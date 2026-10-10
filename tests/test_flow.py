@@ -121,7 +121,8 @@ async def test_thenar_then_standard_budget_shows_results():
     assert isinstance(kwargs["view"], flow.ResultsView)
     assert "Match Idéal" in kwargs["embed"].fields[0].name
     assert "Scyrox V6" in kwargs["embed"].fields[0].value
-    assert "ATK A9 Plus 2.0" in kwargs["embed"].fields[1].value
+    assert "Compatibilité estimée : **75%**" in kwargs["embed"].fields[0].value
+    assert "ATK Z1 V2 Ultra" in kwargs["embed"].fields[1].value
 
 
 @pytest.mark.asyncio

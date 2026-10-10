@@ -13,7 +13,7 @@ import discord
 from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH
 from utils.assets import load_image_urls
 from utils.catalog import load_catalog, load_commercial_links
-from utils.matcher import MAX_SCORE, MouseScore, recommend
+from utils.matcher import MouseScore, compatibility_percent, recommend
 from utils.models import BUDGET_LABELS, GRIP_LABELS, BudgetMode, Grip, HandMeasure, Thenar
 from utils.session import FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
@@ -168,7 +168,7 @@ def results_embed(session: FinderSession, ranked: list[MouseScore], links: dict[
     embed.add_field(
         name="🥇 Le Match Idéal",
         value=f"**{top.mouse.label}** — {top.mouse.price_eur:.2f} €\n"
-              f"Score : **{top.total}/{MAX_SCORE}**\n{_reasons_text(top)}"[:1024],
+              f"Compatibilité estimée : **{compatibility_percent(top)}%**\n{_reasons_text(top)}"[:1024],
         inline=False,
     )
     if len(ranked) > 1:
@@ -176,12 +176,12 @@ def results_embed(session: FinderSession, ranked: list[MouseScore], links: dict[
         embed.add_field(
             name="🥈 L'Alternative",
             value=f"**{alt.mouse.label}** — {alt.mouse.price_eur:.2f} €\n"
-                  f"Score : **{alt.total}/{MAX_SCORE}**\n{_reasons_text(alt)}"[:1024],
+                  f"Compatibilité estimée : **{compatibility_percent(alt)}%**\n{_reasons_text(alt)}"[:1024],
             inline=False,
         )
     else:
         embed.add_field(name="🥈 L'Alternative", value="Aucune autre souris ne correspond à ces critères.", inline=False)
-    embed.set_footer(text="Cliquez sur un bouton 🛒 pour acheter. Score sur 40 points.")
+    embed.set_footer(text="Cliquez sur un bouton 🛒 pour acheter. Le pourcentage estime l'adéquation géométrique de la souris.")
     return embed
 
 

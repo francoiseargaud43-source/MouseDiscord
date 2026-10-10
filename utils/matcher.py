@@ -42,7 +42,7 @@ LENGTH_EXCLUDE_DELTA_MM = 8.0   # delta > 8 mm -> exclusion
 WIDTH_PTS_IN_RANGE = 10
 WIDTH_PTS_NEAR = 5
 WIDTH_NEAR_DELTA_MM = 2.0       # delta < 2 mm -> +5
-WIDTH_EXCLUDE_DELTA_MM = 4.0    # delta > 4 mm -> exclusion
+WIDTH_EXCLUDE_DELTA_MM = 5.0    # delta > 5 mm -> exclusion (tolérance élargie pour les coques asymétriques, ex. Z1)
 
 GRIP_POINTS = {"Élevé": 10, "Moyen": 5}  # "Faible" -> exclusion
 GRIP_EXCLUDED_FIT = "Faible"
@@ -128,6 +128,11 @@ def _proximity_points(delta: float, in_pts: int, near_pts: int, near_threshold: 
     if delta < near_threshold:
         return near_pts
     return 0
+
+
+def compatibility_percent(score: MouseScore) -> int:
+    """Pourcentage de compatibilité affiché à l'utilisateur : score / 40 × 100, arrondi à l'entier (demi vers le haut)."""
+    return int(score.total * 100 / MAX_SCORE + 0.5)
 
 
 def _ecart_text(delta: float) -> str:

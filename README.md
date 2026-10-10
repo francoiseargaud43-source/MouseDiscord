@@ -203,17 +203,17 @@ Code : `utils/matcher.py`. Constantes nommées en tête de fichier.
 
 **Filtre budget** (mode « Budget Personnalisé » uniquement) : exclusion si `price_eur > budget`.
 
-**Points** (total maximum **40**) :
+**Points** (total maximum **40**, affiché en pourcentage : `score / 40 × 100`, arrondi à l'entier) :
 
 | Critère | Règle | Points |
 |---|---|---|
 | Longueur | dans la plage / écart < 3 mm / écart > 8 mm | 10 / 5 / exclusion |
-| Largeur | dans la plage / écart < 2 mm / écart > 4 mm | 10 / 5 / exclusion |
+| Largeur | dans la plage / écart < 2 mm / écart > 5 mm (seuil `WIDTH_EXCLUDE_DELTA_MM`) | 10 / 5 / exclusion |
 | Grip | Élevé / Moyen / Faible | 10 / 5 / exclusion |
 | Bosse | Palm : Front ou Mid · Claw : Mid ou Rear · Fingertip : ignorée | 5 · 5 · 0 |
 | Boutons | Palm : High · Claw : Low ou Mid · Fingertip : Low | 5 · 5 · 10 |
 
-Tri : score décroissant, puis souris dont `budget_tier` correspond au choix d'Étape 4
+Tri : score décroissant (ex æquo : souris dont `budget_tier` correspond au choix d'Étape 4)
 (Économique → « Économique », Rapport Qualité/Prix → « Qualité-Prix », Haut de Gamme → « Haut de Gamme »).
 Le muscle thénar n'entre jamais dans le calcul.
 
@@ -224,7 +224,7 @@ Le muscle thénar n'entre jamais dans le calcul.
 | Scyrox V6 | **30** | longueur 10 · largeur 10 · grip Moyen 5 · bosse Mid 5 · boutons Mid 0 |
 | ATK A9 Plus 2.0 | **25** | longueur 5 · largeur 5 · grip Élevé 10 · bosse Mid 5 · boutons 0 |
 | ATK X1 V2 Ultra Max | **20** | longueur 0 (écart 3.2 mm) · largeur 5 · grip 10 · bosse 5 · boutons 0 |
-| ATK Z1 V2 Ultra | exclue | largeur évaluée 63.8 mm, écart 4.2 mm > 4 mm |
+| ATK Z1 V2 Ultra | **30** (ex æquo avec V6) | longueur 10 · largeur 0 (écart 4.2 mm, sous le seuil de 5 mm) · grip 10 · bosse Front/Mid 5 · boutons High 5 |
 | Scyrox V8 / V8S, ATK F1 V3 | exclues | grip Palm « Faible » |
 
 ---
@@ -265,7 +265,7 @@ pytest
 ```
 
 - `tests/test_matcher.py` : plages cibles, pondérations pour une main **180 × 90 mm en Palm**
-  (V6 = 30, A9 Plus = 25, X1 = 20, Z1 et V8 exclues), bornes des seuils, tri et départage.
+  (V6 = 30, Z1 = 30, A9 Plus = 25, X1 = 20, V8 exclue), bornes des seuils, tri et départage par gamme.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : durée de vie des sessions.
 - `tests/test_flow.py` : parcours complet du flux avec des interactions simulées (édition de message, erreurs de saisie, budget personnalisé).

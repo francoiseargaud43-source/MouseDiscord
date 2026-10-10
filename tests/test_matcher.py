@@ -10,6 +10,7 @@ from utils.catalog import load_catalog
 from utils.matcher import (
     MAX_SCORE,
     WIDTH_MEASUREMENT_OFFSET_MM,
+    compatibility_percent,
     compute_target_ranges,
     evaluate_mouse,
     rank_mice,
@@ -97,21 +98,53 @@ def test_palm_180x90_x1_breakdown(catalog):
     assert s.total == 20
 
 
+def test_palm_180x90_z1_is_kept_with_seuil_5mm(catalog):
+    # ATK Z1 : largeur évaluée 63.8, écart 4.2 mm : hors bande +5 (écart < 2) mais sous le seuil d'exclusion 5 mm
+    z1 = evaluate_mouse(catalog["atk_z1_ultra"], HandMeasure(180, 90), Grip.PALM)
+    assert not z1.is_excluded
+    assert z1.breakdown.length_pts == 10   # 122.5 dans [118.79, 123.79]
+    assert z1.breakdown.width_pts == 0     # écart 4.2 mm : ni +10, ni +5 (bande < 2 mm)
+    assert z1.breakdown.grip_pts == 10     # Palm Élevé
+    assert z1.breakdown.hump_pts == 5      # Mid-Front -> Front/Mid
+    assert z1.breakdown.button_pts == 5    # High
+    assert z1.total == 30
+
+
 def test_palm_180x90_excluded_mice(catalog):
     hand = HandMeasure(180, 90)
     # Scyrox V8 et ATK F1 : compatibilité Palm « Faible » -> exclusion
     assert evaluate_mouse(catalog["scyrox_v8"], hand, Grip.PALM).is_excluded
     assert evaluate_mouse(catalog["atk_f1_ultimate"], hand, Grip.PALM).is_excluded
-    # ATK Z1 : largeur évaluée 63.8, écart 4.2 mm > 4 mm -> exclusion
-    z1 = evaluate_mouse(catalog["atk_z1_ultra"], hand, Grip.PALM)
-    assert z1.is_excluded and "Largeur" in z1.excluded_reason
-    assert z1.total == 0
 
 
-def test_palm_180x90_ranking(catalog):
+def test_palm_180x90_ranking_without_budget(catalog):
     ranked = recommend(list(catalog.values()), HandMeasure(180, 90), Grip.PALM, top_n=5)
-    assert [s.mouse.id for s in ranked] == ["scyrox_v6", "atk_a9_plus", "atk_x1_ultra_max"]
-    assert [s.total for s in ranked] == [30, 25, 20]
+    # Ex æquo à 30 : Scyrox V6 et ATK Z1 (sans choix de gamme, l'ordre du catalogue départage)
+    assert [s.mouse.id for s in ranked] == ["scyrox_v6", "atk_z1_ultra", "atk_a9_plus", "atk_x1_ultra_max"]
+    assert [s.total for s in ranked] == [30, 30, 25, 20]
+
+
+def test_palm_180x90_z1_wins_tie_when_haut_de_gamme(catalog):
+    ranked = recommend(list(catalog.values()), HandMeasure(180, 90), Grip.PALM, BudgetMode.HAUT_DE_GAMME)
+    assert ranked[0].mouse.id == "atk_z1_ultra" and ranked[0].total == 30
+    assert ranked[1].mouse.id == "scyrox_v6"
+
+
+def test_palm_180x90_v6_wins_tie_when_qualite_prix(catalog):
+    ranked = recommend(list(catalog.values()), HandMeasure(180, 90), Grip.PALM, BudgetMode.QUALITE_PRIX)
+    assert ranked[0].mouse.id == "scyrox_v6"
+
+
+def test_compatibility_percent_rounding(catalog):
+    from utils.matcher import MouseScore, ScoreBreakdown
+    m = catalog["atk_z1_ultra"]
+    def pct(total):
+        return compatibility_percent(MouseScore(mouse=m, grip=Grip.PALM, breakdown=ScoreBreakdown(length_pts=total)))
+    assert pct(40) == 100
+    assert pct(35) == 88    # 87.5 -> demi vers le haut
+    assert pct(30) == 75
+    assert pct(25) == 63    # 62.5 -> 63
+    assert pct(0) == 0
 
 
 def test_max_score_is_sum_of_criteria():
@@ -148,14 +181,16 @@ def test_length_delta_exactly_8_is_not_excluded():
     assert not evaluate_mouse(make_mouse(length_mm=low - 8.0), hand, Grip.PALM).is_excluded
 
 
-def test_width_delta_exactly_2_gives_zero_and_above_4_excludes():
+def test_width_delta_exactly_2_gives_zero_and_above_5_excludes():
     hand = HandMeasure(180, 90)
     r = compute_target_ranges(hand, Grip.PALM)
     # width_max_mm = largeur évaluée + 3
     at_2 = evaluate_mouse(make_mouse(width_max_mm=r.width_min - 2.0 + 3.0), hand, Grip.PALM)
     assert at_2.breakdown.width_pts == 0 and not at_2.is_excluded
-    over_4 = evaluate_mouse(make_mouse(width_max_mm=r.width_max + 4.5 + 3.0), hand, Grip.PALM)
-    assert over_4.is_excluded
+    at_5 = evaluate_mouse(make_mouse(width_max_mm=r.width_max + 5.0 + 3.0), hand, Grip.PALM)
+    assert not at_5.is_excluded and at_5.breakdown.width_pts == 0
+    over_5 = evaluate_mouse(make_mouse(width_max_mm=r.width_max + 5.5 + 3.0), hand, Grip.PALM)
+    assert over_5.is_excluded
 
 
 def test_width_uses_width_max_minus_three():
