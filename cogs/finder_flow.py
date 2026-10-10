@@ -1,8 +1,10 @@
 """Flux Discord du Mouse Shape Finder : message persistant, étapes éphémères, modals.
 
-Navigation : chaque étape remplace le message éphémère existant via
-``interaction.response.edit_message()`` (aucun nouveau message dans le salon).
-L'état de l'utilisateur vit dans ``bot.sessions`` (session_id = user_id).
+CONFIDENTIALITÉ (vérifiée par tests/test_flow.py, analyse statique incluse) :
+- seul le message d'accueil ``StartView`` est public ; il ne fait qu'ouvrir un parcours privé ;
+- toutes les autres réponses sont éphémères : ``send_message(ephemeral=True)``, ``followup.send(ephemeral=True)``
+  ou ``edit_message`` sur le message éphémère du parcours ;
+- chaque vue et chaque modal porte le ``session_id`` du parcours ; chaque action vérifie l'identifiant ET le propriétaire.
 
 Parcours : grip -> mesures de la main -> budget (3 étapes).
 Le muscle thénar a été retiré du parcours (il n'entrait dans aucun calcul).
@@ -19,7 +21,7 @@ from utils.catalog import load_catalog, load_commercial_links
 from utils.matcher import MAX_SCORE, MouseScore, compatibility_percent, evaluate_mouse
 from utils.models import BUDGET_LABELS, GRIP_LABELS, BudgetMode, Grip, HandMeasure
 from utils.selection import Selection, select
-from utils.session import FinderSession
+from utils.session import LOOKUP_FORBIDDEN, LOOKUP_OK, FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
 
 log = logging.getLogger(__name__)
@@ -63,15 +65,34 @@ async def _send_ephemeral(interaction: discord.Interaction, content: str) -> Non
         log.warning("Impossible de répondre à l'interaction (expirée ?) : %s", exc)
 
 
-async def require_session(interaction: discord.Interaction) -> FinderSession | None:
-    """Retourne la session active ou informe l'utilisateur qu'elle a expiré."""
-    session = interaction.client.sessions.get(interaction.user.id)
-    if session is None:
+async def require_session(interaction: discord.Interaction, session_id: str) -> FinderSession | None:
+    """Retourne la session si elle est active ET appartient à l'utilisateur ; sinon informe en privé."""
+    session, status = interaction.client.sessions.lookup(session_id, interaction.user.id)
+    if status == LOOKUP_OK:
+        return session
+    if status == LOOKUP_FORBIDDEN:
+        # Ne révèle rien sur le parcours d'un autre membre et ne modifie rien.
+        await _send_ephemeral(interaction, "🔒 Cette action n'est pas disponible pour votre compte.")
+    else:
         await _send_ephemeral(
             interaction,
-            "⏱️ Votre session a expiré. Cliquez à nouveau sur **Start Mouse Shape Finder**.",
+            "⏱️ Ce parcours n'est plus actif (expiré ou remplacé par un nouveau test). "
+            "Cliquez à nouveau sur **Start Mouse Shape Finder**.",
         )
-    return session
+    return None
+
+
+async def _show_private(interaction: discord.Interaction, **kwargs) -> None:
+    """Affiche une étape ou un résultat en PRIVÉ.
+
+    Cas normal : remplace le message éphémère d'origine (bouton, menu ou modal lancé depuis ce message).
+    Repli : si Discord ne fournit pas le message d'origine (modal non lié à un composant),
+    envoi d'un nouveau message éphémère. Dans les deux cas, rien n'est publié dans le salon.
+    """
+    if interaction.message is not None:
+        await interaction.response.edit_message(**kwargs)
+    else:
+        await interaction.response.send_message(ephemeral=True, **kwargs)
 
 
 def _image(embed: discord.Embed, key: str) -> discord.Embed:
@@ -259,10 +280,13 @@ class FinderModal(discord.ui.Modal):
 
 
 # ---------------------------------------------------------------------------
-# Point d'entrée persistant
+# Point d'entrée persistant (SEUL message public du parcours)
 # ---------------------------------------------------------------------------
 class StartView(discord.ui.View):
-    """Vue persistante (timeout=None, custom_id fixe) enregistrée au démarrage du bot."""
+    """Vue persistante (timeout=None, custom_id fixe) enregistrée au démarrage du bot.
+
+    Le clic ouvre un parcours PRIVÉ : la réponse est éphémère et n'est jamais publiée.
+    """
 
     def __init__(self) -> None:
         super().__init__(timeout=None)
@@ -274,9 +298,9 @@ class StartView(discord.ui.View):
         custom_id=START_CUSTOM_ID,
     )
     async def start(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
-        interaction.client.sessions.start(interaction.user.id)
+        session = interaction.client.sessions.start(interaction.user.id)
         await interaction.response.send_message(
-            embed=grip_step_embed(), view=GripView(), ephemeral=True
+            embed=grip_step_embed(), view=GripView(session.session_id), ephemeral=True
         )
 
     async def on_error(self, interaction: discord.Interaction, error: Exception, item) -> None:
@@ -288,7 +312,8 @@ class StartView(discord.ui.View):
 # Étape 1 : Grip
 # ---------------------------------------------------------------------------
 class GripSelect(discord.ui.Select):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
+        self.session_id = session_id
         super().__init__(
             placeholder="Choisissez votre grip…",
             min_values=1,
@@ -300,25 +325,26 @@ class GripSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        session = await require_session(interaction)
+        session = await require_session(interaction, self.session_id)
         if session is None:
             return
         session.grip = Grip(self.values[0])
-        await interaction.response.edit_message(embed=measure_step_embed(session), view=MeasureView())
+        await _show_private(interaction, embed=measure_step_embed(session), view=MeasureView(self.session_id))
 
 
 class GripView(FinderView):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
         super().__init__(timeout=VIEW_TIMEOUT)
-        self.add_item(GripSelect())
+        self.add_item(GripSelect(session_id))
 
 
 # ---------------------------------------------------------------------------
 # Étape 2 : Mesures (bouton -> modal)
 # ---------------------------------------------------------------------------
 class MeasureModal(FinderModal):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
         super().__init__(title="Mesure de votre main")
+        self.session_id = session_id
         self.length = discord.ui.TextInput(
             label="Longueur de la main (mm)",
             placeholder="Ex : 180",
@@ -337,13 +363,13 @@ class MeasureModal(FinderModal):
         self.add_item(self.width)
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        session = await require_session(interaction)
+        session = await require_session(interaction, self.session_id)
         if session is None:
             return
         try:
             length, width = parse_hand_measures(self.length.value, self.width.value)
         except InputError as exc:
-            # Erreur de saisie : on informe sans changer l'étape courante.
+            # Erreur de saisie : message PRIVÉ, étape courante inchangée, données non enregistrées.
             await _send_ephemeral(
                 interaction,
                 f"❌ **Saisie invalide**\n{exc}\n\nCliquez à nouveau sur **Saisir mes mesures**.",
@@ -351,26 +377,28 @@ class MeasureModal(FinderModal):
             return
         session.hand_length_mm = length
         session.hand_width_mm = width
-        await interaction.response.edit_message(embed=budget_step_embed(session), view=BudgetView())
+        await _show_private(interaction, embed=budget_step_embed(session), view=BudgetView(self.session_id))
 
 
 class MeasureView(FinderView):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
         super().__init__(timeout=VIEW_TIMEOUT)
+        self.session_id = session_id
 
     @discord.ui.button(label="Saisir mes mesures", style=discord.ButtonStyle.primary, emoji="📏")
     async def open_measures(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
-        session = await require_session(interaction)
+        session = await require_session(interaction, self.session_id)
         if session is None:
             return
-        await interaction.response.send_modal(MeasureModal())
+        await interaction.response.send_modal(MeasureModal(self.session_id))
 
 
 # ---------------------------------------------------------------------------
 # Étape 3 : Budget (select -> modal si budget personnalisé)
 # ---------------------------------------------------------------------------
 class BudgetSelect(discord.ui.Select):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
+        self.session_id = session_id
         super().__init__(
             placeholder="Choisissez votre gamme…",
             min_values=1,
@@ -382,13 +410,13 @@ class BudgetSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        session = await require_session(interaction)
+        session = await require_session(interaction, self.session_id)
         if session is None:
             return
         mode = BudgetMode(self.values[0])
         if mode is BudgetMode.CUSTOM:
             # Le modal est la réponse à cette interaction ; la session est mise à jour à la soumission.
-            await interaction.response.send_modal(BudgetModal())
+            await interaction.response.send_modal(BudgetModal(self.session_id))
             return
         session.budget_mode = mode
         session.max_budget_eur = None
@@ -396,14 +424,15 @@ class BudgetSelect(discord.ui.Select):
 
 
 class BudgetView(FinderView):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
         super().__init__(timeout=VIEW_TIMEOUT)
-        self.add_item(BudgetSelect())
+        self.add_item(BudgetSelect(session_id))
 
 
 class BudgetModal(FinderModal):
-    def __init__(self) -> None:
+    def __init__(self, session_id: str) -> None:
         super().__init__(title="Budget personnalisé")
+        self.session_id = session_id
         self.price = discord.ui.TextInput(
             label="Prix maximum (€)",
             placeholder="Ex : 60",
@@ -414,7 +443,7 @@ class BudgetModal(FinderModal):
         self.add_item(self.price)
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        session = await require_session(interaction)
+        session = await require_session(interaction, self.session_id)
         if session is None:
             return
         try:
@@ -431,20 +460,27 @@ class BudgetModal(FinderModal):
 
 
 # ---------------------------------------------------------------------------
-# Résultat final
+# Résultat final (privé) et fermeture
 # ---------------------------------------------------------------------------
 async def _show_results(interaction: discord.Interaction, session: FinderSession) -> None:
     selection = compute_selection(session)
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
-    await interaction.response.edit_message(
+    owner_id = session.user_id
+    # Minimisation : les réponses ne servent plus une fois le résultat produit.
+    interaction.client.sessions.discard(session.session_id)
+    await _show_private(
+        interaction,
         embed=results_embed(session, selection),
-        view=ResultsView(selection.ranked, links),
+        view=ResultsView(owner_id, selection.ranked, links),
     )
 
 
 class ResultsView(FinderView):
-    def __init__(self, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str]) -> None:
+    """Boutons du résultat privé : liens d'achat, Fermer, Refaire le test (propriétaire uniquement)."""
+
+    def __init__(self, owner_id: int, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str]) -> None:
         super().__init__(timeout=VIEW_TIMEOUT)
+        self.owner_id = owner_id
         for score in ranked:
             url = links.get(score.mouse.id)
             if url:
@@ -465,11 +501,32 @@ class ResultsView(FinderView):
                         custom_id=f"mouse_finder:nolink:{score.mouse.id}",
                     )
                 )
+        close = discord.ui.Button(label="Fermer", style=discord.ButtonStyle.secondary, emoji="✖️")
+        close.callback = self._close
+        self.add_item(close)
         # Ajouté en dernier : le bouton de relance apparaît après les liens d'achat.
         restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄")
         restart.callback = self._restart
         self.add_item(restart)
 
+    async def _check_owner(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.owner_id:
+            await _send_ephemeral(interaction, "🔒 Cette action n'est pas disponible pour votre compte.")
+            return False
+        return True
+
+    async def _close(self, interaction: discord.Interaction) -> None:
+        if not await self._check_owner(interaction):
+            return
+        # Retire le résultat du message privé ; aucun message n'est publié.
+        await interaction.response.edit_message(
+            content="✅ Résultat fermé. Cliquez sur **Start Mouse Shape Finder** dans le salon pour un nouveau test.",
+            embed=None,
+            view=None,
+        )
+
     async def _restart(self, interaction: discord.Interaction) -> None:
-        interaction.client.sessions.start(interaction.user.id)
-        await interaction.response.edit_message(embed=grip_step_embed(), view=GripView())
+        if not await self._check_owner(interaction):
+            return
+        session = interaction.client.sessions.start(interaction.user.id)
+        await interaction.response.edit_message(embed=grip_step_embed(), view=GripView(session.session_id))

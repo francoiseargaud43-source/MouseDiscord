@@ -45,14 +45,14 @@ Principales : ATK Store (collections Z1, U2, X1, A9 ; fiches Fierce X et Dragonf
 
 ```
 $ pytest -q
-133 passed, 1 warning in 0.47s          # warning : audioop (dépendance discord.py), non bloquant
+150 passed, 1 warning in 0.48s          # warning : audioop (dépendance discord.py), non bloquant
 $ python -m pyflakes bot.py config.py cogs utils tests tools
 (aucune sortie : propre)
 $ python tools/compare_profiles.py
 Écrit : docs/audit/matrice_profils.md
 ```
 
-Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 11 · `test_setup_command` 7 · `test_session` 4 · `test_catalog_lookup` 1.
+Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 21 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1.
 
 **Non exécuté** : toute interaction avec un serveur Discord réel (voir §8).
 
@@ -67,6 +67,8 @@ Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `te
 | `test_flow::test_valid_measures_move_to_thenar_step` | Devient `..._to_budget_step` (étape 3/3). | Thénar retiré. |
 | `test_flow::test_thenar_then_standard_budget_shows_results` | Devient `test_standard_budget_shows_results_with_percentage_wording`. | Thénar retiré ; libellé du score. |
 | `test_flow::test_custom_budget_invalid_then_valid` | Conservé ; `thenar` retiré de la session. Résultat inchangé (A9 Plus seule à 50 €). | — |
+| `test_session::*` (4 → 11) | API `get(user_id)` remplacée par `lookup(session_id, user_id)` ; `start` remplace le parcours précédent. | Correctif de confidentialité : une ancienne vue (parcours 1) écrivait dans le parcours 2 du même utilisateur (reproduit). |
+| `test_flow::*` (11 → 21) | Vues et modals reçoivent `session_id` ; helper `make_interaction` fournit `interaction.message` ; ajout des tests d'isolation, de propriétaire, de fermeture et d'analyse statique des envois publics. | Même correctif ; aucune assertion de résultat modifiée. |
 | `test_setup_command::*` | Ajout d'un `state_path` temporaire ; le mock d'envoi retourne un identifiant. Même comportement de publication. | Idempotence. |
 | `test_data::test_catalog_loads_all_six_mice` | Remplacé par `test_catalog_contains_owner_models_and_new_verified_variants`. | 18 entrées au lieu de 6. |
 | `test_data::test_images_config_has_all_keys` | Clés mises à jour (`step3_budget`). | Thénar retiré. |
