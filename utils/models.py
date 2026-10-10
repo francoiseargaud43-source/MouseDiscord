@@ -1,8 +1,25 @@
-"""Types métier partagés : grips, budgets, zones thénar et souris."""
+"""Types métier partagés : grips, modes de sélection, souris et métadonnées de données.
+
+Séparation des largeurs (voir docs/audit/AUDIT.md, §3.3) :
+- ``width_max_mm``   : largeur maximale documentée de la coque (donnée catalogue) ;
+- ``grip_width_mm``  : largeur de prise réellement mesurée (None tant qu'aucune mesure n'existe) ;
+- l'estimation ``width_max_mm - GRIP_WIDTH_ESTIMATE_OFFSET_MM`` n'est utilisée qu'à défaut de mesure.
+"""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
+
+UNKNOWN = "Inconnu"  # valeur explicite pour une donnée non vérifiée (ni Faible, ni Moyen, ni Élevé)
+
+FIT_LEVELS = frozenset({"Élevé", "Moyen", "Faible", UNKNOWN})
+BUTTON_HEIGHTS = frozenset({"Low", "Mid", "High", UNKNOWN})
+HUMP_POSITIONS = frozenset({"Front", "Mid", "Rear", "Mid-Front", "Mid-Rear", "Any", UNKNOWN})
+
+DIMENSION_STATUSES = frozenset({"verified", "single_source", "conflicting", "owner_spec", "owner_spec_unverified"})
+PRICE_STATUSES = frozenset({"owner_spec_unverified", "verified", "unknown"})
+FIT_STATUSES = frozenset({"owner_spec", "unverified"})
 
 
 class Grip(Enum):
@@ -32,11 +49,6 @@ class BudgetMode(Enum):
     def label(self) -> str:
         return BUDGET_LABELS[self]
 
-    @property
-    def tier(self) -> str | None:
-        """Valeur de `budget_tier` du catalogue correspondant (tie-break)."""
-        return BUDGET_TIERS[self]
-
 
 BUDGET_LABELS = {
     BudgetMode.ECONOMIQUE: "Économique",
@@ -44,25 +56,6 @@ BUDGET_LABELS = {
     BudgetMode.HAUT_DE_GAMME: "Haut de Gamme (Max Perf)",
     BudgetMode.CUSTOM: "Budget Personnalisé Maximal",
 }
-
-BUDGET_TIERS = {
-    BudgetMode.ECONOMIQUE: "Économique",
-    BudgetMode.QUALITE_PRIX: "Qualité-Prix",
-    BudgetMode.HAUT_DE_GAMME: "Haut de Gamme",
-    BudgetMode.CUSTOM: None,
-}
-
-
-class Thenar(Enum):
-    """Muscle thénar : collecté pour l'UX, n'entre PAS dans l'équation."""
-
-    SMALL = "small"
-    MEDIUM = "medium"
-    LARGE = "large"
-
-    @property
-    def label(self) -> str:
-        return self.name.capitalize()
 
 
 @dataclass(frozen=True)
@@ -83,13 +76,28 @@ GRIP_FIT_FIELDS = {
 
 
 @dataclass(frozen=True)
+class Source:
+    label: str
+    url: str
+    fields: tuple[str, ...]          # champs couverts par la source (ex. "length_mm", "price_eur")
+    date_checked: str                # AAAA-MM-JJ de la vérification
+
+    @classmethod
+    def from_dict(cls, raw: dict[str, Any]) -> "Source":
+        return cls(
+            label=str(raw["label"]),
+            url=str(raw["url"]),
+            fields=tuple(raw.get("fields", ())),
+            date_checked=str(raw["date_checked"]),
+        )
+
+
+@dataclass(frozen=True)
 class Mouse:
     id: str
     brand: str
     model: str
-    price_eur: float
     budget_tier: str
-    length_mm: float
     width_max_mm: float
     hump_position: str
     button_height: str
@@ -97,6 +105,26 @@ class Mouse:
     claw_grip_fit: str
     fingertip_grip_fit: str
     fit_rationale: str
+    # Géométrie : None = non vérifiée / en conflit (ne doit pas être comblée par défaut)
+    length_mm: float | None = None
+    height_mm: float | None = None
+    grip_width_mm: float | None = None        # largeur de prise MESURÉE uniquement
+    dimension_status: str = "owner_spec_unverified"
+    conflicts: dict[str, Any] = field(default_factory=dict)  # ex. {"length_mm": {"values": [...], "sources": [...]}}
+    shell_id: str | None = None               # même coque => dimensions partagées
+    # Commercial / indicatif (ne modifient jamais le score géométrique)
+    price_eur: float | None = None
+    price_status: str = "owner_spec_unverified"
+    price_note: str = ""
+    weight_g: float | None = None
+    sensor: str | None = None
+    polling_hz: int | None = None
+    # Métadonnées de compatibilité
+    fit_status: str = "owner_spec"
+    family: str = ""
+    category: str = "ATK"                     # marque du produit (ATK ou autre)
+    sources: tuple[Source, ...] = ()
+    notes: str = ""
 
     @property
     def label(self) -> str:
@@ -104,3 +132,7 @@ class Mouse:
 
     def fit_for(self, grip: Grip) -> str:
         return getattr(self, GRIP_FIT_FIELDS[grip])
+
+    @property
+    def is_price_known(self) -> bool:
+        return self.price_eur is not None

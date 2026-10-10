@@ -1,22 +1,29 @@
-"""Moteur de recommandation Mouse Shape Finder.
+"""Moteur de compatibilité morphologique Mouse Shape Finder.
 
-Pour une main de longueur L et de largeur W (mm) et un grip donné, on calcule
-des plages cibles, puis on attribue des points sur 40 (cf. README, section Scoring).
-Aucune dépendance Discord ici : module pur, entièrement testable.
+Ce module ne fait QUE la compatibilité géométrique (points sur 40). Il ne lit ni les prix,
+ni les modes de sélection : ceux-ci sont dans ``utils/selection.py``.
+
+Statuts produits par ``evaluate_mouse`` :
+- ``excluded`` : une règle éliminatoire s'applique (écart de longueur > 8 mm, largeur > 5 mm,
+  compatibilité de grip « Faible », prix au-dessus d'un budget personnalisé) ;
+- ``pending``  : aucune exclusion, mais une donnée nécessaire est absente ou en conflit
+  (grip « Inconnu », bosse/boutons « Inconnu », longueur non vérifiée…) : aucun point
+  n'est inventé, le score reste partiel et n'est pas classable ;
+- ``scored``   : toutes les données sont présentes ; le score est final sur 40.
+
+Les constantes sont regroupées ici et documentées dans README.md (section Moteur de scoring).
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Iterable, Sequence
+from typing import Sequence
 
-from utils.models import BudgetMode, Grip, HandMeasure, Mouse
+from utils.models import UNKNOWN, BudgetMode, Grip, HandMeasure, Mouse
 
-# ---------------------------------------------------------------------------
-# A. Équations de base (plages idéales)
-# ---------------------------------------------------------------------------
+# --- A. Équations de base (plages idéales) --------------------------------
 LENGTH_BASE_MM = 71.4
 LENGTH_SLOPE = 0.2633
-LENGTH_SPAN_MM = 5.0  # Cible_Longueur_Max = Cible_Longueur_Min + 5 (Palm/Claw) ; +5 au-dessus du min (Fingertip)
+LENGTH_SPAN_MM = 5.0           # Max = Min + 5 (Palm/Claw) ; Fingertip : Max = base + L×k + 5
 
 WIDTH_BASE_PALM_CLAW_MM = 48.4
 WIDTH_BASE_FINGERTIP_MM = 47.3
@@ -24,46 +31,58 @@ WIDTH_SLOPE = 0.08
 WIDTH_SPAN_PALM_CLAW_MM = 4.0
 WIDTH_SPAN_FINGERTIP_MM = 3.9
 
-# ---------------------------------------------------------------------------
-# B. Ajustement technique de la largeur
-# ---------------------------------------------------------------------------
-WIDTH_MEASUREMENT_OFFSET_MM = 3.0  # largeur_evaluee = width_max_mm - 3.0
+# --- B. Largeur de prise (estimation provisoire) --------------------------
+# Utilisée UNIQUEMENT si aucune largeur de prise mesurée n'existe pour la souris.
+GRIP_WIDTH_ESTIMATE_OFFSET_MM = 3.0
+# Ancien nom conservé pour compatibilité des imports et des tests.
+WIDTH_MEASUREMENT_OFFSET_MM = GRIP_WIDTH_ESTIMATE_OFFSET_MM
 
-# ---------------------------------------------------------------------------
-# C. Scoring
-# ---------------------------------------------------------------------------
+# --- C. Barème (points sur 40) --------------------------------------------
 MAX_SCORE = 40
 
 LENGTH_PTS_IN_RANGE = 10
 LENGTH_PTS_NEAR = 5
-LENGTH_NEAR_DELTA_MM = 3.0      # delta < 3 mm -> +5
-LENGTH_EXCLUDE_DELTA_MM = 8.0   # delta > 8 mm -> exclusion
+LENGTH_NEAR_DELTA_MM = 3.0       # écart < 3 mm (strict)  -> +5
+LENGTH_EXCLUDE_DELTA_MM = 8.0    # écart > 8 mm (strict)  -> exclusion
 
 WIDTH_PTS_IN_RANGE = 10
 WIDTH_PTS_NEAR = 5
-WIDTH_NEAR_DELTA_MM = 2.0       # delta < 2 mm -> +5
-WIDTH_EXCLUDE_DELTA_MM = 5.0    # delta > 5 mm -> exclusion (tolérance élargie pour les coques asymétriques, ex. Z1)
+WIDTH_NEAR_DELTA_MM = 2.0        # écart < 2 mm (strict)  -> +5
+WIDTH_EXCLUDE_DELTA_MM = 5.0     # écart > 5 mm (strict)  -> exclusion (seuil porté de 4 à 5 mm : docs/audit/AUDIT.md)
 
-GRIP_POINTS = {"Élevé": 10, "Moyen": 5}  # "Faible" -> exclusion
+GRIP_POINTS = {"Élevé": 10, "Moyen": 5}   # "Faible" -> exclusion ; "Inconnu" -> en attente
+GRIP_MAX_POINTS = 10
 GRIP_EXCLUDED_FIT = "Faible"
 
 HUMP_POINTS = 5
+HUMP_MAX_POINTS = 5
+
+# Règles de compatibilité bosse / boutons, CENTRALISÉES ici (ne pas les dupliquer ailleurs).
 HUMP_IDEAL = {
     Grip.PALM: frozenset({"Front", "Mid"}),
     Grip.CLAW: frozenset({"Mid", "Rear"}),
-}  # Fingertip : bosse ignorée
+}                                           # Fingertip : bosse ignorée (0 point, pas de donnée requise)
 
-BUTTON_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 BUTTON_IDEAL = {
     Grip.PALM: frozenset({"High"}),
     Grip.CLAW: frozenset({"Low", "Mid"}),
     Grip.FINGERTIP: frozenset({"Low"}),
 }
+BUTTON_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
+BUTTON_MAX_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
+
+# Précision de comparaison : les écarts sont arrondis à 6 décimales avant d'être comparés
+# aux seuils stricts, pour qu'un écart « exact » ne soit jamais classé à côté par bruit flottant.
+DELTA_DECIMALS = 6
+
+STATUS_SCORED = "scored"
+STATUS_PENDING = "pending"
+STATUS_EXCLUDED = "excluded"
 
 
 @dataclass(frozen=True)
 class TargetRanges:
-    length_min: float
+    length_min: float      # 0.0 en Fingertip (pas de minimum)
     length_max: float
     width_min: float
     width_max: float
@@ -86,16 +105,31 @@ class ScoreBreakdown:
 class MouseScore:
     mouse: Mouse
     grip: Grip
+    status: str = STATUS_SCORED
     breakdown: ScoreBreakdown = field(default_factory=ScoreBreakdown)
     details: tuple[str, ...] = ()
     excluded_reason: str | None = None
+    missing: tuple[str, ...] = ()          # données manquantes (statut pending)
+    computable_max: int = 0                # points maximum pouvant être attribués avec les données présentes
+    width_source: str | None = None        # "measured" | "estimated"
+    width_used_mm: float | None = None
+    confidence: str | None = None          # "élevée" | "moyenne" | "faible"
 
     @property
     def is_excluded(self) -> bool:
-        return self.excluded_reason is not None
+        return self.status == STATUS_EXCLUDED
+
+    @property
+    def is_pending(self) -> bool:
+        return self.status == STATUS_PENDING
+
+    @property
+    def is_scored(self) -> bool:
+        return self.status == STATUS_SCORED
 
     @property
     def total(self) -> int:
+        """Points attribués. Pour un candidat en attente, il s'agit d'un score PARTIEL non classable."""
         return 0 if self.is_excluded else self.breakdown.total
 
 
@@ -103,7 +137,7 @@ def compute_target_ranges(hand: HandMeasure, grip: Grip) -> TargetRanges:
     length_min_base = LENGTH_BASE_MM + hand.length_mm * LENGTH_SLOPE
     length_max = length_min_base + LENGTH_SPAN_MM
     if grip is Grip.FINGERTIP:
-        length_min = 0.0  # pas de minimum en Fingertip
+        length_min = 0.0
         width_min = WIDTH_BASE_FINGERTIP_MM + hand.width_mm * WIDTH_SLOPE
         width_span = WIDTH_SPAN_FINGERTIP_MM
     else:
@@ -113,12 +147,26 @@ def compute_target_ranges(hand: HandMeasure, grip: Grip) -> TargetRanges:
     return TargetRanges(length_min, length_max, width_min, width_min + width_span)
 
 
-def _distance_outside(value: float, low: float, high: float) -> float:
-    """0 si value est dans [low, high], sinon l'écart à la plage."""
+def grip_width_for_scoring(mouse: Mouse) -> tuple[float, str]:
+    """Largeur de prise utilisée pour la comparaison et sa provenance.
+
+    La mesure réelle remplace toujours l'estimation ; sans mesure, on applique le correctif provisoire.
+    """
+    if mouse.grip_width_mm is not None:
+        return mouse.grip_width_mm, "measured"
+    return mouse.width_max_mm - GRIP_WIDTH_ESTIMATE_OFFSET_MM, "estimated"
+
+
+def _round_delta(value: float) -> float:
+    return round(value, DELTA_DECIMALS)
+
+
+def distance_outside(value: float, low: float, high: float) -> float:
+    """0 si value ∈ [low, high], sinon l'écart à la plage (arrondi pour comparer proprement)."""
     if value < low:
-        return low - value
+        return _round_delta(low - value)
     if value > high:
-        return value - high
+        return _round_delta(value - high)
     return 0.0
 
 
@@ -130,17 +178,32 @@ def _proximity_points(delta: float, in_pts: int, near_pts: int, near_threshold: 
     return 0
 
 
-def compatibility_percent(score: MouseScore) -> int:
-    """Pourcentage de compatibilité affiché à l'utilisateur : score / 40 × 100, arrondi à l'entier (demi vers le haut)."""
-    return int(score.total * 100 / MAX_SCORE + 0.5)
-
-
-def _ecart_text(delta: float) -> str:
+def _ecart(delta: float) -> str:
     return "dans la plage" if delta == 0.0 else f"écart {delta:.1f} mm"
 
 
-def _excluded(mouse: Mouse, grip: Grip, reason: str) -> MouseScore:
-    return MouseScore(mouse=mouse, grip=grip, excluded_reason=reason)
+def _confidence(mouse: Mouse, width_source: str) -> str:
+    if mouse.dimension_status != "verified" or mouse.fit_status != "owner_spec":
+        return "faible"
+    if width_source == "measured":
+        return "élevée"
+    return "moyenne"   # dimensions vérifiées mais largeur de prise estimée
+
+
+def _finish(mouse, grip, status, breakdown, details, missing, computable_max, width_source, width_used, excluded_reason=None):
+    return MouseScore(
+        mouse=mouse,
+        grip=grip,
+        status=status,
+        breakdown=breakdown,
+        details=tuple(details),
+        excluded_reason=excluded_reason,
+        missing=tuple(missing),
+        computable_max=computable_max,
+        width_source=width_source,
+        width_used_mm=width_used,
+        confidence=None if status == STATUS_EXCLUDED else _confidence(mouse, width_source or "estimated"),
+    )
 
 
 def evaluate_mouse(
@@ -150,98 +213,99 @@ def evaluate_mouse(
     budget_mode: BudgetMode | None = None,
     max_budget_eur: float | None = None,
 ) -> MouseScore:
-    """Score une souris sur 40 points, ou la marque comme exclue (score 0)."""
-    # Filtre éliminatoire budget
+    """Évalue la compatibilité morphologique d'une souris pour une main et un grip donnés."""
+    # --- Filtre éliminatoire budget personnalisé (prix inconnu = non conforme par défaut)
     if budget_mode is BudgetMode.CUSTOM:
         if max_budget_eur is None:
             raise ValueError("max_budget_eur est requis pour le mode Budget Personnalisé.")
-        if mouse.price_eur > max_budget_eur:
-            return _excluded(
-                mouse, grip,
-                f"Prix {mouse.price_eur:.2f} € au-dessus du budget maximal {max_budget_eur:.2f} €",
-            )
+        if mouse.price_eur is not None and mouse.price_eur > max_budget_eur:
+            return _finish(mouse, grip, STATUS_EXCLUDED, ScoreBreakdown(), [], [], 0, None, None,
+                           excluded_reason=f"Prix {mouse.price_eur:.2f} € au-dessus du budget maximal {max_budget_eur:.2f} €")
 
     ranges = compute_target_ranges(hand, grip)
     details: list[str] = []
+    missing: list[str] = []
+    computable = 0
 
-    # --- Longueur -----------------------------------------------------------
-    len_delta = _distance_outside(mouse.length_mm, ranges.length_min, ranges.length_max)
-    if len_delta > LENGTH_EXCLUDE_DELTA_MM:
-        return _excluded(mouse, grip, f"Longueur hors plage de {len_delta:.1f} mm (> {LENGTH_EXCLUDE_DELTA_MM:g} mm)")
-    length_pts = _proximity_points(len_delta, LENGTH_PTS_IN_RANGE, LENGTH_PTS_NEAR, LENGTH_NEAR_DELTA_MM)
-    if grip is Grip.FINGERTIP:
-        len_target = f"≤ {ranges.length_max:.1f} mm"
+    if mouse.dimension_status == "conflicting":
+        missing.append("dimensions en conflit entre sources")
+
+    # --- Longueur -------------------------------------------------------------
+    length_pts = 0
+    if mouse.length_mm is None:
+        missing.append("longueur non vérifiée")
     else:
-        len_target = f"{ranges.length_min:.1f}–{ranges.length_max:.1f} mm"
-    details.append(
-        f"Longueur {mouse.length_mm:.1f} mm vs cible {len_target} "
-        f"({_ecart_text(len_delta)}) : {length_pts} pts"
-    )
+        len_delta = distance_outside(mouse.length_mm, ranges.length_min, ranges.length_max)
+        if len_delta > LENGTH_EXCLUDE_DELTA_MM:
+            return _finish(mouse, grip, STATUS_EXCLUDED, ScoreBreakdown(), [], missing, 0, None, None,
+                           excluded_reason=f"Longueur hors plage de {len_delta:.1f} mm (> {LENGTH_EXCLUDE_DELTA_MM:g} mm)")
+        length_pts = _proximity_points(len_delta, LENGTH_PTS_IN_RANGE, LENGTH_PTS_NEAR, LENGTH_NEAR_DELTA_MM)
+        computable += LENGTH_PTS_IN_RANGE
+        target = (f"≤ {ranges.length_max:.1f} mm" if grip is Grip.FINGERTIP
+                  else f"{ranges.length_min:.1f}–{ranges.length_max:.1f} mm")
+        details.append(f"Longueur {mouse.length_mm:.1f} mm vs cible {target} ({_ecart(len_delta)}) : {length_pts} pts")
 
-    # --- Largeur (ajustée : width_max - 3 mm) -----------------------------
-    evaluated_width = mouse.width_max_mm - WIDTH_MEASUREMENT_OFFSET_MM
-    wid_delta = _distance_outside(evaluated_width, ranges.width_min, ranges.width_max)
+    # --- Largeur de prise (mesurée ou estimée) -------------------------------
+    width_used, width_source = grip_width_for_scoring(mouse)
+    wid_delta = distance_outside(width_used, ranges.width_min, ranges.width_max)
     if wid_delta > WIDTH_EXCLUDE_DELTA_MM:
-        return _excluded(mouse, grip, f"Largeur de prise hors plage de {wid_delta:.1f} mm (> {WIDTH_EXCLUDE_DELTA_MM:g} mm)")
+        return _finish(mouse, grip, STATUS_EXCLUDED, ScoreBreakdown(), [], missing, 0, width_source, width_used,
+                       excluded_reason=f"Largeur de prise hors plage de {wid_delta:.1f} mm (> {WIDTH_EXCLUDE_DELTA_MM:g} mm)")
     width_pts = _proximity_points(wid_delta, WIDTH_PTS_IN_RANGE, WIDTH_PTS_NEAR, WIDTH_NEAR_DELTA_MM)
+    computable += WIDTH_PTS_IN_RANGE
+    origin = "mesurée" if width_source == "measured" else "estimée (coque − 3 mm, provisoire)"
     details.append(
-        f"Largeur de prise {evaluated_width:.1f} mm vs cible {ranges.width_min:.1f}–{ranges.width_max:.1f} mm "
-        f"({_ecart_text(wid_delta)}) : {width_pts} pts"
+        f"Largeur de prise {origin} {width_used:.1f} mm vs cible {ranges.width_min:.1f}–{ranges.width_max:.1f} mm "
+        f"({_ecart(wid_delta)}) : {width_pts} pts"
     )
 
-    # --- Compatibilité grip -------------------------------------------------
+    # --- Compatibilité grip ---------------------------------------------------
+    grip_pts = 0
     fit = mouse.fit_for(grip)
     if fit == GRIP_EXCLUDED_FIT:
-        return _excluded(mouse, grip, f"Compatibilité {grip.label} « Faible »")
-    grip_pts = GRIP_POINTS[fit]
-    details.append(f"Compatibilité {grip.label} : {fit} : {grip_pts} pts")
+        return _finish(mouse, grip, STATUS_EXCLUDED, ScoreBreakdown(), [], missing, 0, width_source, width_used,
+                       excluded_reason=f"Compatibilité {grip.label} « Faible »")
+    if fit == UNKNOWN:
+        missing.append(f"compatibilité {grip.label} non vérifiée")
+    else:
+        grip_pts = GRIP_POINTS[fit]
+        computable += GRIP_MAX_POINTS
+        details.append(f"Compatibilité {grip.label} : {fit} : {grip_pts} pts")
 
-    # --- Bosse & boutons ----------------------------------------------------
+    # --- Bosse ----------------------------------------------------------------
+    hump_pts = 0
     if grip is Grip.FINGERTIP:
-        hump_pts = 0
         details.append("Bosse : ignorée en Fingertip : 0 pt")
+    elif mouse.hump_position == UNKNOWN:
+        missing.append("position de la bosse non vérifiée")
     else:
         hump_tokens = set(mouse.hump_position.split("-"))
         hump_ok = bool(hump_tokens & HUMP_IDEAL[grip])
         hump_pts = HUMP_POINTS if hump_ok else 0
+        computable += HUMP_MAX_POINTS
         details.append(f"Bosse {mouse.hump_position} : {'adaptée' if hump_ok else 'non adaptée'} : {hump_pts} pts")
 
-    button_ok = mouse.button_height in BUTTON_IDEAL[grip]
-    button_pts = BUTTON_POINTS[grip] if button_ok else 0
-    details.append(f"Boutons {mouse.button_height} : {'adaptés' if button_ok else 'non adaptés'} : {button_pts} pts")
+    # --- Boutons --------------------------------------------------------------
+    button_pts = 0
+    if mouse.button_height == UNKNOWN:
+        missing.append("hauteur des boutons non vérifiée")
+    else:
+        button_ok = mouse.button_height in BUTTON_IDEAL[grip]
+        button_pts = BUTTON_POINTS[grip] if button_ok else 0
+        computable += BUTTON_MAX_POINTS[grip]
+        details.append(f"Boutons {mouse.button_height} : {'adaptés' if button_ok else 'non adaptés'} : {button_pts} pts")
 
-    breakdown = ScoreBreakdown(
-        length_pts=length_pts,
-        width_pts=width_pts,
-        grip_pts=grip_pts,
-        hump_pts=hump_pts,
-        button_pts=button_pts,
-    )
-    return MouseScore(mouse=mouse, grip=grip, breakdown=breakdown, details=tuple(details))
-
-
-def rank_mice(
-    scores: Iterable[MouseScore],
-    budget_mode: BudgetMode | None = None,
-) -> list[MouseScore]:
-    """Filtre les exclues et trie : score décroissant, puis tier budget correspondant."""
-    preferred_tier = budget_mode.tier if budget_mode is not None else None
-    kept = [s for s in scores if not s.is_excluded]
-
-    def sort_key(s: MouseScore) -> tuple[int, int]:
-        tier_match = preferred_tier is not None and s.mouse.budget_tier == preferred_tier
-        return (-s.total, 0 if tier_match else 1)
-
-    return sorted(kept, key=sort_key)  # sorted() est stable : l'ordre du catalogue départage le reste
+    breakdown = ScoreBreakdown(length_pts=length_pts, width_pts=width_pts, grip_pts=grip_pts,
+                               hump_pts=hump_pts, button_pts=button_pts)
+    status = STATUS_PENDING if missing else STATUS_SCORED
+    return _finish(mouse, grip, status, breakdown, details, missing, computable, width_source, width_used)
 
 
-def recommend(
-    mice: Sequence[Mouse],
-    hand: HandMeasure,
-    grip: Grip,
-    budget_mode: BudgetMode | None = None,
-    max_budget_eur: float | None = None,
-    top_n: int = 2,
-) -> list[MouseScore]:
-    scores = [evaluate_mouse(m, hand, grip, budget_mode, max_budget_eur) for m in mice]
-    return rank_mice(scores, budget_mode)[:top_n]
+def rank_by_compatibility(scores: Sequence[MouseScore]) -> list[MouseScore]:
+    """Classement purement morphologique : score décroissant, puis ordre du catalogue (stable)."""
+    return sorted((s for s in scores if s.is_scored), key=lambda s: -s.total)
+
+
+def compatibility_percent(score: MouseScore) -> int:
+    """Pourcentage du MAXIMUM THÉORIQUE du barème (score/40). Ce n'est PAS une probabilité."""
+    return int(score.total * 100 / MAX_SCORE + 0.5)

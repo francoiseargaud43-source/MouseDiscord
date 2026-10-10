@@ -1,8 +1,7 @@
 {
-  "_aide": "Renseignez une URL https:// publique pour chaque image. Laissez une valeur vide pour ne pas afficher d'image.",
+  "_aide": "Renseignez une URL https:// publique pour chaque image. Laissez une valeur vide pour ne pas afficher d'image. La clé step3_budget remplace step4_budget (l'étape thénar a été retirée) ; step4_budget reste lue en repli.",
   "banner": "",
   "step1_grip": "",
   "step2_measure": "",
-  "step3_thenar": "",
-  "step4_budget": ""
+  "step3_budget": ""
 }

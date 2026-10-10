@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from cogs import finder_flow as flow
-from utils.models import BudgetMode, Grip, Thenar
+from utils.models import BudgetMode, Grip
 from utils.session import SessionStore
 
 
@@ -43,7 +43,7 @@ async def test_start_button_sends_ephemeral_step1_with_grip_select():
     kwargs = inter.response.send_message.call_args.kwargs
     assert kwargs["ephemeral"] is True
     assert isinstance(kwargs["view"], flow.GripView)
-    assert "Étape 1/4" in kwargs["embed"].title
+    assert "Étape 1/3" in kwargs["embed"].title
     assert inter.client.sessions.get(99) is not None
 
 
@@ -59,7 +59,7 @@ async def test_grip_selection_edits_message_to_step2():
     assert store.get(99).grip is Grip.CLAW
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.MeasureView)
-    assert "Étape 2/4" in kwargs["embed"].title
+    assert "Étape 2/3" in kwargs["embed"].title
 
 
 @pytest.mark.asyncio
@@ -74,7 +74,7 @@ async def test_measure_button_opens_modal_without_new_message():
 
 
 @pytest.mark.asyncio
-async def test_valid_measures_move_to_thenar_step():
+async def test_valid_measures_move_to_budget_step():
     store = SessionStore(ttl_seconds=600)
     store.start(99).grip = Grip.PALM
     inter = make_interaction(store=store)
@@ -83,8 +83,8 @@ async def test_valid_measures_move_to_thenar_step():
     s = store.get(99)
     assert (s.hand_length_mm, s.hand_width_mm) == (180.0, 90.0)
     kwargs = inter.response.edit_message.call_args.kwargs
-    assert isinstance(kwargs["view"], flow.ThenarView)
-    assert "Étape 3/4" in kwargs["embed"].title
+    assert isinstance(kwargs["view"], flow.BudgetView)
+    assert "Étape 3/3" in kwargs["embed"].title
 
 
 @pytest.mark.asyncio
@@ -103,33 +103,48 @@ async def test_invalid_measures_show_error_and_keep_step():
 
 
 @pytest.mark.asyncio
-async def test_thenar_then_standard_budget_shows_results():
+async def test_standard_budget_shows_results_with_percentage_wording():
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
     s.grip, s.hand_length_mm, s.hand_width_mm = Grip.PALM, 180.0, 90.0
     inter = make_interaction(store=store)
-    thenar_view = flow.ThenarView()
-    select_values(thenar_view.children[0], "medium")
-    await thenar_view.children[0].callback(inter)
-    assert store.get(99).thenar is Thenar.MEDIUM
-
-    inter2 = make_interaction(store=store)
-    budget_view = flow.BudgetView()
-    select_values(budget_view.children[0], BudgetMode.QUALITE_PRIX.value)
-    await budget_view.children[0].callback(inter2)
-    kwargs = inter2.response.edit_message.call_args.kwargs
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
+    await view.children[0].callback(inter)
+    kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.ResultsView)
-    assert "Match Idéal" in kwargs["embed"].fields[0].name
-    assert "Scyrox V6" in kwargs["embed"].fields[0].value
-    assert "Compatibilité estimée : **75%**" in kwargs["embed"].fields[0].value
-    assert "ATK Z1 V2 Ultra" in kwargs["embed"].fields[1].value
+    fields = {f.name: f.value for f in kwargs["embed"].fields}
+    assert "Match Idéal" in " ".join(fields)
+    top = next(v for k, v in fields.items() if "Match Idéal" in k)
+    alt = next(v for k, v in fields.items() if "Alternative" in k)
+    assert "Scyrox V6" in top
+    assert "Score de correspondance : **30/40** — **75 %** du maximum théorique du barème" in top
+    assert "Z1" in alt
+    assert "Pourquoi ce choix" in " ".join(fields)
+    assert "ni une probabilité" in kwargs["embed"].footer.text
+
+
+@pytest.mark.asyncio
+async def test_results_show_pending_candidates_separately():
+    store = SessionStore(ttl_seconds=600)
+    s = store.start(99)
+    s.grip, s.hand_length_mm, s.hand_width_mm = Grip.PALM, 180.0, 90.0
+    inter = make_interaction(store=store)
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.HAUT_DE_GAMME.value)
+    await view.children[0].callback(inter)
+    fields = {f.name: f.value for f in inter.response.edit_message.call_args.kwargs["embed"].fields}
+    pending = next(v for k, v in fields.items() if "À vérifier" in k)
+    assert "Phantom Ultimate" in pending and "non classable" in pending
+    top = next(v for k, v in fields.items() if "Match Idéal" in k)
+    assert "Phantom" not in top
 
 
 @pytest.mark.asyncio
 async def test_custom_budget_opens_modal_from_select():
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
-    s.grip, s.hand_length_mm, s.hand_width_mm, s.thenar = Grip.PALM, 180.0, 90.0, Thenar.LARGE
+    s.grip, s.hand_length_mm, s.hand_width_mm = Grip.PALM, 180.0, 90.0
     inter = make_interaction(store=store)
     view = flow.BudgetView()
     select_values(view.children[0], BudgetMode.CUSTOM.value)
@@ -142,7 +157,7 @@ async def test_custom_budget_opens_modal_from_select():
 async def test_custom_budget_invalid_then_valid():
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
-    s.grip, s.hand_length_mm, s.hand_width_mm, s.thenar = Grip.PALM, 180.0, 90.0, Thenar.LARGE
+    s.grip, s.hand_length_mm, s.hand_width_mm = Grip.PALM, 180.0, 90.0
 
     bad = make_interaction(store=store)
     await modal_budget("trois").on_submit(bad)

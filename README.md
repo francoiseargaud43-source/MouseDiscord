@@ -21,6 +21,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 9. [Moteur de scoring](#moteur-de-scoring)
 10. [Architecture](#architecture)
 11. [Tests](#tests)
+12. [Audit et données](docs/audit/AUDIT.md)
 
 ---
 
@@ -29,11 +30,12 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | Étape | Ce que voit l'utilisateur | Action |
 |---|---|---|
 | Accueil | Message persistant (bannière) dans le salon | Bouton bleu **Start Mouse Shape Finder** |
-| 1. Grip | Message éphémère + image des 3 grips | Menu : Palm / Claw / Fingertip Grip |
-| 2. Mesures | Le même message est mis à jour + image « règle » | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
-| 3. Thénar | Le même message est mis à jour + image des zones | Menu : Small / Medium / Large (collecté, sans impact sur le calcul) |
-| 4. Budget | Le même message est mis à jour | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget Personnalisé (→ modal prix max) |
-| Résultat | Le même message affiche le Top 1 et le Top 2 | Boutons 🛒 d'achat (liens URL) et 🔄 Refaire le test |
+| 1/3. Grip | Message éphémère + image des 3 grips | Menu : Palm / Claw / Fingertip Grip |
+| 2/3. Mesures | Le même message est mis à jour + image « règle » | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
+| 3/3. Budget | Le même message est mis à jour | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget Personnalisé (→ modal prix max) |
+| Résultat | Le même message affiche le Match Idéal, l'Alternative, l'explication du choix et les souris « à vérifier » | Boutons 🛒 d'achat (liens URL) et 🔄 Refaire le test |
+
+Le muscle thénar a été retiré du parcours : il était collecté mais n'entrait dans aucun calcul (voir `docs/audit/AUDIT.md`).
 
 Les étapes utilisent `interaction.response.edit_message()` : le salon ne se remplit pas de messages.
 Les saisies invalides (texte, nombre hors bornes, etc.) déclenchent un message d'erreur explicite
@@ -41,7 +43,10 @@ et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'uti
 
 Les sessions sont stockées **en mémoire**, une par utilisateur (`session_id = user_id`), avec une expiration
 après 30 min d'inactivité (`SESSION_TTL_SECONDS`). Un redémarrage du bot efface les sessions en cours :
-le message persistant, lui, continue de fonctionner.
+le message persistant, lui, continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
+
+**Score affiché** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`.
+Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** : c'est une estimation géométrique provisoire.
 
 ---
 
@@ -103,18 +108,21 @@ sans republier le message. Les logs apparaissent dans le terminal.
 Commande réservée aux membres ayant la permission **Gérer le serveur**.
 
 ```
-!setup_finder            → publie le message d'accueil dans FINDER_CHANNEL_ID (ou le salon courant si vide)
-!setup_finder #salon     → publie dans le salon indiqué
+!setup_finder            → publie (ou met à jour) le message d'accueil dans FINDER_CHANNEL_ID (ou le salon courant si vide)
+!setup_finder #salon     → même chose dans le salon indiqué
 ```
 
 Ce que fait la commande :
 1. Met le salon cible en lecture seule pour `@everyone` (`Envoyer des messages` et `Ajouter des réactions` désactivés),
-   sauf si `LOCK_FINDER_CHANNEL=false`. Les boutons restent cliquables.
-2. Publie l'embed « Mouse Shape Finder » avec le bouton **Start Mouse Shape Finder**.
-3. Confirme dans le salon de la commande.
+   **au niveau du salon uniquement** (aucune permission serveur n'est modifiée), sauf si `LOCK_FINDER_CHANNEL=false`.
+   Les boutons restent cliquables.
+2. Si un message d'accueil a déjà été publié dans ce salon, **il est édité** : aucun doublon n'est créé.
+   Sinon, le message « Mouse Shape Finder » est publié avec le bouton **Start Mouse Shape Finder**.
+3. Mémorise l'identifiant du message dans `state/finder_message.json` (dossier ignoré par Git).
+   Si ce message a été supprimé, ou s'il appartient à un autre salon, un nouveau message est publié.
+4. Confirme dans le salon de la commande.
 
-> Relancer `!setup_finder` publie un **nouveau** message : supprimez l'ancien à la main pour éviter les doublons
-> (les deux restent fonctionnels).
+Le bouton est une vue persistante (`custom_id` fixe, enregistrée au démarrage) : il répond encore après un redémarrage du bot.
 
 ---
 
@@ -128,22 +136,20 @@ le bot le relit à chaque interaction, aucun redémarrage n'est nécessaire.
   "banner": "https://.../banniere.png",
   "step1_grip": "https://.../3-grips.png",
   "step2_measure": "https://.../mesure-regle.png",
-  "step3_thenar": "https://.../zones-thenar.png",
-  "step4_budget": ""
+  "step3_budget": ""
 }
 ```
 
 | Clé | Affichée à |
 |---|---|
 | `banner` | Message persistant d'accueil |
-| `step1_grip` | Étape 1 — illustration des 3 grips |
-| `step2_measure` | Étape 2 — main mesurée à la règle |
-| `step3_thenar` | Étape 3 — zones rouges Small / Medium / Large |
-| `step4_budget` | Étape 4 — facultatif (vide = aucune image) |
+| `step1_grip` | Étape 1/3 — illustration des 3 grips |
+| `step2_measure` | Étape 2/3 — main mesurée à la règle |
+| `step3_budget` | Étape 3/3 — facultatif (vide = aucune image). Remplace l'ancienne clé `step4_budget`, encore lue en repli. |
 
 Les URL doivent être publiques et commencer par `https://`. Une valeur vide ou invalide n'affiche simplement pas d'image.
-Les fichiers Discord (pièces jointes) ne sont pas utilisés : hébergez les images ailleurs (ou sur un salon Discord
-et copiez le lien direct de l'image).
+**Aucune URL d'image n'est fournie par défaut** : elles seront renseignées par le propriétaire.
+Les fichiers Discord (pièces jointes) ne sont pas utilisés : hébergez les images ailleurs.
 
 ---
 
@@ -160,6 +166,7 @@ Les liens d'affiliation sont dans **`data/commercial_links.json`**, séparés du
 
 - La clé est l'`id` de la souris dans `data/mouse_db.json`.
 - Une souris sans lien affiche un bouton grisé « Lien bientôt disponible » ; ajoutez simplement son `id` pour l'activer.
+- Aucun lien n'est inventé dans le dépôt : le fichier est volontairement vide tant que le propriétaire ne fournit pas les liens.
 - Les entrées dont l'URL ne commence pas par `http(s)://` sont ignorées (un avertissement est écrit dans les logs).
 - Modification à chaud : rechargé à chaque résultat, sans redémarrage.
 
@@ -167,28 +174,59 @@ Les liens d'affiliation sont dans **`data/commercial_links.json`**, séparés du
 
 ## Modifier le catalogue
 
-`data/mouse_db.json` contient une liste d'objets avec les champs suivants :
+`data/mouse_db.json` contient une liste d'objets (schéma v2). Chaque valeur géométrique porte ses sources.
 
-| Champ | Valeurs | Usage |
-|---|---|---|
-| `id` | identifiant unique | Clé de jointure avec `commercial_links.json` |
-| `brand`, `model` | texte | Nom affiché |
-| `price_eur` | nombre | Prix (filtre « Budget Personnalisé ») |
-| `budget_tier` | `Économique`, `Qualité-Prix`, `Haut de Gamme` | Départage des ex æquo |
-| `length_mm`, `width_max_mm` | nombre | Dimensions (largeur ajustée de −3 mm) |
-| `hump_position` | `Front`, `Mid`, `Rear`, `Mid-Front`, `Any`… | Bosse |
-| `button_height` | `Low`, `Mid`, `High` | Hauteur des boutons |
-| `palm_grip_fit`, `claw_grip_fit`, `fingertip_grip_fit` | `Élevé`, `Moyen`, `Faible` | Compatibilité par grip |
-| `fit_rationale` | texte | Raison affichée dans le résultat |
+**Géométrie**
 
-Le catalogue est validé au chargement (champs manquants, valeurs hors liste, identifiants dupliqués).
-Une erreur est signalée dans les logs et l'utilisateur voit un message d'erreur générique.
+| Champ | Usage |
+|---|---|
+| `length_mm` | Longueur. `null` = non vérifiée ou en conflit (la souris reste « à vérifier »). |
+| `width_max_mm` | Largeur maximale **de la coque** (catalogue). |
+| `grip_width_mm` | Largeur de prise **mesurée** — `null` tant qu'aucune mesure n'existe. |
+| `height_mm` | Hauteur (informative). |
+| `dimension_status` | `verified` (≥ 2 sources concordantes), `single_source`, `conflicting`, `owner_spec`, `owner_spec_unverified`. |
+| `conflicts` | Valeurs divergentes et leurs sources (ex. longueur 118.0 vs 117 mm). |
+| `shell_id` | Même coque = dimensions partagées (ex. A9 Ultimate / A9 Air / A9 Plus). |
+
+**Compatibilité** (valeurs : `Élevé`, `Moyen`, `Faible`, `Inconnu`)
+
+| Champ | Usage |
+|---|---|
+| `palm_grip_fit`, `claw_grip_fit`, `fingertip_grip_fit` | Compatibilité par grip. `Inconnu` = non vérifié : la souris est mise **à vérifier** (aucun point n'est attribué). |
+| `hump_position` | `Front`, `Mid`, `Rear`, `Mid-Front`, `Mid-Rear`, `Any` ou `Inconnu`. |
+| `button_height` | `Low`, `Mid`, `High` ou `Inconnu`. |
+| `fit_status` | `owner_spec` (cahier des charges) ou `unverified`. |
+| `fit_rationale` | Texte affiché dans le résultat. |
+
+**Commercial** (ne modifie jamais le score géométrique)
+
+| Champ | Usage |
+|---|---|
+| `price_eur` | Prix en euros. `null` = inconnu : exclu des modes à prix, autorisé en Haut de Gamme. |
+| `price_status` | `verified`, `owner_spec_unverified` ou `unknown`. Un prix `verified` exige un prix. |
+| `price_note` | Précision (date, devise d'origine…). |
+| `budget_tier` | `Économique`, `Qualité-Prix`, `Haut de Gamme` (étiquette, départage visuel uniquement). |
+| `weight_g`, `sensor`, `polling_hz` | Caractéristiques documentées. `polling_hz` ≥ 8000 et capteur `PAW3950`/`PAW3955` (variantes) comptent pour le mode Haut de Gamme. |
+| `sources` | `[{label, url, fields, date_checked}]`. Obligatoire pour toute donnée `verified` ou `single_source`. |
+| `notes` | Commentaires de vérification. |
+
+Le catalogue est validé au chargement (champs manquants, valeurs hors liste, identifiants dupliqués,
+conflits sans deux valeurs, dimensions « vérifiées » sans source). Une erreur est signalée dans les logs.
+
+**Régénérer les matrices** après modification : `python tools/compare_profiles.py`.
 
 ---
 
 ## Moteur de scoring
 
-Code : `utils/matcher.py`. Constantes nommées en tête de fichier.
+Code : `utils/matcher.py` (compatibilité géométrique, sans Discord) et `utils/selection.py` (modes).
+Toutes les constantes sont nommées en tête de fichier.
+
+**Trois couches distinctes**
+
+1. **Compatibilité morphologique** : points sur 40, identiques quel que soit le mode.
+2. **Éligibilité** : `scored` (score final), `pending` (donnée manquante ou en conflit : score partiel, non classable), `excluded` (règle éliminatoire).
+3. **Stratégie de sélection** : le mode choisit parmi les candidats `scored`, dans une zone de tolérance. Il ne modifie jamais un score.
 
 **Plages cibles** pour une main de longueur `L` et de largeur `W` (mm) :
 
@@ -199,33 +237,63 @@ Code : `utils/matcher.py`. Constantes nommées en tête de fichier.
 | Largeur min | `48.4 + W × 0.08` | `47.3 + W × 0.08` |
 | Largeur max | min + 4.0 | min + 3.9 |
 
-**Largeur évaluée** = `width_max_mm − 3.0` (constante `WIDTH_MEASUREMENT_OFFSET_MM`).
+**Largeur de prise utilisée** :
+- si `grip_width_mm` est renseignée (mesure) : elle est utilisée (`width_source = measured`) ;
+- sinon : `width_max_mm − 3.0` (`GRIP_WIDTH_ESTIMATE_OFFSET_MM`, `width_source = estimated`). **Correctif provisoire**, à remplacer par des mesures.
 
-**Filtre budget** (mode « Budget Personnalisé » uniquement) : exclusion si `price_eur > budget`.
+**Règles strictes** : les seuils d'écart sont stricts (`< 3 mm`, `< 2 mm`, `> 8 mm`, `> 5 mm`). Un écart exactement égal à 3, 2, 8 ou 5 mm
+n'est donc pas dans la zone supérieure. Les écarts sont arrondis à 6 décimales avant comparaison (`DELTA_DECIMALS`).
 
-**Points** (total maximum **40**, affiché en pourcentage : `score / 40 × 100`, arrondi à l'entier) :
+**Points** (total maximum **40**) :
 
 | Critère | Règle | Points |
 |---|---|---|
 | Longueur | dans la plage / écart < 3 mm / écart > 8 mm | 10 / 5 / exclusion |
-| Largeur | dans la plage / écart < 2 mm / écart > 5 mm (seuil `WIDTH_EXCLUDE_DELTA_MM`) | 10 / 5 / exclusion |
+| Largeur de prise | dans la plage / écart < 2 mm / écart > 5 mm (`WIDTH_EXCLUDE_DELTA_MM`) | 10 / 5 / exclusion |
 | Grip | Élevé / Moyen / Faible | 10 / 5 / exclusion |
 | Bosse | Palm : Front ou Mid · Claw : Mid ou Rear · Fingertip : ignorée | 5 · 5 · 0 |
 | Boutons | Palm : High · Claw : Low ou Mid · Fingertip : Low | 5 · 5 · 10 |
 
-Tri : score décroissant (ex æquo : souris dont `budget_tier` correspond au choix d'Étape 4)
-(Économique → « Économique », Rapport Qualité/Prix → « Qualité-Prix », Haut de Gamme → « Haut de Gamme »).
-Le muscle thénar n'entre jamais dans le calcul.
+Les règles de bosse et de boutons sont centralisées dans `HUMP_IDEAL` et `BUTTON_IDEAL` (`utils/matcher.py`).
 
-**Exemple : main 180 × 90 mm, Palm**, plages cibles 118.8–123.8 mm et 55.6–59.6 mm :
+**Affichage** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`, où `Y = X / 40 × 100` arrondi à l'entier (demi vers le haut).
+Le pourcentage n'est jamais présenté comme une probabilité.
+
+**Statuts**
+
+- `excluded` : longueur > 8 mm hors plage, largeur de prise > 5 mm hors plage, grip « Faible », prix > budget (mode budget personnalisé).
+- `pending` : aucune exclusion, mais grip, bosse, boutons ou longueur `Inconnu` / en conflit. Le score partiel est affiché, jamais classé.
+- `scored` : toutes les données présentes.
+
+**Niveau de confiance** : `élevée` si dimensions vérifiées et largeur de prise mesurée ; `moyenne` si dimensions vérifiées
+mais largeur estimée ; `faible` sinon (dimensions d'une seule source, non vérifiées, ou compatibilité non confirmée).
+
+**Modes de sélection** (`utils/selection.py`) — tolérances **provisoires**, à valider :
+
+| Mode | Zone (écart au meilleur score) | Critère dans la zone |
+|---|---|---|
+| Économique | ≤ 5 pts | prix le plus bas |
+| Rapport Qualité/Prix | ≤ 2 pts | points par euro le plus élevé (indicateur provisoire) |
+| Haut de Gamme | ≤ 2 pts | performance **documentée** (polling ≥ 8000 Hz, capteur PAW3950/PAW3955 : 0 à 2) ; le prix n'entre pas |
+| Budget Personnalisé | ≤ 2 pts, parmi les souris ≤ budget | meilleur score, puis le moins cher |
+
+Les souris sans prix connu ne sont jamais recommandées dans les modes à prix : elles passent dans « À vérifier ».
+Une donnée de performance absente compte pour zéro ; cela ne signifie pas une performance inférieure.
+
+**Exemple : main 180 × 90 mm, Palm** (plages 118.8–123.8 mm et 55.6–59.6 mm, valeurs de non-régression) :
 
 | Souris | Résultat | Détail |
 |---|---|---|
 | Scyrox V6 | **30** | longueur 10 · largeur 10 · grip Moyen 5 · bosse Mid 5 · boutons Mid 0 |
+| ATK Z1 V2 Ultra | **30** | longueur 10 · largeur 0 (écart 4.2 mm, zone 2–5 mm) · grip 10 · bosse Mid-Front 5 · boutons High 5 |
 | ATK A9 Plus 2.0 | **25** | longueur 5 · largeur 5 · grip Élevé 10 · bosse Mid 5 · boutons 0 |
 | ATK X1 V2 Ultra Max | **20** | longueur 0 (écart 3.2 mm) · largeur 5 · grip 10 · bosse 5 · boutons 0 |
-| ATK Z1 V2 Ultra | **30** (ex æquo avec V6) | longueur 10 · largeur 0 (écart 4.2 mm, sous le seuil de 5 mm) · grip 10 · bosse Front/Mid 5 · boutons High 5 |
 | Scyrox V8 / V8S, ATK F1 V3 | exclues | grip Palm « Faible » |
+
+Ces souris donnent, selon le mode : Économique → A9 Plus ; Qualité/Prix → V6 ; Haut de Gamme → Z1 (polling 8000 Hz documenté).
+
+**Matrices complètes** (profils Palm, Claw, Fingertip, toutes les souris du catalogue) : `docs/audit/matrice_profils.md`,
+générées par `python tools/compare_profiles.py`.
 
 ---
 
@@ -236,20 +304,26 @@ MouseDiscord/
 ├── bot.py                    # Point d'entrée, vue persistante, chargement du cog
 ├── config.py                 # Variables d'environnement et chemins
 ├── cogs/
-│   ├── mouse_finder.py       # Commande !setup_finder (+ verrouillage du salon)
-│   └── finder_flow.py        # Vues, menus, modals, embeds, flux des étapes 1 à 4 et résultat
+│   ├── mouse_finder.py       # !setup_finder (idempotent, verrouillage du salon)
+│   └── finder_flow.py        # Vues, menus, modals, embeds, flux 1/3 à 3/3 et résultat
 ├── utils/
-│   ├── matcher.py            # Moteur de scoring (pur Python, sans Discord)
-│   ├── models.py             # Grip, BudgetMode, Thenar, Mouse, HandMeasure
+│   ├── matcher.py            # Compatibilité morphologique (points, statuts, largeur de prise)
+│   ├── selection.py          # Modes de sélection (tolérances, classement, explications)
+│   ├── models.py             # Grip, BudgetMode, Mouse, Source, HandMeasure
 │   ├── catalog.py            # Chargement / validation de mouse_db.json et des liens
 │   ├── assets.py             # Lecture de assets/images.json
 │   ├── session.py            # Sessions utilisateur en mémoire (session_id = user_id)
 │   └── validation.py         # Validation des saisies des modals
 ├── data/
-│   ├── mouse_db.json         # Catalogue (géométrie, prix, compatibilité)
-│   └── commercial_links.json # Liens d'affiliation (modifiable à tout moment)
+│   ├── mouse_db.json         # Catalogue v2 (géométrie + sources, compatibilité, prix)
+│   └── commercial_links.json # Liens d'affiliation (vide tant que non fournis)
 ├── assets/
-│   └── images.json           # URL des images des étapes
+│   └── images.json           # URL des images des étapes (vides tant que non fournies)
+├── tools/
+│   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
+│   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
+├── docs/audit/               # Audit, catalogue ATK, matrices, rapport final
+├── state/                    # Message publié par !setup_finder (ignoré par Git)
 ├── tests/                    # pytest
 ├── requirements.txt
 ├── requirements-dev.txt
@@ -260,14 +334,26 @@ MouseDiscord/
 
 ## Tests
 
+Reproduire les résultats (depuis la racine du dépôt, environnement virtuel activé) :
+
 ```bash
-pytest
+pip install -r requirements-dev.txt
+pytest -q
+python -m pyflakes bot.py config.py cogs utils tests tools
+python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 ```
 
-- `tests/test_matcher.py` : plages cibles, pondérations pour une main **180 × 90 mm en Palm**
-  (V6 = 30, Z1 = 30, A9 Plus = 25, X1 = 20, V8 exclue), bornes des seuils, tri et départage par gamme.
+- `tests/test_matcher.py` : plages cibles, points pour 180 × 90 mm en Palm (non-régression), bornes strictes, largeur mesurée vs estimée, statuts `scored` / `pending` / `excluded`, budget personnalisé.
+- `tests/test_selection.py` : effet réel de chaque mode, tolérances, prix inconnus, candidats à vérifier jamais classés.
+- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images vides par défaut, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : durée de vie des sessions.
-- `tests/test_flow.py` : parcours complet du flux avec des interactions simulées (édition de message, erreurs de saisie, budget personnalisé).
-- `tests/test_setup_command.py` : publication et verrouillage du salon par `!setup_finder`.
-- `tests/test_data.py` : intégrité des fichiers de `data/` et `assets/`.
+- `tests/test_flow.py` : parcours complet 1/3 à 3/3 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »).
+- `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
+
+**Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main
+(voir `docs/audit/RAPPORT_FINAL.md`, §« Vérifications Discord manuelles ») : isolation des sessions entre deux utilisateurs,
+interactions expirées, vue persistante après redémarrage, absence d'accumulation de messages, permissions limitées au salon.
+
+---
+

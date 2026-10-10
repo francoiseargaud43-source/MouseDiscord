@@ -5,7 +5,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable
 
-from utils.models import BudgetMode, Grip, Thenar
+from utils.models import BudgetMode, Grip
 
 
 @dataclass
@@ -14,7 +14,6 @@ class FinderSession:
     grip: Grip | None = None
     hand_length_mm: float | None = None
     hand_width_mm: float | None = None
-    thenar: Thenar | None = None
     budget_mode: BudgetMode | None = None
     max_budget_eur: float | None = None
     last_seen: float = field(default=0.0)

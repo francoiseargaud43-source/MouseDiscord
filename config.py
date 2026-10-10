@@ -15,6 +15,8 @@ ASSETS_DIR = ROOT_DIR / "assets"
 MOUSE_DB_PATH = DATA_DIR / "mouse_db.json"
 COMMERCIAL_LINKS_PATH = DATA_DIR / "commercial_links.json"
 IMAGES_CONFIG_PATH = ASSETS_DIR / "images.json"
+# Mémoire locale du message publié par !setup_finder (ignorée par Git).
+FINDER_STATE_PATH = ROOT_DIR / "state" / "finder_message.json"
 
 
 def _env_bool(name: str, default: bool) -> bool:
