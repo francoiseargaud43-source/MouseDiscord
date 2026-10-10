@@ -30,7 +30,7 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
    ne poursuivez pas et demandez au support Alwaysdata quelle option correspond à votre compte.
 4. **Ne placez jamais le projet dans `www/`.** Ce dossier sert les fichiers au web public : votre `.env`
    (qui contient le token) pourrait y être téléchargé. Le dossier du projet doit être
-   **`/home/[compte]/AzeMouse`**, c'est-à-dire directement dans votre dossier personnel.
+   **`/home/[compte]/MouseDiscord`**, c'est-à-dire directement dans votre dossier personnel.
 5. **Le bot n'ouvre aucun port et ne sert aucune page web.** Il se connecte sortant à Discord. Aucune configuration
    de site ni de port n'est nécessaire.
 6. **Python : utilisez `python`, jamais `python3`.** Sur Alwaysdata, la documentation indique d'utiliser la commande
@@ -69,19 +69,19 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
 | Côté | Chemin | Remarque |
 |---|---|---|
 | Votre PC | Le dossier local que vous avez préparé (ex. `Documents\AzeMouse`) | Contient le code extrait de GitHub (§3) |
-| Serveur | **`/home/[compte]/AzeMouse`** | Dossier racine du projet. Dans FileZilla : `/home/[compte]/AzeMouse` |
+| Serveur | **`/home/[compte]/MouseDiscord`** | Dossier racine du projet. Dans FileZilla : `/home/[compte]/MouseDiscord` |
 
 `AzeMouse` existe **sur les deux côtés** : votre PC reçoit le code GitHub, le serveur reçoit une copie de la partie
 « production » de ce code. Le dossier distant doit être créé à la racine de votre dossier personnel, **pas** dans `www/`.
 
 **Règle essentielle** : le contenu du dépôt doit être placé **directement dans `AzeMouse`**, sans dossier intermédiaire
 (pas de `AzeMouse/MouseDiscord-…/bot.py`, pas de `AzeMouse/AzeMouse/bot.py`). Après transfert, le fichier `bot.py`
-doit se trouver exactement à `/home/[compte]/AzeMouse/bot.py`.
+doit se trouver exactement à `/home/[compte]/MouseDiscord/bot.py`.
 
 ### 2.2 Arborescence finale attendue sur le serveur
 
 ```
-/home/[compte]/AzeMouse/
+/home/[compte]/MouseDiscord/
 ├── bot.py                      ← point d'entrée (requis)
 ├── config.py                   ← configuration et chemins (requis)
 ├── requirements.txt            ← dépendances à installer (requis)
@@ -268,14 +268,14 @@ Source : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/sftp/ (h�
 
 1. Dans le panneau droit, allez dans `/home/[compte]`.
 2. Clic droit > **Créer un répertoire** > nom : `AzeMouse` (si le dossier n'existe pas déjà). Double-cliquez dessus.
-   **Vérifiez la barre de chemin : `/home/[compte]/AzeMouse`.**
+   **Vérifiez la barre de chemin : `/home/[compte]/MouseDiscord`.**
 3. Dans le panneau gauche, ouvrez le dossier racine du projet (celui qui contient `bot.py`).
 4. Sélectionnez **les éléments à transférer** (voir §2.3) :
    - `bot.py`, `config.py`, `requirements.txt`, `README.md`, `.env.example`
    - les dossiers `cogs`, `utils`, `data`, `assets`, `tools`
    - **Ne sélectionnez pas** : `.git`, `tests`, `docs`, `requirements-dev.txt`, `pytest.ini`, `.gitignore`, `.venv`, `state`,
      `__pycache__`, `.pytest_cache`, `.env`.
-5. Clic droit sur la sélection > **Téléverser** (ou glisser-déposer vers le panneau droit, dans `/home/[compte]/AzeMouse`).
+5. Clic droit sur la sélection > **Téléverser** (ou glisser-déposer vers le panneau droit, dans `/home/[compte]/MouseDiscord`).
    Les dossiers sont transférés **récursivement** (avec leur contenu).
 6. Si FileZilla demande quoi faire pour les fichiers existants : **Écraser** (sur un premier déploiement).
 7. **Ne pas** utiliser « Synchroniser les répertoires » pour ce transfert : cette fonction peut supprimer des fichiers distants.
@@ -285,7 +285,7 @@ Source : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/sftp/ (h�
 
 ### 5.4 Vérifier le transfert
 
-1. Dans le panneau droit, vérifiez que `/home/[compte]/AzeMouse` contient : `bot.py`, `config.py`, `requirements.txt`,
+1. Dans le panneau droit, vérifiez que `/home/[compte]/MouseDiscord` contient : `bot.py`, `config.py`, `requirements.txt`,
    `cogs/`, `utils/`, `data/`, `assets/`, `tools/`.
 2. Ouvrez `cogs/` : il doit contenir `finder_flow.py` et `mouse_finder.py` (et non un sous-dossier supplémentaire).
 3. Consultez l'onglet **File d'attente** (en bas) : aucun transfert ne doit être en erreur (« Échec » ou « Erreur »).
@@ -376,7 +376,7 @@ Les outils de test (`requirements-dev.txt`) ne sont **pas** nécessaires sur le 
 **Méthode recommandée : copier le modèle sur le serveur, puis l'éditer dans FileZilla.**
 
 1. Dans le terminal SSH : `cp ~/AzeMouse/.env.example ~/AzeMouse/.env`.
-2. Dans FileZilla, panneau droit, ouvrez `/home/[compte]/AzeMouse` (rafraîchissez la liste si besoin).
+2. Dans FileZilla, panneau droit, ouvrez `/home/[compte]/MouseDiscord` (rafraîchissez la liste si besoin).
 3. Clic droit sur `.env` > **Afficher/Éditer**. Remplacez les valeurs par les vôtres, enregistrez, et acceptez le téléversement
    de la version modifiée. (FileZilla édite une copie temporaire locale : fermez-la ensuite et ne la conservez pas.)
    Le contenu à obtenir :
@@ -455,8 +455,8 @@ Ce que dit la documentation Alwaysdata, et ce qui en découle :
 | Champ | Valeur |
 |---|---|
 | Nom | `MouseDiscord` (libre) |
-| Commande (*command*) | `/home/[compte]/AzeMouse/.venv/bin/python bot.py` |
-| Répertoire de travail (*working directory*) | `/home/[compte]/AzeMouse` |
+| Commande (*command*) | `/home/[compte]/MouseDiscord/.venv/bin/python bot.py` |
+| Répertoire de travail (*working directory*) | `/home/[compte]/MouseDiscord` |
 | Version de Python | Laissez vide : le venv (§6.3) utilise déjà sa propre version. Le chemin absolu de `.venv/bin/python` est utilisé. |
 | Variables d'environnement | Vide, **ou** `DISCORD_TOKEN=[token]` si vous ne voulez pas utiliser `.env` (§6.5) |
 | Commande de surveillance (*monitoring command*) | **Vide** |
@@ -640,7 +640,7 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 | `LoginFailure` / « Improper token » | Token incorrect ou révoqué | Reset Token dans le portail, mettez à jour `.env`, redémarrez |
 | `PrivilegedIntentsRequired` | Message Content Intent désactivé dans le portail | Activez-le (§8.1), redémarrez |
 | `ConfigError` / « doit être un nombre entier » | `FINDER_CHANNEL_ID` ou `SESSION_TTL_SECONDS` mal saisi | Corrigez `.env` (chiffres seulement) |
-| `ModuleNotFoundError: No module named 'discord'` | Service lancé avec le mauvais Python, ou dépendances non installées | Utilisez `/home/[compte]/AzeMouse/.venv/bin/python` ; réinstallez (§6.4) |
+| `ModuleNotFoundError: No module named 'discord'` | Service lancé avec le mauvais Python, ou dépendances non installées | Utilisez `/home/[compte]/MouseDiscord/.venv/bin/python` ; réinstallez (§6.4) |
 | `No such file or directory: 'bot.py'` ou `can't open file` | Commande ou répertoire de travail incorrect ; ou dossier intermédiaire (§5.3) | Vérifiez §7.1 et que `bot.py` est directement dans `AzeMouse` |
 | `Cannot connect to host discord.com` | Pas d'accès réseau sortant au moment du démarrage | Relancez le service ; si le problème persiste, contactez le support Alwaysdata |
 | `Forbidden` / « Le bot ne peut pas écrire » | Permissions du bot insuffisantes dans le salon | Vérifiez les permissions du salon et du rôle du bot (§8.2) |
@@ -737,13 +737,13 @@ Cette méthode n'a **pas été vérifiée** sur votre hébergement : utilisez la
 
 | Élément | Chemin sur le serveur |
 |---|---|
-| Projet | `/home/[compte]/AzeMouse` |
-| Environnement virtuel | `/home/[compte]/AzeMouse/.venv` |
-| Python du service | `/home/[compte]/AzeMouse/.venv/bin/python` |
-| Secrets | `/home/[compte]/AzeMouse/.env` (droits `600`) |
-| Catalogue | `/home/[compte]/AzeMouse/data/mouse_db.json` |
-| Liens d'achat | `/home/[compte]/AzeMouse/data/commercial_links.json` |
-| Images | `/home/[compte]/AzeMouse/assets/images.json` |
-| Mémoire du message d'accueil | `/home/[compte]/AzeMouse/state/finder_message.json` |
+| Projet | `/home/[compte]/MouseDiscord` |
+| Environnement virtuel | `/home/[compte]/MouseDiscord/.venv` |
+| Python du service | `/home/[compte]/MouseDiscord/.venv/bin/python` |
+| Secrets | `/home/[compte]/MouseDiscord/.env` (droits `600`) |
+| Catalogue | `/home/[compte]/MouseDiscord/data/mouse_db.json` |
+| Liens d'achat | `/home/[compte]/MouseDiscord/data/commercial_links.json` |
+| Images | `/home/[compte]/MouseDiscord/assets/images.json` |
+| Mémoire du message d'accueil | `/home/[compte]/MouseDiscord/state/finder_message.json` |
 | Journaux du service | `/home/[compte]/admin/logs/services/` |
 | Sauvegardes (recommandé) | `/home/[compte]/backup-azemouse/` |
