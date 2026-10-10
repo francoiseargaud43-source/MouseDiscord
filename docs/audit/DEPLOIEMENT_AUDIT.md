@@ -122,7 +122,7 @@ Vérifié sur copie propre : **aucun** fichier de production n'importe `tests/`,
 | `README.md` | Permissions corrigées ; modèle de session corrigé (`session_id`) ; section déploiement et architecture à jour | Documentation exacte | — |
 | `docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md` (nouveau) | Guide complet | Livrables D, E, G | — |
 | `docs/audit/RAPPORT_FINAL.md` | Compteurs de tests mis à jour (165) | Cohérence | — |
-| `cogs/finder_flow.py` | Docstring : référence à un fichier inexistant (`AUDIT_CONFIDENTIALITE.md`) remplacée par une référence aux tests | Documentation exacte | — |
+| `cogs/finder_flow.py` | Aucune modification dans ce lot. La docstring (référence à un fichier inexistant remplacée) était déjà corrigée dans le commit `30cdcb8` | — | — |
 
 ### C.2 Ce qui est correct et n'a pas été modifié
 
