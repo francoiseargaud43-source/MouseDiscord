@@ -145,7 +145,7 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     top = next(v for k, v in fields.items() if "Match Idéal" in k)
     alt = next(v for k, v in fields.items() if "Alternative" in k)
     assert "Scyrox V6" in top
-    assert "Score de correspondance : **30/40** — **75 %** du maximum théorique du barème" in top
+    assert "Score : **30/40**" in top
     assert "Z1" in alt
     assert "Pourquoi ce choix" in " ".join(fields)
     assert "ni une probabilité" in kwargs["embed"].footer.text

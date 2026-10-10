@@ -19,7 +19,7 @@ import discord
 from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH
 from utils.assets import load_image_urls
 from utils.catalog import load_catalog, load_commercial_links
-from utils.matcher import MAX_SCORE, MouseScore, compatibility_percent, evaluate_mouse
+from utils.matcher import MAX_SCORE, MouseScore, evaluate_mouse
 from utils.models import BUDGET_LABELS, GRIP_LABELS, BudgetMode, Grip, HandMeasure
 from utils.selection import Selection, select
 from utils.session import LOOKUP_FORBIDDEN, LOOKUP_OK, FinderSession
@@ -31,7 +31,7 @@ VIEW_TIMEOUT = 900
 START_CUSTOM_ID = "mouse_finder:start"
 COLOR = discord.Color.from_rgb(88, 101, 242)
 SCORE_DISCLAIMER = (
-    "Score géométrique provisoire : ce n'est ni une probabilité d'achat, ni une validation biomécanique. "
+    "Score géométrique provisoire, ni une probabilité d'achat ni une validation biomécanique. "
     "Largeur de prise estimée (coque − 3 mm) tant qu'elle n'est pas mesurée."
 )
 MAX_PENDING_SHOWN = 5
@@ -181,20 +181,9 @@ def _price_text(score: MouseScore) -> str:
     return text
 
 
-def _score_text(score: MouseScore) -> str:
-    pct = compatibility_percent(score)
-    return f"Score de correspondance : **{score.total}/{MAX_SCORE}** — **{pct} %** du maximum théorique du barème"
-
-
 def _candidate_text(score: MouseScore) -> str:
-    lines = [
-        f"**{score.mouse.label}** — {_price_text(score)}",
-        _score_text(score),
-        f"Confiance des données : {score.confidence}",
-    ]
+    lines = [f"**{score.mouse.label}** · {_price_text(score)}", f"Score : **{score.total}/{MAX_SCORE}**"]
     lines += [f"• {line}" for line in score.details]
-    if score.mouse.fit_rationale:
-        lines.append(f"💬 {score.mouse.fit_rationale}")
     return "\n".join(lines)[:1024]
 
 
@@ -202,7 +191,7 @@ def _pending_text(pending: tuple[MouseScore, ...]) -> str:
     lines = []
     for item in pending[:MAX_PENDING_SHOWN]:
         partial = f" — score partiel {item.total}/{item.computable_max} pts (non classable)" if item.computable_max else ""
-        lines.append(f"• **{item.mouse.label}** : {', '.join(item.missing)}{partial}")
+        lines.append(f"• **{item.mouse.label}**{partial}")
     if len(pending) > MAX_PENDING_SHOWN:
         lines.append(f"… et {len(pending) - MAX_PENDING_SHOWN} autre(s).")
     return "\n".join(lines)[:1024]
@@ -210,7 +199,7 @@ def _pending_text(pending: tuple[MouseScore, ...]) -> str:
 
 def results_embed(session: FinderSession, selection: Selection) -> discord.Embed:
     embed = discord.Embed(title="🎯 Résultat Mouse Shape Finder", color=COLOR)
-    embed.description = f"{_recap(session)}\n🎚️ Gamme : **{_budget_text(session)}**"
+    embed.description = f"{_recap(session)}\n🎚️ Gamme : **{_budget_text(session)}**\n"
 
     if not selection.ranked:
         embed.add_field(
