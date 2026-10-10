@@ -12,7 +12,7 @@ Date de l'audit : 2026-10-10 · Branche : `arena/33e33710-mousediscord` · Réf�
   affichage `X/40 — Y %`.
 - Catalogue : 6 modèles d'origine conservés, 12 variantes ATK ajoutées **sans valeur inventée** (grip et hauteur de bouton
   « Inconnu » → à vérifier). Aucun prix EUR n'a pu être vérifié.
-- Tests : 72 → **133** à la rédaction initiale ; **217** après la mission de finalisation du 2026-10-10 (voir `RAPPORT_FINAL.md` §4). Lint pyflakes propre. Aucun test Discord réel n'a été exécuté (voir §9).
+- Tests : 72 → **133** à la rédaction initiale ; **219** après la mission de finalisation du 2026-10-10 (voir `RAPPORT_FINAL.md` §4). Lint pyflakes propre. Aucun test Discord réel n'a été exécuté (voir §9).
 - **Note datée 2026-10-10 (finalisation)** : Z1 reste à **30/40** (décision du propriétaire : bande de largeur non étendue). Confidentialité : scénarios P01–P13 et contrôle statique documentés dans `AUDIT_CONFIDENTIALITE.md` (tests automatisés uniquement, pas de validation Discord).
 
 ## 1. État du dépôt au début de la mission

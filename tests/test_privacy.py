@@ -305,3 +305,68 @@ async def test_results_buttons_still_work_after_session_was_discarded():
     restart = make_interaction(user_id=1, store=store)
     await results_view._restart(restart)                     # Refaire le test : fonctionne
     assert isinstance(restart.response.edit_message.call_args.kwargs["view"], flow.GripView)
+
+
+# ---------------------------------------------------------------------------
+# P09 (non-régression) : après relance, TOUS les anciens composants sont refusés
+# sans modifier la nouvelle session. Choix confirmé : une seule session active par utilisateur.
+# ---------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_p09_old_components_are_refused_and_never_modify_new_session():
+    store = SessionStore(ttl_seconds=600)
+    # Ancien parcours : grip choisi, mesures saisies, menus et modals encore affichés
+    _, old_sid = await run_start(store, 1)
+    old_grip_view = flow.GripView(old_sid)
+    old_measure_view = flow.MeasureView(old_sid)
+    old_budget_view = flow.BudgetView(old_sid)
+    # Relance par le même utilisateur : la nouvelle session remplace l'ancienne
+    _, new_sid = await run_start(store, 1)
+    assert new_sid != old_sid
+    before = store.get(new_sid, 1)
+    snapshot = (before.grip, before.hand_length_mm, before.hand_width_mm, before.budget_mode, before.max_budget_eur)
+
+    attempts = []
+    g = make_interaction(user_id=1, store=store)
+    select_values(old_grip_view.children[0], "claw")
+    attempts.append((g, old_grip_view.children[0].callback))
+    m = make_interaction(user_id=1, store=store)
+    attempts.append((m, old_measure_view.open_measures.callback))
+    ms = make_interaction(user_id=1, store=store)
+    attempts.append((ms, modal_with(flow.MeasureModal(old_sid), "150", "70").on_submit))
+    b = make_interaction(user_id=1, store=store)
+    select_values(old_budget_view.children[0], BudgetMode.ECONOMIQUE.value)
+    attempts.append((b, old_budget_view.children[0].callback))
+    bm = make_interaction(user_id=1, store=store)
+    attempts.append((bm, modal_budget(old_sid, "50").on_submit))
+
+    for inter, call in attempts:
+        await call(inter)
+        assert_private(inter)
+        inter.response.edit_message.assert_not_awaited()
+        inter.response.send_modal.assert_not_awaited()
+        assert "plus actif" in inter.response.send_message.call_args.args[0]
+
+    after = store.get(new_sid, 1)
+    assert after is not None
+    assert (after.grip, after.hand_length_mm, after.hand_width_mm, after.budget_mode, after.max_budget_eur) == snapshot
+    # La nouvelle session reste pleinement utilisable après ces tentatives
+    ok = await choose_grip(store, 1, new_sid, "palm")
+    assert ok.response.edit_message.await_count == 1
+    assert store.get(new_sid, 1).grip is Grip.PALM
+
+
+@pytest.mark.asyncio
+async def test_p09_old_results_buttons_do_not_affect_new_session():
+    store = SessionStore(ttl_seconds=600)
+    _, old_sid = await run_start(store, 1)
+    await choose_grip(store, 1, old_sid, "palm")
+    await submit_measures(store, 1, old_sid, "180", "90")
+    shown = await choose_budget(store, 1, old_sid, BudgetMode.QUALITE_PRIX)
+    old_results = shown.response.edit_message.call_args.kwargs["view"]
+    # Nouveau parcours de l'utilisateur 1, puis clic sur « Fermer » du résultat précédent
+    _, new_sid = await run_start(store, 1)
+    await choose_grip(store, 1, new_sid, "claw")
+    close = make_interaction(user_id=1, store=store)
+    await old_results._close(close)     # le résultat appartient au même utilisateur : fermeture autorisée
+    assert store.get(new_sid, 1).grip is Grip.CLAW   # la nouvelle session n'est pas touchée
+    assert store.lookup(new_sid, 1)[1] == LOOKUP_OK

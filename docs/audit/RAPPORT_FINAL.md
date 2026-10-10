@@ -11,7 +11,7 @@ Date : 2026-10-10 · Branche : `arena/33e33710-mousediscord` · Base : `68a5bbd`
 - **Thénar** : retiré du parcours (aucun rôle fonctionnel documenté).
 - **`!setup_finder`** : idempotent (édition du message existant).
 - **Score affiché** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`, sans probabilité.
-- **Tests** : **133 passent** (72 avant). **Aucun test Discord réel** n'a été exécuté.
+- **Tests** : **219 passent** à la finalisation du 2026-10-10 (72 dans le dépôt d'origine). Contrôle statique de confidentialité : 0 violation. **Aucun test sur serveur Discord réel** n'a été exécuté : la validation en conditions réelles reste à faire (`PROTOCOLE_DISCORD_CONFIDENTIALITE.md`).
 
 ## 2. Fichiers modifiés et créés
 
@@ -45,14 +45,14 @@ Principales : ATK Store (collections Z1, U2, X1, A9 ; fiches Fierce X et Dragonf
 
 ```
 $ pytest -q
-217 passed, 1 warning in 0.91s          # warning : audioop (dépendance discord.py), non bloquant
+219 passed, 1 warning in 0.91s          # warning : audioop (dépendance discord.py), non bloquant
 $ python -m pyflakes bot.py config.py cogs utils tests tools
 (aucune sortie : propre)
 $ python tools/compare_profiles.py
 Écrit : docs/audit/matrice_profils.md
 ```
 
-Répartition (collecte pytest) : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 21 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1 · `test_config` 5 · `test_deployment_check` 9 · `test_privacy` 12 · `test_privacy_scan` 24 · `test_doc_references` 17 (tests paramétrés inclus).
+Répartition (collecte pytest) : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 21 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1 · `test_config` 5 · `test_deployment_check` 9 · `test_privacy` 14 · `test_privacy_scan` 24 · `test_doc_references` 17 (tests paramétrés inclus).
 
 Contrôles complémentaires : `python tools/privacy_scan.py` → `0 violation(s)` ; vérification de la mutation du contrôle de propriétaire (3 tests échouent, voir `AUDIT_CONFIDENTIALITE.md` §6).
 
@@ -126,7 +126,12 @@ Le passage à 35 nécessite une décision propriétaire (§7, point 1).
 
 ## 8. Vérifications Discord manuelles (non exécutées)
 
-À faire sur un serveur de test, avec deux comptes et un salon dédié :
+**Statut : aucune de ces vérifications n'a été exécutée sur Discord.** Elles sont à réaliser par le propriétaire.
+
+- Procédure détaillée, pas à pas (prérequis, 10 étapes, textes attendus, tableau de consignation) : **`docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`**.
+- Ce que les tests automatisés couvrent déjà, et ce qu'ils ne couvrent pas : **`docs/audit/AUDIT_CONFIDENTIALITE.md`** §8.
+
+Liste de contrôle complémentaire (à faire sur un serveur de test, avec deux comptes et un salon dédié) :
 
 - [ ] **Isolation des sessions** : deux utilisateurs font le test en même temps ; chacun voit son propre résultat.
 - [ ] **Interaction expirée** : après 30 min (ou `SESSION_TTL_SECONDS` réduit), cliquer sur un menu ancien → message « session expirée », pas d'erreur.

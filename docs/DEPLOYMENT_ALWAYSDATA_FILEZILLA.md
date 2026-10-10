@@ -35,7 +35,7 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
    de site ni de port n'est nécessaire.
 6. **Python : utilisez `python`, jamais `python3`.** Sur Alwaysdata, la documentation indique d'utiliser la commande
    `python` (https://help.alwaysdata.com/en/docs/web-hosting/languages/python/configuration/).
-   La version Python du projet doit être **3.10 au minimum** (exigence de `python-dotenv`). Cette procédure a été
+   La version Python du projet doit être **3.10 au minimum** : la version de `python-dotenv` installée par `requirements.txt` (1.2.x) exige Python ≥ 3.10 (`discord.py` 2.7.x exige seulement ≥ 3.8). Cette procédure a été
    testée localement avec **Python 3.11** ; utilisez 3.11 si possible.
 
 ---
@@ -589,7 +589,7 @@ une des deux réponses peut échouer, et le comportement devient imprévisible.
 
 | Commande | Ce qu'elle vérifie | Résultat à la date du guide |
 |---|---|---|
-| `python -m pytest -q` (avec `requirements-dev.txt`) | Moteur, catalogue, validation, sessions, flux, `.env`, script de contrôle | `165 passed` |
+| `python -m pytest -q` (avec `requirements-dev.txt`) | Moteur, catalogue, validation, sessions, flux, confidentialité, `.env`, script de contrôle | `219 passed` (à la date de la finalisation) |
 | `python -m pyflakes bot.py config.py cogs utils tests tools` | Erreurs de code statiques | aucune sortie |
 | Copie « production » (sans tests) : chargement des cogs et de la vue persistante | Le bot démarre et charge ses extensions | vérifié |
 

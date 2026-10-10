@@ -37,6 +37,7 @@ EXPECTED_HEADINGS = {
     ],
     "docs/audit/DEPLOIEMENT_AUDIT.md": [
         "### F.1 Vérifications NON réalisées (nécessitent votre hébergement ou Discord)",
+        "## Livrable H — Diagnostic des prérequis d'hébergement (Alwaysdata)",
     ],
     "docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md": [
         "### 2.2 Arborescence finale attendue sur le serveur",

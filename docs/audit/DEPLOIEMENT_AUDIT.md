@@ -96,7 +96,7 @@ Aucune autre variable n'est lue. Les valeurs vides sont traitées comme absentes
 
 ### A.10 Tests disponibles
 
-- `pytest` : 165 tests (dont 5 pour la configuration et 9 pour le script de contrôle de déploiement). Aucun ne se connecte à Discord.
+- `pytest` : 219 tests à la date de la finalisation (dont 5 pour la configuration et 9 pour le script de contrôle de déploiement ; 14 scénarios de confidentialité ; 24 cas du contrôle statique ; 17 vérifications de références documentaires, paramétrées). Aucun ne se connecte à Discord.
 - `pyflakes` : propre.
 - Vérification de déploiement réalisée sur une **copie de production** (uniquement les fichiers de production, venv et `pip install -r requirements.txt`).
 
@@ -151,7 +151,7 @@ Vérifié sur copie propre : **aucun** fichier de production n'importe `tests/`,
 
 | Vérification | Commande | Résultat |
 |---|---|---|
-| Suite complète | `pytest -q` (venv local, Python 3.11.2) | **165 passed**, 1 avertissement (`audioop`, dépendance de discord.py) |
+| Suite complète | `pytest -q` (venv local, Python 3.11.2) | **219 passed** à la date de la finalisation (2026-10-10), 1 avertissement (`audioop`, dépendance de discord.py). Le total de 165 indiqué précédemment était antérieur aux tests de confidentialité et de références documentaires. |
 | Analyse statique | `pyflakes bot.py config.py cogs utils tests tools` | aucune sortie (propre) |
 | Copie de production | `cp` de la liste de production, `python3 -m venv`, `pip install -r requirements.txt` | discord.py 2.7.1, python-dotenv 1.2.4 installés |
 | Chargement hors projet | `python /tmp/check_setup.py` depuis `/tmp` (copie de production) | `extensions: ['cogs.mouse_finder']`, `commands: ['setup_finder']`, `persistent views: 1`, token chargé depuis `.env`, images vides OK |
@@ -162,6 +162,9 @@ Vérifié sur copie propre : **aucun** fichier de production n'importe `tests/`,
 
 ### F.1 Vérifications NON réalisées (nécessitent votre hébergement ou Discord)
 
+Aucune de ces vérifications n'a été effectuée à distance : la sandbox n'a pas accès à votre compte Alwaysdata ni à votre serveur Discord.
+
+
 - Connexion réelle à Discord et apparition du bot en ligne.
 - Commandes `!setup_finder`, publication, verrouillage du salon (et permissions réelles de votre serveur).
 - Bouton persistant après redémarrage du service ; parcours complet en privé ; affichage des résultats.
@@ -169,6 +172,28 @@ Vérifié sur copie propre : **aucun** fichier de production n'importe `tests/`,
 - Création du venv et installation des dépendances **sur Alwaysdata** ; présence de la version Python voulue.
 - Accès SFTP/SSH depuis votre PC et empreinte du serveur.
 - Que les boutons restent cliquables dans un salon où `@everyone` ne peut pas écrire (attendu d'après le fonctionnement des interactions, à confirmer).
+- Protocole complet de validation Discord (10 étapes, deux comptes) : `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`. **Non exécuté.**
+
+---
+
+## Livrable H — Diagnostic des prérequis d'hébergement (Alwaysdata)
+
+Date : 2026-10-10. Méthode : lecture de la documentation publique d'Alwaysdata et des métadonnées des paquets installés. **Aucun accès au compte Alwaysdata n'a été utilisé** : rien n'a été installé, lancé, ni redémarré à distance.
+
+| # | Prérequis | Source vérifiée | État | Ce que vous devez contrôler sur votre compte |
+|---|---|---|---|---|
+| H1 | **Offre payante** : les « Services » (processus persistant) ne sont pas disponibles sur les offres gratuites | Documentation Services : « available on all our paid plans » | Vérifié dans la documentation ; **non vérifié sur votre offre** | Menu **Advanced > Services** visible. Sinon, la méthode retenue ne fonctionne pas et il faut changer d'offre ou de méthode |
+| H2 | **Premier plan** : le processus ne doit pas se mettre en arrière-plan (pas de fork) | Documentation Services : « It must runs in foreground, not fork » | Conforme : `bot.py` reste au premier plan, aucun `&` ni `nohup` | — |
+| H3 | **Version Python** : 3.10 minimum pour `python-dotenv` 1.2.x ; 3.11 testé | Documentation Python : 3.11 figure dans les versions prises en charge ; « Versions are not necessarily already installed » | Vérifié dans la documentation ; **version installée sur votre compte non vérifiée** | Environment > Python ; `PYTHON_VERSION=3.11 python --version` dans le terminal distant |
+| H4 | **Commande `python`** (et non `python3`) pour le venv et le service | Documentation Python : « always use `python` … Never use `python3` » | Conforme au guide (§6.2–6.3) | — |
+| H5 | **Aucun port à ouvrir** : le bot ne sert aucune page et n'écoute sur aucun port | Code (`bot.py`, aucun serveur HTTP) | Conforme ; aucune *Monitoring command* ne doit être configurée (elle redémarrerait le service en boucle) | Laisser le champ Monitoring vide |
+| H6 | **Connexion sortante vers Discord** (`discord.com:443`, passerelle WebSocket) | Documentation Services : « There is no network filtering » (aucune restriction annoncée) ; le bac à sable de développement n'a pas pu atteindre `discord.com` | **Non vérifié** sur Alwaysdata | Message `Cannot connect to host discord.com` dans les journaux = problème réseau à signaler au support |
+| H7 | **Redémarrage automatique** et **désactivation après échecs répétés** | Documentation Services : redémarrage automatique ; désactivation si échecs rapprochés ; redémarrage = signal SIGHUP | Vérifié dans la documentation ; **comportement réel non testé** | Un token invalide peut désactiver le service après plusieurs échecs : corriger `.env` puis réactiver le service |
+| H8 | **Journaux** : `/home/[compte]/admin/logs/services/` et onglet Logs de l'administration | Documentation Services | Vérifié dans la documentation ; **non consulté** | Consulter après le premier démarrage (guide §7.2) |
+| H9 | **Tâche planifiée** non utilisée comme surveillance | Documentation Tâches | Décision : non retenue (risque de plusieurs instances) | — |
+| H10 | **Dépendances** : `discord.py` 2.7.1 (≥ 3.8) et `python-dotenv` 1.2.4 (≥ 3.10), relevées dans les métadonnées installées | Métadonnées des paquets (environnement de développement) | Vérifié localement ; **réinstallation sur Alwaysdata non réalisée** | `pip install -r requirements.txt` dans le venv du serveur |
+
+**Conclusion du diagnostic** : rien, dans la documentation publique, n'interdit la méthode retenue (Service + venv + `.env`) sur une offre payante. Trois points restent à confirmer sur votre compte : l'offre (H1), la version Python installée (H3), et la sortie réseau vers Discord (H6). Aucun de ces points n'est confirmé à ce stade.
 
 ---
 
