@@ -9,8 +9,10 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
-# Secrets et configuration locale
+# Secrets et configuration locale (jamais versionnés ; le modèle .env.example reste suivi)
 .env
+.env.*
+!.env.example
 
 # Logs
 *.log

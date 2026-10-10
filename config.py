@@ -1,4 +1,9 @@
-"""Configuration centralisée du bot (variables d'environnement + chemins)."""
+"""Configuration centralisée du bot (variables d'environnement + chemins).
+
+Lecture du fichier ``.env`` : toujours celui situé À CÔTÉ de ce fichier (ROOT_DIR/.env),
+quel que soit le répertoire depuis lequel le bot est lancé. Les variables déjà présentes
+dans l'environnement du processus ne sont pas écrasées par ``.env``.
+"""
 from __future__ import annotations
 
 import os
@@ -6,9 +11,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 ROOT_DIR = Path(__file__).resolve().parent
+ENV_FILE = ROOT_DIR / ".env"
 DATA_DIR = ROOT_DIR / "data"
 ASSETS_DIR = ROOT_DIR / "assets"
 
@@ -18,6 +22,12 @@ IMAGES_CONFIG_PATH = ASSETS_DIR / "images.json"
 # Mémoire locale du message publié par !setup_finder (ignorée par Git).
 FINDER_STATE_PATH = ROOT_DIR / "state" / "finder_message.json"
 
+load_dotenv(ENV_FILE)  # chemin explicite : ne dépend pas du répertoire courant
+
+
+class ConfigError(ValueError):
+    """Variable d'environnement invalide ; le message indique la variable à corriger."""
+
 
 def _env_bool(name: str, default: bool) -> bool:
     raw = os.getenv(name)
@@ -26,11 +36,24 @@ def _env_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on", "oui"}
 
 
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name, "").strip()
+    if raw == "":
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        raise ConfigError(
+            f"{name} doit être un nombre entier (valeur actuelle : {raw!r}). "
+            f"Corrigez-la dans le fichier {ENV_FILE}."
+        ) from None
+
+
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!").strip() or "!"
-# Salon cible de !setup_finder (ID numérique). Vide = salon où la commande est tapée.
-FINDER_CHANNEL_ID = int(os.getenv("FINDER_CHANNEL_ID", "0").strip() or 0)
+# Salon cible de !setup_finder (ID numérique). 0 = salon où la commande est tapée.
+FINDER_CHANNEL_ID = _env_int("FINDER_CHANNEL_ID", 0)
 # Rend le salon en lecture seule pour @everyone lors du setup.
 LOCK_FINDER_CHANNEL = _env_bool("LOCK_FINDER_CHANNEL", True)
 # Durée de vie d'une session utilisateur en mémoire (secondes).
-SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", "1800"))
+SESSION_TTL_SECONDS = _env_int("SESSION_TTL_SECONDS", 1800)

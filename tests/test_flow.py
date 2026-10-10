@@ -354,3 +354,16 @@ def test_every_view_and_modal_carries_session_id():
     for cls in (flow.GripView, flow.MeasureView, flow.MeasureModal, flow.BudgetView, flow.BudgetModal):
         params = inspect.signature(cls.__init__).parameters
         assert "session_id" in params, cls.__name__
+
+
+def test_missing_commercial_link_shows_disabled_placeholder_button():
+    """Sans URL d'achat : bouton désactivé « Lien bientôt disponible », jamais d'erreur ni de lien inventé."""
+    from config import MOUSE_DB_PATH
+    from utils.catalog import load_catalog
+
+    mouse = load_catalog(MOUSE_DB_PATH)[0]
+    view = flow.ResultsView(1, [SimpleNamespace(mouse=mouse)], {})
+    placeholder = [c for c in view.children if getattr(c, "disabled", False)]
+    assert placeholder, "un bouton désactivé doit remplacer le lien manquant"
+    assert placeholder[0].label.startswith("Lien bientôt disponible")
+    assert not any(getattr(c, "url", None) for c in view.children if getattr(c, "disabled", False))

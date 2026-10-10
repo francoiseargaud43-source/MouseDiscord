@@ -45,14 +45,14 @@ Principales : ATK Store (collections Z1, U2, X1, A9 ; fiches Fierce X et Dragonf
 
 ```
 $ pytest -q
-150 passed, 1 warning in 0.48s          # warning : audioop (dépendance discord.py), non bloquant
+165 passed, 1 warning in 0.63s          # warning : audioop (dépendance discord.py), non bloquant
 $ python -m pyflakes bot.py config.py cogs utils tests tools
 (aucune sortie : propre)
 $ python tools/compare_profiles.py
 Écrit : docs/audit/matrice_profils.md
 ```
 
-Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 21 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1.
+Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 22 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1 · `test_config` 5 · `test_deployment_check` 9.
 
 **Non exécuté** : toute interaction avec un serveur Discord réel (voir §8).
 

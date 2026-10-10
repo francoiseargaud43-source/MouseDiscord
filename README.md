@@ -41,9 +41,10 @@ Les étapes utilisent `interaction.response.edit_message()` : le salon ne se rem
 Les saisies invalides (texte, nombre hors bornes, etc.) déclenchent un message d'erreur explicite
 et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'utilisateur.
 
-Les sessions sont stockées **en mémoire**, une par utilisateur (`session_id = user_id`), avec une expiration
-après 30 min d'inactivité (`SESSION_TTL_SECONDS`). Un redémarrage du bot efface les sessions en cours :
-le message persistant, lui, continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
+Les sessions sont stockées **en mémoire**, identifiées par un `session_id` aléatoire propre à chaque parcours
+(et non par l'identifiant Discord seul), avec une expiration après 30 min d'inactivité (`SESSION_TTL_SECONDS`).
+Relancer un test remplace le précédent : les anciens menus deviennent inactifs. Un redémarrage du bot efface les sessions
+en cours : le message persistant continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
 
 **Score affiché** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`.
 Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** : c'est une estimation géométrique provisoire.
@@ -75,8 +76,10 @@ Pour lancer les tests : `pip install -r requirements-dev.txt`.
    (nécessaire pour la commande préfixée `!setup_finder`).
 3. Invitez le bot sur votre serveur (**OAuth2 → URL Generator**) :
    - Scopes : `bot`
-   - Permissions minimales : *View Channels*, *Send Messages*, *Embed Links*, *Read Message History*,
-     *Manage Roles* et *Manage Channels* (uniquement si vous voulez que le bot verrouille le salon, voir `LOCK_FINDER_CHANNEL`).
+   - Permissions minimales : *View Channels*, *Send Messages*, *Embed Links*, *Read Message History*.
+     Ajoutez *Manage Roles* (« Gérer les permissions » au niveau du salon) uniquement si vous voulez que le bot
+     verrouille le salon (`LOCK_FINDER_CHANNEL=true`). Aucune permission *Administrateur* n'est nécessaire.
+   - Intent privilégié requis : **Message Content Intent** (étape 2). Sans lui, le bot ne démarre pas.
 4. Créez un salon dédié (ex. `#mouse-shape-finder`), copiez son identifiant (mode développeur Discord activé :
    clic droit sur le salon → *Copier l'identifiant*) et renseignez `FINDER_CHANNEL_ID`.
 
@@ -97,6 +100,10 @@ Pour lancer les tests : `pip install -r requirements-dev.txt`.
 ```bash
 python bot.py
 ```
+
+Pour un fonctionnement permanent sur un hébergement (Alwaysdata, services, mise à jour, diagnostic) :
+voir **[docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md](docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md)**.
+Contrôle avant mise en ligne : `python tools/check_deployment.py`.
 
 Le bot enregistre la vue persistante au démarrage : le bouton fonctionne donc après chaque redémarrage,
 sans republier le message. Les logs apparaissent dans le terminal.
@@ -312,7 +319,7 @@ MouseDiscord/
 │   ├── models.py             # Grip, BudgetMode, Mouse, Source, HandMeasure
 │   ├── catalog.py            # Chargement / validation de mouse_db.json et des liens
 │   ├── assets.py             # Lecture de assets/images.json
-│   ├── session.py            # Sessions utilisateur en mémoire (session_id = user_id)
+│   ├── session.py            # Sessions de parcours en mémoire (session_id aléatoire, propriétaire vérifié)
 │   └── validation.py         # Validation des saisies des modals
 ├── data/
 │   ├── mouse_db.json         # Catalogue v2 (géométrie + sources, compatibilité, prix)
@@ -320,9 +327,12 @@ MouseDiscord/
 ├── assets/
 │   └── images.json           # URL des images des étapes (vides tant que non fournies)
 ├── tools/
+│   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
 │   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
 │   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
-├── docs/audit/               # Audit, catalogue ATK, matrices, rapport final
+├── docs/
+│   ├── DEPLOYMENT_ALWAYSDATA_FILEZILLA.md  # Guide de mise en ligne (Alwaysdata, FileZilla, mise à jour)
+│   └── audit/                # Audit, catalogue ATK, matrices, rapports
 ├── state/                    # Message publié par !setup_finder (ignoré par Git)
 ├── tests/                    # pytest
 ├── requirements.txt
@@ -347,8 +357,10 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 - `tests/test_selection.py` : effet réel de chaque mode, tolérances, prix inconnus, candidats à vérifier jamais classés.
 - `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images vides par défaut, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
-- `tests/test_session.py` : durée de vie des sessions.
-- `tests/test_flow.py` : parcours complet 1/3 à 3/3 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »).
+- `tests/test_session.py` : isolation des sessions par `session_id`, propriétaire, remplacement d'un parcours, expiration.
+- `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
+- `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice.
+- `tests/test_flow.py` : parcours complet 1/3 à 3/3 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), confidentialité (aucun envoi public, analyse statique), lien manquant → « Lien bientôt disponible ».
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main
