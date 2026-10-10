@@ -58,7 +58,7 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
 3. Créez un utilisateur SSH avec un **shell standard** (pas « SFTP only » : cet accès serait *chrooted*, c'est-à-dire
    enfermé dans un dossier, et ne permettrait pas d'exécuter les commandes de la §6).
 4. Activez l'option **password connection** (connexion par mot de passe) ou configurez une clé SSH, selon votre préférence.
-5. **Notez les empreintes (fingerprints)** affichées sur cette même page : vous les comparerez à la première connexion (§3).
+5. **Notez les empreintes (fingerprints)** affichées sur cette même page : vous les comparerez à la première connexion (§5.1).
 
 ---
 
@@ -68,7 +68,7 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
 
 | Côté | Chemin | Remarque |
 |---|---|---|
-| Votre PC | Le dossier local que vous avez préparé (ex. `Documents\AzeMouse`) | Contient le code extrait de GitHub (§4) |
+| Votre PC | Le dossier local que vous avez préparé (ex. `Documents\AzeMouse`) | Contient le code extrait de GitHub (§3) |
 | Serveur | **`/home/[compte]/AzeMouse`** | Dossier racine du projet. Dans FileZilla : `/home/[compte]/AzeMouse` |
 
 `AzeMouse` existe **sur les deux côtés** : votre PC reçoit le code GitHub, le serveur reçoit une copie de la partie
@@ -85,7 +85,7 @@ doit se trouver exactement à `/home/[compte]/AzeMouse/bot.py`.
 ├── bot.py                      ← point d'entrée (requis)
 ├── config.py                   ← configuration et chemins (requis)
 ├── requirements.txt            ← dépendances à installer (requis)
-├── .env                        ← SECRETS : token + réglages (créé sur le serveur, §5)
+├── .env                        ← SECRETS : token + réglages (créé sur le serveur, §6.5)
 ├── .env.example                ← modèle (facultatif)
 ├── README.md                   ← documentation (facultatif)
 ├── cogs/                       ← requis
@@ -119,7 +119,7 @@ directement sur le serveur.
 
 | Fichier ou dossier | Transférer ? | Obligatoire ? | Rôle | Remarques |
 |---|---|---|---|---|
-| `bot.py` | Oui | Oui | Point d'entrée, démarrage du bot | Lancé par la commande de la §8 |
+| `bot.py` | Oui | Oui | Point d'entrée, démarrage du bot | Lancé par la commande de la §7.1 |
 | `config.py` | Oui | Oui | Lit `.env`, définit les chemins | Ne contient aucun secret |
 | `cogs/*.py` (3 fichiers) | Oui | Oui | Commande `!setup_finder` et parcours Discord | Dossier entier |
 | `utils/*.py` (8 fichiers) | Oui | Oui | Moteur, catalogue, sessions, validation | Dossier entier |
@@ -141,7 +141,7 @@ directement sur le serveur.
 | `__pycache__/`, `.pytest_cache/`, `*.pyc` | Non | Non | Caches Python générés | Recréés automatiquement |
 | `.venv/`, `venv/`, `env/` | **Non** | Non | Environnement virtuel de votre PC | Un venv Windows ne fonctionne pas sur Linux : créez-le sur le serveur |
 | `state/` | Non | Non | Mémoire du message publié | Créé par le bot sur le serveur |
-| `*.log` | Non | Non | Journaux locaux | Les journaux du serveur sont dans l'administration (§8.4) |
+| `*.log` | Non | Non | Journaux locaux | Les journaux du serveur sont dans l'administration (§7.2) |
 
 ### 2.4 Le fichier `.env` : secret, à ne jamais publier
 
@@ -224,7 +224,7 @@ Aucune modification de code n'est nécessaire pour faire fonctionner le bot. Vé
 |---|---|---|
 | `data/commercial_links.json` | Remplacer ou vider les URL `https://url.com/…` (§2.5) | Recommandé avant mise en ligne publique |
 | `assets/images.json` | Rien à faire si les images ne sont pas prêtes (valeurs vides = pas d'illustration) | Non |
-| `.env` | **Ne pas le créer sur votre PC pour le transférer** : vous le créerez sur le serveur (§5) | — |
+| `.env` | **Ne pas le créer sur votre PC pour le transférer** : vous le créerez sur le serveur (§6.5) | — |
 
 Le code est déjà adapté au déploiement : chemins ancrés sur l'emplacement des fichiers (fonctionne quel que soit le
 répertoire de lancement), `.env` lu depuis le dossier du projet, erreurs de configuration explicites.
@@ -281,7 +281,7 @@ Source : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/sftp/ (h�
 7. **Ne pas** utiliser « Synchroniser les répertoires » pour ce transfert : cette fonction peut supprimer des fichiers distants.
 
 > Piège fréquent : sélectionner le dossier `MouseDiscord-…` lui-même au lieu de son contenu crée
-> `AzeMouse/MouseDiscord-…/bot.py`. Le bot ne démarrera pas (voir §11, « Fichier introuvable »).
+> `AzeMouse/MouseDiscord-…/bot.py`. Le bot ne démarrera pas (voir §11, « No such file or directory »).
 
 ### 5.4 Vérifier le transfert
 
@@ -563,7 +563,7 @@ Dans Discord, en tant qu'utilisateur ayant la permission **Gérer le serveur** :
 - ou `!setup_finder #mouse-shape-finder`.
 
 La première exécution publie le message ; les suivantes **l'éditent** (aucun doublon). Le message est mémorisé dans
-`~/AzeMouse/state/finder_message.json` : ce dossier doit rester sur le serveur (ne pas le supprimer, §10).
+`~/AzeMouse/state/finder_message.json` : ce dossier doit rester sur le serveur (ne pas le supprimer, §12.1).
 
 ---
 
@@ -626,7 +626,7 @@ Cochez chaque point après vérification :
 - [ ] « Refaire le test » relance un parcours ; « Fermer » retire le résultat.
 
 Ce qui n'a **pas** été testé sur un vrai serveur Discord lors de la rédaction de ce guide est indiqué dans
-`docs/audit/DEPLOIEMENT_AUDIT.md` (§ « Points non vérifiés »).
+`docs/audit/DEPLOIEMENT_AUDIT.md` (section F.1 « Vérifications NON réalisées »).
 
 ---
 

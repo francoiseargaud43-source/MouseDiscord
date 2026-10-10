@@ -18,7 +18,9 @@ from utils.matcher import (
     STATUS_EXCLUDED,
     STATUS_PENDING,
     STATUS_SCORED,
+    WIDTH_EXCLUDE_DELTA_MM,
     WIDTH_MEASUREMENT_OFFSET_MM,
+    WIDTH_NEAR_DELTA_MM,
     compatibility_percent,
     compute_target_ranges,
     evaluate_mouse,
@@ -110,6 +112,11 @@ def test_palm_180x90_z1_is_kept_with_seuil_5mm(catalog):
     assert z1.is_scored
     assert z1.breakdown.length_pts == 10     # 122.5 dans [118.79, 123.79]
     assert z1.breakdown.width_pts == 0       # écart 4.2 mm : ni +10 ni +5 (bande < 2 mm)
+    # Largeur utilisée = largeur max Z1 (66.8) − 3 mm d'estimation de prise = 63.8 ; hors bande (> 59.6 mm)
+    assert z1.width_source == "estimated"
+    assert z1.width_used_mm == pytest.approx(63.8)
+    assert z1.width_used_mm - 59.6 == pytest.approx(4.2)      # écart à la borne haute, entre 2 et 5 mm
+    assert WIDTH_NEAR_DELTA_MM < 4.2 < WIDTH_EXCLUDE_DELTA_MM  # éligible (≤ 5 mm), sans bonus (≥ 2 mm)
     assert z1.breakdown.grip_pts == 10
     assert z1.breakdown.hump_pts == 5        # Mid-Front -> Front/Mid
     assert z1.breakdown.button_pts == 5      # High

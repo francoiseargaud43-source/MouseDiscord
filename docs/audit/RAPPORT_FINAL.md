@@ -45,14 +45,18 @@ Principales : ATK Store (collections Z1, U2, X1, A9 ; fiches Fierce X et Dragonf
 
 ```
 $ pytest -q
-165 passed, 1 warning in 0.63s          # warning : audioop (dépendance discord.py), non bloquant
+217 passed, 1 warning in 0.91s          # warning : audioop (dépendance discord.py), non bloquant
 $ python -m pyflakes bot.py config.py cogs utils tests tools
 (aucune sortie : propre)
 $ python tools/compare_profiles.py
 Écrit : docs/audit/matrice_profils.md
 ```
 
-Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 22 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1 · `test_config` 5 · `test_deployment_check` 9.
+Répartition (collecte pytest) : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `test_validation` 18 · `test_flow` 21 · `test_session` 11 · `test_setup_command` 7 · `test_catalog_lookup` 1 · `test_config` 5 · `test_deployment_check` 9 · `test_privacy` 12 · `test_privacy_scan` 24 · `test_doc_references` 17 (tests paramétrés inclus).
+
+Contrôles complémentaires : `python tools/privacy_scan.py` → `0 violation(s)` ; vérification de la mutation du contrôle de propriétaire (3 tests échouent, voir `AUDIT_CONFIDENTIALITE.md` §6).
+
+**Ce qui n'a pas été exécuté** : aucun test sur serveur Discord réel. Le protocole manuel est dans `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md` (non exécuté).
 
 **Non exécuté** : toute interaction avec un serveur Discord réel (voir §8).
 
@@ -68,6 +72,9 @@ Répartition : `test_matcher` 43 · `test_data` 29 · `test_selection` 20 · `te
 | `test_flow::test_thenar_then_standard_budget_shows_results` | Devient `test_standard_budget_shows_results_with_percentage_wording`. | Thénar retiré ; libellé du score. |
 | `test_flow::test_custom_budget_invalid_then_valid` | Conservé ; `thenar` retiré de la session. Résultat inchangé (A9 Plus seule à 50 €). | — |
 | `test_session::*` (4 → 11) | API `get(user_id)` remplacée par `lookup(session_id, user_id)` ; `start` remplace le parcours précédent. | Correctif de confidentialité : une ancienne vue (parcours 1) écrivait dans le parcours 2 du même utilisateur (reproduit). |
+| `test_flow::test_no_public_interaction_reply_in_flow_module` (analyse textuelle) | **Supprimé et remplacé** par `tests/test_privacy_scan.py` (analyse AST, règles R1–R6). | L'ancien test ignorait `**kwargs` (contournement possible), `defer`, `edit_message`, les alias et `channel.send`. |
+| `test_flow::make_interaction` (helper) | `store or SessionStore(...)` → `store if store is not None else SessionStore(...)`. | Un `SessionStore` vide est « faux » (`__len__`) : le helper créait un store différent de celui du test. Aucun test existant ne change de résultat. |
+| `test_matcher::test_palm_180x90_z1_is_kept_with_seuil_5mm` | Assertions ajoutées : largeur utilisée 63.8 mm, source « estimée », écart 4.2 mm, seuils 2 et 5 mm. **Total 30 inchangé.** | Renforcement de la non-régression Z1 ; aucune modification de la bande de bonus. |
 | `test_flow::*` (11 → 21) | Vues et modals reçoivent `session_id` ; helper `make_interaction` fournit `interaction.message` ; ajout des tests d'isolation, de propriétaire, de fermeture et d'analyse statique des envois publics. | Même correctif ; aucune assertion de résultat modifiée. |
 | `test_setup_command::*` | Ajout d'un `state_path` temporaire ; le mock d'envoi retourne un identifiant. Même comportement de publication. | Idempotence. |
 | `test_data::test_catalog_loads_all_six_mice` | Remplacé par `test_catalog_contains_owner_models_and_new_verified_variants`. | 18 entrées au lieu de 6. |
@@ -104,7 +111,7 @@ Le passage à 35 nécessite une décision propriétaire (§7, point 1).
 
 ## 7. Points ouverts et entrées nécessaires du propriétaire
 
-1. **Bande de largeur** : étendre le +5 pts à `2 ≤ écart ≤ 5 mm` (Z1 → 35/40) ? Non implémenté.
+1. **Bande de largeur** : étendre le +5 pts à `2 ≤ écart ≤ 5 mm` (Z1 → 35/40) ? **Décision : non.** Le barème reste inchangé ; Z1 reste à 30/40 (écart 4.2 mm, test de régression `test_palm_180x90_z1_is_kept_with_seuil_5mm`).
 2. **Compatibilités grip et hauteurs de boutons** des 12 nouvelles variantes (sans cela, elles restent « à vérifier »).
 3. **Prix EUR** et dates de vérification (les six prix d'origine sont sans date ; ATK affiche en USD).
 4. **A9 Plus** : 63.5 ou 64.0 mm (conservé 63.5, écart 0.5 mm).

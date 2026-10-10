@@ -12,7 +12,8 @@ Date de l'audit : 2026-10-10 · Branche : `arena/33e33710-mousediscord` · Réf�
   affichage `X/40 — Y %`.
 - Catalogue : 6 modèles d'origine conservés, 12 variantes ATK ajoutées **sans valeur inventée** (grip et hauteur de bouton
   « Inconnu » → à vérifier). Aucun prix EUR n'a pu être vérifié.
-- Tests : 72 → **133** (tous passent). Lint pyflakes propre. Aucun test Discord réel n'a été exécuté (voir §8).
+- Tests : 72 → **133** à la rédaction initiale ; **217** après la mission de finalisation du 2026-10-10 (voir `RAPPORT_FINAL.md` §4). Lint pyflakes propre. Aucun test Discord réel n'a été exécuté (voir §9).
+- **Note datée 2026-10-10 (finalisation)** : Z1 reste à **30/40** (décision du propriétaire : bande de largeur non étendue). Confidentialité : scénarios P01–P13 et contrôle statique documentés dans `AUDIT_CONFIDENTIALITE.md` (tests automatisés uniquement, pas de validation Discord).
 
 ## 1. État du dépôt au début de la mission
 
@@ -49,7 +50,7 @@ Gravité : **H** élevée (résultat ou sécurité des données faux/trompeur), 
 | C17 | Images | Clé `step4_budget` devenue `step3_budget`. | B | **Corrigé** avec repli : `step4_budget` est lue si `step3_budget` est vide. Aucune URL n'était renseignée. |
 | C18 | Documentation | README décrivait l'étape thénar, 4 étapes, « Compatibilité estimée », et le re-post de `!setup_finder`. | M | **Corrigé**. |
 | C19 | Libellé « Points sur 100 » | Le cahier des charges dit « sur 100 » alors que le barème totalise 40. | M | **Conservé sur 40** (points bruts). **Point ouvert** : confirmer le libellé final (le wording de la mission, `X/40`, est appliqué). |
-| C20 | Couverture de tests | Aucun test sur les statuts, les conflits, le catalogue v2, l'idempotence de `!setup_finder`. | M | **Corrigé** : +61 tests (§6 du rapport final). |
+| C20 | Couverture de tests | Aucun test sur les statuts, les conflits, le catalogue v2, l'idempotence de `!setup_finder`. | M | **Corrigé** : +61 tests (`RAPPORT_FINAL.md` §4). |
 
 ## 3. Audit du muscle thénar
 
@@ -93,7 +94,7 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
 
 ## 8. Points ouverts (propriétaire)
 
-1. **Bande de largeur** : étendre la règle +5 pts à `2 ≤ écart ≤ 5 mm` (Z1 → 35/40) ? Non implémenté : le cahier des charges ne le prévoit pas.
+1. **Bande de largeur** : étendre la règle +5 pts à `2 ≤ écart ≤ 5 mm` (Z1 → 35/40) ? **Décision (mission de finalisation, 2026-10-10) : non.** Z1 reste à 30/40 : écart 4.2 mm, 0 point de largeur (bonus strict < 2 mm). Toute évolution du barème devra être générale, justifiée et testée sur plusieurs modèles.
 2. **Compatibilités des nouvelles variantes** (grip Palm / Claw / Fingertip, hauteur des boutons) : à renseigner pour les classer.
 3. **Prix EUR** et date de vérification pour les six modèles d'origine et les nouvelles variantes.
 4. **A9 Plus** : largeur 63.5 ou 64.0 mm ? Confirmer la source.

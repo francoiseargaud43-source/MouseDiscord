@@ -1,6 +1,6 @@
 """Stratégie de sélection par mode commercial (étape 3 du moteur).
 
-Séparation en trois opérations (cahier des charges, §5.1) :
+Séparation en trois opérations (spécification du propriétaire, non versionnée dans ce dépôt ; voir docs/audit/AUDIT.md §2 et §5) :
 1. compatibilité morphologique  -> utils/matcher.py (points sur 40, inchangés par le mode) ;
 2. éligibilité                  -> statut « scored » / « pending » / « excluded » ;
 3. stratégie de sélection       -> ce module : le mode choisit parmi les candidats

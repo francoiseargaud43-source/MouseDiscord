@@ -350,6 +350,7 @@ Reproduire les résultats (depuis la racine du dépôt, environnement virtuel ac
 pip install -r requirements-dev.txt
 pytest -q
 python -m pyflakes bot.py config.py cogs utils tests tools
+python tools/privacy_scan.py          # contrôle statique de confidentialité (0 violation attendue)
 python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 ```
 
@@ -358,13 +359,16 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 - `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images vides par défaut, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : isolation des sessions par `session_id`, propriétaire, remplacement d'un parcours, expiration.
+- `tests/test_privacy.py` : scénarios de confidentialité P02–P12 (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md`.
+- `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
+- `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts.
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice.
 - `tests/test_flow.py` : parcours complet 1/3 à 3/3 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), confidentialité (aucun envoi public, analyse statique), lien manquant → « Lien bientôt disponible ».
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main
-(voir `docs/audit/RAPPORT_FINAL.md`, §« Vérifications Discord manuelles ») : isolation des sessions entre deux utilisateurs,
+(voir `docs/audit/RAPPORT_FINAL.md`, §8 « Vérifications Discord manuelles (non exécutées) » et le protocole `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`, non exécuté) : isolation des sessions entre deux utilisateurs,
 interactions expirées, vue persistante après redémarrage, absence d'accumulation de messages, permissions limitées au salon.
 
 ---

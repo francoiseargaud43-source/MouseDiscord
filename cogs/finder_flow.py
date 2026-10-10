@@ -1,6 +1,7 @@
 """Flux Discord du Mouse Shape Finder : message persistant, étapes éphémères, modals.
 
-CONFIDENTIALITÉ (vérifiée par tests/test_flow.py, analyse statique incluse) :
+CONFIDENTIALITÉ (tests : tests/test_flow.py, tests/test_privacy.py ; contrôle statique :
+tools/privacy_scan.py, testé par tests/test_privacy_scan.py ; limites : docs/audit/AUDIT_CONFIDENTIALITE.md) :
 - seul le message d'accueil ``StartView`` est public ; il ne fait qu'ouvrir un parcours privé ;
 - toutes les autres réponses sont éphémères : ``send_message(ephemeral=True)``, ``followup.send(ephemeral=True)``
   ou ``edit_message`` sur le message éphémère du parcours ;

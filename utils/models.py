@@ -1,6 +1,6 @@
 """Types métier partagés : grips, modes de sélection, souris et métadonnées de données.
 
-Séparation des largeurs (voir docs/audit/AUDIT.md, §3.3) :
+Séparation des largeurs (voir docs/audit/AUDIT.md, §2, constat C2) :
 - ``width_max_mm``   : largeur maximale documentée de la coque (donnée catalogue) ;
 - ``grip_width_mm``  : largeur de prise réellement mesurée (None tant qu'aucune mesure n'existe) ;
 - l'estimation ``width_max_mm - GRIP_WIDTH_ESTIMATE_OFFSET_MM`` n'est utilisée qu'à défaut de mesure.

@@ -3,7 +3,6 @@ isolation des parcours et confidentialité (aucune publication dans le salon).
 """
 from __future__ import annotations
 
-import ast
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
@@ -25,7 +24,7 @@ def make_interaction(user_id: int = 99, store: SessionStore | None = None, has_m
         is_done=MagicMock(return_value=False),
     )
     followup = SimpleNamespace(send=AsyncMock())
-    client = SimpleNamespace(sessions=store or SessionStore(ttl_seconds=600))
+    client = SimpleNamespace(sessions=store if store is not None else SessionStore(ttl_seconds=600))
     message = SimpleNamespace(id=1) if has_message else None
     return SimpleNamespace(
         user=SimpleNamespace(id=user_id),
@@ -327,24 +326,7 @@ async def test_error_message_is_ephemeral_when_response_already_done():
     assert inter.followup.send.call_args.kwargs["ephemeral"] is True
 
 
-def test_no_public_interaction_reply_in_flow_module():
-    """Analyse statique : tout envoi d'interaction (send_message / followup.send) doit être éphémère."""
-    tree = ast.parse((ROOT / "cogs" / "finder_flow.py").read_text(encoding="utf-8"))
-    offenders = []
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
-            continue
-        name = node.func.attr
-        target = ast.unparse(node.func.value)
-        is_interaction_send = name == "send_message" or (name == "send" and "followup" in target)
-        if not is_interaction_send:
-            continue
-        ephemeral = {k.arg: k.value for k in node.keywords}.get("ephemeral")
-        if not (isinstance(ephemeral, ast.Constant) and ephemeral.value is True) and not any(
-            k.arg is None for k in node.keywords  # **kwargs : contrôlé par _show_private (ephemeral=True)
-        ):
-            offenders.append(f"line {node.lineno}: {ast.unparse(node)}")
-    assert offenders == []
+# Contrôle statique de confidentialité : voir tests/test_privacy_scan.py (remplace l'ancien test textuel).
 
 
 def test_every_view_and_modal_carries_session_id():
