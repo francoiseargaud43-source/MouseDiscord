@@ -588,7 +588,6 @@ ls assets/illustrations | wc -l                  # attendu : 15
 ls -l .env                                       # attendu : -rw-------  (et non rw-r--r--)
 
 # 5. JSON valides (une erreur de syntaxe ne fait pas tomber le bot mais bloque le parcours)
-for f in data/mouse_catalogue data/commercial_links data/mouse_db.json assets/images.json; do :; done
 for f in data/mouse_db.json data/commercial_links.json assets/images.json; do   .venv/bin/python -m json.tool "$f" > /dev/null && echo "OK   $f" || echo "ERREUR $f"; done
 ```
 
