@@ -202,21 +202,23 @@ def build_parcours() -> Image.Image:
 def build_resultat() -> Image.Image:
     store = SessionStore(ttl_seconds=600)
     session = store.start(1)
-    session.grip, session.hand_length_mm, session.hand_width_mm = Grip.PALM, 180.0, 90.0
+    session.grip, session.hand_length_mm, session.hand_width_mm = Grip.PALM, 180.0, 100.0
     session.thenar = Thenar.PETITE
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    recommandation, explication = embeds[0], embeds[1]
-    hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 150
+    titres = [
+        "Résultat — message éphémère (privé) : la recommandation",
+        "Plus bas dans le même message : « Comment lire ce résultat »",
+        "Encore plus bas, seulement si le thénar est « Petite » : l'arrière étroit",
+    ]
+    hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 200
     canvas, draw = nouveau_canvas(hauteur)
-    # Bloc 1 : la recommandation seule — uniquement des liens d'achat, aucun bouton à répondre.
-    y = bandeau(draw, PAD, "Résultat — message éphémère (privé) : la recommandation")
-    y = draw_embed(canvas, draw, recommandation, y)
-    y = draw_boutons(draw, y, [("🛒 Acheter ATK Z1 V2 Ultra", False), ("🔗 Liens à venir", False)])
-    # Bloc 2 : le mode d'emploi, plus bas dans le même message.
-    y = bandeau(draw, y, "Plus bas dans le même message : « Comment lire ce résultat »")
-    y = draw_embed(canvas, draw, explication, y)
-    y = draw_boutons(draw, y, [("🛒 Acheter ATK Z1 V2 Ultra", False), ("🔗 Liens à venir", False)])
+    y = PAD
+    for embed, titre in zip(embeds, titres):
+        y = bandeau(draw, y, titre)
+        y = draw_embed(canvas, draw, embed, y)
+        # Aucun bouton interactif : uniquement les liens d'achat (ou « 🔗 Liens à venir »).
+        y = draw_boutons(draw, y, [("🛒 Acheter Scyrox V6", False), ("🔗 Liens à venir", False)])
     return canvas
 
 

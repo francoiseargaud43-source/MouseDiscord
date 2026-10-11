@@ -184,8 +184,10 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
    un identifiant sans lien affiche « Liens à venir ».
 3. **Thénar** : informatif uniquement, et **non proposé en Fingertip** (décision du propriétaire, 2026-10-11). Aucune
    règle thénar → dimensions n'est documentée ; la note « arrière étroit » (T13) n'entre pas dans le score et le dit.
-4. **Largeur de prise** : toujours estimée (coque − 3 mm) pour toutes les souris, donc confiance plafonnée à
-   « moyenne » (Scyrox : « faible », données `owner_spec_unverified`).
+4. **Largeur de prise** : toujours estimée (coque − 3 mm) pour toutes les souris ; les mesures locales
+   (`docs/MESURES_LARGEUR_2026-10-11.md`) ne sont pas encore inscrites dans `data/mouse_db.json`. La confiance
+   des données reste donc plafonnée à « moyenne » (Scyrox : « faible ») — mais elle n'est **plus affichée**
+   depuis le 2026-10-11.
 5. **T04/T05/T06** non utilisées dans les embeds (choix documenté §2). Les aperçus de §6 sont des rendus
    simulés : les emojis y apparaissent sous forme de carrés (police de la machine de génération), pas dans Discord.
 6. **Aucune vérification sur un serveur Discord réel** : les rendus mobile/desktop restent à contrôler par le
@@ -201,6 +203,12 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
   ni détail de géométrie, et aucune liste de souris écartées ;
 - **❓ Comment lire ce résultat** (plus bas dans le même message) : repères de taille, barème sur 40 points,
   « pourquoi ce choix », confiance et, si besoin, note thénar.
+
+La **confiance des données** n'est plus affichée (décision du propriétaire, 2026-10-11) : elle mesure la
+solidité des chiffres disponibles sur la souris, pas la qualité du choix. Elle reste calculée dans
+`MouseScore.confidence` et pourra revenir plus tard. Les illustrations suivent le contenu : la bosse ou les
+boutons de la souris choisie dans le bloc 1, les repères de taille (T12) dans le bloc 2, l'arrière étroit (T13)
+dans le bloc 3 — ce dernier n'apparaissant que si un thénar « Petite » a été déclaré.
 
 Les trois rôles sont choisis dans le classement du mode, sans jamais recalculer un score : le match idéal est la
 tête du classement ; l'alternative est la souris qui correspond le mieux au profil, en préférant une souris un

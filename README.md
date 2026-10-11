@@ -36,7 +36,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
-| Résultat | **Deux blocs privés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage) puis « ❓ Comment lire ce résultat » (score /40, confiance, pourquoi ce choix) | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
+| Résultat | **Deux blocs privés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage) puis « ❓ Comment lire ce résultat » (repères de taille, la souris choisie en clair, pourquoi ce choix) | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -57,11 +57,13 @@ Relancer un test remplace le précédent : les anciens menus deviennent inactifs
 en cours : le message persistant continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
-théorique** pour le match idéal, l'alternative et, quand elle existe, l'économie. Ni score /40, ni badge de
-confiance, ni souris écartées à ce niveau : tout cela est expliqué dans le bloc « ❓ Comment lire ce résultat »,
-plus bas dans le même message privé. Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils
-restent dans `MouseScore.details` et dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat,
-ni une validation biomécanique** : c'est une estimation géométrique provisoire.
+théorique** pour le match idéal, l'alternative et, quand elle existe, l'économie. Ni score /40, ni souris
+écartées à ce niveau : le détail est expliqué dans le bloc « ❓ Comment lire ce résultat », plus bas dans le
+même message privé (repères de taille, phrase reliant la souris choisie à ces repères, pourquoi ce choix, et
+l'illustration correspondante). Le paragraphe « arrière étroit » (T13) n'apparaît que si le thénar déclaré est
+« Petite ». Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans
+`MouseScore.details` et dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat, ni une
+validation biomécanique** : c'est une estimation géométrique provisoire.
 
 ---
 
@@ -340,8 +342,10 @@ Le pourcentage n'est jamais présenté comme une probabilité.
 - `pending` : aucune exclusion, mais grip, bosse, boutons ou longueur `Inconnu` / en conflit. Le score partiel est affiché, jamais classé.
 - `scored` : toutes les données présentes.
 
-**Niveau de confiance** : `élevée` si dimensions vérifiées et largeur de prise mesurée ; `moyenne` si dimensions vérifiées
-mais largeur estimée ; `faible` sinon (dimensions d'une seule source, non vérifiées, ou compatibilité non confirmée).
+**Niveau de confiance** (calculé, **non affiché**) : `élevée` si dimensions vérifiées et largeur de prise mesurée ;
+`moyenne` si dimensions vérifiées mais largeur estimée ; `faible` sinon (dimensions d'une seule source, non
+vérifiées, ou compatibilité non confirmée). Il mesure la solidité des **données**, pas la qualité de la souris :
+il reste dans `MouseScore.confidence` et n'apparaît plus dans le résultat (décision du propriétaire, 2026-10-11).
 
 **Modes de sélection** (`utils/selection.py`) — tolérances **provisoires**, à valider :
 

@@ -1034,9 +1034,10 @@ grep -q build_image_url utils/assets.py       && echo "OK   utils/assets.py (ré
 grep -q step2_thenar assets/images.json       && echo "OK   assets/images.json (clés)"      || echo "ANCIEN assets/images.json"
 grep -q thenar_step_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (4 étapes)" || echo "ANCIEN cogs/finder_flow.py"
 grep -q "Comment lire ce résultat" cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (résultat épuré)" || echo "ANCIEN cogs/finder_flow.py (résultat)"
+grep -q ResultsView bot.py                     && echo "ANCIEN bot.py (vue supprimée — à remplacer)" || echo "OK   bot.py"
 ```
 
-Les **sept lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
+Les **huit lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
 du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
 `tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
@@ -1049,7 +1050,8 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 
 | Élément | Nature | Redémarrage nécessaire ? |
 |---|---|---|
-| `cogs/finder_flow.py` | Code : parcours, résultat épuré (recommandation puis « ❓ Comment lire ce résultat »), note thénar, boutons d'achat uniquement | **Oui** |
+| `bot.py` | Code : supprime l'enregistrement de la vue persistante des boutons retirés — **obligatoire** : l'ancien `bot.py` référence `ResultsView.persistent()`, qui n'existe plus | **Oui** |
+| `cogs/finder_flow.py` | Code : parcours, résultat épuré (recommandation puis « ❓ Comment lire ce résultat » + paragraphes illustrés), boutons d'achat uniquement | **Oui** |
 | `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
 | `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
@@ -1058,12 +1060,13 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 `config.py`, les autres fichiers de `utils/`, `assets/` et `requirements.txt` sont **inchangés** :
 inutile de les retransférer.
 
-**2. FileZilla — six fichiers à glisser dans `~/MouseDiscord`**
+**2. FileZilla — sept fichiers à glisser dans `~/MouseDiscord`**
 
 Ouvrez le dossier téléchargé à gauche, `~/MouseDiscord` à droite, puis glissez (conflits : **Écraser**,
 jamais « Synchroniser les répertoires ») :
 
 ```
+bot.py
 cogs/finder_flow.py
 utils/matcher.py
 utils/models.py
@@ -1083,7 +1086,7 @@ cd ~/MouseDiscord
 # attendu : catalogue lisible : 26 souris · liens d'achat valides : 26 · 0 erreur(s) bloquante(s)
 ```
 
-**4. Redémarrage** (nécessaire : trois fichiers Python ont changé) — mode tâche planifiée :
+**4. Redémarrage** (nécessaire : plusieurs fichiers Python ont changé) — mode tâche planifiée :
 
 ```bash
 pkill -f "bot.py"                 # la tâche planifiée relance le bot au prochain créneau (≤ 1 min)

@@ -32,7 +32,9 @@ from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH
 from utils.assets import load_image_urls
 from utils.catalog import load_catalog, load_commercial_links
 from utils.matcher import (
+    LENGTH_PTS_IN_RANGE,
     MAX_SCORE,
+    WIDTH_PTS_IN_RANGE,
     MouseScore,
     compatibility_percent,
     compute_target_ranges,
@@ -68,8 +70,6 @@ SCORE_DISCLAIMER = (
     "Le calcul est expliqué dans le bloc « Comment lire ce résultat », plus bas."
 )
 BUTTON_LABEL_MAX = 80
-
-CONFIDENCE_BADGES = {"élevée": "🟢", "moyenne": "🟡", "faible": "🔴"}
 
 # Affichage : noms français des positions de bosse et des hauteurs de boutons (le catalogue garde
 # ses valeurs anglaises, seules les phrases montrées à l'utilisateur sont traduites).
@@ -219,16 +219,45 @@ def _price_text(score: MouseScore, *, verified_hint: bool = False) -> str:
     return text
 
 
-def _confidence_detail(score: MouseScore) -> str:
-    """Pourquoi cette confiance (onglet Détails) : jamais affiché dans le résumé."""
-    level = score.confidence or "faible"
-    badge = CONFIDENCE_BADGES.get(level, "🔴")
-    reason = {
-        "élevée": "dimensions vérifiées et largeur de prise mesurée",
-        "moyenne": "dimensions vérifiées, largeur de prise encore estimée (coque − 3 mm, provisoire)",
-        "faible": "données d'une seule source ou compatibilité non confirmée",
-    }.get(level, "données partielles")
-    return f"{badge} **{level.capitalize()}** — {reason}."
+def _match_summary(score: MouseScore) -> str:
+    """Ce qui colle et ce qui colle moins, en clair : jamais une valeur du barème.
+
+    C'est la phrase qui relie la souris choisie aux repères de taille affichés juste au-dessus.
+    """
+    mouse = score.mouse
+    good, weak = [], []
+    if score.breakdown.length_pts == LENGTH_PTS_IN_RANGE:
+        good.append("longueur dans la cible")
+    elif score.breakdown.length_pts > 0:
+        weak.append("longueur à quelques millimètres de la cible")
+    else:
+        weak.append("longueur en léger retrait")
+    if score.breakdown.width_pts == WIDTH_PTS_IN_RANGE:
+        good.append("largeur de prise dans la cible")
+    elif score.breakdown.width_pts > 0:
+        weak.append("largeur de prise proche de la cible")
+    else:
+        weak.append("largeur de prise un peu large")
+    if score.breakdown.grip_pts > 0:
+        good.append(f"prise {score.grip.label} bien soutenue")
+    if score.breakdown.thenar_pts > 0:
+        good.append("arrière marqué qui soutient votre thénar")
+    elif score.breakdown.thenar_pts < 0:
+        weak.append("arrière large peu adapté à un petit thénar")
+    if mouse.hump_position != "Inconnu" and score.grip is not Grip.FINGERTIP:
+        # En Fingertip, la bosse est ignorée par le barème : ne pas la présenter comme un défaut.
+        (good if score.breakdown.hump_pts > 0 else weak).append(
+            f"bosse {HUMP_DISPLAY.get(mouse.hump_position, mouse.hump_position)} "
+            + ("adaptée" if score.breakdown.hump_pts > 0 else "moins adaptée")
+        )
+    if mouse.button_height != "Inconnu":
+        (good if score.breakdown.button_pts > 0 else weak).append(
+            f"boutons {BUTTON_DISPLAY.get(mouse.button_height, mouse.button_height)} "
+            + ("adaptés" if score.breakdown.button_pts > 0 else "moins adaptés")
+        )
+    sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
+    sentence += f". À noter : {', '.join(weak[:1])}." if weak else "."
+    return sentence[:1024]
 
 
 def _slot_text(score: MouseScore) -> str:
@@ -380,11 +409,14 @@ def result_image_key(winner: MouseScore | None, grip: Grip | None) -> str | None
 
 
 def results_embeds(session: FinderSession, selection: Selection) -> list[discord.Embed]:
-    """Résultat en deux blocs : (1) la recommandation, (2) « comment lire ce résultat », plus bas.
+    """Résultat en un seul message, jamais en onglet : la recommandation, puis l'explication plus bas.
 
-    Le premier bloc ne garde que l'essentiel : ce que la personne a saisi, puis les souris utiles
-    avec leur prix et leur pourcentage. Aucun score, aucun terme technique, aucune liste de souris
-    écartées — tout cela est expliqué dans le second bloc (voir docs/REPORTE_DESIGN.md §9).
+    Bloc 1 — **la recommandation** : la ligne du parcours, puis le match idéal, l'alternative et, si
+    elle existe, l'économie (nom · prix · pourcentage du maximum théorique). Rien d'autre à l'écran :
+    ni score, ni badge, ni terme technique (voir docs/REPORTE_DESIGN.md §9).
+    Bloc 2 — **« Comment lire ce résultat »** : les repères de taille, la phrase qui relie la souris
+    choisie à ces repères, le pourquoi du choix — et l'illustration des repères de taille.
+    Bloc 3 — **seulement** si un thénar « Petite » a été déclaré : l'arrière étroit conseillé (T13).
     """
     main = discord.Embed(title="🎯 Votre recommandation", color=COLOR)
     header = _recap(session)
@@ -426,20 +458,25 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         "compatibilité de prise, bosse, boutons) ; le pourcentage indique sa part du maximum "
         f"théorique. Ici : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %**."
     )
+    guide.add_field(
+        name=f"📐 {ideal.mouse.label} en clair",
+        value=f"{_size_text(ideal.mouse)} · {_price_text(ideal)}\n{_match_summary(ideal)}"[:1024],
+        inline=False,
+    )
     guide.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
-    guide.add_field(name="🔎 Confiance", value=_confidence_detail(ideal), inline=False)
-    if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
-        guide.add_field(
-            name="🖐️ Thénar Petite",
-            value=("Arrière étroit en « pilule » conseillé (méthode Oblivity) ; "
-                   "une souris à bosse arrière marquée est **pénalisée à la marge** dans le score."),
-            inline=False,
-        )
-        guide = _image(guide, "illustration_rear_narrow")
-    else:
-        guide = _image(guide, "illustration_mouse_dimensions")
+    guide = _image(guide, "illustration_mouse_dimensions")
     guide.set_footer(text=SCORE_DISCLAIMER)
-    return [main, guide]
+    embeds = [main, guide]
+
+    if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
+        narrow = discord.Embed(title="🖐️ Un arrière étroit pour votre thénar", color=COLOR)
+        narrow.description = (
+            "Votre thénar est **Petite** : un arrière de souris étroit, en « pilule », laisse la main "
+            "se poser sans forcer (méthode Oblivity). Une souris à bosse arrière marquée est "
+            "**pénalisée à la marge** dans le score."
+        )
+        embeds.append(_image(narrow, "illustration_rear_narrow"))
+    return embeds
 
 
 def expired_embed() -> discord.Embed:

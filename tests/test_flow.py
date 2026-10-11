@@ -162,6 +162,7 @@ async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeyp
     session = start_for(store, grip=Grip.FINGERTIP, length=190.0, width=95.0)
     session.budget_mode = BudgetMode.ECONOMIQUE
     embeds = flow.results_embeds(session, flow.compute_selection(session))
+    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "❓ Comment lire ce résultat"]
     assert not any("Thénar" in field.name for embed in embeds for field in embed.fields)
     assert all("arriere_etroit" not in (embed.image.url or "") for embed in embeds)
     assert "T02_boutons_bas" in embeds[0].image.url  # bosse ignorée en Fingertip → illustration des boutons
@@ -236,11 +237,12 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
     assert "Z1" in alt
     assert "Comment lire ce résultat" in guide.title
-    guide_fields = fields_of(guide)
-    guide_text = (guide.description or "") + " ".join(guide_fields)
+    guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
     assert "40 points" in guide_text and "30/40" in guide_text      # le score s'explique ici
-    assert "Pourquoi ce choix" in " ".join(guide_fields)
-    assert "🔎 Confiance" in guide_fields
+    assert "Pourquoi ce choix" in " ".join(f.name for f in guide.fields)
+    # La souris choisie est reliée aux repères de taille, juste au-dessus.
+    assert any(f.name.startswith("📐 Scyrox V6") and "en clair" in f.name for f in guide.fields)
+    assert "Confiance" not in guide_text                            # indicateur retiré de l'affichage
     assert "ni une probabilité" in guide.footer.text
 
 
@@ -253,6 +255,7 @@ async def test_result_never_mentions_the_excluded_mice():
     text = " ".join(str(e.to_dict()) for e in flow.results_embeds(s, flow.compute_selection(s)))
     assert "écart" not in text and "Non classées" not in text
     assert "matrice_profils" not in text and "docs/" not in text
+    assert "Confiance" not in text and "confiance" not in text
     assert "Phantom" not in text
 
 
@@ -266,7 +269,9 @@ def test_result_shows_the_explanation_block_below_the_recommendation():
     assert all("Score" not in f.value and "Confiance" not in f.value for f in embeds[0].fields)
     guide = embeds[1]
     assert "/40" in (guide.description or "")
-    assert [f.name for f in guide.fields][:2] == ["🧭 Pourquoi ce choix ?", "🔎 Confiance"]
+    names = [f.name for f in guide.fields]
+    assert names[0].startswith("📐 ") and names[0].endswith(" en clair")
+    assert names[1] == "🧭 Pourquoi ce choix ?"
 
 
 @pytest.mark.asyncio
@@ -306,7 +311,7 @@ async def test_custom_budget_invalid_then_valid():
     await modal_budget(s.session_id, "50").on_submit(good)
     main, guide = good.response.edit_message.call_args.kwargs["embeds"]
     assert "A9 Plus" in fields_of(main)["🥇 Le match idéal"]
-    assert "🟡 **Moyenne**" in " ".join(fields_of(guide).values())
+    assert "Confiance" not in (guide.description or "") + " ".join(fields_of(guide))
     assert store.lookup(s.session_id, 99)[1] != "ok"  # session supprimée après résultat
 
 
@@ -477,7 +482,8 @@ def test_embeds_respect_discord_limits_and_stay_short():
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    assert len(embeds) == 2, "un résultat tient en deux embeds (recommandation + repères de taille)"
+    # Trois blocs au maximum : recommandation, « comment lire ce résultat », arrière étroit (thénar Petite).
+    assert len(embeds) == 3
     total = 0
     for embed in embeds:
         assert len(embed) <= 6000
@@ -531,17 +537,20 @@ def test_thenar_only_weighs_on_rear_hump_mice():
     assert all(s.breakdown.thenar_pts == 0 for s in other.ranked if s.mouse.hump_position != "Rear")
 
 
-def test_thenar_petite_adds_a_narrow_rear_note_and_a_bounded_adjustment(monkeypatch):
+def test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration(monkeypatch):
+    """Thénar « Petite » : un paragraphe dédié, illustré (T13), affiché plus bas dans le message."""
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
-    details = flow.results_embeds(session, flow.compute_selection(session))[1]
-    names = " ".join(field.name for field in details.fields)
-    values = " ".join(field.value for field in details.fields)
-    assert "Thénar Petite" in names
-    assert "pilule" in values and "pénalisée à la marge" in values
-    assert details.image is not None and "T13_arriere_etroit" in details.image.url
+    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    assert len(embeds) == 3
+    narrow = embeds[2]
+    assert "arrière étroit" in narrow.title
+    assert "pilule" in narrow.description and "pénalisée à la marge" in narrow.description
+    assert narrow.image is not None and "T13_arriere_etroit" in narrow.image.url
+    # Le bloc « comment lire ce résultat » garde l'illustration des repères de taille.
+    assert "T12_souris_longueur_largeur" in embeds[1].image.url
 
 
 def test_step_illustrations_are_branched_when_image_base_url_is_set(monkeypatch):
