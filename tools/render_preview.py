@@ -21,7 +21,7 @@ if str(ROOT) not in sys.path:
 
 from cogs import finder_flow as flow  # noqa: E402
 from utils.assets import IMAGE_KEYS  # noqa: E402
-from utils.models import BudgetMode, Grip, Thenar  # noqa: E402
+from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 from utils.session import SessionStore  # noqa: E402
 
 # Les images locales sont référencées par un faux domaine : l'aperçu dessine les fichiers de
@@ -203,18 +203,21 @@ def build_parcours() -> Image.Image:
 
 
 def build_resultat() -> Image.Image:
+    # Cas le plus complet : Claw pincée + thénar « Petite » → tous les blocs d'explication s'affichent.
     store = SessionStore(ttl_seconds=600)
     session = store.start(1)
-    session.grip, session.hand_length_mm, session.hand_width_mm = Grip.PALM, 180.0, 100.0
+    session.grip, session.hand_length_mm, session.hand_width_mm = Grip.CLAW, 180.0, 100.0
     session.thenar = Thenar.PETITE
+    session.claw_variant = ClawVariant.PINCEE
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     titres = [
         "Résultat — message éphémère (privé) : la recommandation",
         "Plus bas : les repères de taille (illustrés)",
         "Plus bas : l'arrière étroit, quand le thénar est « Petite »",
-        "Plus bas : la bosse conseillée pour la prise",
-        "Plus bas : la hauteur des boutons conseillée",
+        "Plus bas : la bosse, la forme de coque, et le conseil de la variante de Claw",
+        "Plus bas : la variante de Claw déclarée, illustrée",
+        "Enfin : la hauteur des boutons conseillée",
     ]
     hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 200
     canvas, draw = nouveau_canvas(hauteur)
