@@ -535,6 +535,34 @@ Les logs sont aussi visibles dans l'administration : **Advanced > Processes > Se
 - Administration : **Advanced > Services** (ou **Advanced > Processes > Services**) > action **Redémarrer** du service.
 - Le redémarrage envoie `SIGHUP` (documentation Alwaysdata) : le bot s'arrête puis redémarre.
 
+### 7.5 Le bot est hors ligne / le service est « arrêté » ou « désactivé »
+
+Le redémarrage se fait **dans l'administration Alwaysdata** (ce n'est ni FileZilla, ni le terminal SSH) :
+
+1. Connectez-vous sur `https://admin.alwaysdata.com` > **Advanced > Processes > Services**
+   (selon la version de l'interface : **Advanced > Services**). L'entrée `MouseDiscord` et son état sont affichés.
+2. Selon l'état :
+   - **En cours d'exécution** → action **Redémarrer** (le bot revient en ligne en quelques secondes).
+   - **Arrêté** → action **Démarrer**.
+   - **Désactivé** → action **Activer**, puis **Démarrer**. Alwaysdata désactive automatiquement un service qui échoue
+     plusieurs fois de suite : la cause est à chercher dans les journaux avant de relancer, sinon il retombera.
+3. Vérifier dans le journal du service (§7.2) la ligne de démarrage réussie
+   (`INFO mouse_discord : Connecté en tant que …`). Le bot apparaît alors **en ligne** dans Discord.
+4. Un redémarrage vide les sessions en cours (les menus éphémères répondent « session expirée ») : le message d'accueil
+   persistant, lui, reste opérationnel et `state/` est conservé.
+
+Causes de démarrage immédiatement interrompu (les journaux les nomment) :
+
+| Message dans le journal | Cause | Correction |
+|---|---|---|
+| `DISCORD_TOKEN est vide` | `.env` absent ou ligne vide sur le serveur | Renseigner `DISCORD_TOKEN` (§6.5) |
+| `Improper token` / `401 Unauthorized` | Token erroné ou révoqué | Recopier le token depuis le portail développeur Discord |
+| `No such file or directory` | Répertoire de travail ou commande du service incorrects | `/home/[compte]/MouseDiscord` et chemin absolu du `.venv` (§7.1) |
+| `ModuleNotFoundError` | Dépendances non installées dans le venv | §6.4 |
+
+> Ne lancez **pas** en même temps un `python bot.py` dans le terminal SSH et le service : deux instances du même bot
+> se disputent Discord (§9).
+
 ### 7.4 Arrêter le service
 
 Administration : **Advanced > Services** > action **Arrêter** (ou désactiver le service). Ne le faites pas en même temps
