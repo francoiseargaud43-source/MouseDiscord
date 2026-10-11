@@ -205,9 +205,49 @@ Un commit par point coché, avec message explicite, et un résumé final : fichi
 
 ---
 
-## 7. Ce qu'il me manque de toi pour finir
+## 7. Résultat « moins pavé » — fait le 2026-10-11
 
-1. **Les réponses de leur bot** (§4) — surtout les plages par prise pour ton gabarit et leur texte sur bosse/boutons.
-2. **Ta mesure de largeur de prise** sur les souris que tu possèdes (I1) — au réglet, au niveau du capteur.
-3. **Tes prix en euros** (ou l'autorisation de chercher) pour les 8 nouvelles souris (I4).
+La capture du bot montrait un pavé de paragraphes. Refonte appliquée (`cogs/finder_flow.py`, tests mis à jour, 257 verts) :
+
+| Avant | Après |
+|---|---|
+| Bloc « Match Idéal » de 5 lignes (taille, prix, score, confiance + raison longue, justification) | **3 lignes** : souris · taille · prix / score unique + badge (🟢/🟡/🔴) / résumé humain |
+| « Confiance moyenne — Dimensions vérifiées, largeur de prise estimée (coque − 3 mm, provisoire) » | « 🟡 Confiance moyenne (largeur estimée) » — le détail reste dans la matrice technique |
+| « À vérifier » : phrase globale | **décompte par raison** (« 20 écartées — 20 sans compatibilité de prise ») puis ≤ 5 noms |
+| Embed 2 : 3 paragraphes + rappel | **autoportant** (prise · thénar · main · gamme + cibles), 1 ligne « Ce que fait le score », thénar en 1 ligne |
+| Doublons « provisoire » / explications | une seule mention générique, dans le pied de l'embed 1 |
+
+Aperçu régénéré : `docs/apercu_resultat.png` (et `docs/apercu_parcours.png`). Aucun calcul touché.
+Reste optionnel (I5#2) : afficher « X souris classées sur 26 » — demande de faire remonter la taille du catalogue
+jusqu'au résultat, donc une petite évolution de `Selection` (à faire avec un test dédié).
+
+## 8. Mesurer la largeur de prise depuis une capture (outil fourni)
+
+`tools/measure_grip_width.py` fait exactement ce que tu demandais avec imageonline.io, mais **en local et en mm** :
+
+```bash
+python tools/measure_grip_width.py contour_souris.png --length 118.2 --at 0.5
+```
+
+- `--length` = la longueur réelle de la souris (l'échelle est déduite du contour : 300 px pour 120 mm → 0,4 mm/px) ;
+- `--at` = où mesurer (0 = avant, 0,5 = milieu, 1 = arrière) ; `--sensor-percent` d'EloShapes
+  (ex. « Position · Centered (53 %) ») se traduit en `--at` selon le repère de ton choix ;
+- sortie : largeur max mesurée (à comparer à la fiche fabricant), largeur au point demandé, et **profil tous les 10 %**.
+
+Marche à suivre : capture vue de dessus (EloShapes) → outil → reporter `grip_width_mm` dans `data/mouse_db.json`
+avec la source et la date. C'est la méthode recommandée par la vidéo (3:19 et 6:35).
+Précision typique ± 0,3 mm ; une mesure au réglet sur une souris réelle reste la référence pour valider la méthode.
+
+## 9. Ce qu'il me manque de toi pour finir
+
+1. **Les 10 fichiers `.txt` de leur outil** — ils ne sont **pas arrivés** dans mon espace de travail (seul le dossier
+   d'images existe). Colle leur contenu dans le chat, ou renvoie-les. Ce que j'en attends : leurs **plages de longueur
+   et de largeur par prise** et leurs conseils de forme, pour comparer avec notre moteur et repérer ce qui doit bouger.
+   À noter : **leurs noms de fichiers contiennent le thénar** (« Thenar Medium », « Thenar Small »…) — soit leur outil
+   le demande aussi, soit tu as utilisé notre bot : dans les deux cas, dis-moi de quel bot viennent ces réponses.
+2. **Les prix en euros** : la page que j'interroge (`/fr-fr/collections/souris`) m'affiche **« $ … USD »**, pas des euros.
+   Si ton navigateur affiche bien des **€**, envoie-moi les montants exacts que tu vois (ou une capture) : je les
+   saisirai sourcés. Sinon je cherche des prix EUR chez des revendeurs européens.
+3. **Ta mesure de largeur de prise** sur les souris que tu possèdes (I1) — au réglet, au niveau du capteur,
+   ou via `tools/measure_grip_width.py` sur une capture EloShapes.
 4. **Le choix des points** à implémenter (I1 → I5) : je peux tout faire d'un coup, ou seulement I1/I3/I5 (les moins risqués).

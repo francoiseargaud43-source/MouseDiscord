@@ -398,6 +398,7 @@ MouseDiscord/
 │   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
 │   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
 │   ├── build_ai_bundle.py    # Prépare le pack (prompt + règles + catalogue) pour une IA de recherche
+│   ├── measure_grip_width.py # Largeur de prise en mm depuis une capture vue de dessus (méthode Oblivity)
 │   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
 ├── docs/
 │   ├── DEPLOYMENT_ALWAYSDATA_FILEZILLA.md  # Guide de mise en ligne (Alwaysdata, FileZilla, illustrations)

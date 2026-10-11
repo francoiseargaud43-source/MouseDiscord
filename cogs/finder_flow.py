@@ -64,7 +64,7 @@ COLOR = BORDEAUX
 COLOR_EXPIRED = discord.Color.orange()           # seule exception à la charte (session expirée)
 
 SCORE_DISCLAIMER = (
-    "Score géométrique provisoire, ni une probabilité d'achat ni une validation biomécanique. "
+    "Score géométrique provisoire : ni une probabilité d'achat ni une validation biomécanique. "
     "Largeur de prise estimée (coque − 3 mm) tant qu'elle n'est pas mesurée."
 )
 PENDING_DOC_REFERENCE = "docs/audit/matrice_profils.md"
@@ -209,14 +209,11 @@ def _price_text(score: MouseScore) -> str:
 
 
 def _confidence_line(score: MouseScore) -> str:
-    """Badge de confiance en une ligne, avec la raison (jamais une couleur seule)."""
-    badge = CONFIDENCE_BADGES.get(score.confidence or "faible", "🔴")
-    reason = {
-        "élevée": "Dimensions vérifiées et largeur de prise mesurée",
-        "moyenne": "Dimensions vérifiées, largeur de prise estimée (coque − 3 mm, provisoire)",
-        "faible": "Données d'une seule source ou compatibilité non confirmée",
-    }.get(score.confidence or "faible", "Données partielles")
-    return f"{badge} Confiance {score.confidence or 'faible'} — {reason}"
+    """Badge de confiance compact (jamais une couleur seule) : le détail est expliqué dans la matrice."""
+    level = score.confidence or "faible"
+    badge = CONFIDENCE_BADGES.get(level, "🔴")
+    short = {"élevée": "", "moyenne": " (largeur estimée)", "faible": " (source unique)"}.get(level, "")
+    return f"{badge} Confiance {level}{short}"
 
 
 def _match_summary(score: MouseScore) -> str:
@@ -248,17 +245,17 @@ def _match_summary(score: MouseScore) -> str:
         )
     sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
     if weak:
-        sentence += f". À noter : {', '.join(weak[:2])}."
+        sentence += f". À noter : {', '.join(weak[:1])}."
     else:
         sentence += "."
     return sentence[:300]
 
 
 def _candidate_text(score: MouseScore) -> str:
-    """Bloc du Match Idéal : souris, prix, score unique, confiance, justification humaine (≤ 600 car.)."""
+    """Match idéal en trois lignes courtes : souris/prix, score unique + confiance, résumé humain."""
     return (
         f"**{score.mouse.label}** · {_size_text(score.mouse)} · {_price_text(score)}\n"
-        f"Score : **{score.total}/{MAX_SCORE} — {compatibility_percent(score)} % du maximum théorique**  ·  "
+        f"Score : **{score.total}/{MAX_SCORE} — {compatibility_percent(score)} % du maximum théorique** · "
         f"{_confidence_line(score)}\n"
         f"{_match_summary(score)}"
     )[:1024]
@@ -323,17 +320,45 @@ def _pending_reason(score: MouseScore) -> str:
     return "données incomplètes"
 
 
+PENDING_BUCKETS = {
+    "compatibilité": "sans compatibilité de prise",
+    "bosse": "sans hauteur de bosse",
+    "boutons": "sans hauteur de boutons",
+    "dimensions": "sans dimensions vérifiées",
+    "prix": "sans prix renseigné",
+}
+
+
+def _pending_bucket(score: MouseScore) -> str:
+    """Regroupe une souris non classée par donnée manquante (pour un décompte compact)."""
+    missing = " ".join(score.missing)
+    for key, label in PENDING_BUCKETS.items():
+        if key in missing:
+            return label
+    return "données incomplètes"
+
+
+def _pending_breakdown(pending: tuple[MouseScore, ...]) -> str:
+    """« 12 sans compatibilité · 5 sans hauteur de boutons » — ordre décroissant, sans points internes."""
+    counts: dict[str, int] = {}
+    for score in pending:
+        bucket = _pending_bucket(score)
+        counts[bucket] = counts.get(bucket, 0) + 1
+    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    return " · ".join(f"{count} {label}" for label, count in ordered)
+
+
 def _pending_text(pending: tuple[MouseScore, ...]) -> str:
-    """Silence visuel : 5 noms maximum, sans score, puis renvoi vers la matrice technique."""
+    """Décompte compact par raison, puis au maximum 5 noms (jamais de score partiel)."""
+    header = f"{len(pending)} souris écartées du classement — {_pending_breakdown(pending)}."
     if len(pending) > MAX_PENDING_LISTED:
-        return (
-            f"{len(pending)} souris écartées du classement faute de compatibilité vérifiée "
-            f"(prise, bosse ou boutons). Détails techniques : `{PENDING_DOC_REFERENCE}`."
-        )
+        return f"{header}\nDétail par souris : `{PENDING_DOC_REFERENCE}`."[:1024]
     lines = [f"• **{s.mouse.label}** — {_pending_reason(s)}" for s in pending[:MAX_PENDING_SHOWN]]
     if len(pending) > MAX_PENDING_SHOWN:
-        lines.append(f"… et {len(pending) - MAX_PENDING_SHOWN} autre(s) — détails : `{PENDING_DOC_REFERENCE}`.")
-    return "\n".join(lines)[:1024]
+        lines.append(f"… +{len(pending) - MAX_PENDING_SHOWN} — `{PENDING_DOC_REFERENCE}`.")
+    else:
+        lines.append(f"Détail par souris : `{PENDING_DOC_REFERENCE}`.")
+    return f"{header}\n" + "\n".join(lines)[:1024]
 
 
 # ---------------------------------------------------------------------------
@@ -466,22 +491,17 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
 
     if selection.ranked and session.grip is not None:
         details = discord.Embed(title="📐 Repères de taille", color=COLOR)
-        details.description = _target_line(session)
+        # Autoportant : le rappel de la prise et des mesures permet de lire cet embed seul (partage, capture).
+        details.description = f"{_recap(session)}\n{_target_line(session)}"
         details.add_field(
-            name="Ce que fait le score",
-            value=(
-                "Le score sur 40 compare longueur, largeur de prise, compatibilité de prise, bosse et boutons. "
-                "C'est un indicateur géométrique provisoire, pas une probabilité d'achat."
-            ),
+            name="🧮 Ce que fait le score",
+            value="Score sur 40 : longueur, largeur de prise, compatibilité de prise, bosse, boutons.",
             inline=False,
         )
         if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
             details.add_field(
                 name="🖐️ Thénar Petite (indicatif)",
-                value=(
-                    "Un arrière étroit est souvent plus confortable pour cette morphologie. "
-                    "Recommandation morphologique indicative, **non prise en compte dans le score**."
-                ),
+                value="Un arrière étroit est souvent plus confortable pour cette morphologie — **non prise en compte dans le score**.",
                 inline=False,
             )
             details = _image(details, "illustration_rear_narrow")
