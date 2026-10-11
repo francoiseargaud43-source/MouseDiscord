@@ -234,6 +234,16 @@ python tools/measure_grip_width.py contour_souris.png --length 118.2 --at 0.5
   (ex. « Position · Centered (53 %) ») se traduit en `--at` selon le repère de ton choix ;
 - sortie : largeur max mesurée (à comparer à la fiche fabricant), largeur au point demandé, et **profil tous les 10 %**.
 
+Validation du 2026-10-11 (photos produit vue de dessus, F1 V3, longueur réelle 118,2 mm) :
+
+| Mesure | Photo 1 | Photo 2 | Fiche fabricant |
+|---|---|---|---|
+| Largeur maximale | **62,3 mm** | **62,7 mm** | 62,4 mm |
+| Largeur au milieu | 58,7 mm | 59,6 mm | estimation actuelle : 59,4 mm (coque − 3 mm) |
+
+Écart outil ↔ fiche : ≤ 0,4 mm. Et la règle « coque − 3 mm » tombe juste (59,1 mm mesurés au milieu contre 59,4 mm estimés).
+Deux photos « planches » (3 vues dans une image) ont été rejetées à juste titre : il faut **une souris par image**.
+
 Marche à suivre : capture vue de dessus (EloShapes) → outil → reporter `grip_width_mm` dans `data/mouse_db.json`
 avec la source et la date. C'est la méthode recommandée par la vidéo (3:19 et 6:35).
 Précision typique ± 0,3 mm ; une mesure au réglet sur une souris réelle reste la référence pour valider la méthode.
