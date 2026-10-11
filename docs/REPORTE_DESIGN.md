@@ -112,6 +112,10 @@ aucun champ de plus de 700 caractères.
 
 ## 6. Captures après refonte (générées sans serveur)
 
+> **Mise à jour du 2026-10-11** : le résultat a été compacté (décompte par raison dans « À vérifier »,
+> match idéal en trois lignes, embed 2 autoportant) — voir `docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md` §7.
+> Les deux captures ci-dessous ont été régénérées à cette date.
+
 Deux aperçus sont versionnés dans le dépôt (rendu simulé du client, thème sombre, fond `#313338`,
 carte `#2B2D31`, liseré bordeaux `#8A2342`) :
 
