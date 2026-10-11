@@ -36,13 +36,24 @@ def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert len(mice) == len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS)
 
 
+def price_is_either_absent_or_sourced(mouse) -> bool:
+    """Règle prix : soit aucun prix, soit un prix EUR vérifié, daté et rattaché à une source en ligne."""
+    if mouse.price_eur is None:
+        return "EUR" in mouse.price_note
+    dated_price_source = any(
+        "price_eur" in source.fields and source.url.startswith("http") and source.date_checked
+        for source in mouse.sources
+    )
+    return mouse.price_status == "verified" and dated_price_source and "EUR" in mouse.price_note
+
+
 def test_store_additions_are_sourced_and_never_invent_compatibility(mice):
     """Les ajouts « produits vendus » sont sourcés, sans prix EUR inventé ni compatibilité de prise inventée."""
     for mouse_id in STORE_2026_10_11_IDS:
         mouse = mice[mouse_id]
         assert mouse.sources, f"{mouse_id} doit citer au moins une source"
         assert all(s.date_checked and s.url.startswith("http") for s in mouse.sources)
-        assert mouse.price_eur is None and "EUR" in mouse.price_note, mouse_id
+        assert price_is_either_absent_or_sourced(mouse), mouse_id
         assert mouse.fit_status == "unverified", mouse_id
         assert {mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit} == {"Inconnu"}, mouse_id
 
@@ -71,7 +82,7 @@ def test_a9_plus_width_kept_with_documented_conflict_tolerance(mice):
 def test_new_models_have_no_invented_compatibility_or_price(mice):
     for mid in NEW_ATK_IDS:
         m = mice[mid]
-        assert m.price_eur is None, f"{mid} : aucun prix EUR n'est vérifié"
+        assert price_is_either_absent_or_sourced(m), f"{mid} : prix non sourcé"
         assert m.palm_grip_fit == "Inconnu" and m.claw_grip_fit == "Inconnu" and m.fingertip_grip_fit == "Inconnu"
         assert m.fit_status == "unverified"
         assert m.sources, f"{mid} : toute donnée doit citer une source"

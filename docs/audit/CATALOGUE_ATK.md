@@ -11,7 +11,9 @@ Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma
 
 - **Dimensions** : L × l × H en mm, tels que publiés ; `—` = non trouvé.
 - **Statut dimensions** : `verified` = ≥ 2 sources concordantes (écart ≤ 0.5 mm) ; `single_source` = une seule source ; `conflicting` = sources en désaccord > 0.5 mm.
-- **Prix** : aucun prix EUR vérifié. Le store ATK affiche des prix en USD (indicatifs, non convertis). Colonne laissée à `—`.
+- **Prix** : le store ATK n'affiche que des USD (non convertis). Depuis le 2026-10-11, des prix **EUR** sont relevés
+  chez des revendeurs français et écrits dans la base quand la variante correspond exactement
+  (voir `docs/RECHERCHE_PRIX_EUR_2026-10-11.md`) ; statut `verified` = prix daté + URL en source.
 - **Disponibilité** : non vérifiée par modèle.
 - **Compatibilité grip / boutons** : non renseignée pour les nouvelles variantes (`Inconnu`). Les mentions marketing « claw grip » ou « palm grip » de l'éditeur ne sont **pas** assimilées à une compatibilité.
 - **Relevance** : résultat du moteur. P = Palm 180×90, C = Claw 150×75, F = Fingertip 200×100 (voir `matrice_profils.md`).

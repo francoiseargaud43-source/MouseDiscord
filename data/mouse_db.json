@@ -17,11 +17,20 @@
     "fit_status": "owner_spec",
     "dimension_status": "owner_spec_unverified",
     "price_eur": 74.9,
-    "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
+    "price_status": "verified",
+    "price_note": "Prix EUR issu du cahier des charges (74,90 €), confirmé le 2026-10-11 par le prix public français (74,90 €, noir, en stock ; blanc en promotion à 59,90 €) chez Maxesport.",
     "fit_rationale": "La bosse arrière verrouille parfaitement le Claw grip. Très légère pour le Fingertip.",
     "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées.",
-    "sources": []
+    "sources": [
+      {
+        "label": "Maxesport (revendeur FR, expédition depuis la France) — Scyrox V8 8K Wireless Black",
+        "url": "https://maxesport.gg/products/scyrox-v8-8k-wireless-black",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
   },
   {
     "id": "scyrox_v6",
@@ -236,7 +245,7 @@
     "dimension_status": "verified",
     "price_eur": 45.0,
     "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
+    "price_note": "Prix issu du cahier des charges (45,00 €, non daté). Observation 2026-10-11 : 44,90 € (noir, en stock) chez Maxesport, revendeur FR.",
     "fit_rationale": "Rapport qualité/prix imbattable pour les budgets serrés. Forme 'patate' universelle.",
     "weight_g": 57.0,
     "polling_hz": 1000,
@@ -263,6 +272,14 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Maxesport (revendeur FR, expédition depuis la France) — ATK Dragonfly A9 Plus 2.0 Wireless Black",
+        "url": "https://maxesport.gg/products/atk-dragonfly-a9-plus-2-0-wireless-black",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -326,9 +343,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "single_source",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 114.9,
+    "price_status": "verified",
+    "price_note": "Prix EUR (public France) constaté le 2026-10-11 : 114,90 € (ATK Blazing Sky Ghost Ultimate 8K, coque carbone, argent) chez Maxesport.",
     "fit_rationale": "",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
@@ -347,6 +364,14 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Maxesport (revendeur FR, expédition depuis la France) — ATK Blazing Sky Ghost Ultimate 8K Wireless CF Silver",
+        "url": "https://maxesport.gg/products/atk-blazing-sky-ghost-ultimate-8k-wireless-cf-silver",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -834,9 +859,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "single_source",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 89.9,
+    "price_status": "verified",
+    "price_note": "Prix EUR (public France) constaté le 2026-10-11 : 89,90 € (ATK Dragonfly A9 Air 8K, Shadow White, en stock) chez Maxesport.",
     "fit_rationale": "",
     "weight_g": 47.0,
     "sensor": null,
@@ -854,6 +879,14 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Maxesport (revendeur FR, expédition depuis la France) — ATK Dragonfly A9 Air 8K Wireless Shadow White",
+        "url": "https://maxesport.gg/products/atk-dragonfly-a9-air-8k-wireless-shadow-white",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -962,7 +995,7 @@
     "grip_width_mm": null,
     "shell_id": null,
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "EloShapes : « Front flare · Flat » et flancs plats (profil sans évasement arrière marqué — critère « rear design » de la vidéo Oblivity). Modèle très distribué et peu cher ; homologation de prise à faire par le propriétaire.",
     "id": "vxe_r1",
@@ -981,8 +1014,8 @@
     "weight_g": 51.0,
     "sensor": "PAW3395",
     "polling_hz": 2000,
-    "price_eur": null,
-    "price_note": "Store ATK : à partir de 14,98 $ (série R1) — aucun prix EUR documenté, non converti.",
+    "price_eur": 29.9,
+    "price_note": "Prix EUR « à partir de » constaté le 2026-10-11 : 29,90 € (VXE R1 S, en stock) ; R1 SE+ 39,90 €, R1 44,90 €, R1 Pro 49,90 €, R1 Pro Max 59,90 €. Famille R1 : variante la moins chère en stock retenue pour les filtres de budget.",
     "sources": [
       {
         "label": "EloShapes — VXE MAD R vs R1",
@@ -1014,6 +1047,14 @@
         "url": "https://www.atk.store/products/vxe-dragonfly-r1-series-wireless-mouse",
         "fields": [
           "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Maxesport (revendeur FR, expédition depuis la France) — VXE R1 (R1 S / R1 / R1 Pro / R1 Pro Max)",
+        "url": "https://maxesport.gg/products/vxe-r1-s-wireless-white",
+        "fields": [
+          "price_eur"
         ],
         "date_checked": "2026-10-11"
       }
@@ -1091,7 +1132,7 @@
     "grip_width_mm": null,
     "shell_id": null,
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "Dimensions identiques à l'ATK Blazing Sky X1 / X1 V2 déjà au catalogue (127 × 64 × 40) : coque de la famille X1. Pas encore de fiche EloShapes -> position de la bosse inconnue : souris en « à vérifier » jusqu'à vérification. Éditeur : « Claw / Palm / Fingertip », « medium to large hands ».",
     "id": "vxe_x3",
@@ -1110,8 +1151,8 @@
     "weight_g": 51.0,
     "sensor": "PAW3315",
     "polling_hz": 1000,
-    "price_eur": null,
-    "price_note": "Store ATK : à partir de 29,98 $ (lancement) — aucun prix EUR documenté, non converti.",
+    "price_eur": 44.9,
+    "price_note": "Prix EUR « à partir de » constaté le 2026-10-11 : 44,90 € (VXE X3, blanc/noir, en stock) ; X3 Pro 49,90 €. Variantes de la même famille, coque identique.",
     "sources": [
       {
         "label": "ATK Store — VXE Dragonfly X3 Series",
@@ -1124,6 +1165,14 @@
           "sensor",
           "polling_hz",
           "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Maxesport (revendeur FR, expédition depuis la France) — VXE X3 (X3 / X3 Pro)",
+        "url": "https://maxesport.gg/products/vxe-x3-white",
+        "fields": [
+          "price_eur"
         ],
         "date_checked": "2026-10-11"
       }
