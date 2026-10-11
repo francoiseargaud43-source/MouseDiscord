@@ -65,6 +65,11 @@ Gravité : **H** élevée (résultat ou sécurité des données faux/trompeur), 
   (`FinderSession.thenar`, récapitulatif, note indicative « arrière étroit » avec `T13` si « Petite »).
   **Aucun effet** sur les équations, seuils, points, scores, classements ou exclusions ; aucune règle thénar → dimensions
   n'a été inventée. Tests : `test_thenar_is_stored_and_not_scored`, `test_thenar_petite_adds_a_purely_informative_narrow_rear_note`.
+- **Exception Fingertip — 2026-10-11 (décision du propriétaire)** : l'étape thénar **n'est pas proposée** en prise Fingertip
+  (parcours 1 → 2/3 → 3/3) et la note « arrière étroit » (T13) n'apparaît jamais dans ce cas : cette prise ne repose pas
+  sur l'arrière de la souris, et le barème y ignore déjà la bosse (`HUMP_IDEAL` ne couvre que Palm et Claw).
+  Le calcul reste inchangé : seul le nombre de questions posées varie.
+  Tests : `test_fingertip_skips_the_thenar_step_and_shortens_the_path`, `test_fingertip_result_has_no_thenar_note_nor_rear_illustration`.
 
 ## 4. Incohérences avec les résultats attendus
 

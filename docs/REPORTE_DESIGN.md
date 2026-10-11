@@ -27,11 +27,11 @@ Date : 2026-10-11 · Branche : `arena/87fafd0d-mousediscord` · Périmètre : pr
 |---|---|---|---|---|
 | T08 | `T08_azemouse_banniere.png` | `banner` | Message persistant d'accueil (`banner_embed`) | **Branchée** |
 | T09 | `T09_griffe_paume_doigts.png` | `step1_grip` | **Étape 1/4 — prise** (`grip_step_embed`) | **Branchée** |
-| T10 | `T10_tailles_de_main.png` | `step2_thenar` | **Étape 2/4 — thénar** (`thenar_step_embed`), informatif | **Branchée** |
+| T10 | `T10_tailles_de_main.png` | `step2_thenar` | **Étape 2/4 — thénar** (`thenar_step_embed`), informatif — **étape sautée en Fingertip** | **Branchée** |
 | T11 | `T11_mesurer_la_main.png` | `step2_measure` | **Étape 3/4 — mesures** (`measure_step_embed`) | **Branchée** |
 | — | *(aucun fichier)* | `step3_budget` | Étape 4/4 — budget : laissée vide, aucune image imposée | Disponible |
 | T12 | `T12_souris_longueur_largeur.png` | `illustration_mouse_dimensions` | Résultat, embed 2 « 📐 Repères de taille » | **Branchée** |
-| T13 | `T13_arriere_etroit.png` | `illustration_rear_narrow` | Résultat, embed 2 **si thénar « Petite »** (note indicative) | **Branchée** |
+| T13 | `T13_arriere_etroit.png` | `illustration_rear_narrow` | Résultat, embed 2 **si thénar « Petite »** et prise Palm/Claw (note indicative ; jamais en Fingertip) | **Branchée** |
 | T14 | `T14_bosse_centrale.png` | `illustration_hump_mid` | Résultat, embed 1 — bosse Mid du match idéal | **Branchée** |
 | T15 | `T15_bosse_avant.png` | `illustration_hump_front` | Résultat, embed 1 — bosse Front / Mid-Front | **Branchée** |
 | T07 | `T07_bosse_arriere.png` | `illustration_hump_rear` | Résultat, embed 1 — bosse Rear | **Branchée** |
@@ -41,6 +41,10 @@ Date : 2026-10-11 · Branche : `arena/87fafd0d-mousediscord` · Périmètre : pr
 | T04 | `T04_griffe_relachee.png` | `illustration_grip_relaxed` | Documentation uniquement (variantes de prise) | Clé prête, non affichée |
 | T05 | `T05_griffe_agressive.png` | `illustration_grip_aggressive` | Documentation uniquement | Clé prête, non affichée |
 | T06 | `T06_griffe_pince.png` | `illustration_grip_pincer` | Documentation uniquement | Clé prête, non affichée |
+
+**Parcours adaptatif** : en **Fingertip**, l'étape thénar n'est pas proposée (3 étapes : 1 → 2/3 → 3/3) et ni la note
+« arrière étroit » ni l'illustration T13 n'apparaissent : cette prise ne s'appuie pas sur l'arrière de la souris, et le
+barème y ignore déjà la bosse. La numérotation s'adapte (`_steps_total`) ; elle reste 1/4 → 4/4 pour Palm et Claw.
 
 **Règle de choix de l'image du résultat** (`result_image_key`) : la **bosse** d'abord (plus déterminante pour le ressenti),
 puis les **boutons** si la bosse est inconnue ou non lue (Fingertip). Une seule image par embed, jamais trois.
@@ -174,8 +178,8 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
 2. **Liens commerciaux d'exemple** : `data/commercial_links.json` contient encore `https://url.com/…` (scyrox_v8,
    atk_a9_plus). Ce sont des espaces réservés du propriétaire : à remplacer ou à vider, sinon le bouton d'achat pointe
    vers un site tiers. Aucun lien n'a été inventé ni supprimé par cette mission.
-3. **Thénar** : informatif uniquement. Aucune règle thénar → dimensions n'est documentée ; la note « arrière étroit »
-   (T13) n'entre pas dans le score et le dit explicitement.
+3. **Thénar** : informatif uniquement, et **non proposé en Fingertip** (décision du propriétaire, 2026-10-11). Aucune
+   règle thénar → dimensions n'est documentée ; la note « arrière étroit » (T13) n'entre pas dans le score et le dit.
 4. **Largeur de prise** : toujours estimée (coque − 3 mm) pour toutes les souris, donc confiance plafonnée à
    « moyenne » (Scyrox : « faible », données `owner_spec_unverified`).
 5. **T04/T05/T06** non utilisées dans les embeds (choix documenté §2). Les aperçus de §6 sont des rendus

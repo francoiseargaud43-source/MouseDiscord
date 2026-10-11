@@ -80,7 +80,7 @@ CONFIDENCE_BADGES = {"élevée": "🟢", "moyenne": "🟡", "faible": "🔴"}
 GRIP_OPTIONS = (
     (Grip.PALM, "Palm Grip", "Paume posée sur la coque"),
     (Grip.CLAW, "Claw Grip", "Doigts arqués, pulpes en contact"),
-    (Grip.FINGERTIP, "Fingertip Grip", "Bout des doigts seulement"),
+    (Grip.FINGERTIP, "Fingertip Grip", "Bout des doigts — parcours raccourci"),
 )
 THENAR_OPTIONS = (
     (Thenar.PETITE, "Petite", "Thénar peu développé"),
@@ -164,6 +164,16 @@ def _size_text(mouse) -> str:
     if mouse.width_max_mm is not None:
         parts.append(f"larg. {_mm(mouse.width_max_mm)} (coque)")
     return " · ".join(parts)
+
+
+def _steps_total(session_or_grip) -> int:
+    """Nombre d'étapes du parcours : 3 en Fingertip (l'étape thénar n'est pas proposée), 4 sinon."""
+    grip = getattr(session_or_grip, "grip", session_or_grip)
+    return 3 if grip is Grip.FINGERTIP else 4
+
+
+def _step_title(index: int, session_or_grip, label: str) -> str:
+    return f"Étape {index}/{_steps_total(session_or_grip)} — {label}"
 
 
 def _budget_text(session: FinderSession) -> str:
@@ -345,7 +355,8 @@ def banner_embed() -> discord.Embed:
 def grip_step_embed() -> discord.Embed:
     description = "\n".join(f"**{label}** — {desc}" for _, label, desc in GRIP_OPTIONS)
     embed = discord.Embed(
-        title="Étape 1/4 — Votre prise",
+        # Pas de dénominateur : le nombre d'étapes dépend de la prise choisie (3 en Fingertip, 4 sinon).
+        title="Étape 1 — Votre prise",
         description=f"Quelle prise utilisez-vous le plus souvent ?\n{description}",
         color=COLOR,
     )
@@ -354,7 +365,7 @@ def grip_step_embed() -> discord.Embed:
 
 def thenar_step_embed() -> discord.Embed:
     embed = discord.Embed(
-        title="Étape 2/4 — Votre éminence thénar",
+        title=_step_title(2, Grip.PALM, "Votre éminence thénar"),
         description=(
             "À titre **informatif** : cette donnée n'influence pas le score.\n"
             "Elle aide seulement à expliquer l'arrière de souris conseillé."
@@ -366,7 +377,7 @@ def thenar_step_embed() -> discord.Embed:
 
 def measure_step_embed(session: FinderSession) -> discord.Embed:
     embed = discord.Embed(
-        title="Étape 3/4 — Vos mesures",
+        title=_step_title(2 if session.grip is Grip.FINGERTIP else 3, session, "Vos mesures"),
         description=(
             f"{_recap(session)}\n\n"
             "Avec une règle :\n"
@@ -380,7 +391,7 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
 
 def budget_step_embed(session: FinderSession) -> discord.Embed:
     embed = discord.Embed(
-        title="Étape 4/4 — Budget et gamme",
+        title=_step_title(3 if session.grip is Grip.FINGERTIP else 4, session, "Budget et gamme"),
         description=f"{_recap(session)}\nChoisissez votre gamme de prix.",
         color=COLOR,
     )
@@ -464,7 +475,7 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
             ),
             inline=False,
         )
-        if session.thenar is Thenar.PETITE:
+        if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
             details.add_field(
                 name="🖐️ Thénar Petite (indicatif)",
                 value=(
@@ -563,6 +574,12 @@ class GripSelect(discord.ui.Select):
         if session is None:
             return
         session.grip = Grip(self.values[0])
+        if session.grip is Grip.FINGERTIP:
+            # L'arrière de la souris n'est pas utilisé dans cette prise (bosse ignorée par le barème,
+            # thénar non collecté) : l'étape thénar est sautée et aucune note « arrière étroit » ne s'affiche.
+            session.thenar = None
+            await _show_private(interaction, embed=measure_step_embed(session), view=MeasureView(self.session_id))
+            return
         await _show_private(interaction, embed=thenar_step_embed(), view=ThenarView(self.session_id))
 
 

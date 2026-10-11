@@ -22,7 +22,8 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 10. [Architecture](#architecture)
 11. [Tests](#tests)
 12. [Design et illustrations](docs/REPORTE_DESIGN.md)
-13. [Audit et données](docs/audit/AUDIT.md)
+13. [Faire enrichir le catalogue par une IA](docs/PROMPT_RECHERCHE_SOURIS_ATK.md)
+14. [Audit et données](docs/audit/AUDIT.md)
 
 ---
 
@@ -32,13 +33,15 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 |---|---|---|
 | Accueil | Message persistant : bannière AzeMouse (`T08`) | Bouton **Start Mouse Shape Finder** |
 | 1/4. Prise | Message éphémère + illustration des 3 prises (`T09`) | Menu : Palm / Claw / Fingertip Grip |
-| 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score) |
+| 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
 | Résultat | **Deux embeds privés** : la recommandation (Match Idéal, alternative réellement différente, explication, souris à vérifier) puis les repères de taille illustrés | Boutons 🛒 d'achat (liens réels), ✖️ Fermer, 🔄 Refaire le test |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
+En **Fingertip**, l'étape n'est **pas posée** : cette prise ne s'appuie sur l'arrière de la souris (la bosse est déjà
+ignorée par le barème), donc ni thénar ni note « arrière étroit » ne sont demandés ni affichés (`_steps_total`).
 
 **Identité visuelle** : bordeaux `#8A2342` en couleur latérale de tous les embeds (« session expirée » exceptée, en orange),
 illustrations sur fond Nuit `#0B1220` avec liseré bordeaux et une touche de jaune Étincelle `#F0C43C`.
@@ -224,6 +227,25 @@ Les liens d'affiliation sont dans **`data/commercial_links.json`**, séparés du
 
 ---
 
+## Faire enrichir le catalogue par une IA
+
+Le pack de recherche se prépare et s'envoie en trois étapes (détail : `docs/PROMPT_RECHERCHE_SOURIS_ATK.md`) :
+
+```bash
+python tools/build_ai_bundle.py     # crée pack_ia_mousediscord.zip (prompt + règles + catalogue + identifiants)
+```
+
+1. Joignez `pack_ia_mousediscord.zip`, les **liens YouTube** et vos **captures Discord** à votre message.
+2. Copiez le **prompt** du §3 de `docs/PROMPT_RECHERCHE_SOURIS_ATK.md`.
+3. À la réponse : collez les fiches dans `data/mouse_db.json`, puis
+   `python tools/check_deployment.py` → `pytest -q` → `python tools/compare_profiles.py`.
+
+Le pack ne contient **aucun secret** (ni `.env`, ni `state/`, ni liens d'affiliation) et rappelle les règles du projet :
+aucune valeur inventée, prix en euros uniquement s'ils sont documentés en euros, compatibilités « Inconnu » sans source
+explicite, deux sources concordantes à ≤ 0.5 mm pour un statut `verified`.
+
+---
+
 ## Modifier le catalogue
 
 `data/mouse_db.json` contient une liste d'objets (schéma v2). Chaque valeur géométrique porte ses sources.
@@ -375,6 +397,7 @@ MouseDiscord/
 ├── tools/
 │   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
 │   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
+│   ├── build_ai_bundle.py    # Prépare le pack (prompt + règles + catalogue) pour une IA de recherche
 │   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
 ├── docs/
 │   ├── DEPLOYMENT_ALWAYSDATA_FILEZILLA.md  # Guide de mise en ligne (Alwaysdata, FileZilla, illustrations)
@@ -411,6 +434,7 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts.
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
+- `tests/test_ai_bundle.py` : contenu du pack IA (`tools/build_ai_bundle.py`) — fichiers attendus, **aucun secret** (`.env`, `state/`, liens d'affiliation), liste des identifiants existants.
 - `tests/test_flow.py` : parcours complet 1/4 à 4/4 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), charte d'embeds, limites Discord des embeds, refus des détails internes (`pts`), thénar stocké mais sans effet sur le score, illustrations branchées, lien manquant → « Liens à venir ».
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 

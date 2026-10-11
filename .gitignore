@@ -19,3 +19,6 @@ __pycache__/
 
 # État local du bot (message Mouse Shape Finder publié)
 state/
+
+# Pack IA généré par tools/build_ai_bundle.py (jamais versionné)
+pack_ia_mousediscord.zip

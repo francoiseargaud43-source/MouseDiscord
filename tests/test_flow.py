@@ -84,7 +84,8 @@ async def test_start_button_sends_ephemeral_step1_with_grip_select():
     kwargs = inter.response.send_message.call_args.kwargs
     assert kwargs["ephemeral"] is True
     assert isinstance(kwargs["view"], flow.GripView)
-    assert "Étape 1/4" in kwargs["embed"].title
+    # Le dénominateur dépend de la prise choisie (3 étapes en Fingertip, 4 sinon) : « Étape 1 » sans total.
+    assert kwargs["embed"].title.startswith("Étape 1")
     assert "prise" in kwargs["embed"].title.lower()
     session = inter.client.sessions.get(kwargs["view"].children[0].session_id, 99)
     assert session is not None
@@ -131,6 +132,44 @@ def test_thenar_select_only_proposes_the_three_valid_sizes():
 
 def test_thenar_labels_are_french_and_mapped():
     assert [THENAR_LABELS[t] for t in Thenar] == ["Petite", "Moyenne", "Grande"]
+
+
+@pytest.mark.asyncio
+async def test_fingertip_skips_the_thenar_step_and_shortens_the_path():
+    """Fingertip : l'arrière de la souris n'est pas utilisé → pas d'étape thénar (parcours 1 → 3 étapes)."""
+    store = SessionStore(ttl_seconds=600)
+    s = store.start(99)
+    inter = make_interaction(store=store)
+    view = flow.GripView(s.session_id)
+    select_values(view.children[0], "fingertip")
+    await view.children[0].callback(inter)
+    kwargs = inter.response.edit_message.call_args.kwargs
+    assert isinstance(kwargs["view"], flow.MeasureView), "on va directement à l'étape des mesures"
+    assert "Étape 2/3" in kwargs["embed"].title
+    session = store.get(s.session_id, 99)
+    assert session.grip is Grip.FINGERTIP and session.thenar is None
+
+    measures = make_interaction(store=store)
+    await modal_with(flow.MeasureModal(s.session_id), "190", "95").on_submit(measures)
+    budget_title = measures.response.edit_message.call_args.kwargs["embed"].title
+    assert "Étape 3/3" in budget_title
+
+
+@pytest.mark.asyncio
+async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeypatch):
+    monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.FINGERTIP, length=190.0, width=95.0)
+    session.budget_mode = BudgetMode.ECONOMIQUE
+    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    assert not any("Thénar" in field.name for embed in embeds for field in embed.fields)
+    assert all("arriere_etroit" not in (embed.image.url or "") for embed in embeds)
+    assert "T02_boutons_bas" in embeds[0].image.url  # bosse ignorée en Fingertip → illustration des boutons
+
+
+def test_steps_total_follows_the_grip():
+    assert flow._steps_total(Grip.PALM) == 4 and flow._steps_total(Grip.CLAW) == 4
+    assert flow._steps_total(Grip.FINGERTIP) == 3
 
 
 @pytest.mark.asyncio
