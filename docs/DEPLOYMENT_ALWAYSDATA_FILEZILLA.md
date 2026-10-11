@@ -474,7 +474,12 @@ la validité est vérifiée par Discord au premier lancement.
 ## 7. Démarrage permanent : Alwaysdata « Services »
 
 Un lancement dans le terminal (`python bot.py`) **s'arrête à la fermeture de votre session SSH**. Pour un fonctionnement
-permanent, déclarez le bot comme **service** (documentation : https://help.alwaysdata.com/en/docs/web-hosting/services/).
+permanent, deux solutions :
+
+- déclarer le bot comme **service** (documentation : https://help.alwaysdata.com/en/docs/web-hosting/services/) —
+  fonctionnalité **réservée aux offres payantes**, détaillée aux §7.1–7.6 ;
+- ou créer une **tâche planifiée** relançant le bot au premier plan (**Avancé > Tâches planifiées**), disponible sur
+  toutes les offres : voir §7.7.
 
 Ce que dit la documentation Alwaysdata, et ce qui en découle :
 
@@ -649,6 +654,39 @@ cd ~/MouseDiscord && .venv/bin/python bot.py   # lance le bot au premier plan : 
 
 > Ne lancez jamais ce test pendant que le service tourne : deux instances du même bot se disputent Discord (§9).
 > Un service qui se fait tuer sans raison remonte tout seul ; s'il échoue plusieurs fois, Alwaysdata le **désactive**.
+
+### 7.7 Mode « tâches planifiées » (sans service)
+
+Si le compte n'utilise pas de **service** (fonctionnalité payante) mais une **tâche planifiée**
+(**Avancé > Tâches planifiées**, démon `aljob`), le fonctionnement est le suivant :
+
+| Point | Conséquence |
+|---|---|
+| La tâche exécute en boucle `…/MouseDiscord/.venv/bin/python bot.py` **au premier plan** | Tant que le bot tourne, son exécution est « en cours » |
+| `aljob` **ignore** un nouveau lancement si l'exécution précédente n'est pas terminée | C'est ce qui empêche deux instances du même bot de tourner en parallèle |
+| Si le bot s'arrête (plantage), la prochaine occurrence de la tâche le relance | Une fréquence courte (toutes les minutes / 5 minutes) = **redémarrage automatique** |
+| Les journaux sont dans `~/admin/logs/jobs/` (et non `services/`) | `ls -lt ~/admin/logs/jobs/ | head` puis `tail -n 60 ~/admin/logs/jobs/[fichier]` |
+| Les processus en cours sont listés dans **Avancé > Processus > Tâches planifiées** | Contrôle visuel équivalent à `ps -ef | grep "[b]ot.py"` |
+
+**Commandes utiles**
+
+```bash
+# Le bot tourne-t-il ? (une seule ligne attendue)
+ps -ef | grep "[b]ot.py"
+
+# Que disent les journaux de la tâche ? (démarrage, sortie du bot, arrêt)
+ls -lt ~/admin/logs/jobs/ | head
+tail -n 60 ~/admin/logs/jobs/[fichier-le-plus-recent]
+```
+
+**Arrêter / relancer le bot**
+
+| Objectif | Marche à suivre |
+|---|---|
+| **Redémarrer** (après une mise à jour du code) | `pkill -f "bot.py"` en SSH, puis attendre la prochaine occurrence de la tâche (≤ 1 min si la fréquence est « toutes les minutes ») |
+| **Forcer un lancement immédiat** | Mettre temporairement la fréquence de la tâche sur « toutes les minutes » dans **Avancé > Tâches planifiées**, enregistrer, puis attendre la minute en cours |
+| **Arrêter durablement** | Désactiver la tâche dans l'administration puis `pkill -f "bot.py"` |
+| **Ne jamais faire** | Lancer `python bot.py` à la main pendant que la tâche est active : `aljob` ne voit pas ce processus et lancerait une **seconde** instance au prochain créneau (§9) |
 
 ### 7.4 Arrêter le service
 
@@ -855,7 +893,10 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
    ```
 6. **Contrôle** : `~/AzeMouse/.venv/bin/python ~/AzeMouse/tools/check_deployment.py` → `0 erreur(s)`.
 7. **Redémarrage** : nécessaire si vous avez modifié **un fichier Python** (`bot.py`, `config.py`, `cogs/`, `utils/`), **`.env`**,
-   ou `requirements.txt`. Redémarrez le service (§7.3).
+   ou `requirements.txt`.
+   - **Service** : action *Redémarrer* (§7.3).
+   - **Tâche planifiée** : `pkill -f "bot.py"` puis attendre le prochain créneau (≤ 1 min si la tâche est « toutes les
+     minutes ») : le nouveau code est alors chargé (§7.7).
 8. **Message d'accueil** : si le texte ou le bouton du message d'accueil a changé dans le code (`cogs/finder_flow.py`),
    tapez `!setup_finder` dans Discord pour éditer le message existant.
 9. **Vérification** : logs (§7.2) puis checklist Discord (§10.3), au minimum le bouton Start et un parcours complet.
@@ -868,7 +909,7 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 | `data/commercial_links.json` (liens) | **Oui** : relu à chaque résultat | Aucun redémarrage |
 | `assets/images.json` (images) | **Oui** : relu à chaque affichage d'image | Aucun redémarrage |
 | `.env`, `config.py` | Non : lus au démarrage | **Redémarrer** |
-| `bot.py`, `cogs/*.py`, `utils/*.py` | Non : chargés au démarrage | **Redémarrer** |
+| `bot.py`, `cogs/*.py`, `utils/*.py` | Non : chargés au démarrage | **Redémarrer** (service : §7.3 ; tâche planifiée : `pkill -f "bot.py"` puis attente du prochain créneau, §7.7) |
 | `requirements.txt` | Non | Installer (§12.2 étape 5) puis **redémarrer** |
 | Texte du message d'accueil (code) | Non : publié dans Discord | Redémarrer puis `!setup_finder` |
 
