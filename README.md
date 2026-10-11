@@ -37,7 +37,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/4 – 3/5. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4 – 4/5. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, **Peu importe le prix**, Budget personnalisé (→ modal prix max) |
-| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, économie — nom, **poids**, prix, pourcentage), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
+| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, économie — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -294,6 +294,7 @@ explicite, deux sources concordantes à ≤ 0.5 mm pour un statut `verified`.
 | `price_note` | Précision (date, devise d'origine…). |
 | `budget_tier` | `Économique`, `Qualité-Prix`, `Haut de Gamme` (étiquette, départage visuel uniquement). |
 | `weight_g`, `sensor`, `polling_hz` | Caractéristiques documentées. `polling_hz` ≥ 8000 et capteur `PAW3950`/`PAW3955` (variantes) comptent pour le mode Haut de Gamme. |
+| `shape` | `Symmetrical` / `Ergonomic` : affichée tout à droite de la ligne du match idéal et de l'alternative (« Symétrique » / « Ergonomique »). |
 | `switches`, `mcu` | Switchs et microcontrôleur documentés (`Nordic 54H20`, `54L15`, `54LM20`, `nRF52840`…). Servent au départage du mode « Peu importe le prix » : capteur > MCU > switchs > fréquence. Un champ vide n'est jamais deviné. |
 | `sources` | `[{label, url, fields, date_checked}]`. Obligatoire pour toute donnée `verified` ou `single_source`. |
 | `notes` | Commentaires de vérification. |

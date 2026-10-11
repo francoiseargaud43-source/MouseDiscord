@@ -62,11 +62,13 @@ SENSOR_TIERS = {
     "PAW3395": 1,
 }
 MCU_TIERS = {
-    "Nordic 54H20": 3,
-    "Nordic 54L15": 2,
-    "Nordic 54LM20": 2,
-    "Nordic nRF52840": 1,
+    "Nordic 54H20": 3, "Nordic nRF54H20": 3,
+    "Nordic 54L15": 2, "Nordic nRF54L15": 2,
+    "Nordic 54LM20": 2, "Nordic nRF54LM20": 2,
+    "Nordic nRF52840": 1, "Nordic 52840": 1,
 }
+# MCU documentés mais non classés (puce maison ou chinoise, sans référentiel comparable publié) :
+# NearLink/HiSilicon (A9 Plus), BK Custom Esports (A9 NB), Broadcom CX52850SE (VXE X3). Rang 0.
 SWITCH_OPTICAL, SWITCH_MECHANICAL = 2, 1
 
 

@@ -610,15 +610,23 @@ def test_embed_colors_follow_the_azemouse_charter():
     assert flow.expired_embed().color == discord.Color.orange()
 
 
-def test_result_lines_show_the_weight_next_to_the_ideal_and_the_alternative():
-    """Le poids documenté est mis en avant dès la ligne du match idéal et de l'alternative."""
+def test_result_lines_show_the_weight_then_the_shape_at_the_far_right():
+    """Ligne du match idéal et de l'alternative : nom · poids · prix · % · forme (tout à droite)."""
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     fields = fields_of(embeds[0])
-    assert re.search(r"· \d+ g ·", fields["🥇 Le match idéal"]), fields["🥇 Le match idéal"]
-    assert re.search(r"· \d+ g ·", fields["🥈 L'alternative"]), fields["🥈 L'alternative"]
+    for cle in ("🥇 Le match idéal", "🥈 L'alternative"):
+        ligne = fields[cle]
+        assert re.search(r"· \d+ g ·", ligne), ligne
+        assert ligne.rstrip().endswith(("Symétrique", "Ergonomique")), ligne
+
+
+def test_shape_is_not_invented_when_the_mouse_has_no_verified_shape():
+    """Forme « Inconnu » : la ligne s'arrête au pourcentage (aucune mention inventée)."""
+    assert flow.SHAPE_LINE_LABELS.get("Inconnu") is None
+    assert flow.SHAPE_LINE_LABELS == {"Symmetrical": "Symétrique", "Ergonomic": "Ergonomique"}
 
 
 def test_budget_step_proposes_five_modes_including_no_price():

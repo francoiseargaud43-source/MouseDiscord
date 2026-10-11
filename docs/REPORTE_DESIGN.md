@@ -206,7 +206,7 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
 
 - **🎯 Votre recommandation** (en haut) : une ligne descriptive du parcours (prise, thénar, mesures, gamme),
   puis **🥇 le match idéal**, **🥈 l'alternative** et, quand elle existe, **💸 l'économie** — chacune sur une
-  seule ligne « **Nom** · poids · prix · pourcentage du maximum théorique ». Rien d'autre : ni score /40, ni confiance,
+  seule ligne « **Nom** · poids · prix · pourcentage du maximum théorique · forme de coque ». Rien d'autre : ni score /40, ni confiance,
   ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons).
   **Exception (mode « Peu importe le prix », 2026-10-11)** : la ligne garde « Nom · pourcentage » et le prix descend en
   tout petit, suivi des composants documentés (capteur, fréquence, poids) — le prix ne concurrence plus la forme ;
@@ -233,7 +233,8 @@ budget » : la zone de tolérance reste de 2 pts, le classement suit le **score*
 **composants documentés** — capteur (génération), puis MCU, puis switchs, puis fréquence (``components_index``,
 ``utils/selection.py``) —, puis le prix le plus bas ; aucun prix connu n'est exigé, donc les souris sans prix
 redeviennent classables. Le poids documenté est affiché dès la ligne du match idéal et de l'alternative, pour
-comparer deux formes équivalentes d'un coup d'œil. La
+comparer deux formes équivalentes d'un coup d'œil, avec la forme de coque (« Symétrique » / « Ergonomique »)
+tout à droite — le poids et la forme sont les deux critères qui différencient deux souris à score égal. La
 ligne de prix en petit texte (`-#`) rappelle que le montant n'entre pas dans le classement. Aucun barème n'est
 touché : c'est une stratégie de sélection de plus (`utils/selection.py`), comme demandé dans le master prompt.
 

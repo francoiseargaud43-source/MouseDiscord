@@ -109,6 +109,9 @@ SHAPE_GUIDE = {
                 "(une ergonomique basse peut aussi faire l'affaire)."),
 }
 SHAPE_DISPLAY = {"Symmetrical": "symétrique", "Ergonomic": "ergonomique", "Inconnu": "non vérifiée"}
+# Forme affichée en bout de ligne du match idéal / de l'alternative (demande du propriétaire) :
+# « tout à droite », lisible d'un coup d'œil. Forme non vérifiée = rien plutôt qu'une mention inutile.
+SHAPE_LINE_LABELS = {"Symmetrical": "Symétrique", "Ergonomic": "Ergonomique"}
 BUTTON_GUIDE = {
     Grip.PALM: ("hauts",
                 "les doigts reposent à plat : des boutons hauts évitent de tirer sur les tendons."),
@@ -373,10 +376,11 @@ def _components_text(mouse) -> str:
 
 
 def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
-    """Une souris recommandée : nom · poids · prix · pourcentage, sur une ligne. Rien d'autre.
+    """Une souris recommandée : nom · poids · prix · pourcentage · forme, sur une ligne.
 
-    Le poids documenté est mis en avant dès la première ligne (demande du propriétaire,
-    2026-10-11) : il permet de comparer le match idéal et l'alternative d'un coup d'œil. Ni score
+    Le poids documenté et la forme de coque (« Symétrique » / « Ergonomique », tout à droite) sont
+    mis en avant dès la première ligne (demande du propriétaire, 2026-10-11) : ils permettent de
+    comparer le match idéal et l'alternative d'un coup d'œil. Ni score
     brut, ni badge de confiance, ni commentaire : tout cela vit dans les blocs plus bas. Seul le
     mode « Peu importe le prix » ajoute une seconde ligne, en tout petit : le prix (sans effet sur
     ce classement) et les composants documentés, qui départagent les égalités de forme.
@@ -389,6 +393,9 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
     if mode is not BudgetMode.PEU_IMPORTE_PRIX:
         parts.append(_price_text(score))
     parts.append(f"**{compatibility_percent(score)} %**")
+    shape = SHAPE_LINE_LABELS.get(mouse.shape)
+    if shape:
+        parts.append(shape)          # tout à droite : symétrique ou ergonomique
     line = " · ".join(parts)
     if mode is not BudgetMode.PEU_IMPORTE_PRIX:
         return line
