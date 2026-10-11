@@ -185,7 +185,7 @@ def build_parcours() -> Image.Image:
     etapes = [
         ("Accueil — message persistant (public)", flow.banner_embed(), ["🖱️  Start Mouse Shape Finder"], True),
         ("Étape 1/4 — prise", flow.grip_step_embed(), ["Choisissez votre prise…"], False),
-        ("Étape 2/4 — thénar (informatif)", flow.thenar_step_embed(), ["Choisissez la taille de votre thénar…"], False),
+        ("Étape 2/4 — thénar (arrière de la souris)", flow.thenar_step_embed(), ["Choisissez la taille de votre thénar…"], False),
         ("Étape 3/4 — mesures", flow.measure_step_embed(session), ["📏  Saisir mes mesures"], True),
         ("Étape 4/4 — budget", flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
     ]
@@ -206,12 +206,19 @@ def build_resultat() -> Image.Image:
     session.thenar = Thenar.PETITE
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 60
+    resume, details = embeds[0], embeds[1]
+    hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 150
     canvas, draw = nouveau_canvas(hauteur)
-    y = bandeau(draw, PAD, "Résultat — message éphémère (privé, deux embeds)")
-    for embed in embeds:
-        y = draw_embed(canvas, draw, embed, y)
-    y = draw_boutons(draw, y, [("🔗 Liens à venir", False), ("✖️ Fermer", False), ("🔄 Refaire le test", False)])
+    # Écran 1 : le résumé tel qu'il s'affiche (un seul embed, court).
+    y = bandeau(draw, PAD, "Résultat — message éphémère (privé) : le résumé")
+    y = draw_embed(canvas, draw, resume, y)
+    y = draw_boutons(draw, y, [("🔗 Liens à venir", False), ("✖️ Fermer", False),
+                               ("🔄 Refaire le test", False), ("🔍 Détails", False)])
+    # Écran 2 : le même message après un clic sur « 🔍 Détails » (puis « ↩️ Résumé » pour revenir).
+    y = bandeau(draw, y, "Après un clic sur 🔍 Détails : repères, confiance, souris écartées")
+    y = draw_embed(canvas, draw, details, y)
+    y = draw_boutons(draw, y, [("🔗 Liens à venir", False), ("✖️ Fermer", False),
+                               ("🔄 Refaire le test", False), ("↩️ Résumé", False)])
     return canvas
 
 

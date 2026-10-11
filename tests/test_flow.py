@@ -222,19 +222,25 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.ResultsView)
-    main, details = kwargs["embeds"]
+    # Un seul embed à l'écran ; le second (repères, confiance, écartées) est derrière 🔍 Détails.
+    assert len(kwargs["embeds"]) == 1
+    main = kwargs["embeds"][0]
+    details = kwargs["view"].embeds[1]
     fields = fields_of(main)
     top = next(v for k, v in fields.items() if "Match Idéal" in k)
     alt = next(v for k, v in fields.items() if "Alternative" in k)
     assert "Scyrox V6" in top
-    assert "Score : **30/40 — 75 % du maximum théorique**" in top
+    assert "**75 %** du maximum théorique" in top           # le pourcentage parle plus que le score brut
+    assert "Score : **" not in top and "coque" not in top  # aucun détail technique dans le résumé
     assert "Confiance faible" in top  # Scyrox : dimensions « owner_spec_unverified »
+    assert "**75 %** du maximum théorique" in alt           # l'alternative porte aussi son pourcentage
     assert "Z1" in alt  # performances documentées différentes : alternative pertinente
     assert "Pourquoi ce choix" in " ".join(fields)
     assert "ni une probabilité" in main.footer.text
-    # Second embed : repères de taille, jamais de points internes.
+    # Second embed : repères de taille et score complet, jamais de points internes.
     assert "Repères de taille" in details.title
-    assert "118.8" in details.description and "59.6" in details.description
+    assert "118,8" in details.description and "59,6" in details.description
+    assert "Score : **30/40 — 75 % du maximum théorique**" in details.description
 
 
 @pytest.mark.asyncio
@@ -246,11 +252,42 @@ async def test_results_show_pending_candidates_separately():
     select_values(view.children[0], BudgetMode.HAUT_DE_GAMME.value)
     await view.children[0].callback(inter)
     fields = fields_of(main_embed_of(inter))
-    pending = next(v for k, v in fields.items() if "À vérifier" in k)
+    pending = next(v for k, v in fields.items() if "Non classées" in k)
     assert "écartées du classement" in pending and "pts" not in pending
-    assert "matrice_profils.md" in pending
+    assert "docs/" not in pending  # le chemin technique vit dans l'onglet Détails
+    details = inter.response.edit_message.call_args.kwargs["view"].embeds[1]
+    detail_text = " ".join(f.value for f in details.fields)
+    assert "matrice_profils.md" in detail_text and "pts" not in detail_text
     top = next(v for k, v in fields.items() if "Match Idéal" in k)
     assert "Phantom" not in top
+
+
+@pytest.mark.asyncio
+async def test_details_button_switches_between_summary_and_technical_view():
+    """Le résumé reste court ; 🔍 Détails affiche le second embed, ↩️ Résumé revient en arrière."""
+    store = SessionStore(ttl_seconds=600)
+    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    inter = make_interaction(store=store)
+    view = flow.BudgetView(s.session_id)
+    select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
+    await view.children[0].callback(inter)
+    results = inter.response.edit_message.call_args.kwargs["view"]
+    summary = inter.response.edit_message.call_args.kwargs["embeds"][0]
+    assert len(results.embeds) == 2 and "Repères de taille" in results.embeds[1].title
+    summary_text = str(summary.to_dict())
+    assert "coque − 3 mm" not in summary_text and "(prix non vérifié)" not in summary_text
+    button = next(c for c in results.children if getattr(c, "label", None) == "Détails")
+    ouvrir = make_interaction(store=store)
+    await button.callback(ouvrir)
+    shown = ouvrir.response.edit_message.call_args.kwargs["embeds"]
+    assert len(shown) == 2 and "Repères de taille" in shown[1].title
+    detail_text = str(shown[1].to_dict())
+    assert "🔎 Confiance" in detail_text and "Score : **" in detail_text  # les explications vivent ici
+    assert button.label == "Résumé"
+    fermer = make_interaction(store=store)
+    await button.callback(fermer)
+    assert len(fermer.response.edit_message.call_args.kwargs["embeds"]) == 1
+    assert button.label == "Détails"
 
 
 @pytest.mark.asyncio

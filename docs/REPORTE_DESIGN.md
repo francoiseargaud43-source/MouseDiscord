@@ -190,3 +190,15 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
    simulés : les emojis y apparaissent sous forme de carrés (police de la machine de génération), pas dans Discord.
 6. **Aucune vérification sur un serveur Discord réel** : les rendus mobile/desktop restent à contrôler par le
    propriétaire (`docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`).
+
+## 9. Résultat : un écran court, un bouton « Détails » (2026-10-11)
+
+Le résultat ne s'affiche plus en deux embeds superposés (trop dense sur mobile) :
+
+- **écran principal** : souris + prix, **pourcentage du maximum théorique**, badge de confiance, alternative
+  (avec son propre pourcentage), raison du choix en une ligne, nombre de souris non classées ;
+- **bouton 🔍 Détails** (dans le message privé, puis ↩️ Résumé pour revenir) : repères de taille, score
+  complet, explication de la confiance, liste des souris écartées et leurs raisons, note thénar.
+
+Aucune information n'est perdue : tout ce qui a été retiré du résumé est dans cet onglet. Les montants et
+mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).

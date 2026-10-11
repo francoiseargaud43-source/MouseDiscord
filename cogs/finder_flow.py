@@ -67,7 +67,7 @@ COLOR_EXPIRED = discord.Color.orange()           # seule exception à la charte 
 
 SCORE_DISCLAIMER = (
     "Score géométrique provisoire : ni une probabilité d'achat ni une validation biomécanique. "
-    "Largeur de prise estimée (coque − 3 mm) tant qu'elle n'est pas mesurée."
+    "Données, limites et souris écartées : bouton 🔍 Détails."
 )
 PENDING_DOC_REFERENCE = "docs/audit/matrice_profils.md"
 BUTTON_LABEL_MAX = 80
@@ -78,6 +78,17 @@ ALTERNATIVE_WIDTH_DELTA_MM = 2.0     # largeur de prise sensiblement différente
 ALTERNATIVE_LENGTH_DELTA_MM = 4.0    # longueur sensiblement différente
 
 CONFIDENCE_BADGES = {"élevée": "🟢", "moyenne": "🟡", "faible": "🔴"}
+
+# Affichage : noms français des positions de bosse et des hauteurs de boutons (le catalogue garde
+# ses valeurs anglaises, seules les phrases montrées à l'utilisateur sont traduites).
+HUMP_DISPLAY = {
+    "Front": "à l'avant",
+    "Mid-Front": "au milieu-avant",
+    "Mid": "au milieu",
+    "Mid-Rear": "au milieu-arrière",
+    "Rear": "à l'arrière",
+}
+BUTTON_DISPLAY = {"High": "hauts", "Mid": "médians", "Low": "bas"}
 
 GRIP_OPTIONS = (
     (Grip.PALM, "Palm Grip", "Paume posée sur la coque"),
@@ -154,9 +165,14 @@ def _image(embed: discord.Embed, key: str) -> discord.Embed:
     return embed
 
 
+def _num(value: float, decimals: int = 0) -> str:
+    """Nombre à la française : virgule décimale, sans zéro inutile (« 118,8 », « 59,95 », « 127 »)."""
+    return (f"{value:.{decimals}f}" if decimals else f"{value:g}").replace(".", ",")
+
+
 def _mm(value: float) -> str:
     """« 127 mm » plutôt que « 127.0 mm » (lisibilité mobile)."""
-    return f"{value:g} mm"
+    return f"{_num(value)} mm"
 
 
 def _size_text(mouse) -> str:
@@ -180,7 +196,7 @@ def _step_title(index: int, session_or_grip, label: str) -> str:
 
 def _budget_text(session: FinderSession) -> str:
     if session.budget_mode is BudgetMode.CUSTOM and session.max_budget_eur is not None:
-        return f"Budget max {session.max_budget_eur:.2f} €"
+        return f"Budget max {_num(session.max_budget_eur, 2)} €"
     if session.budget_mode is not None:
         return BUDGET_RECAP_LABELS.get(session.budget_mode, BUDGET_LABELS[session.budget_mode])
     return "—"
@@ -194,28 +210,40 @@ def _recap(session: FinderSession) -> str:
     if session.thenar:
         parts.append(f"🖐️ Thénar **{THENAR_LABELS[session.thenar]}**")
     if session.hand_length_mm and session.hand_width_mm:
-        parts.append(f"📏 **{session.hand_length_mm:g} × {session.hand_width_mm:g} mm**")
+        parts.append(f"📏 **{_num(session.hand_length_mm)} × {_num(session.hand_width_mm)} mm**")
     if session.budget_mode is not None:
         parts.append(f"🎚️ **{_budget_text(session)}**")
     return "  •  ".join(parts)
 
 
-def _price_text(score: MouseScore) -> str:
+def _price_text(score: MouseScore, *, verified_hint: bool = False) -> str:
+    """Prix lisible ; le statut « non vérifié » n'apparaît que dans l'onglet Détails."""
     mouse = score.mouse
     if mouse.price_eur is None:
         return "prix non renseigné"
-    text = f"{mouse.price_eur:.2f} €"
-    if mouse.price_status != "verified":
+    text = f"{_num(mouse.price_eur, 2)} €"
+    if verified_hint and mouse.price_status != "verified":
         text += " (prix non vérifié)"
     return text
 
 
 def _confidence_line(score: MouseScore) -> str:
-    """Badge de confiance compact (jamais une couleur seule) : le détail est expliqué dans la matrice."""
+    """Badge de confiance en trois mots (jamais une couleur seule) : explication dans l'onglet Détails."""
     level = score.confidence or "faible"
     badge = CONFIDENCE_BADGES.get(level, "🔴")
-    short = {"élevée": "", "moyenne": " (largeur estimée)", "faible": " (source unique)"}.get(level, "")
-    return f"{badge} Confiance {level}{short}"
+    return f"{badge} Confiance {level}"
+
+
+def _confidence_detail(score: MouseScore) -> str:
+    """Pourquoi cette confiance (onglet Détails) : jamais affiché dans le résumé."""
+    level = score.confidence or "faible"
+    badge = CONFIDENCE_BADGES.get(level, "🔴")
+    reason = {
+        "élevée": "dimensions vérifiées et largeur de prise mesurée",
+        "moyenne": "dimensions vérifiées, largeur de prise encore estimée (coque − 3 mm, provisoire)",
+        "faible": "données d'une seule source ou compatibilité non confirmée",
+    }.get(level, "données partielles")
+    return f"{badge} **{level.capitalize()}** — {reason}."
 
 
 def _match_summary(score: MouseScore) -> str:
@@ -243,11 +271,13 @@ def _match_summary(score: MouseScore) -> str:
     if mouse.hump_position != "Inconnu" and score.grip is not Grip.FINGERTIP:
         # En Fingertip, la bosse est ignorée par le barème : ne pas la présenter comme un défaut.
         (good if score.breakdown.hump_pts > 0 else weak).append(
-            f"bosse {mouse.hump_position} " + ("adaptée" if score.breakdown.hump_pts > 0 else "moins adaptée")
+            f"bosse {HUMP_DISPLAY.get(mouse.hump_position, mouse.hump_position)} "
+            + ("adaptée" if score.breakdown.hump_pts > 0 else "moins adaptée")
         )
     if mouse.button_height != "Inconnu":
         (good if score.breakdown.button_pts > 0 else weak).append(
-            f"boutons {mouse.button_height} " + ("adaptés" if score.breakdown.button_pts > 0 else "moins adaptés")
+            f"boutons {BUTTON_DISPLAY.get(mouse.button_height, mouse.button_height)} "
+            + ("adaptés" if score.breakdown.button_pts > 0 else "moins adaptés")
         )
     sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
     if weak:
@@ -258,12 +288,10 @@ def _match_summary(score: MouseScore) -> str:
 
 
 def _candidate_text(score: MouseScore) -> str:
-    """Match idéal en trois lignes courtes : souris/prix, score unique + confiance, résumé humain."""
+    """Match idéal en deux lignes : souris + prix, puis pourcentage et confiance (le reste : 🔍 Détails)."""
     return (
-        f"**{score.mouse.label}** · {_size_text(score.mouse)} · {_price_text(score)}\n"
-        f"Score : **{score.total}/{MAX_SCORE} — {compatibility_percent(score)} % du maximum théorique** · "
-        f"{_confidence_line(score)}\n"
-        f"{_match_summary(score)}"
+        f"**{score.mouse.label}** · {_price_text(score)}\n"
+        f"**{compatibility_percent(score)} %** du maximum théorique · {_confidence_line(score)}"
     )[:1024]
 
 
@@ -303,11 +331,33 @@ def _alternative_is_relevant(top: MouseScore | None, alt: MouseScore | None) -> 
     )
 
 
+def _alternative_reason_short(top: MouseScore, alt: MouseScore) -> str:
+    """Différence utile en quelques mots (la version chiffrée reste dans l'onglet Détails)."""
+    if alt.total == top.total:
+        # Égalité parfaite : la gamme a choisi le moins cher, l'alternative est donc plus chère.
+        return "Même score, un peu plus chère."
+    if (top.mouse.price_eur and alt.mouse.price_eur
+            and alt.mouse.price_eur <= top.mouse.price_eur * ALTERNATIVE_PRICE_RATIO):
+        saving = round((1 - alt.mouse.price_eur / top.mouse.price_eur) * 100)
+        return f"Environ {saving} % moins chère."
+    if performance_index(alt.mouse) > performance_index(top.mouse):
+        return "Performances documentées supérieures."
+    if (top.mouse.hump_position != alt.mouse.hump_position
+            or top.mouse.button_height != alt.mouse.button_height):
+        return "Forme différente de celle du match idéal."
+    return "Dimensions différentes."
+
+
 def _alternative_text(top: MouseScore | None, alt: MouseScore | None) -> str:
+    """Alternative en deux lignes : souris + prix, puis pourcentage, confiance et différence utile."""
     if not _alternative_is_relevant(top, alt):
         return "Aucune alternative pertinente dans la gamme choisie (mêmes géométrie, prix et performances documentées)."
     assert alt is not None and top is not None
-    return f"**{alt.mouse.label}** · {_price_text(alt)}\n{_alternative_reason(top, alt)}"[:1024]
+    return (
+        f"**{alt.mouse.label}** · {_price_text(alt)}\n"
+        f"**{compatibility_percent(alt)} %** du maximum théorique · {_confidence_line(alt)}\n"
+        f"{_alternative_reason_short(top, alt)}"
+    )[:1024]
 
 
 def _pending_reason(score: MouseScore) -> str:
@@ -437,11 +487,12 @@ def _target_line(session: FinderSession) -> str:
     assert session.grip is not None
     ranges = compute_target_ranges(hand, session.grip)
     length = (
-        f"jusqu'à {ranges.length_max:.1f} mm"
+        f"jusqu'à {_num(ranges.length_max, 1)} mm"
         if session.grip is Grip.FINGERTIP
-        else f"{ranges.length_min:.1f}–{ranges.length_max:.1f} mm"
+        else f"{_num(ranges.length_min, 1)}–{_num(ranges.length_max, 1)} mm"
     )
-    return f"Longueur cible : **{length}** · largeur de prise : **{ranges.width_min:.1f}–{ranges.width_max:.1f} mm**."
+    return (f"Longueur cible : **{length}** · largeur de prise : "
+            f"**{_num(ranges.width_min, 1)}–{_num(ranges.width_max, 1)} mm**.")
 
 
 def result_image_key(winner: MouseScore | None, grip: Grip | None) -> str | None:
@@ -489,7 +540,12 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         main.add_field(name="🥈 L'Alternative", value=_alternative_text(top, alt), inline=False)
         main.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
         if selection.pending:
-            main.add_field(name="⏳ À vérifier (non classées)", value=_pending_text(selection.pending), inline=False)
+            main.add_field(
+                name="⏳ Non classées",
+                value=(f"**{len(selection.pending)}** souris écartées du classement, faute de données vérifiées.\n"
+                       "Détail souris par souris : bouton **🔍 Détails**."),
+                inline=False,
+            )
         image_key = result_image_key(top, session.grip)
         if image_key:
             main = _image(main, image_key)
@@ -498,15 +554,24 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     embeds = [main]
 
     if selection.ranked and session.grip is not None:
+        top = selection.ranked[0]
         details = discord.Embed(title="📐 Repères de taille", color=COLOR)
         # Autoportant : le rappel de la prise et des mesures permet de lire cet embed seul (partage, capture).
-        details.description = f"{_recap(session)}\n{_target_line(session)}"
+        details.description = (
+            f"{_recap(session)}\n{_target_line(session)}\n"
+            f"Score : **{top.total}/{MAX_SCORE} — {compatibility_percent(top)} % du maximum théorique**.\n"
+            "Barème : longueur, largeur de prise (ajustement thénar borné à ±2), compatibilité de prise, "
+            "bosse, boutons."
+        )
         details.add_field(
-            name="🧮 Ce que fait le score",
-            value="Score sur 40 : longueur, largeur de prise (ajustement thénar borné à ±2), "
-                  "compatibilité de prise, bosse, boutons.",
+            name="🧩 Le match en clair",
+            value=(f"{_size_text(top.mouse)} · {_price_text(top, verified_hint=True)}\n"
+                   f"{_match_summary(top)}")[:1024],
             inline=False,
         )
+        details.add_field(name="🔎 Confiance", value=_confidence_detail(top), inline=False)
+        if selection.pending:
+            details.add_field(name="⏳ Souris écartées", value=_pending_text(selection.pending), inline=False)
         if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
             details.add_field(
                 name="🖐️ Thénar Petite",
@@ -778,21 +843,22 @@ async def _show_results(interaction: discord.Interaction, session: FinderSession
     selection = compute_selection(session)
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
     owner_id = session.user_id
+    embeds = results_embeds(session, selection)
     # Minimisation : les réponses ne servent plus une fois le résultat produit.
     interaction.client.sessions.discard(session.session_id)
-    await _show_private(
-        interaction,
-        embeds=results_embeds(session, selection),
-        view=ResultsView(owner_id, selection.ranked, links),
-    )
+    # À l'écran : le résumé seul. Les repères, la confiance et les souris écartées sont dans 🔍 Détails.
+    await _show_private(interaction, embeds=embeds[:1], view=ResultsView(owner_id, selection.ranked, links, embeds))
 
 
 class ResultsView(FinderView):
     """Boutons du résultat privé : achats réels, Liens à venir si aucun lien, Fermer, Refaire (propriétaire)."""
 
-    def __init__(self, owner_id: int, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str]) -> None:
+    def __init__(self, owner_id: int, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str],
+                 embeds: list[discord.Embed] | None = None) -> None:
         super().__init__()
         self.owner_id = owner_id
+        self.embeds = list(embeds or [])   # [résumé, détails] — le résumé seul est envoyé au départ
+        self.showing_details = False
         purchases = 0
         for score in ranked[:2]:
             url = links.get(score.mouse.id)
@@ -826,6 +892,25 @@ class ResultsView(FinderView):
         restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄", row=1)
         restart.callback = self._restart
         self.add_item(restart)
+        # Bascule résumé <-> détails : le second embed ne s'affiche que si l'utilisateur le demande.
+        self.details_button: discord.ui.Button | None = None
+        if len(self.embeds) > 1:
+            self.details_button = discord.ui.Button(
+                label="Détails", style=discord.ButtonStyle.secondary, emoji="🔍", row=1
+            )
+            self.details_button.callback = self._toggle_details
+            self.add_item(self.details_button)
+
+    async def _toggle_details(self, interaction: discord.Interaction) -> None:
+        """Affiche (ou masque) l'embed technique, toujours dans le message privé d'origine."""
+        if not await self._check_owner(interaction):
+            return
+        self.showing_details = not self.showing_details
+        if self.details_button is not None:
+            self.details_button.label = "Résumé" if self.showing_details else "Détails"
+            self.details_button.emoji = "↩️" if self.showing_details else "🔍"
+        embeds = self.embeds if self.showing_details else self.embeds[:1]
+        await _show_private(interaction, embeds=embeds, view=self)
 
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.owner_id:
