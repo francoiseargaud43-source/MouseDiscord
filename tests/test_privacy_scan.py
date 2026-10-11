@@ -34,10 +34,10 @@ def test_scanner_really_inspects_interaction_calls():
         if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
         and n.func.attr in {"send_message", "defer", "edit_message", "send"}
     ]
-    # Inventaire exact des 7 appels sensibles actuels : StartView.start, _send_ephemeral (x2 : send_message
-    # et followup.send), _show_private (edit + repli send_message), _close, _restart.
+    # Inventaire exact des 5 appels sensibles actuels : StartView.start, _send_ephemeral (x2 : send_message
+    # et followup.send), _show_private (edit + repli send_message).
     # Toute évolution de ce nombre doit être relue par rapport à EDIT_ALLOWED_FUNCTIONS.
-    assert len(sensitive_calls) == 7
+    assert len(sensitive_calls) == 5
 
 
 # ---------------------------------------------------------------------------

@@ -1033,12 +1033,11 @@ grep -q IMAGES_BASE_URL config.py             && echo "OK   config.py (IMAGES_BA
 grep -q build_image_url utils/assets.py       && echo "OK   utils/assets.py (résolution)"   || echo "ANCIEN utils/assets.py"
 grep -q step2_thenar assets/images.json       && echo "OK   assets/images.json (clés)"      || echo "ANCIEN assets/images.json"
 grep -q thenar_step_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (4 étapes)" || echo "ANCIEN cogs/finder_flow.py"
-grep -q RESULT_CLOSE_ID cogs/finder_flow.py    && echo "OK   cogs/finder_flow.py (boutons du résultat)" || echo "ANCIEN cogs/finder_flow.py (boutons)"
-grep -q "ResultsView.persistent" bot.py        && echo "OK   bot.py (vue persistante des boutons)"      || echo "ANCIEN bot.py (boutons du résultat)"
+grep -q "Comment lire ce résultat" cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (résultat épuré)" || echo "ANCIEN cogs/finder_flow.py (résultat)"
 ```
 
-Les **huit lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
-du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`, `bot.py`) avant de démarrer le service. Le contrôle
+Les **sept lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
+du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
 `tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
 ### 12.9 Mise à jour du 2026-10-11 : catalogue 26 souris, prix en euros, liens d'achat (raccourci)
@@ -1050,8 +1049,7 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 
 | Élément | Nature | Redémarrage nécessaire ? |
 |---|---|---|
-| `bot.py` | Code : enregistre la vue persistante — « Fermer » et « Refaire » répondent même après un redémarrage | **Oui** |
-| `cogs/finder_flow.py` | Code : parcours, résultat court + bouton 🔍 Détails, note thénar, boutons à identifiants stables | **Oui** |
+| `cogs/finder_flow.py` | Code : parcours, résultat épuré (recommandation puis « ❓ Comment lire ce résultat »), note thénar, boutons d'achat uniquement | **Oui** |
 | `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
 | `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
@@ -1060,13 +1058,12 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 `config.py`, les autres fichiers de `utils/`, `assets/` et `requirements.txt` sont **inchangés** :
 inutile de les retransférer.
 
-**2. FileZilla — sept fichiers à glisser dans `~/MouseDiscord`**
+**2. FileZilla — six fichiers à glisser dans `~/MouseDiscord`**
 
 Ouvrez le dossier téléchargé à gauche, `~/MouseDiscord` à droite, puis glissez (conflits : **Écraser**,
 jamais « Synchroniser les répertoires ») :
 
 ```
-bot.py
 cogs/finder_flow.py
 utils/matcher.py
 utils/models.py
@@ -1096,10 +1093,12 @@ ls -lt ~/admin/logs/jobs/ | head  # le journal du jour confirme le redémarrage
 
 Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'accueil n'ont pas changé.
 
-> **Boutons « Fermer » / « Refaire »** : ce transfert corrige aussi le cas « AzeMouse n'a pas répondu à temps ».
-> `bot.py` enregistre désormais une vue **persistante** : ces deux boutons (et 🔍 Détails) continuent de répondre
-> même après un redémarrage du bot. Un résultat affiché **avant** la mise à jour garde ses anciens boutons :
-> relancez un test pour obtenir un message à jour.
+> **Résultat** : « ✖️ Fermer », « 🔄 Refaire le test » et « 🔍 Détails » ont été **retirés** (2026-10-11) : ces
+> boutons interactifs pouvaient cesser de répondre après un redémarrage du bot (« AzeMouse n'a pas répondu à
+> temps »). Le résultat ne porte plus que les boutons d'achat — des **liens** gérés par Discord, qui fonctionnent
+> toujours — et le mode d'emploi du score (« ❓ Comment lire ce résultat ») s'affiche dans le même message, plus
+> bas. Un résultat affiché **avant** la mise à jour garde ses anciens boutons : relancez un test pour obtenir un
+> message à jour.
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 

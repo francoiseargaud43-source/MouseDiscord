@@ -6,9 +6,6 @@ Ces tests ne remplacent PAS une validation sur serveur Discord (voir docs/audit/
 """
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
-import discord
 import pytest
 
 from cogs import finder_flow as flow
@@ -96,7 +93,7 @@ async def test_p02_p03_p06_full_path_is_private_and_result_goes_to_participant_o
     # P06 : le résultat n'est édité que dans l'interaction du participant
     assert result.response.edit_message.await_count == 1
     assert store.get(sid, 1) is None  # session consommée après affichage du résultat
-    assert "Match Idéal" in embed_text(result.response.edit_message.call_args.kwargs["embeds"][0])
+    assert "match idéal" in embed_text(result.response.edit_message.call_args.kwargs["embeds"][0])
     # Un second participant n'a rien reçu : vérifié en P07 et P08.
 
 
@@ -209,17 +206,6 @@ async def test_p08_intruder_cannot_act_on_any_step_of_another_session():
     assert session.grip is before and session.hand_length_mm is None and session.budget_mode is None
 
 
-@pytest.mark.asyncio
-async def test_p08_intruder_cannot_use_results_buttons_of_another_user():
-    store = SessionStore(ttl_seconds=600)
-    intruder = make_interaction(user_id=2, store=store)
-    results = flow.ResultsView(1, [], {})
-    await results._close(intruder)
-    await results._restart(intruder)
-    intruder.response.edit_message.assert_not_awaited()
-
-
-# ---------------------------------------------------------------------------
 # P09 : une nouvelle recherche ne modifie pas le parcours d'un autre utilisateur
 # ---------------------------------------------------------------------------
 @pytest.mark.asyncio
@@ -270,10 +256,9 @@ async def test_p11_persistent_panel_works_after_restart_in_fresh_bot_instance():
     new_bot = MouseBot()                                    # nouveau processus : mémoire vide
     await new_bot.setup_hook()
     try:
+        # Seul le panneau public est persistant : le résultat ne porte que des liens d'achat
+        # (composants gérés par Discord), il n'a donc plus rien à réenregistrer.
         assert any(isinstance(v, flow.StartView) for v in new_bot.persistent_views)
-        assert any(
-            isinstance(v, flow.ResultsView) and v.is_persistent() for v in new_bot.persistent_views
-        ), "les boutons Fermer/Refaire doivent survivre au redémarrage"
         assert len(new_bot.sessions) == 0
         # Le bouton du panneau répond (même custom_id, enregistré au démarrage)
         inter = make_interaction(user_id=1, store=new_bot.sessions)
@@ -290,89 +275,23 @@ async def test_p11_persistent_panel_works_after_restart_in_fresh_bot_instance():
         await new_bot.close()
 
 
-# ---------------------------------------------------------------------------
-# P12 : la fermeture ne touche que le résultat de son propriétaire, et ne modifie aucune session
+# P12 : le résultat ne porte aucun composant interactif et ne touche aucune session
 # ---------------------------------------------------------------------------
 @pytest.mark.asyncio
-async def test_p12_close_affects_only_owner_result_and_no_session():
+async def test_p12_result_has_no_interactive_component_and_touches_no_session():
     store = SessionStore(ttl_seconds=600)
     other = store.start(2)
-    intruder = make_interaction(user_id=2, store=store)
-    results = flow.ResultsView(1, [], {})
-    await results._close(intruder)
-    intruder.response.edit_message.assert_not_awaited()
-    owner = make_interaction(user_id=1, store=store)
-    await results._close(owner)
-    assert owner.response.edit_message.call_args.kwargs["view"] is None
-    assert store.lookup(other.session_id, 2)[1] == LOOKUP_OK   # la session d'un autre n'est pas touchée
-
-
-@pytest.mark.asyncio
-async def test_results_buttons_still_work_after_session_was_discarded():
-    store = SessionStore(ttl_seconds=600)
     _, sid = await run_start(store, 1)
     await choose_grip(store, 1, sid, "palm")
     await submit_measures(store, 1, sid, "180", "90")
     shown = await choose_budget(store, 1, sid, BudgetMode.QUALITE_PRIX)
-    assert store.lookup(sid, 1)[1] != LOOKUP_OK              # session supprimée après affichage
-    results_view = shown.response.edit_message.call_args.kwargs["view"]
-    close = make_interaction(user_id=1, store=store)
-    await results_view._close(close)                         # Fermer : fonctionne
-    close.response.edit_message.assert_awaited_once()
-    restart = make_interaction(user_id=1, store=store)
-    await results_view._restart(restart)                     # Refaire le test : fonctionne
-    assert isinstance(restart.response.edit_message.call_args.kwargs["view"], flow.GripView)
-
-
-@pytest.mark.asyncio
-async def test_p13_result_buttons_always_answer_even_when_the_message_is_gone():
-    """Message supprimé ou trop ancien : réponse privée de repli, jamais le silence (« n'a pas répondu à temps »)."""
-    def gone(*args, **kwargs):
-        raise discord.HTTPException(MagicMock(), "message inconnu")
-
-    store = SessionStore(ttl_seconds=600)
-    close = make_interaction(user_id=1, store=store)
-    close.response.edit_message = AsyncMock(side_effect=gone)
-    await flow.ResultsView(1, [], {})._close(close)
-    assert "Résultat fermé" in close.response.send_message.call_args.args[0]
-    assert_private(close)
-
-    restart = make_interaction(user_id=1, store=store)
-    restart.response.edit_message = AsyncMock(side_effect=gone)
-    await flow.ResultsView(1, [], {})._restart(restart)
-    assert "n'existe plus" in restart.response.send_message.call_args.args[0]
-    assert_private(restart)
-
-
-# ---------------------------------------------------------------------------
-# P13 : les boutons du résultat répondent même quand la vue d'origine n'existe plus
-# (vue persistante enregistrée au démarrage : « Fermer » ferme, « Refaire » relance, Détails explique)
-# ---------------------------------------------------------------------------
-@pytest.mark.asyncio
-async def test_p13_persistent_result_view_closes_and_restarts_without_the_original_view():
-    persistent = flow.ResultsView.persistent()
-    assert persistent.is_persistent()
-
-    store = SessionStore(ttl_seconds=600)
-    close = make_interaction(user_id=1, store=store)
-    await persistent._close(close)
-    assert close.response.edit_message.call_args.kwargs["view"] is None
-    assert flow.RESULT_CLOSED_MESSAGE in close.response.edit_message.call_args.kwargs["content"]
-
-    restart = make_interaction(user_id=1, store=store)
-    await persistent._restart(restart)
-    view = restart.response.edit_message.call_args.kwargs["view"]
-    assert isinstance(view, flow.GripView)
-    assert store.lookup(view.children[0].session_id, 1)[1] == LOOKUP_OK
-
-
-@pytest.mark.asyncio
-async def test_p13_persistent_result_view_explains_missing_details_instead_of_staying_mute():
-    persistent = flow.ResultsView.persistent()
-    inter = make_interaction(user_id=1)
-    await persistent._toggle_details(inter)
-    assert "Détails indisponibles" in inter.response.send_message.call_args.args[0]
-    assert_private(inter)
+    assert_private(shown)
+    view = shown.response.edit_message.call_args.kwargs["view"]
+    assert isinstance(view, flow.ResultsView)
+    assert view.timeout is None
+    for child in view.children:   # liens d'achat, ou rappel désactivé : rien à cliquer côté bot
+        assert getattr(child, "url", None) or child.disabled
+    assert store.lookup(other.session_id, 2)[1] == LOOKUP_OK   # la session d'un autre est intacte
 
 
 # ---------------------------------------------------------------------------
@@ -424,17 +343,18 @@ async def test_p09_old_components_are_refused_and_never_modify_new_session():
 
 
 @pytest.mark.asyncio
-async def test_p09_old_results_buttons_do_not_affect_new_session():
+async def test_p09_old_results_carry_no_interactive_button_to_affect_a_new_session():
+    """Un ancien résultat ne peut plus rien déclencher : il n'a que des liens (ou « Liens à venir »)."""
     store = SessionStore(ttl_seconds=600)
     _, old_sid = await run_start(store, 1)
     await choose_grip(store, 1, old_sid, "palm")
     await submit_measures(store, 1, old_sid, "180", "90")
     shown = await choose_budget(store, 1, old_sid, BudgetMode.QUALITE_PRIX)
-    old_results = shown.response.edit_message.call_args.kwargs["view"]
-    # Nouveau parcours de l'utilisateur 1, puis clic sur « Fermer » du résultat précédent
+    view = shown.response.edit_message.call_args.kwargs["view"]
+    for child in view.children:
+        assert getattr(child, "url", None) or child.disabled, "composant interactif inattendu"
+
     _, new_sid = await run_start(store, 1)
     await choose_grip(store, 1, new_sid, "claw")
-    close = make_interaction(user_id=1, store=store)
-    await old_results._close(close)     # le résultat appartient au même utilisateur : fermeture autorisée
     assert store.get(new_sid, 1).grip is Grip.CLAW   # la nouvelle session n'est pas touchée
     assert store.lookup(new_sid, 1)[1] == LOOKUP_OK

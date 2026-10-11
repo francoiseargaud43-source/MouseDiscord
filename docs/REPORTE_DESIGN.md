@@ -191,34 +191,32 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
 6. **Aucune vérification sur un serveur Discord réel** : les rendus mobile/desktop restent à contrôler par le
    propriétaire (`docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`).
 
-## 9. Résultat : un écran court, un bouton « Détails » (2026-10-11)
+## 9. Résultat : la recommandation d'abord, l'explication plus bas (2026-10-11)
 
-Le résultat ne s'affiche plus en deux embeds superposés (trop dense sur mobile) :
+Le message privé ne montre plus ni score, ni badge de confiance, ni repères de taille en premier niveau :
 
-- **écran principal** : souris + prix, **pourcentage du maximum théorique**, badge de confiance, alternative
-  (avec son propre pourcentage), raison du choix en une ligne, nombre de souris non classées ;
-- **bouton 🔍 Détails** (dans le message privé, puis ↩️ Résumé pour revenir) : repères de taille, score
-  complet, explication de la confiance, liste des souris écartées et leurs raisons, note thénar.
+- **🎯 Votre recommandation** (en haut) : une ligne descriptive du parcours (prise, thénar, mesures, gamme),
+  puis **🥇 le match idéal**, **🥈 l'alternative** et, quand elle existe, **💸 l'économie** — chacune sur une
+  seule ligne « **Nom** · prix · pourcentage du maximum théorique ». Rien d'autre : ni score /40, ni confiance,
+  ni détail de géométrie, et aucune liste de souris écartées ;
+- **❓ Comment lire ce résultat** (plus bas dans le même message) : repères de taille, barème sur 40 points,
+  « pourquoi ce choix », confiance et, si besoin, note thénar.
 
-Aucune information n'est perdue : tout ce qui a été retiré du résumé est dans cet onglet. Les montants et
-mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).
+Les trois rôles sont choisis dans le classement du mode, sans jamais recalculer un score : le match idéal est la
+tête du classement ; l'alternative est la souris qui correspond le mieux au profil, en préférant une souris un
+peu moins chère (son pourcentage sert sinon à faire accepter un léger surcoût) ; l'économie n'apparaît que si une
+souris reste dans la zone de compatibilité du mode (tolérance `TOLERANCE_BY_MODE`) tout en étant vraiment moins
+chère que les deux autres. Les montants et mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).
 
-## 11. Boutons « Fermer » / « Refaire » : une réponse, toujours (2026-10-11)
+## 11. Boutons « Fermer » / « Refaire » / « Détails » : retirés (2026-10-11)
 
-Signalement du propriétaire : sur le bot déployé, « 🔄 Refaire le test » et « ✖️ Fermer » ne répondaient plus
-(« AzeMouse n'a pas répondu à temps »), alors que les liens d'achat fonctionnaient. Ces boutons étaient des
-composants ordinaires : au redémarrage du bot (ou après expiration de la vue), Discord leur envoyait bien
-l'interaction, mais plus personne ne la traitait — d'où le silence côté utilisateur.
+Sur le bot déployé, « 🔄 Refaire le test » et « ✖️ Fermer » ne répondaient plus (« AzeMouse n'a pas répondu à
+temps ») : après un redémarrage du bot ou l'expiration de la vue, Discord envoyait bien l'interaction, mais plus
+personne ne la traitait. Une première correction les a rendus persistants (identifiants fixes + vue enregistrée au
+démarrage) ; le propriétaire a ensuite demandé de les retirer purement et simplement (« juste retire les »).
 
-Correctif, sans changer le comportement visible en marche normale :
-
-- les trois boutons du résultat portent des identifiants **stables et fixes** (`mouse_finder:result:close`,
-  `:restart`, `:details`), au lieu d'identifiants tirés au hasard ;
-- `bot.py` enregistre au démarrage une vue **persistante** sans données (`ResultsView.persistent()`) ayant ces
-  identifiants : « Fermer » ferme, « Refaire » relance, et 🔍 Détails explique que le détail technique n'est plus
-  disponible pour un résultat antérieur au redémarrage (aucun message n'est jamais laissé sans réponse) ;
-- en cas de message déjà supprimé, la fermeture et la relance répondent par un message privé de repli, pour ne
-  jamais laisser Discord afficher « n'a pas répondu à temps ».
-
-Un résultat affiché avant cette mise à jour conserve ses anciens boutons : il suffit de relancer un test pour
-obtenir un message à jour.
+Conséquence : le résultat ne porte plus **aucun** bouton interactif. Il ne reste que les boutons d'achat — des
+liens (`discord.ui.Button(url=…)`) gérés par Discord, qui fonctionnent toujours, même si le bot est arrêté, sans
+aucune interaction à traiter — ou, à défaut de lien, un unique rappel désactivé « 🔗 Liens à venir ». Le message
+se ferme avec la croix du client Discord et un nouveau test se lance depuis le panneau public : plus rien du
+résultat ne peut rester muet.

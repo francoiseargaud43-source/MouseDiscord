@@ -32,9 +32,7 @@ from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH
 from utils.assets import load_image_urls
 from utils.catalog import load_catalog, load_commercial_links
 from utils.matcher import (
-    LENGTH_PTS_IN_RANGE,
     MAX_SCORE,
-    WIDTH_PTS_IN_RANGE,
     MouseScore,
     compatibility_percent,
     compute_target_ranges,
@@ -49,23 +47,14 @@ from utils.models import (
     HandMeasure,
     Thenar,
 )
-from utils.selection import Selection, performance_index, select
+from utils.selection import QUALITE_PRIX_TOLERANCE_POINTS, TOLERANCE_BY_MODE, Selection, select
 from utils.session import LOOKUP_FORBIDDEN, LOOKUP_OK, FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
 
 log = logging.getLogger(__name__)
 
 VIEW_TIMEOUT = 3600           # menus d'étapes : 1 h (la session expire avant : SESSION_TTL_SECONDS)
-RESULT_VIEW_TIMEOUT = 86400   # résultat : boutons actifs 24 h, puis la vue persistante prend le relais
 START_CUSTOM_ID = "mouse_finder:start"
-# Identifiants stables : grâce à eux, la vue persistante enregistrée au démarrage du bot répond
-# encore aux boutons d'un résultat affiché avant un redémarrage (voir ResultsView.persistent).
-RESULT_CLOSE_ID = "mouse_finder:result:close"
-RESULT_RESTART_ID = "mouse_finder:result:restart"
-RESULT_DETAILS_ID = "mouse_finder:result:details"
-RESULT_CLOSED_MESSAGE = (
-    "✅ Résultat fermé. Cliquez sur **Start Mouse Shape Finder** dans le salon pour un nouveau test."
-)
 
 # --- Palette AzeMouse (voir docs/REPORTE_DESIGN.md §4) ---------------------
 NAVY = discord.Color.from_rgb(11, 18, 32)        # #0B1220 Nuit  — référencée dans les illustrations
@@ -76,15 +65,9 @@ COLOR_EXPIRED = discord.Color.orange()           # seule exception à la charte 
 
 SCORE_DISCLAIMER = (
     "Score géométrique provisoire : ni une probabilité d'achat ni une validation biomécanique. "
-    "Données, limites et souris écartées : bouton 🔍 Détails."
+    "Le calcul est expliqué dans le bloc « Comment lire ce résultat », plus bas."
 )
-PENDING_DOC_REFERENCE = "docs/audit/matrice_profils.md"
 BUTTON_LABEL_MAX = 80
-MAX_PENDING_SHOWN = 5      # au-delà : décompte sans liste (le poids visuel reste au winner)
-MAX_PENDING_LISTED = 8     # au-delà : une phrase de synthèse, sans nommer les souris
-ALTERNATIVE_PRICE_RATIO = 0.70       # au moins 30 % moins cher
-ALTERNATIVE_WIDTH_DELTA_MM = 2.0     # largeur de prise sensiblement différente
-ALTERNATIVE_LENGTH_DELTA_MM = 4.0    # longueur sensiblement différente
 
 CONFIDENCE_BADGES = {"élevée": "🟢", "moyenne": "🟡", "faible": "🔴"}
 
@@ -236,13 +219,6 @@ def _price_text(score: MouseScore, *, verified_hint: bool = False) -> str:
     return text
 
 
-def _confidence_line(score: MouseScore) -> str:
-    """Badge de confiance en trois mots (jamais une couleur seule) : explication dans l'onglet Détails."""
-    level = score.confidence or "faible"
-    badge = CONFIDENCE_BADGES.get(level, "🔴")
-    return f"{badge} Confiance {level}"
-
-
 def _confidence_detail(score: MouseScore) -> str:
     """Pourquoi cette confiance (onglet Détails) : jamais affiché dans le résumé."""
     level = score.confidence or "faible"
@@ -255,175 +231,54 @@ def _confidence_detail(score: MouseScore) -> str:
     return f"{badge} **{level.capitalize()}** — {reason}."
 
 
-def _match_summary(score: MouseScore) -> str:
-    """Phrase humaine (sans points internes) : ce qui colle, ce qui colle moins."""
-    mouse = score.mouse
-    good, weak = [], []
-    if score.breakdown.length_pts == LENGTH_PTS_IN_RANGE:
-        good.append("longueur dans la cible")
-    elif score.breakdown.length_pts > 0:
-        weak.append("longueur à quelques millimètres de la cible")
-    else:
-        weak.append("longueur en léger retrait")
-    if score.breakdown.width_pts == WIDTH_PTS_IN_RANGE:
-        good.append("largeur de prise dans la cible")
-    elif score.breakdown.width_pts > 0:
-        weak.append("largeur de prise proche de la cible")
-    else:
-        weak.append("largeur de prise un peu large")
-    if score.breakdown.grip_pts > 0:
-        good.append(f"prise {score.grip.label} bien soutenue")
-    if score.breakdown.thenar_pts > 0:
-        good.append("arrière marqué qui soutient votre thénar")
-    elif score.breakdown.thenar_pts < 0:
-        weak.append("arrière large peu adapté à un petit thénar")
-    if mouse.hump_position != "Inconnu" and score.grip is not Grip.FINGERTIP:
-        # En Fingertip, la bosse est ignorée par le barème : ne pas la présenter comme un défaut.
-        (good if score.breakdown.hump_pts > 0 else weak).append(
-            f"bosse {HUMP_DISPLAY.get(mouse.hump_position, mouse.hump_position)} "
-            + ("adaptée" if score.breakdown.hump_pts > 0 else "moins adaptée")
-        )
-    if mouse.button_height != "Inconnu":
-        (good if score.breakdown.button_pts > 0 else weak).append(
-            f"boutons {BUTTON_DISPLAY.get(mouse.button_height, mouse.button_height)} "
-            + ("adaptés" if score.breakdown.button_pts > 0 else "moins adaptés")
-        )
-    sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
-    if weak:
-        sentence += f". À noter : {', '.join(weak[:1])}."
-    else:
-        sentence += "."
-    return sentence[:300]
+def _slot_text(score: MouseScore) -> str:
+    """Une souris recommandée en une ligne : nom · prix · pourcentage. Rien d'autre.
+
+    Ni score brut, ni badge de confiance, ni commentaire : tout cela vit dans le second bloc
+    (« Comment lire ce résultat »), pour que la recommandation se lise d'un coup d'œil sur mobile.
+    """
+    return f"**{score.mouse.label}** · {_price_text(score)} · **{compatibility_percent(score)} %**"
 
 
-def _candidate_text(score: MouseScore) -> str:
-    """Match idéal en deux lignes : souris + prix, puis pourcentage et confiance (le reste : 🔍 Détails)."""
-    return (
-        f"**{score.mouse.label}** · {_price_text(score)}\n"
-        f"**{compatibility_percent(score)} %** du maximum théorique · {_confidence_line(score)}"
-    )[:1024]
+def _price_or_inf(score: MouseScore) -> float:
+    return score.mouse.price_eur if score.mouse.price_eur is not None else float("inf")
 
 
-def _alternative_reason(top: MouseScore, alt: MouseScore) -> str:
-    """Explique en une phrase pourquoi l'alternative mérite un coup d'œil."""
-    if top.mouse.price_eur and alt.mouse.price_eur and alt.mouse.price_eur <= top.mouse.price_eur * ALTERNATIVE_PRICE_RATIO:
-        saving = round((1 - alt.mouse.price_eur / top.mouse.price_eur) * 100)
-        return f"Prix inférieur d'environ {saving} % pour une compatibilité équivalente."
-    if performance_index(alt.mouse) != performance_index(top.mouse):
-        if performance_index(alt.mouse) > performance_index(top.mouse):
-            return "Performances documentées supérieures (polling ≥ 8000 Hz et/ou capteur haut de gamme)."
-        return "Performances documentées différentes (moins de caractéristiques haut de gamme)."
-    if top.mouse.hump_position != alt.mouse.hump_position or top.mouse.button_height != alt.mouse.button_height:
-        return (
-            f"Géométrie différente : bosse {alt.mouse.hump_position}, boutons {alt.mouse.button_height} "
-            f"contre {top.mouse.hump_position} / {top.mouse.button_height}."
-        )
-    return "Dimensions sensiblement différentes de celles du match idéal."
+def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | None, MouseScore | None]:
+    """Trois rôles, dans l'ordre du classement déjà calculé : idéal, alternative, économie.
 
+    (1) **Le match idéal** : la tête du classement du mode (le prix suit, sauf budget contraint).
+    (2) **L'alternative** : la souris qui correspond le mieux au profil parmi celles qui restent,
+        en préférant une souris un peu moins chère ; sinon la meilleure tout court (son pourcentage
+        sert alors à accepter un léger surcoût).
+    (3) **L'économie** : la moins chère qui reste dans la zone de compatibilité du mode (tolérance
+        ``TOLERANCE_BY_MODE``) et qui est vraiment moins chère que les deux autres ; sinon la ligne
+        n'est pas affichée.
 
-def _alternative_is_relevant(top: MouseScore | None, alt: MouseScore | None) -> bool:
-    """Une alternative ne s'affiche que si elle apporte une vraie différence (prix, performance, géométrie)."""
-    if top is None or alt is None:
-        return False
-    if top.mouse.hump_position != alt.mouse.hump_position or top.mouse.button_height != alt.mouse.button_height:
-        return True
-    if performance_index(alt.mouse) != performance_index(top.mouse):
-        return True
-    if top.mouse.price_eur and alt.mouse.price_eur and alt.mouse.price_eur <= top.mouse.price_eur * ALTERNATIVE_PRICE_RATIO:
-        return True
-    if (top.mouse.length_mm and alt.mouse.length_mm
-            and abs(top.mouse.length_mm - alt.mouse.length_mm) >= ALTERNATIVE_LENGTH_DELTA_MM):
-        return True
-    return bool(
-        top.width_used_mm and alt.width_used_mm
-        and abs(top.width_used_mm - alt.width_used_mm) >= ALTERNATIVE_WIDTH_DELTA_MM
-    )
+    Aucun barème n'est modifié : les trois souris sortent du classement existant, jamais recalculé.
+    """
+    ordered = list(selection.ranked)
+    if not ordered:
+        return None, None, None
+    ideal = ordered[0]
+    reference = selection.reference_score if selection.reference_score is not None else ideal.total
+    tolerance = TOLERANCE_BY_MODE.get(selection.mode, QUALITE_PRIX_TOLERANCE_POINTS)
+    zone = [score for score in ordered[1:] if score.total >= reference - tolerance]
 
+    def best_match(candidates: list[MouseScore]) -> MouseScore | None:
+        # Le meilleur profil ; à égalité, la moins chère.
+        return max(candidates, key=lambda score: (score.total, -_price_or_inf(score))) if candidates else None
 
-def _alternative_reason_short(top: MouseScore, alt: MouseScore) -> str:
-    """Différence utile en quelques mots (la version chiffrée reste dans l'onglet Détails)."""
-    if alt.total == top.total:
-        # Égalité parfaite : la gamme a choisi le moins cher, l'alternative est donc plus chère.
-        return "Même score, un peu plus chère."
-    if (top.mouse.price_eur and alt.mouse.price_eur
-            and alt.mouse.price_eur <= top.mouse.price_eur * ALTERNATIVE_PRICE_RATIO):
-        saving = round((1 - alt.mouse.price_eur / top.mouse.price_eur) * 100)
-        return f"Environ {saving} % moins chère."
-    if performance_index(alt.mouse) > performance_index(top.mouse):
-        return "Performances documentées supérieures."
-    if (top.mouse.hump_position != alt.mouse.hump_position
-            or top.mouse.button_height != alt.mouse.button_height):
-        return "Forme différente de celle du match idéal."
-    return "Dimensions différentes."
-
-
-def _alternative_text(top: MouseScore | None, alt: MouseScore | None) -> str:
-    """Alternative en deux lignes : souris + prix, puis pourcentage, confiance et différence utile."""
-    if not _alternative_is_relevant(top, alt):
-        return "Aucune alternative pertinente dans la gamme choisie (mêmes géométrie, prix et performances documentées)."
-    assert alt is not None and top is not None
-    return (
-        f"**{alt.mouse.label}** · {_price_text(alt)}\n"
-        f"**{compatibility_percent(alt)} %** du maximum théorique · {_confidence_line(alt)}\n"
-        f"{_alternative_reason_short(top, alt)}"
-    )[:1024]
-
-
-def _pending_reason(score: MouseScore) -> str:
-    """Raison courte et lisible — jamais de score partiel ni de « /25 pts » (détails dans la matrice)."""
-    missing = " ".join(score.missing)
-    if "compatibilité" in missing:
-        return f"compatibilité {score.grip.label} non vérifiée"
-    if "longueur" in missing or "conflit" in missing:
-        return "dimensions non vérifiées"
-    if score.mouse.price_eur is None:
-        return "prix non renseigné"
-    if "bosse" in missing:
-        return "position de la bosse non vérifiée"
-    if "boutons" in missing:
-        return "hauteur des boutons non vérifiée"
-    return "données incomplètes"
-
-
-PENDING_BUCKETS = {
-    "compatibilité": "sans compatibilité de prise",
-    "bosse": "sans hauteur de bosse",
-    "boutons": "sans hauteur de boutons",
-    "dimensions": "sans dimensions vérifiées",
-    "prix": "sans prix renseigné",
-}
-
-
-def _pending_bucket(score: MouseScore) -> str:
-    """Regroupe une souris non classée par donnée manquante (pour un décompte compact)."""
-    missing = " ".join(score.missing)
-    for key, label in PENDING_BUCKETS.items():
-        if key in missing:
-            return label
-    return "données incomplètes"
-
-
-def _pending_breakdown(pending: tuple[MouseScore, ...]) -> str:
-    """« 12 sans compatibilité · 5 sans hauteur de boutons » — ordre décroissant, sans points internes."""
-    counts: dict[str, int] = {}
-    for score in pending:
-        bucket = _pending_bucket(score)
-        counts[bucket] = counts.get(bucket, 0) + 1
-    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
-    return " · ".join(f"{count} {label}" for label, count in ordered)
-
-
-def _pending_text(pending: tuple[MouseScore, ...]) -> str:
-    """Décompte compact par raison, puis au maximum 5 noms (jamais de score partiel)."""
-    header = f"{len(pending)} souris écartées du classement — {_pending_breakdown(pending)}."
-    if len(pending) > MAX_PENDING_LISTED:
-        return f"{header}\nDétail par souris : `{PENDING_DOC_REFERENCE}`."[:1024]
-    lines = [f"• **{s.mouse.label}** — {_pending_reason(s)}" for s in pending[:MAX_PENDING_SHOWN]]
-    if len(pending) > MAX_PENDING_SHOWN:
-        lines.append(f"… +{len(pending) - MAX_PENDING_SHOWN} — `{PENDING_DOC_REFERENCE}`.")
-    else:
-        lines.append(f"Détail par souris : `{PENDING_DOC_REFERENCE}`.")
-    return f"{header}\n" + "\n".join(lines)[:1024]
+    ideal_price = _price_or_inf(ideal)
+    cheaper = [score for score in zone if _price_or_inf(score) < ideal_price]
+    alternative = best_match(cheaper) or best_match(zone)
+    ceiling = _price_or_inf(alternative) if alternative is not None else ideal_price
+    economy_zone = [score for score in zone
+                    if score is not alternative
+                    and _price_or_inf(score) < ideal_price
+                    and _price_or_inf(score) < ceiling]
+    economy = min(economy_zone, key=_price_or_inf) if economy_zone else None
+    return ideal, alternative, economy
 
 
 # ---------------------------------------------------------------------------
@@ -525,7 +380,12 @@ def result_image_key(winner: MouseScore | None, grip: Grip | None) -> str | None
 
 
 def results_embeds(session: FinderSession, selection: Selection) -> list[discord.Embed]:
-    """Résultat en deux embeds : (1) la recommandation, (2) les repères de taille. Jamais de points internes."""
+    """Résultat en deux blocs : (1) la recommandation, (2) « comment lire ce résultat », plus bas.
+
+    Le premier bloc ne garde que l'essentiel : ce que la personne a saisi, puis les souris utiles
+    avec leur prix et leur pourcentage. Aucun score, aucun terme technique, aucune liste de souris
+    écartées — tout cela est expliqué dans le second bloc (voir docs/REPORTE_DESIGN.md §9).
+    """
     main = discord.Embed(title="🎯 Votre recommandation", color=COLOR)
     header = _recap(session)
     if session.budget_mode is None:
@@ -533,7 +393,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         header = f"{header}  •  🎚️ **Classement morphologique**"
     main.description = header[:4096]
 
-    if not selection.ranked:
+    ideal, alternative, economy = result_slots(selection)
+    if ideal is None:
         main.add_field(
             name="Aucun match classable",
             value=(
@@ -542,57 +403,43 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
             ),
             inline=False,
         )
-    else:
-        top = selection.ranked[0]
-        alt = selection.ranked[1] if len(selection.ranked) > 1 else None
-        main.add_field(name="🥇 Le Match Idéal", value=_candidate_text(top), inline=False)
-        main.add_field(name="🥈 L'Alternative", value=_alternative_text(top, alt), inline=False)
-        main.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
-        if selection.pending:
-            main.add_field(
-                name="⏳ Non classées",
-                value=(f"**{len(selection.pending)}** souris écartées du classement, faute de données vérifiées.\n"
-                       "Détail souris par souris : bouton **🔍 Détails**."),
-                inline=False,
-            )
-        image_key = result_image_key(top, session.grip)
-        if image_key:
-            main = _image(main, image_key)
+        main.set_footer(text=SCORE_DISCLAIMER)
+        return [main]
 
-    main.set_footer(text=SCORE_DISCLAIMER)
-    embeds = [main]
+    main.add_field(name="🥇 Le match idéal", value=_slot_text(ideal), inline=False)
+    if alternative is not None:
+        main.add_field(name="🥈 L'alternative", value=_slot_text(alternative), inline=False)
+    if economy is not None:
+        main.add_field(name="💸 L'économie", value=_slot_text(economy), inline=False)
+    image_key = result_image_key(ideal, session.grip)
+    if image_key:
+        main = _image(main, image_key)
 
-    if selection.ranked and session.grip is not None:
-        top = selection.ranked[0]
-        details = discord.Embed(title="📐 Repères de taille", color=COLOR)
-        # Autoportant : le rappel de la prise et des mesures permet de lire cet embed seul (partage, capture).
-        details.description = (
-            f"{_recap(session)}\n{_target_line(session)}\n"
-            f"Score : **{top.total}/{MAX_SCORE} — {compatibility_percent(top)} % du maximum théorique**.\n"
-            "Barème : longueur, largeur de prise (ajustement thénar borné à ±2), compatibilité de prise, "
-            "bosse, boutons."
-        )
-        details.add_field(
-            name="🧩 Le match en clair",
-            value=(f"{_size_text(top.mouse)} · {_price_text(top, verified_hint=True)}\n"
-                   f"{_match_summary(top)}")[:1024],
+    if session.grip is None:   # ne devrait pas arriver dans le parcours : on n'explique rien
+        main.set_footer(text=SCORE_DISCLAIMER)
+        return [main]
+
+    guide = discord.Embed(title="❓ Comment lire ce résultat", color=COLOR)
+    guide.description = (
+        f"{_target_line(session)}\n"
+        f"Chaque souris est notée sur **{MAX_SCORE} points** (longueur, largeur de prise, "
+        "compatibilité de prise, bosse, boutons) ; le pourcentage indique sa part du maximum "
+        f"théorique. Ici : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %**."
+    )
+    guide.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
+    guide.add_field(name="🔎 Confiance", value=_confidence_detail(ideal), inline=False)
+    if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
+        guide.add_field(
+            name="🖐️ Thénar Petite",
+            value=("Arrière étroit en « pilule » conseillé (méthode Oblivity) ; "
+                   "une souris à bosse arrière marquée est **pénalisée à la marge** dans le score."),
             inline=False,
         )
-        details.add_field(name="🔎 Confiance", value=_confidence_detail(top), inline=False)
-        if selection.pending:
-            details.add_field(name="⏳ Souris écartées", value=_pending_text(selection.pending), inline=False)
-        if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
-            details.add_field(
-                name="🖐️ Thénar Petite",
-                value=("Arrière étroit en « pilule » conseillé (méthode Oblivity) ; "
-                       "une souris à bosse arrière marquée est **pénalisée à la marge** dans le score."),
-                inline=False,
-            )
-            details = _image(details, "illustration_rear_narrow")
-        else:
-            details = _image(details, "illustration_mouse_dimensions")
-        embeds.append(details)
-    return embeds
+        guide = _image(guide, "illustration_rear_narrow")
+    else:
+        guide = _image(guide, "illustration_mouse_dimensions")
+    guide.set_footer(text=SCORE_DISCLAIMER)
+    return [main, guide]
 
 
 def expired_embed() -> discord.Embed:
@@ -616,7 +463,9 @@ def compute_selection(session: FinderSession) -> Selection:
                        thenar=session.thenar)
         for mouse in mice
     ]
-    return select(scores, session.budget_mode)
+    # top_n = toutes les souris classées : la présentation en choisit trois (match idéal,
+    # alternative, économie) sans jamais recalculer ni modifier les scores.
+    return select(scores, session.budget_mode, top_n=len(scores))
 
 
 # ---------------------------------------------------------------------------
@@ -851,29 +700,27 @@ class BudgetModal(FinderModal):
 async def _show_results(interaction: discord.Interaction, session: FinderSession) -> None:
     selection = compute_selection(session)
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
-    owner_id = session.user_id
     embeds = results_embeds(session, selection)
     # Minimisation : les réponses ne servent plus une fois le résultat produit.
     interaction.client.sessions.discard(session.session_id)
-    # À l'écran : le résumé seul. Les repères, la confiance et les souris écartées sont dans 🔍 Détails.
-    await _show_private(interaction, embeds=embeds[:1], view=ResultsView(owner_id, selection.ranked, links, embeds))
+    # Les deux blocs sont toujours affichés : la recommandation, puis l'explication plus bas.
+    await _show_private(interaction, embeds=embeds, view=ResultsView(selection.ranked, links))
 
 
-class ResultsView(FinderView):
-    """Boutons du résultat privé : achats réels, Liens à venir si aucun lien, Fermer, Refaire (propriétaire)."""
+class ResultsView(discord.ui.View):
+    """Boutons d'achat du résultat : des LIENS, gérés par Discord, jamais par le bot.
 
-    def __init__(self, owner_id: int | None = None,
-                 ranked: tuple[MouseScore, ...] | list[MouseScore] = (),
-                 links: dict[str, str] | None = None,
-                 embeds: list[discord.Embed] | None = None, *, persistent: bool = False) -> None:
-        super().__init__(timeout=None if persistent else RESULT_VIEW_TIMEOUT)
-        self.owner_id = owner_id
-        self.persistent = persistent
-        self.embeds = list(embeds or [])   # [résumé, détails] — le résumé seul est envoyé au départ
-        self.showing_details = False
-        links = links or {}
+    « Fermer », « Refaire le test » et « Détails » ont été retirés le 2026-10-11 : ces boutons
+    interactifs pouvaient cesser de répondre après un redémarrage du bot (« AzeMouse n'a pas
+    répondu à temps »). Un lien, lui, ne dépend pas du bot et fonctionne toujours ; le message
+    éphémère se ferme avec la croix du client Discord, et un nouveau test se lance depuis le
+    panneau du salon. Conséquence : plus aucun bouton du résultat ne peut rester muet.
+    """
+
+    def __init__(self, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str]) -> None:
+        super().__init__(timeout=None)
         purchases = 0
-        for score in (() if persistent else ranked[:2]):
+        for score in ranked[:2]:
             url = links.get(score.mouse.id)
             if url:
                 self.add_item(
@@ -897,93 +744,4 @@ class ResultsView(FinderView):
                     custom_id="mouse_finder:nolink",
                     row=0,
                 )
-            )
-        close = discord.ui.Button(label="Fermer", style=discord.ButtonStyle.secondary, emoji="✖️", row=1,
-                                  custom_id=RESULT_CLOSE_ID)
-        close.callback = self._close
-        self.add_item(close)
-        # Ajouté en dernier : le bouton de relance apparaît après les liens d'achat.
-        restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄", row=1,
-                                    custom_id=RESULT_RESTART_ID)
-        restart.callback = self._restart
-        self.add_item(restart)
-        # Bascule résumé <-> détails : le second embed ne s'affiche que si l'utilisateur le demande.
-        self.details_button: discord.ui.Button | None = None
-        if persistent or len(self.embeds) > 1:
-            self.details_button = discord.ui.Button(
-                label="Détails", style=discord.ButtonStyle.secondary, emoji="🔍", row=1,
-                custom_id=RESULT_DETAILS_ID,
-            )
-            self.details_button.callback = self._toggle_details
-            self.add_item(self.details_button)
-
-    @classmethod
-    def persistent(cls) -> "ResultsView":
-        """Vue sans données, enregistrée au démarrage : les boutons du résultat survivent au redémarrage."""
-        return cls(persistent=True)
-
-    async def _toggle_details(self, interaction: discord.Interaction) -> None:
-        """Affiche (ou masque) l'embed technique, toujours dans le message privé d'origine."""
-        if not await self._check_owner(interaction):
-            return
-        if self.persistent:
-            # Vue de secours : l'embed n'a pas été conservé, on explique au lieu de rester muet.
-            await _send_ephemeral(
-                interaction,
-                "🔍 **Détails indisponibles pour ce résultat** (affiché avant le redémarrage du bot). "
-                "Cliquez sur **🔄 Refaire le test** pour revoir les repères de taille et les souris écartées.",
-            )
-            return
-        self.showing_details = not self.showing_details
-        if self.details_button is not None:
-            self.details_button.label = "Résumé" if self.showing_details else "Détails"
-            self.details_button.emoji = "↩️" if self.showing_details else "🔍"
-        embeds = self.embeds if self.showing_details else self.embeds[:1]
-        await _show_private(interaction, embeds=embeds, view=self)
-
-    async def _check_owner(self, interaction: discord.Interaction) -> bool:
-        if self.owner_id is None:
-            # Vue persistante : un message éphémère n'est cliquable que par la personne qui l'a ouvert.
-            return True
-        if interaction.user.id != self.owner_id:
-            await _send_ephemeral(interaction, "🔒 Cette action n'est pas disponible pour votre compte.")
-            return False
-        return True
-
-    async def _close(self, interaction: discord.Interaction) -> None:
-        if not await self._check_owner(interaction):
-            return
-        if not self.persistent:
-            self.stop()   # retire la vue du message de la mémoire du bot (la vue persistante reste)
-        # Retire le résultat du message privé ; aucun message n'est publié.
-        try:
-            await interaction.response.edit_message(
-                content=RESULT_CLOSED_MESSAGE,
-                embed=None,
-                embeds=None,
-                view=None,
-            )
-        except discord.HTTPException as exc:
-            # Message supprimé ou interaction trop ancienne : on répond au moins en privé, jamais de silence.
-            log.warning("Fermeture impossible (%s) : réponse de repli.", exc)
-            await _send_ephemeral(interaction, RESULT_CLOSED_MESSAGE)
-
-    async def _restart(self, interaction: discord.Interaction) -> None:
-        if not await self._check_owner(interaction):
-            return
-        if not self.persistent:
-            self.stop()
-        session = interaction.client.sessions.start(interaction.user.id)
-        try:
-            await interaction.response.edit_message(
-                embed=grip_step_embed(), embeds=None, view=GripView(session.session_id)
-            )
-        except discord.HTTPException as exc:
-            # L'ancien message n'existe plus : on explique au lieu de rester muet ; le parcours ouvert ici
-            # sera remplacé au prochain clic sur **Start Mouse Shape Finder**.
-            log.warning("Relance impossible (%s) : message de repli.", exc)
-            await _send_ephemeral(
-                interaction,
-                "🔄 Ce résultat n'existe plus : cliquez sur **Start Mouse Shape Finder** dans le salon "
-                "pour lancer un nouveau test.",
             )

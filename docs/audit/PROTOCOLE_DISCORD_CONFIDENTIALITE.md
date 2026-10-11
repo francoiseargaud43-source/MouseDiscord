@@ -103,14 +103,14 @@ Pour chaque étape : faites l'action, comparez à « Attendu », cochez OK ou KO
 
 ### Étape 7 — Terminer les deux parcours
 1. Compte A puis compte B : terminez le parcours jusqu'au résultat.
-2. Attendu : chacun reçoit son **résultat** dans son menu privé (score, boutons d'achat réels ou « 🔗 Liens à venir », **Fermer**, **Refaire le test**).
+2. Attendu : chacun reçoit son **résultat** dans son message privé (match idéal, alternative, économie ; boutons d'achat réels ou « 🔗 Liens à venir »), **sans aucun bouton interactif** (ni Fermer, ni Refaire, ni Détails).
 - ☐ OK ☐ KO — Observé : ______________________
 
 ### Étape 8 — Chacun ne voit que son résultat
 1. Compte A : vérifiez que le résultat contient **180 × 90** et jamais **170 × 80**.
 2. Compte B : vérifiez le contraire.
-3. Compte B : cliquez **Fermer**. Attendu : le résultat de B disparaît ; celui de A reste affiché pour A.
-4. Compte A : cliquez **Fermer**. Attendu : idem pour A.
+3. Compte B : vérifiez qu'aucun bouton interactif n'apparaît côté bot (seuls des liens 🛒 / « 🔗 Liens à venir »).
+4. Compte A : même vérification ; clic en dehors d'un lien → Discord ne doit jamais afficher « n'a pas répondu à temps ».
 - ☐ OK ☐ KO — Observé : ______________________
 
 ### Étape 9 — Anciens composants et bouton d'un autre utilisateur
@@ -152,7 +152,7 @@ Cette étape vérifie les **anciens composants** : après une relance, un menu o
 | 5. Modals | validation privée | | ☐ Non exécuté |
 | 6. Erreurs de saisie | erreur privée, pas d'avancement | | ☐ Non exécuté |
 | 7. Fin des deux parcours | chacun son résultat | | ☐ Non exécuté |
-| 8. Résultats séparés | pas de mélange ; Fermer local | | ☐ Non exécuté |
+| 8. Résultats séparés | pas de mélange ; aucun bouton interactif | | ☐ Non exécuté |
 | 9. Anciens composants | refus propre, nouvelle session intacte | | ☐ Non exécuté |
 | 10. Expiration et redémarrage | « plus actif », panneau opérationnel, pas de doublon | | ☐ Non exécuté |
 

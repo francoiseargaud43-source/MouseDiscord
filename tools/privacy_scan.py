@@ -47,9 +47,10 @@ SENSITIVE_NAMES = frozenset(SEND_METHODS_REQUIRING_EPHEMERAL | EDIT_METHODS | PU
 DYNAMIC_ACCESSORS = frozenset({"getattr", "setattr", "partial"})            # R6
 INTERACTION_HINTS = ("interaction", "response", "followup", "channel", "message", "ctx")
 
-# Fonctions autorisées à éditer un message : parcours privé ou résultat appartenant au propriétaire vérifié.
+# Fonctions autorisées à éditer un message : uniquement le message éphémère du parcours privé
+# (les boutons interactifs du résultat ont été retirés le 2026-10-11 : il ne reste que des liens).
 EDIT_ALLOWED_FUNCTIONS = {
-    "cogs/finder_flow.py": {"_show_private", "_close", "_restart"},
+    "cogs/finder_flow.py": {"_show_private"},
 }
 # Fonctions autorisées à publier : commande d'administration et panneau public, jamais de données individuelles.
 PUBLIC_ALLOWLIST = {

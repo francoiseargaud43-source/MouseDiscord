@@ -36,7 +36,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
-| Résultat | **Deux embeds privés** : la recommandation (Match Idéal, alternative réellement différente, explication, souris à vérifier) puis les repères de taille illustrés | Boutons 🛒 d'achat (liens réels), ✖️ Fermer, 🔄 Refaire le test |
+| Résultat | **Deux blocs privés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage) puis « ❓ Comment lire ce résultat » (score /40, confiance, pourquoi ce choix) | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -56,11 +56,12 @@ Les sessions sont stockées **en mémoire**, identifiées par un `session_id` al
 Relancer un test remplace le précédent : les anciens menus deviennent inactifs. Un redémarrage du bot efface les sessions
 en cours : le message persistant continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
 
-**Score affiché** : `Score : X/40 — Y % du maximum théorique du barème`, **une seule fois** (sur le Match Idéal),
-accompagné du badge de confiance (`🟢` élevée / `🟡` moyenne / `🔴` faible) et de sa raison.
-Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans `MouseScore.details`
-et dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** :
-c'est une estimation géométrique provisoire.
+**Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
+théorique** pour le match idéal, l'alternative et, quand elle existe, l'économie. Ni score /40, ni badge de
+confiance, ni souris écartées à ce niveau : tout cela est expliqué dans le bloc « ❓ Comment lire ce résultat »,
+plus bas dans le même message privé. Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils
+restent dans `MouseScore.details` et dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat,
+ni une validation biomécanique** : c'est une estimation géométrique provisoire.
 
 ---
 

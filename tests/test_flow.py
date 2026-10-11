@@ -222,72 +222,51 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.ResultsView)
-    # Un seul embed à l'écran ; le second (repères, confiance, écartées) est derrière 🔍 Détails.
-    assert len(kwargs["embeds"]) == 1
-    main = kwargs["embeds"][0]
-    details = kwargs["view"].embeds[1]
+    # Aucun bouton interactif : seuls des liens d'achat, ou le rappel désactivé « Liens à venir ».
+    assert all(getattr(c, "url", None) or getattr(c, "disabled", False) for c in kwargs["view"].children)
+    # Deux blocs : la recommandation (courte), puis l'explication plus bas.
+    assert len(kwargs["embeds"]) == 2
+    main, guide = kwargs["embeds"]
     fields = fields_of(main)
-    top = next(v for k, v in fields.items() if "Match Idéal" in k)
-    alt = next(v for k, v in fields.items() if "Alternative" in k)
-    assert "Scyrox V6" in top
-    assert "**75 %** du maximum théorique" in top           # le pourcentage parle plus que le score brut
-    assert "Score : **" not in top and "coque" not in top  # aucun détail technique dans le résumé
-    assert "Confiance faible" in top  # Scyrox : dimensions « owner_spec_unverified »
-    assert "**75 %** du maximum théorique" in alt           # l'alternative porte aussi son pourcentage
-    assert "Z1" in alt  # performances documentées différentes : alternative pertinente
-    assert "Pourquoi ce choix" in " ".join(fields)
-    assert "ni une probabilité" in main.footer.text
-    # Second embed : repères de taille et score complet, jamais de points internes.
-    assert "Repères de taille" in details.title
-    assert "118,8" in details.description and "59,6" in details.description
-    assert "Score : **30/40 — 75 % du maximum théorique**" in details.description
+    ideal = next(v for k, v in fields.items() if "match idéal" in k)
+    alt = next(v for k, v in fields.items() if "alternative" in k)
+    assert "Scyrox V6" in ideal
+    assert "74,90 €" in ideal and "**75 %**" in ideal   # nom · prix · pourcentage, rien de plus
+    assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
+    assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
+    assert "Z1" in alt
+    assert "Comment lire ce résultat" in guide.title
+    guide_fields = fields_of(guide)
+    guide_text = (guide.description or "") + " ".join(guide_fields)
+    assert "40 points" in guide_text and "30/40" in guide_text      # le score s'explique ici
+    assert "Pourquoi ce choix" in " ".join(guide_fields)
+    assert "🔎 Confiance" in guide_fields
+    assert "ni une probabilité" in guide.footer.text
 
 
 @pytest.mark.asyncio
-async def test_results_show_pending_candidates_separately():
+async def test_result_never_mentions_the_excluded_mice():
+    """Demande du propriétaire (2026-10-11) : l'utilisateur ne voit plus les souris écartées."""
     store = SessionStore(ttl_seconds=600)
     s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
-    inter = make_interaction(store=store)
-    view = flow.BudgetView(s.session_id)
-    select_values(view.children[0], BudgetMode.HAUT_DE_GAMME.value)
-    await view.children[0].callback(inter)
-    fields = fields_of(main_embed_of(inter))
-    pending = next(v for k, v in fields.items() if "Non classées" in k)
-    assert "écartées du classement" in pending and "pts" not in pending
-    assert "docs/" not in pending  # le chemin technique vit dans l'onglet Détails
-    details = inter.response.edit_message.call_args.kwargs["view"].embeds[1]
-    detail_text = " ".join(f.value for f in details.fields)
-    assert "matrice_profils.md" in detail_text and "pts" not in detail_text
-    top = next(v for k, v in fields.items() if "Match Idéal" in k)
-    assert "Phantom" not in top
+    s.budget_mode = BudgetMode.HAUT_DE_GAMME
+    text = " ".join(str(e.to_dict()) for e in flow.results_embeds(s, flow.compute_selection(s)))
+    assert "écart" not in text and "Non classées" not in text
+    assert "matrice_profils" not in text and "docs/" not in text
+    assert "Phantom" not in text
 
 
-@pytest.mark.asyncio
-async def test_details_button_switches_between_summary_and_technical_view():
-    """Le résumé reste court ; 🔍 Détails affiche le second embed, ↩️ Résumé revient en arrière."""
+def test_result_shows_the_explanation_block_below_the_recommendation():
+    """Le résumé reste court ; le mode d'emploi du score vit dans un second bloc, plus bas."""
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
-    inter = make_interaction(store=store)
-    view = flow.BudgetView(s.session_id)
-    select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
-    await view.children[0].callback(inter)
-    results = inter.response.edit_message.call_args.kwargs["view"]
-    summary = inter.response.edit_message.call_args.kwargs["embeds"][0]
-    assert len(results.embeds) == 2 and "Repères de taille" in results.embeds[1].title
-    summary_text = str(summary.to_dict())
-    assert "coque − 3 mm" not in summary_text and "(prix non vérifié)" not in summary_text
-    button = next(c for c in results.children if getattr(c, "label", None) == "Détails")
-    ouvrir = make_interaction(store=store)
-    await button.callback(ouvrir)
-    shown = ouvrir.response.edit_message.call_args.kwargs["embeds"]
-    assert len(shown) == 2 and "Repères de taille" in shown[1].title
-    detail_text = str(shown[1].to_dict())
-    assert "🔎 Confiance" in detail_text and "Score : **" in detail_text  # les explications vivent ici
-    assert button.label == "Résumé"
-    fermer = make_interaction(store=store)
-    await button.callback(fermer)
-    assert len(fermer.response.edit_message.call_args.kwargs["embeds"]) == 1
-    assert button.label == "Détails"
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session.budget_mode = BudgetMode.QUALITE_PRIX
+    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "❓ Comment lire ce résultat"]
+    assert all("Score" not in f.value and "Confiance" not in f.value for f in embeds[0].fields)
+    guide = embeds[1]
+    assert "/40" in (guide.description or "")
+    assert [f.name for f in guide.fields][:2] == ["🧭 Pourquoi ce choix ?", "🔎 Confiance"]
 
 
 @pytest.mark.asyncio
@@ -325,24 +304,10 @@ async def test_custom_budget_invalid_then_valid():
 
     good = make_interaction(store=store)
     await modal_budget(s.session_id, "50").on_submit(good)
-    embed = main_embed_of(good)
-    assert "A9 Plus" in embed.fields[0].value
-    assert "🟡 Confiance moyenne" in embed.fields[0].value  # ATK vérifié + largeur estimée
-    assert "Aucune alternative pertinente" in embed.fields[1].value
+    main, guide = good.response.edit_message.call_args.kwargs["embeds"]
+    assert "A9 Plus" in fields_of(main)["🥇 Le match idéal"]
+    assert "🟡 **Moyenne**" in " ".join(fields_of(guide).values())
     assert store.lookup(s.session_id, 99)[1] != "ok"  # session supprimée après résultat
-
-
-@pytest.mark.asyncio
-async def test_results_view_restart_resets_session():
-    store = SessionStore(ttl_seconds=600)
-    store.start(99)
-    inter = make_interaction(store=store)
-    results = flow.ResultsView(99, [], {})
-    await results._restart(inter)
-    kwargs = inter.response.edit_message.call_args.kwargs
-    assert isinstance(kwargs["view"], flow.GripView)
-    new_id = kwargs["view"].children[0].session_id
-    assert store.lookup(new_id, 99)[1] == "ok"
 
 
 # ---------------------------------------------------------------------------
@@ -393,62 +358,26 @@ async def test_other_user_cannot_open_measures_or_submit_modal():
     assert store.get(victim.session_id, 1).hand_length_mm is None
 
 
-@pytest.mark.asyncio
-async def test_results_close_is_owner_only_and_clears_message():
-    store = SessionStore(ttl_seconds=600)
-    intruder = make_interaction(user_id=2, store=store)
-    results = flow.ResultsView(1, [], {})
-    await results._close(intruder)
-    intruder.response.edit_message.assert_not_awaited()
+def test_result_view_has_no_interactive_button_only_purchase_links():
+    """Le résultat ne porte plus « Fermer » / « Refaire » / « Détails » (retirés le 2026-10-11).
 
-    owner = make_interaction(user_id=1, store=store)
-    await results._close(owner)
-    kwargs = owner.response.edit_message.call_args.kwargs
-    assert kwargs["embed"] is None and kwargs["view"] is None
-    owner.response.send_message.assert_not_awaited()
+    Restent les liens d'achat — des composants gérés par Discord, qui fonctionnent même si le bot
+    redémarre — ou, faute de lien, le rappel désactivé « Liens à venir ». Aucun bouton du résultat
+    ne peut donc rester muet.
+    """
+    from config import MOUSE_DB_PATH
+    from utils.catalog import load_catalog
 
+    mouse = load_catalog(MOUSE_DB_PATH)[0]
+    linked = flow.ResultsView([SimpleNamespace(mouse=mouse)], {mouse.id: "https://shop.test/x"})
+    assert [c.label for c in linked.children] == [f"Acheter {mouse.label}"[:80]]
+    assert all(getattr(c, "url", None) for c in linked.children)
+    assert linked.timeout is None
 
-def dispatch_ids(view) -> set[tuple[int, str]]:
-    """Clés (type, custom_id) réellement utilisées par Discord pour retrouver un bouton."""
-    return {
-        (item.type.value, item.custom_id)
-        for item in view.children
-        if getattr(item, "custom_id", None) is not None
-    }
-
-
-def test_result_view_uses_stable_ids_and_a_persistent_twin():
-    """Après expiration/redémarrage, les boutons doivent quand même être reconnus (vue persistante)."""
-    summary, details = discord.Embed(), discord.Embed()
-    live = flow.ResultsView(1, [], {}, embeds=[summary, details])
-    persistent = flow.ResultsView.persistent()
-    assert persistent.is_persistent()
-    assert persistent.timeout is None
-    expected = {
-        (discord.ComponentType.button.value, flow.RESULT_CLOSE_ID),
-        (discord.ComponentType.button.value, flow.RESULT_RESTART_ID),
-        (discord.ComponentType.button.value, flow.RESULT_DETAILS_ID),
-    }
-    assert expected <= dispatch_ids(live)          # le résultat exposé porte bien ces trois boutons
-    assert dispatch_ids(persistent) == dispatch_ids(live)   # la vue de secours utilise les mêmes clés
-    assert flow.ResultsView.persistent().owner_id is None
-
-
-def test_result_view_keeps_a_long_timeout_for_its_real_message():
-    live = flow.ResultsView(1, [], {})
-    assert live.timeout == flow.RESULT_VIEW_TIMEOUT
-    assert flow.RESULT_VIEW_TIMEOUT > flow.VIEW_TIMEOUT     # résultat : bien plus long que les menus
-    assert flow.GripView("sid").timeout == flow.VIEW_TIMEOUT
-
-
-@pytest.mark.asyncio
-async def test_results_restart_is_owner_only():
-    store = SessionStore(ttl_seconds=600)
-    store.start(1).grip = Grip.CLAW
-    intruder = make_interaction(user_id=2, store=store)
-    await flow.ResultsView(1, [], {})._restart(intruder)
-    intruder.response.edit_message.assert_not_awaited()
-    assert store.get(store.start(1).session_id, 1).grip is None  # nouveau parcours vierge, ancien intact
+    empty = flow.ResultsView([SimpleNamespace(mouse=mouse)], {})
+    assert [c.label for c in empty.children] == ["Liens à venir"]
+    assert empty.children[0].disabled is True
+    assert all(getattr(c, "custom_id", None) is None or c.disabled for c in empty.children)
 
 
 @pytest.mark.asyncio
@@ -491,8 +420,8 @@ def test_every_view_and_modal_carries_session_id():
     """Chaque vue / modal de parcours doit recevoir le session_id (pas de clé implicite user_id)."""
     import inspect
 
-    # ResultsView est volontairement exclue : elle ne porte pas de session_id (résultat déjà produit,
-    # propriétaire vérifié par owner_id) — voir tests/test_privacy.py.
+    # ResultsView est volontairement exclue : le résultat n'a plus besoin de session_id (parcours
+    # terminé, aucun bouton interactif) — elle ne porte que des liens d'achat.
     for cls in (flow.GripView, flow.ThenarView, flow.ThenarSelect, flow.MeasureView, flow.MeasureModal,
                 flow.BudgetView, flow.BudgetModal):
         params = inspect.signature(cls.__init__).parameters
@@ -505,12 +434,12 @@ def test_missing_commercial_link_shows_disabled_placeholder_button():
     from utils.catalog import load_catalog
 
     mouse = load_catalog(MOUSE_DB_PATH)[0]
-    view = flow.ResultsView(1, [SimpleNamespace(mouse=mouse)], {})
+    view = flow.ResultsView([SimpleNamespace(mouse=mouse)], {})
     placeholder = [c for c in view.children if getattr(c, "disabled", False)]
     assert len(placeholder) == 1, "un seul bouton informatif, jamais un bouton grisé par souris"
     assert placeholder[0].label == "Liens à venir"
     assert not any(getattr(c, "url", None) for c in view.children if getattr(c, "disabled", False))
-    assert [c.label for c in view.children if c.label in ("Fermer", "Refaire le test")] == ["Fermer", "Refaire le test"]
+    assert not [c for c in view.children if c.label in ("Fermer", "Refaire le test", "Détails")]
 
 
 def test_real_link_creates_purchase_button_without_placeholder():
@@ -518,7 +447,7 @@ def test_real_link_creates_purchase_button_without_placeholder():
     from utils.catalog import load_catalog
 
     mouse = load_catalog(MOUSE_DB_PATH)[0]
-    view = flow.ResultsView(1, [SimpleNamespace(mouse=mouse)], {mouse.id: "https://shop.test/x"})
+    view = flow.ResultsView([SimpleNamespace(mouse=mouse)], {mouse.id: "https://shop.test/x"})
     link_buttons = [c for c in view.children if getattr(c, "url", None)]
     assert len(link_buttons) == 1 and link_buttons[0].label.startswith("Acheter ")
     assert link_buttons[0].url == "https://shop.test/x"
@@ -571,32 +500,7 @@ def test_result_never_exposes_internal_scoring_details():
     assert re.search(r"\d+ pts(?! ou moins)", text) is None
     assert "adaptée : " not in text and "adaptés : " not in text and "vs cible" not in text
     assert "/25" not in text and "partiel" not in text
-    assert "Score : **" in text and "du maximum théorique" in text
-
-
-def test_pending_text_lists_at_most_five_names_without_partial_scores():
-    def fake(index: int) -> SimpleNamespace:
-        return SimpleNamespace(
-            mouse=SimpleNamespace(label=f"Souris {index}", price_eur=None),
-            grip=Grip.PALM,
-            missing=("compatibilité Palm Grip non vérifiée",),
-        )
-
-    text = flow._pending_text(tuple(fake(i) for i in range(1, 6)))
-    assert text.count("•") == 5 and "Souris 5" in text and "pts" not in text
-
-
-def test_pending_text_summarises_instead_of_listing_when_many():
-    def fake(index: int) -> SimpleNamespace:
-        return SimpleNamespace(
-            mouse=SimpleNamespace(label=f"Souris {index}", price_eur=None),
-            grip=Grip.CLAW,
-            missing=("compatibilité Claw Grip non vérifiée",),
-        )
-
-    text = flow._pending_text(tuple(fake(i) for i in range(20)))
-    assert "20 souris écartées du classement" in text
-    assert "Souris 1" not in text and "pts" not in text
+    assert "30/40" in text and "maximum théorique" in text
 
 
 def test_result_image_key_prioritises_the_hump_then_the_buttons():

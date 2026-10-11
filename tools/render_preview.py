@@ -206,19 +206,17 @@ def build_resultat() -> Image.Image:
     session.thenar = Thenar.PETITE
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    resume, details = embeds[0], embeds[1]
+    recommandation, explication = embeds[0], embeds[1]
     hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 150
     canvas, draw = nouveau_canvas(hauteur)
-    # Écran 1 : le résumé tel qu'il s'affiche (un seul embed, court).
-    y = bandeau(draw, PAD, "Résultat — message éphémère (privé) : le résumé")
-    y = draw_embed(canvas, draw, resume, y)
-    y = draw_boutons(draw, y, [("🔗 Liens à venir", False), ("✖️ Fermer", False),
-                               ("🔄 Refaire le test", False), ("🔍 Détails", False)])
-    # Écran 2 : le même message après un clic sur « 🔍 Détails » (puis « ↩️ Résumé » pour revenir).
-    y = bandeau(draw, y, "Après un clic sur 🔍 Détails : repères, confiance, souris écartées")
-    y = draw_embed(canvas, draw, details, y)
-    y = draw_boutons(draw, y, [("🔗 Liens à venir", False), ("✖️ Fermer", False),
-                               ("🔄 Refaire le test", False), ("↩️ Résumé", False)])
+    # Bloc 1 : la recommandation seule — uniquement des liens d'achat, aucun bouton à répondre.
+    y = bandeau(draw, PAD, "Résultat — message éphémère (privé) : la recommandation")
+    y = draw_embed(canvas, draw, recommandation, y)
+    y = draw_boutons(draw, y, [("🛒 Acheter ATK Z1 V2 Ultra", False), ("🔗 Liens à venir", False)])
+    # Bloc 2 : le mode d'emploi, plus bas dans le même message.
+    y = bandeau(draw, y, "Plus bas dans le même message : « Comment lire ce résultat »")
+    y = draw_embed(canvas, draw, explication, y)
+    y = draw_boutons(draw, y, [("🛒 Acheter ATK Z1 V2 Ultra", False), ("🔗 Liens à venir", False)])
     return canvas
 
 
