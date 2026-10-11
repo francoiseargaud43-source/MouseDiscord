@@ -1049,7 +1049,7 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | Élément | Nature | Redémarrage nécessaire ? |
 |---|---|---|
 | `cogs/finder_flow.py` | Code : parcours, résultat en 2 embeds, note thénar | **Oui** |
-| `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar (en pause) | **Oui** |
+| `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
 | `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
 | `tools/check_deployment.py` | Outil de contrôle | Non |
