@@ -59,8 +59,35 @@ Consultées le 2026-10-10 (pages complètes ou extraits de recherche selon la so
 - Tiers : Meckeys (Z1 Series), MaxGaming (Y9 Ultimate), FPSTools (Y9 Ultimate), MouseMetric (Fierce X), notice ATK U2 V2 Ultimate (manuals.plus).
 - Non utilisé comme donnée : Reddit (anecdotique).
 
+## 4. Ajouts du 2026-10-11 — produits encore vendus (atk.store)
+
+Passe complète sur la collection officielle (23 produits, 22 en stock) le **2026-10-11** : les 8 souris encore vendues
+absentes du catalogue ont été ajoutées. Méthode et analyse : `docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md`.
+Les prix sont ceux du store **en dollars** (`price_eur` reste `null`, aucune conversion) ; `budget_tier` suit la bande
+de prix du store (< 50 $ = Économique, 50–100 $ = Qualité-Prix, > 100 $ = Haut de Gamme) — règle nouvelle, à valider.
+
+| Ajout | Dimensions L×l×H (mm) | Poids | Bosse (EloShapes → schéma) | Prix store | Évasement / flancs (EloShapes) | Statut dimensions | Sources |
+|---|---|---|---|---|---|---|---|
+| **VXE Dragonfly V3 / V3 Pro** (`vxe_v3`) | 116,6 × 62,2 × 38,2 | 49–54 g | Back-moderate → **Rear** | dès 14,98 $ | Front flare « Inward - moderate », flancs « Inward » | verified | ATK Store ; EloShapes (V3 / V3 Pro) |
+| **VXE Dragonfly R1 / R1 Pro** (`vxe_r1`) | 120,6 × 64,0 × 37,8 | 51 g | Back-moderate → **Rear** | dès 14,98 $ | Front flare « Flat », flancs « Flat » | verified | EloShapes ; GamerGear ; ATK Store |
+| **VXE MAD R / Major** (`vxe_mad_r`) | 120,1 × 63,1 × 38,1 | 36 g | Back-moderate → **Rear** | dès 44,98 $ | Front flare « Outward - slight », flancs « Flat » | verified | EloShapes ; MouseShape ; ATK Store |
+| **VXE Dragonfly X3 / Pro / Turbo** (`vxe_x3`) | 127,0 × 64,0 × 40,0 | 51–54 g | *inconnue* | dès 29,98 $ | — | single_source | ATK Store |
+| **ATK Blazing Sky U2 Mini** (`atk_u2_mini`) | 119,5 × 63,0 × 38,5 | 38 g | Back-minimal → **Rear** | 84,98 $ | Front flare « Outward - slight », flancs « Inward » | verified | EloShapes (fiche + annonce) ; ATK Store |
+| **ATK Dragonfly A9 NB Ultra** (`atk_a9_nb`) | 125,0 × 63,5 × 40,0 | 56 g | Mid (coque A9) | 79,98 $ | — | verified | ATK Store ; Ryugear ; Standesk |
+| **ATK Blazing Sky F1 V2** (`atk_f1_v2`) | 118,2 × 62,4 × 38,8 | 38–39 g | Mid (coque F1, `shell_id` = `atk_f1`) | dès 44,98 $ | — | verified | ATK Store ; Loadout |
+| **ATK Blazing Sky U2** (`atk_u2`) | 123,7 × 64,6 × 39,1 | 49–55 g | **Rear** | dès 24,98 $ | — | verified | ATK Store ; EloShapes ; Meckeys |
+
+**Non renseigné volontairement** : `palm_grip_fit`, `claw_grip_fit`, `fingertip_grip_fit` et `button_height` restent
+`Inconnu` (les mentions marketing « Claw / Palm » de l'éditeur ne sont pas converties en compatibilité, règle du §1).
+Ces 8 souris apparaissent donc en « À vérifier » et ne sont jamais recommandées tant que le propriétaire n'a pas
+validé ces quatre valeurs.
+
+**Couverture après ajouts** : 26 souris, longueurs 116,6 → 127,0 mm. La `vxe_v3` (116,6 mm) est la première souris
+« Small » du catalogue : elle comble le manque de formes compactes pour les mains de moins de ~175 mm.
+
 ## 5. Ce qu'il reste à faire pour élargir le catalogue
 
-1. Extraire les fiches produits complètes (statut de disponibilité, prix EUR) sur les 23 produits de la collection ATK.
+1. Extraire les fiches produits complètes (statut de disponibilité, prix **EUR**) sur les 26 produits du catalogue
+   (les prix du store sont en USD : à documenter auprès d'un revendeur européen, jamais par conversion).
 2. Vérifier les compatibilités grip et hauteurs de boutons sur des mesures ou des tests documentés (aucune source actuelle ne le fait).
 3. Trancher les conflits du §2 (A9 Plus, Duckbill, Y9, X1 capteur).

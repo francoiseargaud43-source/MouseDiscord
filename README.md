@@ -22,7 +22,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 10. [Architecture](#architecture)
 11. [Tests](#tests)
 12. [Design et illustrations](docs/REPORTE_DESIGN.md)
-13. [Faire enrichir le catalogue par une IA](docs/PROMPT_RECHERCHE_SOURIS_ATK.md)
+13. [Faire enrichir le catalogue par une IA](docs/PROMPT_RECHERCHE_SOURIS_ATK.md) — [Analyse vidéo Oblivity et améliorations proposées](docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md)
 14. [Audit et données](docs/audit/AUDIT.md)
 
 ---

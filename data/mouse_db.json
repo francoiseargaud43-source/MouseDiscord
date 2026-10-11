@@ -895,5 +895,489 @@
         "date_checked": "2026-10-10"
       }
     ]
+  },
+  {
+    "category": "VXE",
+    "family": "VXE Dragonfly V3",
+    "height_mm": 38.2,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Première souris « Small » du catalogue (116,6 mm, EloShapes) : comble le manque de formes compactes. EloShapes : hump « Back - moderate » → Rear (règle de correspondance du projet) ; front flare « Inward - moderate » ; courbure des flancs « Inward ». Éditeur : « Claw / Palm / Fingertip », « small to medium hands ». Compatibilités de prise à valider par le propriétaire (marketing non assimilé à une compatibilité).",
+    "id": "vxe_v3",
+    "brand": "VXE",
+    "model": "Dragonfly V3 / V3 Pro",
+    "budget_tier": "Économique",
+    "length_mm": 116.6,
+    "width_max_mm": 62.2,
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Forme compacte symétrique à bosse arrière (EloShapes) ; l'éditeur annonce Claw/Palm/Fingertip mais aucune compatibilité par prise n'est documentée.",
+    "dimension_status": "verified",
+    "weight_g": 49.0,
+    "sensor": "Xhero AI / PAW3395 SE",
+    "polling_hz": 1000,
+    "price_eur": null,
+    "price_note": "Store ATK : à partir de 14,98 $ (série V3/V3 Pro) — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "ATK Store — VXE Dragonfly V3 Series",
+        "url": "https://www.atk.store/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes — VXE V3 / V3 Pro",
+        "url": "https://www.eloshapes.com/mouse/compare?p=vxe-v3-vs.-vxe-v3-pro",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "hump_position",
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "VXE",
+    "family": "VXE Dragonfly R1",
+    "height_mm": 37.8,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "EloShapes : « Front flare · Flat » et flancs plats (profil sans évasement arrière marqué — critère « rear design » de la vidéo Oblivity). Modèle très distribué et peu cher ; homologation de prise à faire par le propriétaire.",
+    "id": "vxe_r1",
+    "brand": "VXE",
+    "model": "Dragonfly R1 / R1 Pro",
+    "budget_tier": "Économique",
+    "length_mm": 120.6,
+    "width_max_mm": 64.0,
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Symétrique « safe » à bosse arrière modérée et flancs plats (EloShapes) ; compatibilités par prise non documentées.",
+    "dimension_status": "verified",
+    "weight_g": 51.0,
+    "sensor": "PAW3395",
+    "polling_hz": 2000,
+    "price_eur": null,
+    "price_note": "Store ATK : à partir de 14,98 $ (série R1) — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "EloShapes — VXE MAD R vs R1",
+        "url": "https://www.eloshapes.com/mouse/compare?p=vxe-mad-r-vs.-vxe-r1",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "hump_position",
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "GamerGear — VXE Dragonfly R1",
+        "url": "https://gamergear.net/compare.php?a=HPC&prod_catid=2&prod_idA=2539&prod_idB=2459",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — VXE Dragonfly R1 Series",
+        "url": "https://www.atk.store/products/vxe-dragonfly-r1-series-wireless-mouse",
+        "fields": [
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "VXE",
+    "family": "VXE MAD R",
+    "height_mm": 38.1,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky ZERO déjà au catalogue (120,1 × 63,2 × 38,1) : coque équivalente, modèle VXE moins cher. EloShapes : front flare « Outward - slight », flancs plats.",
+    "id": "vxe_mad_r",
+    "brand": "VXE",
+    "model": "MAD R / MAD R Major",
+    "budget_tier": "Économique",
+    "length_mm": 120.1,
+    "width_max_mm": 63.1,
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Symétrique ultraléger (36 g) à bosse arrière modérée (EloShapes) ; compatibilités par prise non documentées.",
+    "dimension_status": "verified",
+    "weight_g": 36.0,
+    "sensor": "PAW3395",
+    "polling_hz": 8000,
+    "price_eur": null,
+    "price_note": "Store ATK : à partir de 44,98 $ (série MAD R) — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "EloShapes — VXE MAD R",
+        "url": "https://www.eloshapes.com/mouse/compare?p=vxe-mad-r",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "hump_position",
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "MouseShape — VXE MAD R",
+        "url": "https://mouseshape.com/mice/vxe-mad-r",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "hump_position"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — VXE MAD R Series",
+        "url": "https://www.atk.store/products/vxe-mad-r-series-wireless-mouse",
+        "fields": [
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "VXE",
+    "family": "VXE Dragonfly X3",
+    "height_mm": 40.0,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Dimensions identiques à l'ATK Blazing Sky X1 / X1 V2 déjà au catalogue (127 × 64 × 40) : coque de la famille X1. Pas encore de fiche EloShapes -> position de la bosse inconnue : souris en « à vérifier » jusqu'à vérification. Éditeur : « Claw / Palm / Fingertip », « medium to large hands ».",
+    "id": "vxe_x3",
+    "brand": "VXE",
+    "model": "Dragonfly X3 / X3 Pro / X3 Turbo",
+    "budget_tier": "Économique",
+    "length_mm": 127.0,
+    "width_max_mm": 64.0,
+    "hump_position": "Inconnu",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Grande souris symétrique (127 mm) de la famille X1, sortie en octobre 2026 ; bosse et compatibilités non documentées.",
+    "dimension_status": "single_source",
+    "weight_g": 51.0,
+    "sensor": "PAW3315",
+    "polling_hz": 1000,
+    "price_eur": null,
+    "price_note": "Store ATK : à partir de 29,98 $ (lancement) — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "ATK Store — VXE Dragonfly X3 Series",
+        "url": "https://www.atk.store/products/vxe-dragonfly-x3-series-lightweight-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "ATK",
+    "family": "ATK Blazing Sky U2",
+    "height_mm": 38.5,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ».",
+    "id": "atk_u2_mini",
+    "brand": "ATK",
+    "model": "Blazing Sky U2 Mini",
+    "budget_tier": "Qualité-Prix",
+    "length_mm": 119.5,
+    "width_max_mm": 63.0,
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Version compacte du U2 (119,5 mm) à bosse arrière minimale (EloShapes) ; compatibilités par prise non documentées.",
+    "dimension_status": "verified",
+    "weight_g": 38.0,
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "price_eur": null,
+    "price_note": "Store ATK : 84,98 $ — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "EloShapes — ATK U2 Mini",
+        "url": "https://www.eloshapes.com/mouse/compare?p=atk-u2-mini",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "hump_position",
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 Mini",
+        "url": "https://www.atk.store/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse",
+        "fields": [
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes (X, 20/08/2026) — U2 Mini annoncé",
+        "url": "https://x.com/EloShapes/status/1958560179475431512",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "ATK",
+    "family": "ATK Dragonfly A9",
+    "height_mm": 40.0,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Mêmes dimensions que l'ATK Dragonfly A9 Plus 2.0 déjà au catalogue (125,0 × 63,5 × 40,0) : coque A9 pleine taille, bosse « Mid » héritée de cette fiche. Version à station de charge 2-en-1, 56 g. Éditeur : « Claw / Fingertip / Palm ». Le distributeur Standesk insiste sur claw / relaxed claw / fingertip.",
+    "id": "atk_a9_nb",
+    "brand": "ATK",
+    "model": "Dragonfly A9 NB Ultra",
+    "budget_tier": "Qualité-Prix",
+    "length_mm": 125.0,
+    "width_max_mm": 63.5,
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque de la famille A9 « pleine taille » (125 × 63,5 × 40) avec station de charge ; compatibilités par prise non documentées.",
+    "dimension_status": "verified",
+    "weight_g": 56.0,
+    "sensor": "PAW3950 Ultra",
+    "polling_hz": 8000,
+    "price_eur": null,
+    "price_note": "Store ATK : 79,98 $ — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "ATK Store — ATK Dragonfly A9 NB",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-nb-lightweight-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Ryugear — ATK Dragonfly A9 NB Ultra",
+        "url": "https://ryugear.in/products/atk-dragonfly-a9-nb-ulltra-lightweight-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Standesk — ATK Dragonfly A9 NB Ultra",
+        "url": "https://www.standesk.eu/product-page/atk-dragonfly-a9-nb-ultra-wireless-gaming-mouse",
+        "fields": [
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "ATK",
+    "family": "ATK Blazing Sky F1",
+    "height_mm": 38.8,
+    "grip_width_mm": null,
+    "shell_id": "atk_f1",
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Même coque que l'ATK F1 V3 Ultimate déjà au catalogue (d'où shell_id « atk_f1 ») : géométrie (bosse « Mid », boutons bas) reprise de cette fiche ; génération précédente, plus lourde (38-39 g contre 36-37 g). Compatibilités de prise non héritées : à valider par le propriétaire pour cette génération.",
+    "id": "atk_f1_v2",
+    "brand": "ATK",
+    "model": "Blazing Sky F1 V2",
+    "budget_tier": "Économique",
+    "length_mm": 118.2,
+    "width_max_mm": 62.4,
+    "hump_position": "Mid",
+    "button_height": "Low",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Même coque compacte que la F1 V3 déjà au catalogue (118,2 × 62,4 × 38,8), génération V2 plus lourde ; compatibilités par prise non documentées pour cette génération.",
+    "dimension_status": "verified",
+    "weight_g": 39.0,
+    "sensor": "PAW3950 Ultra",
+    "polling_hz": 8000,
+    "price_eur": null,
+    "price_note": "Store ATK : à partir de 44,98 $ (série F1 V2) — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
+        "url": "https://www.atk.store/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Loadout — ATK Blazing Sky F1 V2 Series",
+        "url": "https://www.loadout.co.in/product-page/atk-blazing-sky-f1-v2-series",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
+  },
+  {
+    "category": "ATK",
+    "family": "ATK Blazing Sky U2",
+    "height_mm": 39.1,
+    "grip_width_mm": null,
+    "shell_id": null,
+    "fit_status": "unverified",
+    "price_status": "unknown",
+    "conflicts": {},
+    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté.",
+    "id": "atk_u2",
+    "brand": "ATK",
+    "model": "Blazing Sky U2 / U2 Plus / U2 Ultimate",
+    "budget_tier": "Économique",
+    "length_mm": 123.7,
+    "width_max_mm": 64.6,
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Symétrique à flancs rentrants et bosse arrière (famille U2, clone du Zowie U2 selon les revues) ; compatibilités par prise non documentées.",
+    "dimension_status": "verified",
+    "weight_g": 49.0,
+    "sensor": "PAW3395 Ultra",
+    "polling_hz": 1000,
+    "price_eur": null,
+    "price_note": "Store ATK : à partir de 24,98 $ (série U2) — aucun prix EUR documenté, non converti.",
+    "sources": [
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 Series",
+        "url": "https://www.atk.store/products/atk-blazing-sky-u2-series-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor",
+          "price_note"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes — ATK U2",
+        "url": "https://www.eloshapes.com/mouse/compare?p=atk-u2",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "hump_position"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Meckeys — ATK Blazing Sky U2",
+        "url": "https://meckeys.com/shop/mouse/atk-blazing-sky-u2/",
+        "fields": [
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ]
   }
 ]

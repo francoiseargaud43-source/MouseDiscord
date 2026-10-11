@@ -31,6 +31,14 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | ATK A9 Ultimate | ⏳ à vérifier (15/25 pts partiels) | 125.0 mm (écart 1.2 mm) | 61.0 mm (estimée, écart 1.4) | Inconnu | Mid | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK A9 Air | ⏳ à vérifier (15/25 pts partiels) | 125.0 mm (écart 1.2 mm) | 61.0 mm (estimée, écart 1.4) | Inconnu | Mid | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK A9 Mini | ⏳ à vérifier (15/20 pts partiels) | 118.4 mm (écart 0.4 mm) | 58.2 mm (estimée, écart 0.0) | Inconnu | Inconnu | Inconnu | faible | compatibilité Palm Grip non vérifiée, position de la bosse non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly V3 / V3 Pro | ⏳ à vérifier (15/25 pts partiels) | 116.6 mm (écart 2.2 mm) | 59.2 mm (estimée, écart 0.0) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly R1 / R1 Pro | ⏳ à vérifier (15/25 pts partiels) | 120.6 mm (dans la plage) | 61.0 mm (estimée, écart 1.4) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE MAD R / MAD R Major | ⏳ à vérifier (15/25 pts partiels) | 120.1 mm (dans la plage) | 60.1 mm (estimée, écart 0.5) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly X3 / X3 Pro / X3 Turbo | ⏳ à vérifier (5/20 pts partiels) | 127.0 mm (écart 3.2 mm) | 61.0 mm (estimée, écart 1.4) | Inconnu | Inconnu | Inconnu | faible | compatibilité Palm Grip non vérifiée, position de la bosse non vérifiée, hauteur des boutons non vérifiée |
+| ATK Blazing Sky U2 Mini | ⏳ à vérifier (15/25 pts partiels) | 119.5 mm (dans la plage) | 60.0 mm (estimée, écart 0.4) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| ATK Dragonfly A9 NB Ultra | ⏳ à vérifier (15/25 pts partiels) | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Inconnu | Mid | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| ATK Blazing Sky F1 V2 | ⏳ à vérifier (20/30 pts partiels) | 118.2 mm (écart 0.6 mm) | 59.4 mm (estimée, écart 0.0) | Inconnu | Mid | Low | faible | compatibilité Palm Grip non vérifiée |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | ⏳ à vérifier (10/25 pts partiels) | 123.7 mm (dans la plage) | 61.6 mm (estimée, écart 2.0) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 
 **Classement par mode (profil P, budget ≤ 75 € pour le mode budget)**
 
@@ -66,6 +74,14 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | ATK A9 Ultimate | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 61.0 mm (estimée, écart 2.6) | Inconnu | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK A9 Air | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 61.0 mm (estimée, écart 2.6) | Inconnu | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK A9 Mini | ⏳ à vérifier (15/20 pts partiels) | 118.4 mm (écart 2.5 mm) | 58.2 mm (estimée, écart 0.0) | Inconnu | Inconnu | Inconnu | faible | compatibilité Claw Grip non vérifiée, position de la bosse non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly V3 / V3 Pro | ⏳ à vérifier (15/25 pts partiels) | 116.6 mm (écart 0.7 mm) | 59.2 mm (estimée, écart 0.8) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly R1 / R1 Pro | ⏳ à vérifier (5/25 pts partiels) | 120.6 mm (écart 4.7 mm) | 61.0 mm (estimée, écart 2.6) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE MAD R / MAD R Major | ⏳ à vérifier (10/25 pts partiels) | 120.1 mm (écart 4.2 mm) | 60.1 mm (estimée, écart 1.7) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly X3 / X3 Pro / X3 Turbo | ❌ exclue — Longueur hors plage de 11.1 mm (> 8 mm) | 127.0 mm (écart 11.1 mm) | 61.0 mm (estimée, écart 2.6) | Inconnu | Inconnu | Inconnu | — | Longueur hors plage de 11.1 mm (> 8 mm) |
+| ATK Blazing Sky U2 Mini | ⏳ à vérifier (10/25 pts partiels) | 119.5 mm (écart 3.6 mm) | 60.0 mm (estimée, écart 1.6) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
+| ATK Dragonfly A9 NB Ultra | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Inconnu | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
+| ATK Blazing Sky F1 V2 | ⏳ à vérifier (20/30 pts partiels) | 118.2 mm (écart 2.3 mm) | 59.4 mm (estimée, écart 1.0) | Inconnu | Mid | Low | faible | compatibilité Claw Grip non vérifiée |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | ⏳ à vérifier (5/25 pts partiels) | 123.7 mm (écart 7.8 mm) | 61.6 mm (estimée, écart 3.2) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
 
 **Classement par mode (profil C, budget ≤ 75 € pour le mode budget)**
 
@@ -101,6 +117,14 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | ATK A9 Ultimate | ⏳ à vérifier (15/20 pts partiels) | 125.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK A9 Air | ⏳ à vérifier (15/20 pts partiels) | 125.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK A9 Mini | ⏳ à vérifier (20/20 pts partiels) | 118.4 mm (dans la plage) | 58.2 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly V3 / V3 Pro | ⏳ à vérifier (20/20 pts partiels) | 116.6 mm (dans la plage) | 59.2 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly R1 / R1 Pro | ⏳ à vérifier (15/20 pts partiels) | 120.6 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE MAD R / MAD R Major | ⏳ à vérifier (15/20 pts partiels) | 120.1 mm (dans la plage) | 60.1 mm (estimée, écart 0.9) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE Dragonfly X3 / X3 Pro / X3 Turbo | ⏳ à vérifier (15/20 pts partiels) | 127.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| ATK Blazing Sky U2 Mini | ⏳ à vérifier (15/20 pts partiels) | 119.5 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| ATK Dragonfly A9 NB Ultra | ⏳ à vérifier (15/20 pts partiels) | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| ATK Blazing Sky F1 V2 | ⏳ à vérifier (25/30 pts partiels) | 118.2 mm (dans la plage) | 59.4 mm (estimée, écart 0.2) | Inconnu | ignorée (Fingertip) | Low | faible | compatibilité Fingertip Grip non vérifiée |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | ⏳ à vérifier (10/20 pts partiels) | 123.7 mm (dans la plage) | 61.6 mm (estimée, écart 2.4) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 
 **Classement par mode (profil F, budget ≤ 75 € pour le mode budget)**
 

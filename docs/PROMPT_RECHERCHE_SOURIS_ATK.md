@@ -17,7 +17,8 @@ contient exactement :
 | Fichier | Pourquoi l'IA en a besoin |
 |---|---|
 | `docs/PROMPT_RECHERCHE_SOURIS_ATK.md` | **Le prompt** (ce document) : mission, règles, format de sortie |
-| `data/mouse_db.json` | Le catalogue actuel (18 souris) : format réel, valeurs déjà connues, identifiants à ne pas réutiliser |
+| `data/mouse_db.json` | Le catalogue actuel (26 souris) : format réel, valeurs déjà connues, identifiants à ne pas réutiliser |
+| `docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md` | Ce que la vidéo Oblivity ajoute (largeur au capteur, évasement arrière, poids) et les améliorations en attente |
 | `docs/audit/CATALOGUE_ATK.md` | Les 23 produits ATK déjà étudiés et les **décisions de non-ajout** (Z1 originale, Duckbill, doublons) : évite de reproposer ce qui a été écarté |
 | `docs/audit/matrice_profils.md` | Comment chaque souris obtient son score (profils Palm/Claw/Fingertip) : montre ce qui compte vraiment |
 | `README.md` | Comment le bot fonctionne (parcours, score, modes, sources) — section « Moteur de scoring » incluse |
@@ -94,6 +95,16 @@ SOURCES — RÈGLE CENTRALE
   et le conflit est documenté dans `conflicts`).
 - Utilise par priorité : site officiel ATK (fiches produit et pages « shape/dimensions »), bases de formes
   (EloShapes), fiches revendeurs, tests et vidéos documentées (dont les vidéos fournies par l'utilisateur).
+- **EloShapes donne des champs de forme à relever systématiquement** : `Hump placement` (Center / Back - minimal /
+  moderate / aggressive…), `Front flare`, `Side curvature`, `Thumb rest`, `Ring finger rest`. Reporte-les tels quels :
+  la correspondance vers le schéma (`Center → Mid`, `Back - … → Rear`) est appliquée par le projet, pas par toi.
+- **Largeur de prise** : les fabricants et EloShapes publient la largeur MAXIMALE (souvent déformée par l'évasement
+  arrière). Ne l'utilise JAMAIS comme largeur de prise : si une source donne une largeur mesurée **au niveau du
+  capteur**, indique-la à part (`grip_width_measured_mm` + source), sinon laisse la case vide.
+- **Poids, capteur, taux de sondage** : à documenter (le poids est affiché, jamais noté ; capteur ≥ 8000 Hz et PAW3950/3955
+  donnent un bonus en mode « Haut de Gamme »).
+- **Disponibilité et prix** : indique si le produit est encore vendu sur le store officiel (`store_listed`, `store_url`)
+  et le prix **dans sa devise d'origine**, en précisant la devise. Un prix en dollars **n'est pas** un prix en euros.
 - Les vidéos YouTube que je te fournis servent à documenter ce qui n'est pas écrit ailleurs : forme réelle,
   position de la bosse, hauteur des boutons, ressenti de prise. Indique pour chacune l'auteur, le titre et le lien,
   et le minutage précis quand tu en tires une information (ex. « 04:12 — la bosse est clairement à l'arrière »).
@@ -151,6 +162,10 @@ FORMAT DE SORTIE ATTENDU
   "weight_g": 47.0,
   "sensor": "PAW3950 Ultra",
   "polling_hz": 8000,
+  "store_listed": true,
+  "store_url": "https://www.atk.store/products/…",
+  "elo_shapes": {"hump_placement": "Back - moderate", "front_flare": "Outward - slight", "side_curvature": "Inward"},
+  "grip_width_measured_mm": null,
   "conflicts": {},
   "sources": [
     {"label": "ATK — fiche officielle", "url": "https://…", "fields": ["length_mm", "width_max_mm", "weight_g"], "date_checked": "AAAA-MM-JJ"},
@@ -161,7 +176,8 @@ FORMAT DE SORTIE ATTENDU
 
 RÈGLES DE REMPLISSAGE
 - `width_max_mm` est OBLIGATOIRE (largeur maximale de la coque, pas la largeur de prise).
-- `grip_width_mm` reste TOUJOURS `null` : cette valeur exige une mesure réelle du propriétaire.
+- `grip_width_mm` / `grip_width_measured_mm` restent `null` sauf mesure réelle au niveau du capteur (règle du projet :
+  aucune largeur de prise estimée n'est écrite dans le catalogue).
 - `length_mm` ou `width_max_mm` à `null` : uniquement si les sources se contredisent, ET le conflit est décrit ainsi :
   "conflicts": {"length_mm": {"values": [118.0, 117.0], "sources": ["https://…", "https://…"]}}
 - `dimension_status = "verified"` ou `"single_source"` ⇒ `sources` non vide (au moins une source pour `single_source`,
@@ -235,3 +251,5 @@ question du thénar).
 | Compatibilités de prise en « Inconnu » sans source explicite | La forme ne prouve pas le confort de prise |
 | Aucun lien commercial | `data/commercial_links.json` reste sous contrôle du propriétaire |
 | Les souris validées ne sont pas modifiées | Le barème et les valeurs existantes sont testés (non-régression) |
+| Les champs de forme (bosse, flare, courbure) sont recopiés tels quels | La conversion vers le schéma du bot est une décision du projet, pas de la source |
+| Un prix en dollars n'est jamais un prix en euros | Les modes « Économique », « Qualité-Prix » et « Budget perso » exigent un prix EUR **documenté** |

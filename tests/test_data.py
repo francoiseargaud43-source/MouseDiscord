@@ -17,6 +17,11 @@ NEW_ATK_IDS = [
     "atk_phantom_ultimate", "atk_ghost_ultimate", "atk_ghost_extreme", "atk_y9_ultimate", "atk_fierce_x",
     "atk_u2_v2_ultimate", "atk_u2_v2_mini", "atk_zero", "atk_duckbill", "atk_a9_ultimate", "atk_a9_air", "atk_a9_mini",
 ]
+# Ajouts du 2026-10-11 : souris ATK/VXE actuellement vendues sur atk.store, absentes du catalogue
+# (recherche « produits encore vendus » ; sources ATK Store + EloShapes, voir docs/audit/CATALOGUE_ATK.md §4).
+STORE_2026_10_11_IDS = [
+    "vxe_v3", "vxe_r1", "vxe_mad_r", "vxe_x3", "atk_u2_mini", "atk_a9_nb", "atk_f1_v2", "atk_u2",
+]
 
 
 @pytest.fixture(scope="module")
@@ -27,7 +32,26 @@ def mice():
 def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert set(OWNER_IDS) <= set(mice)
     assert set(NEW_ATK_IDS) <= set(mice)
-    assert len(mice) == len(OWNER_IDS) + len(NEW_ATK_IDS)
+    assert set(STORE_2026_10_11_IDS) <= set(mice)
+    assert len(mice) == len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS)
+
+
+def test_store_additions_are_sourced_and_never_invent_compatibility(mice):
+    """Les ajouts « produits vendus » sont sourcés, sans prix EUR inventé ni compatibilité de prise inventée."""
+    for mouse_id in STORE_2026_10_11_IDS:
+        mouse = mice[mouse_id]
+        assert mouse.sources, f"{mouse_id} doit citer au moins une source"
+        assert all(s.date_checked and s.url.startswith("http") for s in mouse.sources)
+        assert mouse.price_eur is None and "EUR" in mouse.price_note, mouse_id
+        assert mouse.fit_status == "unverified", mouse_id
+        assert {mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit} == {"Inconnu"}, mouse_id
+
+
+def test_vxe_v3_fills_the_small_shape_gap(mice):
+    """Première souris « Small » du catalogue (116,6 mm) : les autres font au moins 118 mm."""
+    assert mice["vxe_v3"].length_mm == 116.6
+    others = [m.length_mm for m in mice.values() if m.id != "vxe_v3" and m.length_mm is not None]
+    assert min(others) > mice["vxe_v3"].length_mm
 
 
 def test_owner_models_keep_their_compatibility_values(mice):
