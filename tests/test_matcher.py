@@ -27,7 +27,7 @@ from utils.matcher import (
     grip_width_for_scoring,
     rank_by_compatibility,
 )
-from utils.models import BudgetMode, Grip, HandMeasure, Mouse
+from utils.models import BudgetMode, Grip, HandMeasure, Mouse, Thenar
 
 
 @pytest.fixture(scope="module")
@@ -79,6 +79,23 @@ def test_width_offset_constant_is_three_mm():
 
 def test_max_score_is_sum_of_criteria():
     assert MAX_SCORE == 10 + 10 + 10 + 5 + 5
+
+
+def test_thenar_adjustment_is_bounded_and_rear_hump_only(catalog):
+    """Ajustement thénar : ±2 bornés, uniquement bosse arrière, jamais en Fingertip, défaut inchangé."""
+    rear = catalog["scyrox_v8"]          # bosse Rear, compatible Claw
+    mid = catalog["scyrox_v6"]           # bosse Mid
+    base = evaluate_mouse(rear, HAND, Grip.CLAW)
+    petite = evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.PETITE)
+    grande = evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.GRANDE)
+    moyenne = evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.MOYENNE)
+    assert base.total == moyenne.total            # défaut et thénar moyen : barème historique
+    assert grande.breakdown.thenar_pts == 2 and petite.breakdown.thenar_pts == -2
+    assert grande.total - petite.total == 4
+    assert 0 <= petite.breakdown.width_pts + petite.breakdown.thenar_pts <= 10   # borné 0–10
+    assert evaluate_mouse(mid, HAND, Grip.PALM, thenar=Thenar.GRANDE).breakdown.thenar_pts == 0
+    assert evaluate_mouse(rear, HAND, Grip.FINGERTIP, thenar=Thenar.PETITE).breakdown.thenar_pts == 0
+    assert petite.thenar_note is not None and "arrière marqué" in petite.thenar_note
 
 
 # ---------------------------------------------------------------------------

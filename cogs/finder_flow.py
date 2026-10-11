@@ -234,6 +234,10 @@ def _match_summary(score: MouseScore) -> str:
         weak.append("largeur de prise un peu large")
     if score.breakdown.grip_pts > 0:
         good.append(f"prise {score.grip.label} bien soutenue")
+    if score.breakdown.thenar_pts > 0:
+        good.append("arrière marqué qui soutient votre thénar")
+    elif score.breakdown.thenar_pts < 0:
+        weak.append("arrière large à contre-emploi avec un thénar petite")
     if mouse.hump_position != "Inconnu" and score.grip is not Grip.FINGERTIP:
         # En Fingertip, la bosse est ignorée par le barème : ne pas la présenter comme un défaut.
         (good if score.breakdown.hump_pts > 0 else weak).append(
@@ -500,8 +504,9 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         )
         if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
             details.add_field(
-                name="🖐️ Thénar Petite (indicatif)",
-                value="Un arrière étroit est souvent plus confortable pour cette morphologie — **non prise en compte dans le score**.",
+                name="🖐️ Thénar Petite",
+                value=("Arrière étroit en « pilule » conseillé (méthode Oblivity) ; "
+                       "une souris à bosse arrière marquée est **pénalisée à la marge** dans le score."),
                 inline=False,
             )
             details = _image(details, "illustration_rear_narrow")
@@ -528,7 +533,8 @@ def compute_selection(session: FinderSession) -> Selection:
     hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
     assert session.grip is not None
     scores = [
-        evaluate_mouse(mouse, hand, session.grip, session.budget_mode, session.max_budget_eur)
+        evaluate_mouse(mouse, hand, session.grip, session.budget_mode, session.max_budget_eur,
+                       thenar=session.thenar)
         for mouse in mice
     ]
     return select(scores, session.budget_mode)

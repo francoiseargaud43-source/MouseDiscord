@@ -1,52 +1,76 @@
 # Prix en euros et produits encore vendus — relevé du 2026-10-11
 
-Objectif : répondre à la question « le prix doit être en euros », sans conversion et sans invention,
-puis rassembler ce qui est nécessaire pour choisir **ensemble** les prochaines souris à ajouter.
+## 0. Correction : les prix en euros existent bien
 
-## 1. Ce que j'ai vérifié : le store ATK n'affiche pas d'euros
+Tu avais raison. Le store ATK **affiche bien des prix en euros** — mais seulement quand le **marché
+France** est actif. Mon premier contrôle ne l'était pas (le store servait le marché par défaut, en USD).
+La preuve : la même page, avec le pays forcé sur la France.
 
-| Contrôle | Résultat |
+| URL | Devise affichée |
 |---|---|
-| `https://www.atk.store/fr-fr/collections/souris` | **redirige** vers `https://www.atk.store/collections/mice` (page anglaise) |
-| Fiche F1 V3 (`/fr-fr/products/...`) | prix rendus en **USD** : `Sale price$64.98 USD Regular price$89.98 USD` |
-| Données structurées de la fiche | `"priceCurrency":"USD"` (Z1 : `"price":"54.98","priceCurrency":"USD"`) |
-| Page FR « articles » de la Z1, du Duckbill | mêmes prix en **USD** |
+| `https://www.atk.store/fr-fr/collections/souris` | USD (marché par défaut) |
+| `https://www.atk.store/fr-fr/collections/souris?country=FR` | **EUR** : « Souris • 23 produits • En stock (21) » |
 
-Conclusion : le sélecteur `fr-fr` ne change que la **langue**, pas la devise ; la boutique applique une
-devise USD. Aucun prix EUR ne peut donc venir du store officiel. **Je n'ai converti aucun prix USD en euros.**
+Exemples lus le 2026-10-11 en euros : VXE Dragonfly X3 « à partir de **27,95 €** », ATK Blazing Sky
+Phantom **91,95 €**, F1 V3 « à partir de **59,95 €** », A9 Ultimate « à partir de **41,95 €** »,
+VXE R1 « à partir de **13,95 €** », ZERO « à partir de **63,95 €** »…
 
-## 2. Où il y a de vrais prix en euros (deux sources retenues)
+**Aucune conversion n'a été faite** : ce sont les prix que la boutique affiche elle-même en euros
+(TVA et prix barrés inclus dans la page).
 
-1. **Maxesport** (`maxesport.gg`) — revendeur français, colis expédiés **depuis la France**, prix **TTC en €**,
-   indication « en stock / rupture ». C'est la source la plus proche de ce que paierait l'utilisateur en France.
-2. **Boutique ATK sur Amazon.fr** — vendeur/expéditeur « **ATK Gaming Gears** » (boutique de la marque).
-   Attention : les montants s'affichent deux fois — prix article et **total avec frais d'import**
-   (ex. A9 : 35,99 € + 3,60 € d'import = 39,59 €). J'ai retenu le **prix article**, en le notant.
+## 1. Ce qui est écrit dans la base
 
-## 3. Relevé par souris de notre catalogue
+24 souris sur 26 ont désormais un prix EUR **daté et sourcé** (source : la boutique officielle FR,
+`?country=FR`, relevé du 2026-10-11). Les « à partir de » correspondent à la variante la moins chère
+en stock ; le prix normal barré est conservé dans la note.
 
-| Notre id | Modèle | Prix EUR constaté | Où / état | Écrit dans la base ? |
-|---|---|---|---|---|
-| scyrox_v8 | Scyrox V8 / V8S | **74,90 €** | Maxesport, noir en stock (blanc en promo 59,90 €) | oui (confirme le cahier des charges) |
-| atk_a9_plus | A9 Plus 2.0 | 44,90 € | Maxesport, noir en stock | non : le prix du cahier des charges (45,00 €) reste la référence ; l'observation est notée |
-| atk_a9_air | A9 Air 8K | **89,90 €** | Maxesport, Shadow White en stock | oui |
-| atk_ghost_ultimate | Ghost Ultimate 8K CF | **114,90 €** | Maxesport, argent | oui |
-| vxe_x3 | VXE X3 / X3 Pro / X3 Turbo | **44,90 €** (X3) / 49,90 € (X3 Pro) | Maxesport, en stock | oui, « à partir de » |
-| vxe_r1 | VXE R1 S / N / SE+ / Pro / Pro Max | **29,90 €** (R1 S) → 64,90 € (Pro Max) | Maxesport, plusieurs en stock | oui, « à partir de » |
-| atk_f1_ultimate | F1 V3 Ultimate | 89,90 € (Ultimate+ 8K) / 134,90 € (Extreme+) | Maxesport, blanc en stock | non : modèle « Ultimate » du cahier vs « Ultimate+ » du commerce — à trancher |
-| atk_x1_ultra_max | X1 V2 Ultra Max | 84,90 € (X1 V2 **Ultimate**, pas Ultra Max) | Maxesport | non : variante différente |
-| vxe_v3 | VXE Dragonfly V3 / V3 Pro | 22,90 € (V3) / 26,90 € (V3 Pro) | Maxesport, **toutes en rupture** | non : rupture de stock |
-| vxe_mad_r | VXE MAD R / MAD R Major | 59,90 € (MAD R 8K) | Maxesport, **en rupture** | non : rupture de stock |
-| — | autres 16 souris | aucun prix EUR trouvé | — | non |
+| Souris | Prix EUR officiel | Remarque |
+|---|---|---|
+| VXE Dragonfly X3 | dès 27,95 € | prix normal 31,95 € |
+| ATK Blazing Sky Phantom | 91,95 € | prix normal 109,95 € |
+| ATK A9 Ultimate | dès 41,95 € | prix normal 63,95 € |
+| ATK Blazing Sky ZERO | dès 63,95 € | prix normal 81,95 € |
+| ATK Blazing Sky F1 V2 | dès 41,95 € | prix normal 63,95 € |
+| ATK Blazing Sky U2 V2 | 59,95 € | prix normal 72,95 € |
+| VXE Dragonfly R1 | dès 13,95 € | prix normal 17,95 € |
+| VXE Dragonfly V3 | dès 13,95 € | prix normal 17,95 € |
+| ATK Blazing Sky GHOST | dès 68,95 € | Ultimate et Extreme, prix normal 100,95 € |
+| ATK Blazing Sky Duckbill | 81,95 € | prix normal 118,95 € |
+| ATK Blazing Sky Y9 | dès 41,95 € | prix normal 63,95 € |
+| ATK Blazing Sky U2 Mini | 77,95 € | — |
+| ATK Blazing Sky U2 | dès 22,95 € | prix normal 28,95 € |
+| ATK Dragonfly A9 NB | 72,95 € | prix normal 122,95 € |
+| ATK FIERCE X | 69,95 € | prix normal 81,95 € |
+| ATK A9 Air | 89,90 € | Maxesport (pas de prix officiel distinct pour cette variante) |
+| Scyrox V8 / V8S | 74,90 € | Maxesport — confirmé en euros, non vendu sur le store ATK |
 
-Aucun montant n'a été converti, extrapolé ou « arrondi » : quand la variante exacte n'existait pas,
-je n'ai rien écrit (voir la colonne « Écrit dans la base ? »).
+Les 6 souris de ton cahier des charges **gardent leur prix** : j'ai seulement consigné l'observation
+officielle dans leurs notes (ex. F1 V3 « à partir de » 59,95 € contre 70 € chez toi).
 
-## 4. Effet sur le bot
+Sans prix EUR distinct à ce jour : **A9 Mini** (vendue dans la famille A9 « à partir de » 18,95 €)
+et **U2 V2 Mini** (le store ne liste qu'un « U2 Mini », 77,95 €, qui partage la coque).
 
-Ces prix sourcés rendent les souris concernées **visibles dans les modes Économique, Qualité-Prix et Budget**,
-qui exigent un prix (avant, elles ne sortaient qu'en « haut de gamme »/classement morphologique).
-Le barème géométrique n'est pas touché : les scores sont inchangés (257 tests verts).
+## 2. Autres sources EUR (pour comparaison, non utilisées dans la base)
+
+- **Maxesport** (revendeur FR, expédition depuis la France) : F1 V3 Ultimate+ 89,90 €,
+  F1 V3 Extreme+ 134,90 €, X1 V2 Ultimate 84,90 €, A9 Air 8K 89,90 €, A9 Plus 2.0 44,90 €,
+  X3 44,90 € / X3 Pro 49,90 €, R1 de 29,90 à 64,90 €, V3 22,90 €, MAD R 59,90 €, Scyrox V8 74,90 €.
+- **Boutique ATK sur Amazon.fr** (« ATK Gaming Gears ») : R1 SE+ 33,99 €, Dragonfly A9 35,99 €,
+  A9 Plus 45,99 € — prix **hors frais d'import** affichés séparément (≈ 3,60 €).
+
+Ces deux sources servent de contrôle : elles encadrent les prix officiels sans les remplacer.
+
+## 3. Effet sur le bot
+
+Ces prix sourcés rendent les souris concernées **visibles dans les modes Économique, Qualité-Prix et
+Budget personnalisé**, qui exigent un prix. Le barème géométrique n'est pas touché.
+
+## 4. Couverture du catalogue vs produits encore vendus
+
+Les 23 produits listés par la boutique sont tous représentés par une de nos 26 fiches, sauf trois
+**familles historiques encore vendues** (F1 « Series » dès 36,95 €, X1 « Series » dès 18,95 €,
+Z1 « Series » dès 50,95 €) : elles partagent les coques de modèles déjà présents (F1 V2/V3, X1 V2,
+Z1 V2) mais ont leurs propres variantes économiques. À ajouter si tu veux une couverture exhaustive.
 
 ## 5. Candidats à ajouter (vendus aujourd'hui, absents du catalogue)
 

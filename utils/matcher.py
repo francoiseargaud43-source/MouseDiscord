@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Sequence
 
-from utils.models import UNKNOWN, BudgetMode, Grip, HandMeasure, Mouse
+from utils.models import UNKNOWN, BudgetMode, Grip, HandMeasure, Mouse, Thenar
 
 # --- A. Équations de base (plages idéales) --------------------------------
 LENGTH_BASE_MM = 71.4
@@ -71,6 +71,15 @@ BUTTON_IDEAL = {
 BUTTON_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 BUTTON_MAX_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 
+# --- D. Ajustement thénar ↔ arrière marqué (reverse engineering Oblivity, 2026-10-11) ----
+# L'outil d'Oblivity ne donne AUCUN point au thénar : il s'en sert pour imposer une forme d'arrière
+# (« arrière étroit en pilule » pour un thénar petit OU moyen, aucune contrainte pour un thénar grand)
+# et ne pose même pas la question en Fingertip (dossier Reverse/, 10 sorties datées 2026-10-11).
+# Nous traduisons cette contrainte en un ajustement BORNÉ du sous-score de largeur, appliqué
+# uniquement aux souris à bosse arrière marquée (c'est l'arrière qui « remplit » la paume).
+THENAR_WIDTH_ADJUSTMENT = {Thenar.PETITE: -2, Thenar.MOYENNE: 0, Thenar.GRANDE: +2}
+THENAR_REAR_HUMP = "Rear"          # seule géométrie concernée (bosse arrière marquée)
+
 # Précision de comparaison : les écarts sont arrondis à 6 décimales avant d'être comparés
 # aux seuils stricts, pour qu'un écart « exact » ne soit jamais classé à côté par bruit flottant.
 DELTA_DECIMALS = 6
@@ -95,10 +104,12 @@ class ScoreBreakdown:
     grip_pts: int = 0
     hump_pts: int = 0
     button_pts: int = 0
+    thenar_pts: int = 0     # ajustement thénar (voir THENAR_WIDTH_ADJUSTMENT), borné avec width_pts
 
     @property
     def total(self) -> int:
-        return self.length_pts + self.width_pts + self.grip_pts + self.hump_pts + self.button_pts
+        return (self.length_pts + self.width_pts + self.grip_pts + self.hump_pts
+                + self.button_pts + self.thenar_pts)
 
 
 @dataclass(frozen=True)
@@ -113,6 +124,7 @@ class MouseScore:
     computable_max: int = 0                # points maximum pouvant être attribués avec les données présentes
     width_source: str | None = None        # "measured" | "estimated"
     width_used_mm: float | None = None
+    thenar_note: str | None = None          # effet thénar appliqué (None si aucun)
     confidence: str | None = None          # "élevée" | "moyenne" | "faible"
 
     @property
@@ -190,7 +202,8 @@ def _confidence(mouse: Mouse, width_source: str) -> str:
     return "moyenne"   # dimensions vérifiées mais largeur de prise estimée
 
 
-def _finish(mouse, grip, status, breakdown, details, missing, computable_max, width_source, width_used, excluded_reason=None):
+def _finish(mouse, grip, status, breakdown, details, missing, computable_max, width_source, width_used,
+            excluded_reason=None, thenar_note=None):
     return MouseScore(
         mouse=mouse,
         grip=grip,
@@ -202,6 +215,7 @@ def _finish(mouse, grip, status, breakdown, details, missing, computable_max, wi
         computable_max=computable_max,
         width_source=width_source,
         width_used_mm=width_used,
+        thenar_note=thenar_note,
         confidence=None if status == STATUS_EXCLUDED else _confidence(mouse, width_source or "estimated"),
     )
 
@@ -212,8 +226,14 @@ def evaluate_mouse(
     grip: Grip,
     budget_mode: BudgetMode | None = None,
     max_budget_eur: float | None = None,
+    thenar: Thenar | None = None,
 ) -> MouseScore:
-    """Évalue la compatibilité morphologique d'une souris pour une main et un grip donnés."""
+    """Évalue la compatibilité morphologique d'une souris pour une main et un grip donnés.
+
+    ``thenar`` est facultatif : sans lui (valeur par défaut), le score est strictement identique
+    au barème historique. Avec lui, l'ajustement thénar ne joue que sur les souris à bosse
+    arrière marquée, et jamais en Fingertip (leur outil ne pose pas la question).
+    """
     # --- Filtre éliminatoire budget personnalisé (prix inconnu = non conforme par défaut)
     if budget_mode is BudgetMode.CUSTOM:
         if max_budget_eur is None:
@@ -259,6 +279,24 @@ def evaluate_mouse(
         f"({_ecart(wid_delta)}) : {width_pts} pts"
     )
 
+    # --- Ajustement thénar (uniquement arrière marqué, jamais en Fingertip) ----
+    thenar_pts = 0
+    thenar_note = None
+    applies = (
+        thenar is not None
+        and grip is not Grip.FINGERTIP
+        and mouse.hump_position == THENAR_REAR_HUMP
+    )
+    if applies:
+        adjustment = THENAR_WIDTH_ADJUSTMENT.get(thenar, 0)
+        combined = min(WIDTH_PTS_IN_RANGE, max(0, width_pts + adjustment))
+        thenar_pts = combined - width_pts
+        if thenar_pts:
+            thenar_note = (
+                f"Thénar {thenar.value.lower()} × arrière marqué : {thenar_pts:+d} pt sur la largeur"
+            )
+            details.append(thenar_note)
+
     # --- Compatibilité grip ---------------------------------------------------
     grip_pts = 0
     fit = mouse.fit_for(grip)
@@ -296,9 +334,10 @@ def evaluate_mouse(
         details.append(f"Boutons {mouse.button_height} : {'adaptés' if button_ok else 'non adaptés'} : {button_pts} pts")
 
     breakdown = ScoreBreakdown(length_pts=length_pts, width_pts=width_pts, grip_pts=grip_pts,
-                               hump_pts=hump_pts, button_pts=button_pts)
+                               hump_pts=hump_pts, button_pts=button_pts, thenar_pts=thenar_pts)
     status = STATUS_PENDING if missing else STATUS_SCORED
-    return _finish(mouse, grip, status, breakdown, details, missing, computable, width_source, width_used)
+    return _finish(mouse, grip, status, breakdown, details, missing, computable, width_source, width_used,
+                   thenar_note=thenar_note)
 
 
 def rank_by_compatibility(scores: Sequence[MouseScore]) -> list[MouseScore]:

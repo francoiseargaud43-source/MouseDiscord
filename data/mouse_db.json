@@ -20,7 +20,7 @@
     "price_status": "verified",
     "price_note": "Prix EUR issu du cahier des charges (74,90 €), confirmé le 2026-10-11 par le prix public français (74,90 €, noir, en stock ; blanc en promotion à 59,90 €) chez Maxesport.",
     "fit_rationale": "La bosse arrière verrouille parfaitement le Claw grip. Très légère pour le Fingertip.",
-    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées.",
+    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK (Maxesport : 74,90 €).",
     "sources": [
       {
         "label": "Maxesport (revendeur FR, expédition depuis la France) — Scyrox V8 8K Wireless Black",
@@ -53,7 +53,7 @@
     "price_status": "owner_spec_unverified",
     "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
     "fit_rationale": "Bosse centrale très polyvalente, parfaite pour le Relaxed Claw.",
-    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées.",
+    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK.",
     "sources": []
   },
   {
@@ -78,7 +78,7 @@
     "price_status": "owner_spec_unverified",
     "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
     "fit_rationale": "Arrière étroit empêchant les crampes de l'éminence thénar en Fingertip.",
-    "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée.",
+    "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée. Prix officiel EUR constaté le 2026-10-11 : série F1 V3 « à partir de » 59,95 € (Ultimate+ ; Extreme+ 91,95 €).",
     "sources": [
       {
         "label": "ATK Blog — Which mouse is right for you (F1)",
@@ -127,7 +127,7 @@
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
-    "notes": "127 × 64 × 40 mm confirmés par EloShapes et la collection ATK X1. Capteur indiqué différemment selon les sources (PAW3395 Ultra chez EloShapes, PAW3950 Ultra ou PAW3955 Master chez ATK) : non renseigné. EloShapes : bosse « Back - minimal » vs « Mid » du cahier des charges (conflit signalé).",
+    "notes": "127 × 64 × 40 mm confirmés par EloShapes et la collection ATK X1. Capteur indiqué différemment selon les sources (PAW3395 Ultra chez EloShapes, PAW3950 Ultra ou PAW3955 Master chez ATK) : non renseigné. EloShapes : bosse « Back - minimal » vs « Mid » du cahier des charges (conflit signalé). Prix officiel EUR constaté le 2026-10-11 : série X1 V2 « à partir de » 41,95 €.",
     "conflicts": {
       "sensor": {
         "values": [
@@ -189,7 +189,7 @@
     "fit_rationale": "Coque ergonomique asymétrique. Boutons hauts. Le choix absolu pour le Palm Grip.",
     "weight_g": 54.0,
     "polling_hz": 8000,
-    "notes": "122.5 × 66.8 × 42.4 mm : ATK (collection Z1), article ATK 2024 et Meckeys. Ne pas confondre avec la Z1 originale (119.57 × 60.99 × 36.26 mm selon ATK, dimensions identiques à la Fierce X : non ajoutée, à vérifier). Bosse « Mid-Front » du cahier des charges, à confirmer.",
+    "notes": "122.5 × 66.8 × 42.4 mm : ATK (collection Z1), article ATK 2024 et Meckeys. Ne pas confondre avec la Z1 originale (119.57 × 60.99 × 36.26 mm selon ATK, dimensions identiques à la Fierce X : non ajoutée, à vérifier). Bosse « Mid-Front » du cahier des charges, à confirmer. Prix officiel EUR constaté le 2026-10-11 : Z1 V2 « à partir de » 59,95 €.",
     "sources": [
       {
         "label": "ATK Store — collection Z1 Series",
@@ -249,7 +249,7 @@
     "fit_rationale": "Rapport qualité/prix imbattable pour les budgets serrés. Forme 'patate' universelle.",
     "weight_g": 57.0,
     "polling_hz": 1000,
-    "notes": "Largeur 63.5 mm (cahier des charges) contre 64.0 mm chez EloShapes : écart de 0.5 mm, dans la tolérance de concordance (0.5 mm) ; valeur propriétaire conservée. Polling 1000 Hz documenté (EloShapes) : pas de bonus haut de gamme.",
+    "notes": "Largeur 63.5 mm (cahier des charges) contre 64.0 mm chez EloShapes : écart de 0.5 mm, dans la tolérance de concordance (0.5 mm) ; valeur propriétaire conservée. Polling 1000 Hz documenté (EloShapes) : pas de bonus haut de gamme. Prix officiel EUR constaté le 2026-10-11 : série A9 « à partir de » 18,95 € (A9 Plus 2.0 : 44,90 € chez Maxesport).",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Plus / A9 Pro",
@@ -300,9 +300,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "single_source",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié. ATK affiche 99.98 USD (collection, consultée 2026-10-10) : non converti.",
+    "price_eur": 91.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 91.95 € (ATK Blazing Sky Phantom, prix du produit, prix normal 109.95 €).",
     "fit_rationale": "",
     "weight_g": 44.0,
     "sensor": "PAW3955 Master",
@@ -322,6 +322,14 @@
           "hump_position"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky Phantom, prix du produit",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -343,9 +351,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "single_source",
-    "price_eur": 114.9,
+    "price_eur": 68.95,
     "price_status": "verified",
-    "price_note": "Prix EUR (public France) constaté le 2026-10-11 : 114,90 € (ATK Blazing Sky Ghost Ultimate 8K, coque carbone, argent) chez Maxesport.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "fit_rationale": "",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
@@ -372,6 +380,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky GHOST (carbone) « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -393,9 +409,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "single_source",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 68.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », même coque, prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "fit_rationale": "",
     "weight_g": 48.0,
     "sensor": null,
@@ -412,6 +428,14 @@
           "weight_g"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky GHOST (carbone) « à partir de », même coque",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -432,9 +456,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "verified",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 41.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Dragonfly Y9 « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "fit_rationale": "",
     "weight_g": 55.0,
     "sensor": "PAW3950 Ultra",
@@ -494,6 +518,14 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Dragonfly Y9 « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -514,9 +546,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "verified",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 69.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 69.95 € (ATK FIERCE X, prix du produit, prix normal 81.95 €).",
     "fit_rationale": "",
     "weight_g": 42.0,
     "sensor": "PAW3950 Ultra",
@@ -558,6 +590,14 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK FIERCE X, prix du produit",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -578,9 +618,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "verified",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 59.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 59.95 € (ATK Blazing Sky U2 V2, prix du produit, prix normal 72.95 €).",
     "fit_rationale": "",
     "weight_g": 45.0,
     "sensor": "PAW3950 Ultra",
@@ -619,6 +659,14 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky U2 V2, prix du produit",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -639,9 +687,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "verified",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 77.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 77.95 € (produit « ATK Blazing Sky U2 Mini » : le store ne liste pas de « U2 V2 Mini » séparé).",
     "fit_rationale": "",
     "weight_g": 39.0,
     "sensor": null,
@@ -669,6 +717,14 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — produit « ATK Blazing Sky U2 Mini » : le store ne liste pas de « U2 V2 Mini » séparé",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -689,9 +745,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "single_source",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 63.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 63.95 € (ATK Blazing Sky ZERO « à partir de », prix normal 81.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "fit_rationale": "",
     "weight_g": 39.0,
     "sensor": null,
@@ -709,6 +765,14 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky ZERO « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -729,9 +793,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "conflicting",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 81.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 81.95 € (ATK Blazing Sky Duckbill, prix du produit, prix normal 118.95 €).",
     "fit_rationale": "",
     "weight_g": 46.0,
     "sensor": "PAW3950 Ultra",
@@ -783,6 +847,14 @@
           "weight_g"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky Duckbill, prix du produit",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -804,9 +876,9 @@
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "unverified",
     "dimension_status": "verified",
-    "price_eur": null,
-    "price_status": "unknown",
-    "price_note": "Aucun prix EUR vérifié.",
+    "price_eur": 41.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Dragonfly A9 Ultimate « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "fit_rationale": "",
     "weight_g": 53.0,
     "sensor": "PAW3950 Ultra",
@@ -838,6 +910,14 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Dragonfly A9 Ultimate « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -866,7 +946,7 @@
     "weight_g": 47.0,
     "sensor": null,
     "polling_hz": 8000,
-    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié.",
+    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €).",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Air / A9 Ultimate",
@@ -914,7 +994,7 @@
     "weight_g": 39.0,
     "sensor": null,
     "polling_hz": null,
-    "notes": "Dimensions d'une seule source (ATK, fiche produit). Bosse, boutons et grip non vérifiés.",
+    "notes": "Dimensions d'une seule source (ATK, fiche produit). Bosse, boutons et grip non vérifiés. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 18,95 € ; pas de prix distinct pour l'A9 Mini.",
     "sources": [
       {
         "label": "ATK Store — ATK Dragonfly A9 Ultimate",
@@ -936,7 +1016,7 @@
     "grip_width_mm": null,
     "shell_id": null,
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "Première souris « Small » du catalogue (116,6 mm, EloShapes) : comble le manque de formes compactes. EloShapes : hump « Back - moderate » → Rear (règle de correspondance du projet) ; front flare « Inward - moderate » ; courbure des flancs « Inward ». Éditeur : « Claw / Palm / Fingertip », « small to medium hands ». Compatibilités de prise à valider par le propriétaire (marketing non assimilé à une compatibilité).",
     "id": "vxe_v3",
@@ -955,8 +1035,8 @@
     "weight_g": 49.0,
     "sensor": "Xhero AI / PAW3395 SE",
     "polling_hz": 1000,
-    "price_eur": null,
-    "price_note": "Store ATK : à partir de 14,98 $ (série V3/V3 Pro) — aucun prix EUR documenté, non converti.",
+    "price_eur": 13.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 13.95 € (série VXE Dragonfly V3 « à partir de », prix normal 17.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
         "label": "ATK Store — VXE Dragonfly V3 Series",
@@ -983,6 +1063,14 @@
           "hump_position",
           "sensor",
           "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — série VXE Dragonfly V3 « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
         ],
         "date_checked": "2026-10-11"
       }
@@ -1014,8 +1102,8 @@
     "weight_g": 51.0,
     "sensor": "PAW3395",
     "polling_hz": 2000,
-    "price_eur": 29.9,
-    "price_note": "Prix EUR « à partir de » constaté le 2026-10-11 : 29,90 € (VXE R1 S, en stock) ; R1 SE+ 39,90 €, R1 44,90 €, R1 Pro 49,90 €, R1 Pro Max 59,90 €. Famille R1 : variante la moins chère en stock retenue pour les filtres de budget.",
+    "price_eur": 13.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 13.95 € (série VXE Dragonfly R1 « à partir de », prix normal 17.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
         "label": "EloShapes — VXE MAD R vs R1",
@@ -1053,6 +1141,14 @@
       {
         "label": "Maxesport (revendeur FR, expédition depuis la France) — VXE R1 (R1 S / R1 / R1 Pro / R1 Pro Max)",
         "url": "https://maxesport.gg/products/vxe-r1-s-wireless-white",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — série VXE Dragonfly R1 « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
         "fields": [
           "price_eur"
         ],
@@ -1151,8 +1247,8 @@
     "weight_g": 51.0,
     "sensor": "PAW3315",
     "polling_hz": 1000,
-    "price_eur": 44.9,
-    "price_note": "Prix EUR « à partir de » constaté le 2026-10-11 : 44,90 € (VXE X3, blanc/noir, en stock) ; X3 Pro 49,90 €. Variantes de la même famille, coque identique.",
+    "price_eur": 27.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 27.95 € (série VXE Dragonfly X3 « à partir de », prix normal 31.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
         "label": "ATK Store — VXE Dragonfly X3 Series",
@@ -1175,6 +1271,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — série VXE Dragonfly X3 « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -1185,7 +1289,7 @@
     "grip_width_mm": null,
     "shell_id": null,
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ».",
     "id": "atk_u2_mini",
@@ -1204,8 +1308,8 @@
     "weight_g": 38.0,
     "sensor": "PAW3950",
     "polling_hz": 8000,
-    "price_eur": null,
-    "price_note": "Store ATK : 84,98 $ — aucun prix EUR documenté, non converti.",
+    "price_eur": 77.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 77.95 € (ATK Blazing Sky U2 Mini, prix du produit).",
     "sources": [
       {
         "label": "EloShapes — ATK U2 Mini",
@@ -1240,6 +1344,14 @@
           "sensor"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky U2 Mini, prix du produit",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -1250,7 +1362,7 @@
     "grip_width_mm": null,
     "shell_id": null,
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "Mêmes dimensions que l'ATK Dragonfly A9 Plus 2.0 déjà au catalogue (125,0 × 63,5 × 40,0) : coque A9 pleine taille, bosse « Mid » héritée de cette fiche. Version à station de charge 2-en-1, 56 g. Éditeur : « Claw / Fingertip / Palm ». Le distributeur Standesk insiste sur claw / relaxed claw / fingertip.",
     "id": "atk_a9_nb",
@@ -1269,8 +1381,8 @@
     "weight_g": 56.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": null,
-    "price_note": "Store ATK : 79,98 $ — aucun prix EUR documenté, non converti.",
+    "price_eur": 72.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 72.95 € (ATK Dragonfly A9 NB, prix du produit, prix normal 122.95 €).",
     "sources": [
       {
         "label": "ATK Store — ATK Dragonfly A9 NB",
@@ -1304,6 +1416,14 @@
           "weight_g"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Dragonfly A9 NB, prix du produit",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -1314,7 +1434,7 @@
     "grip_width_mm": null,
     "shell_id": "atk_f1",
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "Même coque que l'ATK F1 V3 Ultimate déjà au catalogue (d'où shell_id « atk_f1 ») : géométrie (bosse « Mid », boutons bas) reprise de cette fiche ; génération précédente, plus lourde (38-39 g contre 36-37 g). Compatibilités de prise non héritées : à valider par le propriétaire pour cette génération.",
     "id": "atk_f1_v2",
@@ -1333,8 +1453,8 @@
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": null,
-    "price_note": "Store ATK : à partir de 44,98 $ (série F1 V2) — aucun prix EUR documenté, non converti.",
+    "price_eur": 41.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Blazing Sky F1 V2 « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
         "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
@@ -1360,6 +1480,14 @@
           "weight_g"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky F1 V2 « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-11"
       }
     ]
   },
@@ -1370,7 +1498,7 @@
     "grip_width_mm": null,
     "shell_id": null,
     "fit_status": "unverified",
-    "price_status": "unknown",
+    "price_status": "verified",
     "conflicts": {},
     "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté.",
     "id": "atk_u2",
@@ -1389,8 +1517,8 @@
     "weight_g": 49.0,
     "sensor": "PAW3395 Ultra",
     "polling_hz": 1000,
-    "price_eur": null,
-    "price_note": "Store ATK : à partir de 24,98 $ (série U2) — aucun prix EUR documenté, non converti.",
+    "price_eur": 22.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 22.95 € (série ATK Blazing Sky U2 « à partir de », prix normal 28.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
         "label": "ATK Store — ATK Blazing Sky U2 Series",
@@ -1424,6 +1552,14 @@
         "url": "https://meckeys.com/shop/mouse/atk-blazing-sky-u2/",
         "fields": [
           "weight_g"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — série ATK Blazing Sky U2 « à partir de »",
+        "url": "https://www.atk.store/fr-fr/collections/souris",
+        "fields": [
+          "price_eur"
         ],
         "date_checked": "2026-10-11"
       }

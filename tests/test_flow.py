@@ -541,8 +541,8 @@ def test_result_image_key_prioritises_the_hump_then_the_buttons():
     assert flow.result_image_key(None, Grip.PALM) is None
 
 
-def test_thenar_is_stored_and_not_scored():
-    """§7.6 : le thénar est stocké et affiché, mais n'influence AUCUN calcul (ni score, ni classement)."""
+def test_thenar_only_weighs_on_rear_hump_mice():
+    """Reverse engineering Oblivity (2026-10-11) : le thénar ne touche que les souris à bosse arrière."""
     store_a = SessionStore(ttl_seconds=600)
     without = start_for(store_a, user_id=1, grip=Grip.PALM, length=180.0, width=90.0)
     without.budget_mode = BudgetMode.QUALITE_PRIX
@@ -551,11 +551,13 @@ def test_thenar_is_stored_and_not_scored():
     with_thenar.budget_mode = BudgetMode.QUALITE_PRIX
     base = flow.compute_selection(without)
     other = flow.compute_selection(with_thenar)
-    assert base == other, "le thénar ne doit modifier ni les scores, ni le classement, ni les explications"
-    assert base.ranked[0].total == 30  # non-régression du barème Palm 180 × 90
+    # Le gagnant Palm (bosse Mid) n'est pas concerné : classement et scores identiques.
+    assert base.ranked[0].mouse.id == other.ranked[0].mouse.id
+    assert base.ranked[0].total == other.ranked[0].total == 30  # non-régression du barème Palm 180 × 90
+    assert all(s.breakdown.thenar_pts == 0 for s in other.ranked if s.mouse.hump_position != "Rear")
 
 
-def test_thenar_petite_adds_a_purely_informative_narrow_rear_note(monkeypatch):
+def test_thenar_petite_adds_a_narrow_rear_note_and_a_bounded_adjustment(monkeypatch):
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
@@ -564,7 +566,7 @@ def test_thenar_petite_adds_a_purely_informative_narrow_rear_note(monkeypatch):
     names = " ".join(field.name for field in details.fields)
     values = " ".join(field.value for field in details.fields)
     assert "Thénar Petite" in names
-    assert "non prise en compte dans le score" in values
+    assert "pilule" in values and "pénalisée à la marge" in values
     assert details.image is not None and "T13_arriere_etroit" in details.image.url
 
 

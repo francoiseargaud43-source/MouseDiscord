@@ -59,12 +59,13 @@ BUDGET_LABELS = {
 
 
 class Thenar(Enum):
-    """Taille de l'éminence thénar : **collectée et affichée uniquement**.
+    """Taille de l'éminence thénar : collectée, affichée, et utilisée pour UN seul ajustement.
 
-    Aucune source ne définit de règle thénar -> dimensions (docs/audit/AUDIT.md, §3 et §8) :
-    cette donnée n'entre donc dans aucun calcul (ni points, ni classement, ni exclusion) et
-    n'est jamais lue par utils/matcher.py ni utils/selection.py. Seul le parcours la stocke
-    (utils/session.py) pour l'afficher et proposer une explication informative.
+    Depuis le reverse engineering de l'outil Oblivity (2026-10-11, dossier ``Reverse/``), le thénar
+    sert à trancher la forme de l'arrière (« arrière étroit en pilule » pour un thénar petit ou
+    moyen, aucune contrainte pour un grand). Il ne modifie donc que le sous-score de largeur, et
+    uniquement pour les souris à bosse arrière marquée (``THENAR_WIDTH_ADJUSTMENT`` dans
+    ``utils/matcher.py``). En Fingertip, la question n'est jamais posée, donc jamais appliquée.
     """
 
     PETITE = "petite"
