@@ -101,10 +101,20 @@ def test_duckbill_length_is_not_filled_while_sources_conflict(mice):
     assert duck.conflicts["length_mm"]["values"] == [118.0, 117.0]
 
 
-def test_no_commercial_link_is_invented():
+def test_commercial_links_are_official_and_verified():
+    """Liens fournis par le propriétaire le 2026-10-11, vérifiés un par un sur les boutiques officielles.
+
+    Détail de la vérification : docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md.
+    Aucun lien d'exemple ne doit subsister, et une souris dont le lien n'a pas été fourni reste
+    sans lien : le résultat affiche alors « Liens à venir », jamais un lien inventé.
+    """
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
-    assert all(url.startswith(("https://", "http://")) for url in links.values())
-    assert not any(k in links for k in NEW_ATK_IDS)
+    assert links, "les liens d'achat vérifiés doivent être livrés"
+    assert all(
+        url.startswith(("https://www.atk.store/", "https://scyrox.com/")) for url in links.values()
+    )
+    assert not any("url.com" in url for url in links.values())
+    assert "atk_a9_nb" not in links  # lien jamais fourni : aucune invention
 
 
 def test_commercial_links_reference_known_mice():
