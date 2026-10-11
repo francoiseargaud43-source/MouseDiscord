@@ -57,7 +57,7 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Modèle | Statut / score | Longueur | Largeur de prise utilisée | Grip | Bosse | Boutons | Confiance | Données manquantes |
 |---|---|---|---|---|---|---|---|---|
 | Scyrox V8 / V8S | ✅ 30/40 | 118.0 mm (écart 2.1 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Rear | Low | faible | — |
-| Scyrox V6 | ✅ 30/40 | 119.0 mm (écart 3.1 mm) | 58.0 mm (estimée, écart 0.0) | Élevé | Mid | Mid | faible | — |
+| Scyrox V6 | ✅ 25/40 | 119.0 mm (écart 3.1 mm) | 58.0 mm (estimée, écart 0.0) | Élevé | Mid | Mid | faible | — |
 | ATK F1 V3 Ultimate | ✅ 30/40 | 118.2 mm (écart 2.3 mm) | 59.4 mm (estimée, écart 1.0) | Élevé | Mid | Low | moyenne | — |
 | ATK X1 V2 Ultra Max | ❌ exclue — Longueur hors plage de 11.1 mm (> 8 mm) | 127.0 mm (écart 11.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Mid | — | Longueur hors plage de 11.1 mm (> 8 mm) |
 | ATK Z1 V2 Ultra | ❌ exclue — Largeur de prise hors plage de 5.4 mm (> 5 mm) | 122.5 mm (écart 6.6 mm) | 63.8 mm (estimée, écart 5.4) | Moyen | Mid-Front | High | — | Largeur de prise hors plage de 5.4 mm (> 5 mm) |
@@ -88,9 +88,9 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
 | Économique | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 3 candidat(s) | Économique : ATK F1 V3 Ultimate est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (30/40). |
-| Qualité/Prix | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 3 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V8 / V8S (30/40) | Scyrox V6 (30/40) | 3 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
-| Budget ≤ 75 € | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 3 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 3 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
+| Qualité/Prix | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | Scyrox V8 / V8S (30/40) | ATK F1 V3 Ultimate (30/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
+| Budget ≤ 75 € | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 2 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 2 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
 ## Profil F — Fingertip 200 × 100 mm
@@ -100,11 +100,11 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | Modèle | Statut / score | Longueur | Largeur de prise utilisée | Grip | Bosse | Boutons | Confiance | Données manquantes |
 |---|---|---|---|---|---|---|---|---|
 | Scyrox V8 / V8S | ✅ 35/40 | 118.0 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Élevé | ignorée (Fingertip) | Low | faible | — |
-| Scyrox V6 | ✅ 30/40 | 119.0 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Mid | faible | — |
+| Scyrox V6 | ✅ 40/40 | 119.0 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Mid | faible | — |
 | ATK F1 V3 Ultimate | ✅ 35/40 | 118.2 mm (dans la plage) | 59.4 mm (estimée, écart 0.2) | Élevé | ignorée (Fingertip) | Low | moyenne | — |
 | ATK X1 V2 Ultra Max | ❌ exclue — Compatibilité Fingertip Grip « Faible » | 127.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Faible | ignorée (Fingertip) | Mid | — | Compatibilité Fingertip Grip « Faible » |
 | ATK Z1 V2 Ultra | ❌ exclue — Compatibilité Fingertip Grip « Faible » | 122.5 mm (dans la plage) | 63.8 mm (estimée, écart 4.6) | Faible | ignorée (Fingertip) | High | — | Compatibilité Fingertip Grip « Faible » |
-| ATK A9 Plus 2.0 | ✅ 20/40 | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Moyen | ignorée (Fingertip) | Mid | moyenne | — |
+| ATK A9 Plus 2.0 | ✅ 30/40 | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Moyen | ignorée (Fingertip) | Mid | moyenne | — |
 | ATK Phantom Ultimate | ❌ exclue — Prix 91.95 € au-dessus du budget maximal 75.00 € | 119.7 mm (dans la plage) | 59.5 mm (estimée, écart 0.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 91.95 € au-dessus du budget maximal 75.00 € |
 | ATK GHOST Ultimate | ⏳ à vérifier (20/20 pts partiels) | 121.0 mm (dans la plage) | 58.3 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK GHOST Extreme | ⏳ à vérifier (20/20 pts partiels) | 121.0 mm (dans la plage) | 58.3 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
@@ -130,8 +130,8 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | ATK F1 V3 Ultimate (35/40) | Scyrox V8 / V8S (35/40) | 3 candidat(s) | Économique : ATK F1 V3 Ultimate est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (35/40). |
-| Qualité/Prix | ATK F1 V3 Ultimate (35/40) | Scyrox V8 / V8S (35/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (35/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V8 / V8S (35/40) | ATK F1 V3 Ultimate (35/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 2 souris à 2 pts ou moins du meilleur score (35/40). Le prix n'entre pas dans le classement. |
-| Budget ≤ 75 € | ATK F1 V3 Ultimate (35/40) | Scyrox V8 / V8S (35/40) | 2 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 2 souris à 2 pts ou moins du meilleur score (35/40) ; à score égal, la moins chère. |
+| Économique | ATK F1 V3 Ultimate (35/40) | Scyrox V6 (40/40) | 3 candidat(s) | Économique : ATK F1 V3 Ultimate est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (40/40). |
+| Qualité/Prix | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
+| Budget ≤ 75 € | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Budget personnalisé : meilleur score conforme au budget, seule souris dans la zone de tolérance ; à score égal, la moins chère. |
 

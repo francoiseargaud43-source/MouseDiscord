@@ -63,10 +63,12 @@ HUMP_IDEAL = {
     Grip.CLAW: frozenset({"Mid", "Rear"}),
 }                                           # Fingertip : bosse ignorée (0 point, pas de donnée requise)
 
+# Alignement sur le reverse engineering de l'outil Oblivity (2026-10-11, docs/REVERSE_ENGINEERING_OBLIVITY.md) :
+# Claw -> « Low » uniquement ; Fingertip -> « Mid-to-Low » (jamais haut) ; Palm -> « Elevated » (High).
 BUTTON_IDEAL = {
     Grip.PALM: frozenset({"High"}),
-    Grip.CLAW: frozenset({"Low", "Mid"}),
-    Grip.FINGERTIP: frozenset({"Low"}),
+    Grip.CLAW: frozenset({"Low"}),
+    Grip.FINGERTIP: frozenset({"Low", "Mid"}),
 }
 BUTTON_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 BUTTON_MAX_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}

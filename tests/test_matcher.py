@@ -312,18 +312,22 @@ def test_palm_hump_and_buttons_points():
 
 
 def test_claw_hump_and_buttons_points():
+    """Claw : bosse Mid/Rear (5 pts) et boutons bas uniquement (aligné sur l'outil Oblivity)."""
     for hump in ("Mid", "Rear"):
-        for buttons in ("Low", "Mid"):
-            s = evaluate_mouse(make_mouse(hump_position=hump, button_height=buttons), HAND, Grip.CLAW)
-            assert (s.breakdown.hump_pts, s.breakdown.button_pts) == (5, 5)
+        s = evaluate_mouse(make_mouse(hump_position=hump, button_height="Low"), HAND, Grip.CLAW)
+        assert (s.breakdown.hump_pts, s.breakdown.button_pts) == (5, 5)
+    mid_buttons = evaluate_mouse(make_mouse(hump_position="Rear", button_height="Mid"), HAND, Grip.CLAW)
+    assert (mid_buttons.breakdown.hump_pts, mid_buttons.breakdown.button_pts) == (5, 0)
     s = evaluate_mouse(make_mouse(hump_position="Front", button_height="High"), HAND, Grip.CLAW)
     assert (s.breakdown.hump_pts, s.breakdown.button_pts) == (0, 0)
 
 
 def test_fingertip_ignores_hump_and_rewards_low_buttons():
-    s = evaluate_mouse(make_mouse(hump_position="Front", button_height="Low"), HAND, Grip.FINGERTIP)
-    assert (s.breakdown.hump_pts, s.breakdown.button_pts) == (0, 10)
-    s = evaluate_mouse(make_mouse(hump_position="Rear", button_height="Mid"), HAND, Grip.FINGERTIP)
+    """Fingertip : bosse ignorée ; boutons « Mid-to-Low » acceptés, les boutons hauts pénalisés."""
+    for buttons in ("Low", "Mid"):
+        s = evaluate_mouse(make_mouse(hump_position="Front", button_height=buttons), HAND, Grip.FINGERTIP)
+        assert (s.breakdown.hump_pts, s.breakdown.button_pts) == (0, 10)
+    s = evaluate_mouse(make_mouse(hump_position="Rear", button_height="High"), HAND, Grip.FINGERTIP)
     assert s.breakdown.button_pts == 0
 
 
