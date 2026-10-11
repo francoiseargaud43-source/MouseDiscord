@@ -15,7 +15,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable
 
-from utils.models import BudgetMode, Grip
+from utils.models import BudgetMode, Grip, Thenar
 
 # Issues possibles de ``SessionStore.lookup``.
 LOOKUP_OK = "ok"
@@ -28,6 +28,8 @@ class FinderSession:
     user_id: int
     session_id: str = field(default_factory=lambda: secrets.token_urlsafe(12))
     grip: Grip | None = None
+    # Éminence thénar : stockée et affichée à titre informatif, JAMAIS utilisée dans un calcul.
+    thenar: Thenar | None = None
     hand_length_mm: float | None = None
     hand_width_mm: float | None = None
     budget_mode: BudgetMode | None = None

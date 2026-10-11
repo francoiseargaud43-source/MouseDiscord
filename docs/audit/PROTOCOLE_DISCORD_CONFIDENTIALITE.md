@@ -103,7 +103,7 @@ Pour chaque étape : faites l'action, comparez à « Attendu », cochez OK ou KO
 
 ### Étape 7 — Terminer les deux parcours
 1. Compte A puis compte B : terminez le parcours jusqu'au résultat.
-2. Attendu : chacun reçoit son **résultat** dans son menu privé (score, boutons d'achat ou « Lien bientôt disponible », **Fermer**, **Refaire le test**).
+2. Attendu : chacun reçoit son **résultat** dans son menu privé (score, boutons d'achat réels ou « 🔗 Liens à venir », **Fermer**, **Refaire le test**).
 - ☐ OK ☐ KO — Observé : ______________________
 
 ### Étape 8 — Chacun ne voit que son résultat

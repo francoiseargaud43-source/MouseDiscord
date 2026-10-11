@@ -63,16 +63,19 @@ Aucune autre variable n'est lue. Les valeurs vides sont traitées comme absentes
   - `commercial_links.json` : à chaque résultat ;
   - `images.json` : à chaque affichage d'image.
   Un changement de ces trois fichiers prend effet **sans redémarrage**.
-- Liens : fichier absent ou vide → aucun lien ; URL invalide → ignorée avec un avertissement ; lien absent → bouton désactivé
-  « Lien bientôt disponible » (comportement conservé, test `test_missing_commercial_link_shows_disabled_placeholder_button`).
+- Liens : fichier absent ou vide → aucun lien ; URL invalide → ignorée avec un avertissement ; sans lien, **un seul** bouton
+  informatif désactivé « Liens à venir » (depuis le 2026-10-11 : plus un bouton grisé par souris — tests
+  `test_missing_commercial_link_shows_disabled_placeholder_button`, `test_real_link_creates_purchase_button_without_placeholder`).
 - Images : URL `https://` uniquement ; vide ou invalide → aucune image, sans erreur (testé).
+  Depuis le 2026-10-11, un **nom de fichier** (repris de `assets/illustrations/`) est résolu avec `IMAGES_BASE_URL`
+  (le schéma doit être `https://`, sinon la valeur est ignorée avec un avertissement).
 
 ### A.7 Données et points à décider par le propriétaire
 
 | Fichier | Constat | Décision |
 |---|---|---|
 | `data/commercial_links.json` | Contient `"scyrox_v8": "https://url.com/v8"` et `"atk_a9_plus": "https://url.com/a9"` : **URL d'exemple**, pas vos liens | **Non modifié** (instruction : ne pas toucher aux liens non fournis). À remplacer ou à vider avant mise en ligne publique. Signalé par `check_deployment.py` (`ATTENTION`) |
-| `assets/images.json` | Toutes les valeurs vides | Aucune image affichée : fonctionnel, rien à corriger |
+| `assets/images.json` | **2026-10-11** : les 15 illustrations livrées sont référencées par leur nom de fichier ; il reste à les publier et à renseigner `IMAGES_BASE_URL` (guide de déploiement §2.7) | Sans `IMAGES_BASE_URL` : aucune image affichée, aucun plantage. Signalé par `check_deployment.py` (`ATTENTION`) |
 
 ### A.8 Discord : intents et permissions
 

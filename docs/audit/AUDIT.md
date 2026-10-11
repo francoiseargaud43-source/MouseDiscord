@@ -14,6 +14,7 @@ Date de l'audit : 2026-10-10 · Branche : `arena/33e33710-mousediscord` · Réf�
   « Inconnu » → à vérifier). Aucun prix EUR n'a pu être vérifié.
 - Tests : 72 → **133** à la rédaction initiale ; **219** après la mission de finalisation du 2026-10-10 (voir `RAPPORT_FINAL.md` §4). Lint pyflakes propre. Aucun test Discord réel n'a été exécuté (voir §9).
 - **Note datée 2026-10-10 (finalisation)** : Z1 reste à **30/40** (décision du propriétaire : bande de largeur non étendue). Confidentialité : scénarios P01–P13 et contrôle statique documentés dans `AUDIT_CONFIDENTIALITE.md` (tests automatisés uniquement, pas de validation Discord).
+- **Note datée 2026-10-11 (mission design visuel)** : refonte de la présentation seule (palette AzeMouse, 4 étapes avec le thénar informatif, résultat en deux embeds allégés, 15 illustrations `ImageUse` intégrées). **Aucun calcul, seuil, score, statut ni prix modifié** : Z1 reste à **30/40**, V6 30, A9 Plus 25, X1 20. Détail : `docs/REPORTE_DESIGN.md`.
 
 ## 1. État du dépôt au début de la mission
 
@@ -59,6 +60,11 @@ Gravité : **H** élevée (résultat ou sécurité des données faux/trompeur), 
   Les valeurs Small/Medium/Large ne sont pas documentées dans les sources retenues.
 - **Décision** : **retiré de la V1** (parcours 1/3 → 3/3, `Thenar` supprimé de `utils/models.py`, `images.json` mis à jour avec repli).
   Il pourra être réintroduit si le propriétaire documente une fonction de calcul précise.
+- **Réintroduction informative — 2026-10-11 (décision du propriétaire)** : le thénar redevient l'**étape 2/4**
+  (Petite / Moyenne / Grande), avec l'illustration `T10`. Règle appliquée : **stockage et affichage uniquement**
+  (`FinderSession.thenar`, récapitulatif, note indicative « arrière étroit » avec `T13` si « Petite »).
+  **Aucun effet** sur les équations, seuils, points, scores, classements ou exclusions ; aucune règle thénar → dimensions
+  n'a été inventée. Tests : `test_thenar_is_stored_and_not_scored`, `test_thenar_petite_adds_a_purely_informative_narrow_rear_note`.
 
 ## 4. Incohérences avec les résultats attendus
 
@@ -101,7 +107,9 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
 5. **Duckbill** : longueur 118.0 ou 117 mm ? La valeur « 55 mm » évoquée dans la mission n'a été trouvée dans aucune source.
 6. **Z1 originale** : confirmer ses dimensions (ou confirmer qu'elle n'est pas à ajouter).
 7. **Y9 Ultimate** : polling (8000 ou 1000 Hz) et poids.
-8. **Rôle du thénar** : documenté ou définitivement retiré ?
+8. **Rôle du thénar** : **tranché le 2026-10-11** — réintroduit comme étape 2/4 **informative** (stockée et affichée,
+   sans aucun effet sur le score, §3). Une règle de calcul thénar → dimensions reste à documenter si elle doit un jour
+   compter dans le classement.
 9. **Libellé** « sur 100 » ou « sur 40 » ?
 10. **Tolérances de sélection** : valider 5 / 2 / 2 / 2 pts.
 11. **Vérifications Discord** : à faire par le propriétaire (§9).

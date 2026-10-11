@@ -58,6 +58,31 @@ BUDGET_LABELS = {
 }
 
 
+class Thenar(Enum):
+    """Taille de l'éminence thénar : **collectée et affichée uniquement**.
+
+    Aucune source ne définit de règle thénar -> dimensions (docs/audit/AUDIT.md, §3 et §8) :
+    cette donnée n'entre donc dans aucun calcul (ni points, ni classement, ni exclusion) et
+    n'est jamais lue par utils/matcher.py ni utils/selection.py. Seul le parcours la stocke
+    (utils/session.py) pour l'afficher et proposer une explication informative.
+    """
+
+    PETITE = "petite"
+    MOYENNE = "moyenne"
+    GRANDE = "grande"
+
+    @property
+    def label(self) -> str:
+        return THENAR_LABELS[self]
+
+
+THENAR_LABELS = {
+    Thenar.PETITE: "Petite",
+    Thenar.MOYENNE: "Moyenne",
+    Thenar.GRANDE: "Grande",
+}
+
+
 @dataclass(frozen=True)
 class HandMeasure:
     length_mm: float

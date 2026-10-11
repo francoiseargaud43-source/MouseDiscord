@@ -105,7 +105,8 @@ doit se trouver exactement à `/home/[compte]/MouseDiscord/bot.py`.
 │   ├── mouse_db.json           ← catalogue (requis)
 │   └── commercial_links.json   ← liens d'achat (requis ; peut être vide)
 ├── assets/
-│   └── images.json             ← URL des images (requis ; peut être vide)
+│   ├── images.json             ← clé -> nom de fichier ou URL https (requis ; peut être vide)
+│   └── illustrations/          ← les 15 images T01–T15 (facultatif : sans elles, aucun embed n'affiche d'image)
 ├── tools/
 │   └── check_deployment.py     ← contrôle de déploiement (facultatif, recommandé)
 ├── .venv/                      ← créé SUR LE SERVEUR à l'étape 6 (ne pas transférer)
@@ -125,7 +126,8 @@ directement sur le serveur.
 | `utils/*.py` (8 fichiers) | Oui | Oui | Moteur, catalogue, sessions, validation | Dossier entier |
 | `data/mouse_db.json` | Oui | Oui | Catalogue des souris | Relu à chaque recherche |
 | `data/commercial_links.json` | Oui | Oui (fichier) | Liens d'achat | Peut contenir `{}`. **Voir §2.5** |
-| `assets/images.json` | Oui | Oui (fichier) | URL des images | Peut être vide (aucune illustration, sans erreur) |
+| `assets/images.json` | Oui | Oui (fichier) | Images des étapes et du résultat | Peut être vide (aucune illustration, sans erreur) |
+| `assets/illustrations/` | Oui | Non (recommandé) | Les 15 images `T01`–`T15` prêtes à publier | **Voir §2.7** |
 | `requirements.txt` | Oui | Oui | Dépendances de production (`discord.py`, `python-dotenv`) | Installé à l'étape 6 |
 | `.env` (votre vrai fichier) | **Non** (créez-le sur le serveur) | Oui | Token et réglages | **Secret** : voir §2.4 |
 | `.env.example` | Oui | Non | Modèle de `.env` | Ne contient pas de secret |
@@ -168,16 +170,51 @@ Ces adresses sont des **espaces réservés**, pas vos liens. Tant qu'elles reste
 envoie vers un site qui n'est pas le vôtre. Le script de contrôle le signale (`ATTENTION`).
 Avant la mise en ligne publique, **choisissez** :
 - soit remplacer ces URL par vos liens d'achat réels (`https://…`) ;
-- soit vider le fichier : `{}` (les souris concernées afficheront alors « Lien bientôt disponible »).
+- soit vider le fichier : `{}` (aucun bouton d'achat ne sera affiché ; un unique bouton informatif « 🔗 Liens à venir » remplace les boutons manquants).
 
-Le bot **ne plante pas** si une URL est vide ou absente : le bouton devient désactivé avec la mention
-« Lien bientôt disponible ». Aucun lien n'est inventé par le code.
+Le bot **ne plante pas** si une URL est vide ou absente : le résultat affiche un unique bouton informatif
+« 🔗 Liens à venir ». Aucun lien n'est inventé par le code.
 
 ### 2.6 Le `.gitignore`
 
 Le fichier `.gitignore` **est déjà présent dans le dépôt** (il n'y a rien à ajouter). Il protège le dépôt Git
 (secrets, environnements virtuels, caches, `state/`). Il ne contrôle pas FileZilla : seul votre choix de fichiers
 détermine ce qui est transféré.
+
+### 2.7 Les illustrations : publier les images et renseigner `IMAGES_BASE_URL`
+
+Les 15 images livrées dans `assets/illustrations/` (bannière, triptyques de prises, schémas de bosse et de boutons)
+sont référencées par `assets/images.json` **par leur nom de fichier**. Discord exige des adresses publiques en `https://` :
+il faut donc les publier, puis indiquer au bot où les trouver.
+
+1. Copier le dossier `assets/illustrations/` dans votre espace web (Alwaysdata sert par défaut le dossier `~/www/`) :
+
+   ```bash
+   mkdir -p ~/www/illustrations
+   cp ~/MouseDiscord/assets/illustrations/*.png ~/www/illustrations/
+   ```
+
+   Variante par lien symbolique (les mises à jour du dépôt sont alors reprises automatiquement) :
+
+   ```bash
+   ln -s ~/MouseDiscord/assets/illustrations ~/www/illustrations
+   ```
+
+2. Vérifier qu'une image est bien accessible en `https://[compte].alwaysdata.net/illustrations/T08_azemouse_banniere.png`
+   (ouvrez l'adresse dans votre navigateur : l'image doit s'afficher, même hors connexion Discord).
+
+3. Dans `.env`, renseigner la base publique (une seule variable, voir §6.5) :
+
+   ```
+   IMAGES_BASE_URL=https://[compte].alwaysdata.net/illustrations/
+   ```
+
+4. Contrôler : `python tools/check_deployment.py` doit afficher `images configurées : 15/15`.
+   Sinon, les `ATTENTION` indiquent la cause exacte (base absente, schéma non `https://`, fichier manquant).
+
+Sans `IMAGES_BASE_URL`, le bot fonctionne normalement mais **aucun embed n'affiche d'image** (aucune erreur, aucun plantage).
+Le fichier `assets/images.json` (et le `.env`) est relu à chaque interaction : **aucun redémarrage** n'est nécessaire après
+une modification.
 
 ---
 
@@ -223,7 +260,8 @@ Aucune modification de code n'est nécessaire pour faire fonctionner le bot. Vé
 | Fichier | Action | Obligatoire |
 |---|---|---|
 | `data/commercial_links.json` | Remplacer ou vider les URL `https://url.com/…` (§2.5) | Recommandé avant mise en ligne publique |
-| `assets/images.json` | Rien à faire si les images ne sont pas prêtes (valeurs vides = pas d'illustration) | Non |
+| `assets/images.json` | Rien à faire : les 15 images sont déjà référencées par leur nom de fichier | Non |
+| `assets/illustrations/` | Transférer le dossier, puis publier les images et renseigner `IMAGES_BASE_URL` (§2.7) | Recommandé |
 | `.env` | **Ne pas le créer sur votre PC pour le transférer** : vous le créerez sur le serveur (§6.5) | — |
 
 Le code est déjà adapté au déploiement : chemins ancrés sur l'emplacement des fichiers (fonctionne quel que soit le
@@ -387,6 +425,7 @@ FINDER_CHANNEL_ID=[id-salon]
 COMMAND_PREFIX=!
 LOCK_FINDER_CHANNEL=true
 SESSION_TTL_SECONDS=1800
+IMAGES_BASE_URL=https://[compte].alwaysdata.net/illustrations/
 ```
 
 - `DISCORD_TOKEN` : **obligatoire**. Sans lui, le bot quitte immédiatement avec le message « DISCORD_TOKEN est vide ».
@@ -395,6 +434,8 @@ SESSION_TTL_SECONDS=1800
 - `COMMAND_PREFIX` : facultatif, `!` par défaut.
 - `LOCK_FINDER_CHANNEL` : facultatif, `true` par défaut (voir §8.3 pour ses effets).
 - `SESSION_TTL_SECONDS` : facultatif, `1800` par défaut (30 min d'inactivité).
+- `IMAGES_BASE_URL` : facultatif, mais **nécessaire pour afficher les illustrations** (voir §2.7). Doit commencer par
+  `https://` et se terminer par `/`. Sans elle, aucun embed n'affiche d'image (aucun plantage).
 - Pas d'espaces autour du `=`, pas de guillemets, une variable par ligne.
 
 **Méthode alternative (terminal)** : éditez `~/AzeMouse/.env` avec `nano` si l'éditeur est installé (`which nano` pour le vérifier), sinon `vi`.
@@ -420,8 +461,9 @@ cd ~/AzeMouse
 ```
 
 Résultat attendu (exemple de lecture) :
-- `[OK]` partout ;
-- `[ATTENTION]` pour les liens d'exemple `url.com` (§2.5) : n'empêche pas le lancement ;
+- `[OK]` partout, dont `images configurées : 15/15` si l'étape §2.7 est faite ;
+- `[ATTENTION]` pour les liens d'exemple `url.com` (§2.5) et pour `IMAGES_BASE_URL` manquant (§2.7) :
+  n'empêche pas le lancement ;
 - **`0 erreur(s) bloquante(s).`** : condition pour continuer.
 
 Le script n'affiche jamais la valeur du token. Il contrôle la présence de `DISCORD_TOKEN`, pas sa validité :
@@ -619,7 +661,7 @@ Cochez chaque point après vérification :
 - [ ] Une saisie invalide (ex. texte à la place d'un nombre) affiche « Saisie invalide » sans faire avancer le parcours.
 - [ ] Le budget (menu) fonctionne ; « Budget Personnalisé » ouvre une fenêtre et accepte un prix.
 - [ ] Le résultat s'affiche **uniquement** à la personne concernée (aucun message public).
-- [ ] Les boutons d'achat **sans lien** affichent « Lien bientôt disponible » (désactivés) et ne provoquent aucune erreur.
+- [ ] Les boutons d'achat **sans lien** : un seul bouton « 🔗 Liens à venir » (désactivé), aucune erreur.
 - [ ] **Redémarrage du service** puis clic sur le bouton **Start** du message d'accueil : il doit toujours répondre
       (la vue persistante est enregistrée au démarrage).
 - [ ] **Fermeture de votre session SSH et de FileZilla** : le bot reste en ligne dans Discord.

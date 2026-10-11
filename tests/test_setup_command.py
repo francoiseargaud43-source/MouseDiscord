@@ -41,7 +41,7 @@ async def test_setup_posts_banner_locks_channel_and_saves_state(monkeypatch, sta
     args, kwargs = channel.set_permissions.call_args
     assert args[0] == "everyone" and kwargs["send_messages"] is False
     send_kwargs = channel.send.call_args.kwargs
-    assert send_kwargs["embed"].title == "🖱️ Mouse Shape Finder"
+    assert send_kwargs["embed"].title == "🖱️ AzeMouse — Mouse Shape Finder"
     assert send_kwargs["view"].children[0].custom_id == "mouse_finder:start"
     assert load_state(state_file) == {"channel_id": 111, "message_id": 555}
 

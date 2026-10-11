@@ -83,16 +83,22 @@ def _order_for_mode(mode: BudgetMode, pool: list[MouseScore], rest: list[MouseSc
 def _explanation(mode: BudgetMode, top: MouseScore, pool: list[MouseScore], reference: int) -> str:
     n = len(pool)
     tol = TOLERANCE_BY_MODE[mode]
-    zone = f"parmi les {n} souris à {tol} pts ou moins du meilleur score ({reference}/40)" if n > 1 else "seule souris dans la zone de tolérance"
+    # Fragment inséré après le critère : « … parmi les 2 souris à 2 pts ou moins du meilleur score (30/40) »
+    # ou « …, seule souris dans la zone de tolérance » (phrases lisibles ; aucune règle de tri modifiée).
+    zone = (
+        f" parmi les {n} souris à {tol} pts ou moins du meilleur score ({reference}/40)"
+        if n > 1
+        else ", seule souris dans la zone de tolérance"
+    )
     if mode is BudgetMode.ECONOMIQUE:
-        return f"Économique : {top.mouse.label} est la moins chère {zone}."
+        return f"Économique : {top.mouse.label} est la moins chère{zone}."
     if mode is BudgetMode.QUALITE_PRIX:
-        return (f"Rapport qualité/prix : meilleur rapport points/€ {zone}. "
+        return (f"Rapport qualité/prix : meilleur rapport points/€{zone}. "
                 "Indicateur provisoire, pas un score qualité-prix validé.")
     if mode is BudgetMode.HAUT_DE_GAMME:
-        return (f"Haut de gamme : performances documentées les plus élevées ({performance_index(top.mouse)}/{MAX_PERFORMANCE_INDEX}) "
+        return (f"Haut de gamme : performances documentées les plus élevées ({performance_index(top.mouse)}/{MAX_PERFORMANCE_INDEX})"
                 f"{zone}. Le prix n'entre pas dans le classement.")
-    return (f"Budget personnalisé : meilleur score conforme au budget {zone} ; "
+    return (f"Budget personnalisé : meilleur score conforme au budget{zone} ; "
             "à score égal, la moins chère.")
 
 

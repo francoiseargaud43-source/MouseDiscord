@@ -76,7 +76,7 @@ def check(root: Path, env: Mapping[str, str], python_version: tuple = tuple(sys.
         raw_links = json.loads(links_path.read_text(encoding="utf-8")) if links_path.is_file() else {}
         real = {k: v for k, v in raw_links.items() if not k.startswith("_")}
         valid = [k for k, v in real.items() if isinstance(v, str) and v.startswith(("https://", "http://"))]
-        results.append((OK, f"liens d'achat valides : {len(valid)} (les autres affichent « Lien bientôt disponible »)"))
+        results.append((OK, f"liens d'achat valides : {len(valid)} (sans lien, le résultat affiche « Liens à venir »)"))
         for key in real:
             if key in valid and any(host in real[key] for host in PLACEHOLDER_HOSTS):
                 results.append((WARN, f"lien d'exemple détecté pour « {key} » : remplacez-le ou videz-le avant la mise en ligne"))
@@ -84,11 +84,24 @@ def check(root: Path, env: Mapping[str, str], python_version: tuple = tuple(sys.
         results.append((ERROR, f"commercial_links.json invalide (JSON) : {exc}"))
 
     images_path = root / "assets" / "images.json"
+    base_url = (merged.get("IMAGES_BASE_URL") or "").strip()
     if images_path.is_file():
         try:
             images = json.loads(images_path.read_text(encoding="utf-8"))
-            count = sum(1 for k, v in images.items() if not k.startswith("_") and isinstance(v, str) and v.startswith("https://"))
-            results.append((OK, f"images configurées : {count} (vide = pas d'illustration, sans erreur)"))
+            entries = {k: v.strip() for k, v in images.items()
+                       if not k.startswith("_") and isinstance(v, str) and v.strip()}
+            filenames = [v for v in entries.values() if not v.startswith("https://")]
+            if base_url and not base_url.startswith("https://"):
+                results.append((ERROR, f"IMAGES_BASE_URL doit commencer par https:// (valeur actuelle : {base_url!r})"))
+            resolved = len(entries) - len(filenames) + (len(filenames) if base_url.startswith("https://") else 0)
+            results.append((OK, f"images configurées : {resolved}/{len(entries)} (vide = pas d'illustration, sans erreur)"))
+            if filenames and not base_url:
+                results.append((WARN, f"IMAGES_BASE_URL n'est pas renseigné : {len(filenames)} illustration(s) de "
+                                      "assets/illustrations/ ne seront pas affichées (voir README, section Personnaliser les images)"))
+            missing = [name for name in filenames if not (root / "assets" / "illustrations" / name).is_file()]
+            if missing:
+                shown = ", ".join(missing[:5]) + ("…" if len(missing) > 5 else "")
+                results.append((WARN, f"illustrations absentes de assets/illustrations/ : {shown}"))
         except json.JSONDecodeError as exc:
             results.append((ERROR, f"assets/images.json invalide (JSON) : {exc}"))
     else:

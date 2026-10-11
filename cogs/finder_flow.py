@@ -1,4 +1,4 @@
-"""Flux Discord du Mouse Shape Finder : message persistant, étapes éphémères, modals.
+"""Flux Discord du Mouse Shape Finder : message persistant, étapes éphémères, modals, résultat.
 
 CONFIDENTIALITÉ (tests : tests/test_flow.py, tests/test_privacy.py ; contrôle statique :
 tools/privacy_scan.py, testé par tests/test_privacy_scan.py ; limites : docs/audit/AUDIT_CONFIDENTIALITE.md) :
@@ -7,8 +7,18 @@ tools/privacy_scan.py, testé par tests/test_privacy_scan.py ; limites : docs/au
   ou ``edit_message`` sur le message éphémère du parcours ;
 - chaque vue et chaque modal porte le ``session_id`` du parcours ; chaque action vérifie l'identifiant ET le propriétaire.
 
-Parcours : grip -> mesures de la main -> budget (3 étapes).
-Le muscle thénar a été retiré du parcours (il n'entrait dans aucun calcul).
+Parcours : 1/4 prise -> 2/4 thénar (informatif) -> 3/4 mesures de la main -> 4/4 budget.
+Le muscle thénar est collecté et affiché mais **n'entre dans aucun calcul** (il n'existe aucune règle
+sourcée thénar -> dimensions : docs/audit/AUDIT.md §3) ; il n'est jamais lu par utils/matcher.py ni utils/selection.py.
+
+CHARTE AZEMOUSE (voir docs/REPORTE_DESIGN.md) :
+- **Bordeaux #8A2342** = couleur latérale de tous les embeds (identité) ; seul « session expirée » reste orange ;
+- **Nuit #0B1220 / Encre #070B14** portent le fond des illustrations (assets/images/T*.png) ;
+- **Étincelle #F0C43C** est un highlight présent uniquement dans les images (jamais en aplat) ;
+- **Crème #F6F1EA** n'apparaît que dans les illustrations, jamais dans un embed.
+Limites Discord prises en compte : pas de police personnalisée dans le texte natif (hiérarchie rendue par le
+Markdown), une seule image par embed, 25 champs maximum, 5 boutons par rangée, 1024 caractères par champ.
+Le résultat tient en **deux embeds** : la recommandation, puis les repères de taille — jamais les points internes.
 """
 from __future__ import annotations
 
@@ -19,9 +29,25 @@ import discord
 from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH
 from utils.assets import load_image_urls
 from utils.catalog import load_catalog, load_commercial_links
-from utils.matcher import MAX_SCORE, MouseScore, evaluate_mouse
-from utils.models import BUDGET_LABELS, GRIP_LABELS, BudgetMode, Grip, HandMeasure
-from utils.selection import Selection, select
+from utils.matcher import (
+    LENGTH_PTS_IN_RANGE,
+    MAX_SCORE,
+    WIDTH_PTS_IN_RANGE,
+    MouseScore,
+    compatibility_percent,
+    compute_target_ranges,
+    evaluate_mouse,
+)
+from utils.models import (
+    BUDGET_LABELS,
+    GRIP_LABELS,
+    THENAR_LABELS,
+    BudgetMode,
+    Grip,
+    HandMeasure,
+    Thenar,
+)
+from utils.selection import Selection, performance_index, select
 from utils.session import LOOKUP_FORBIDDEN, LOOKUP_OK, FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
 
@@ -29,24 +55,46 @@ log = logging.getLogger(__name__)
 
 VIEW_TIMEOUT = 900
 START_CUSTOM_ID = "mouse_finder:start"
-COLOR = discord.Color.from_rgb(88, 101, 242)
+
+# --- Palette AzeMouse (voir docs/REPORTE_DESIGN.md §4) ---------------------
+NAVY = discord.Color.from_rgb(11, 18, 32)        # #0B1220 Nuit  — référencée dans les illustrations
+BORDEAUX = discord.Color.from_rgb(138, 35, 66)   # #8A2342 Bordeaux — couleur latérale des embeds
+SPARK = discord.Color.from_rgb(240, 196, 60)     # #F0C43C Étincelle — jamais en aplat, images uniquement
+COLOR = BORDEAUX
+COLOR_EXPIRED = discord.Color.orange()           # seule exception à la charte (session expirée)
+
 SCORE_DISCLAIMER = (
     "Score géométrique provisoire, ni une probabilité d'achat ni une validation biomécanique. "
     "Largeur de prise estimée (coque − 3 mm) tant qu'elle n'est pas mesurée."
 )
-MAX_PENDING_SHOWN = 5
+PENDING_DOC_REFERENCE = "docs/audit/matrice_profils.md"
+BUTTON_LABEL_MAX = 80
+MAX_PENDING_SHOWN = 5      # au-delà : décompte sans liste (le poids visuel reste au winner)
+MAX_PENDING_LISTED = 8     # au-delà : une phrase de synthèse, sans nommer les souris
+ALTERNATIVE_PRICE_RATIO = 0.70       # au moins 30 % moins cher
+ALTERNATIVE_WIDTH_DELTA_MM = 2.0     # largeur de prise sensiblement différente
+ALTERNATIVE_LENGTH_DELTA_MM = 4.0    # longueur sensiblement différente
+
+CONFIDENCE_BADGES = {"élevée": "🟢", "moyenne": "🟡", "faible": "🔴"}
 
 GRIP_OPTIONS = (
-    (Grip.PALM, "Palm Grip", "Paume entièrement posée sur la coque"),
-    (Grip.CLAW, "Claw Grip", "Doigts arqués, contact par les pulpes"),
-    (Grip.FINGERTIP, "Fingertip Grip", "Contact uniquement par le bout des doigts"),
+    (Grip.PALM, "Palm Grip", "Paume posée sur la coque"),
+    (Grip.CLAW, "Claw Grip", "Doigts arqués, pulpes en contact"),
+    (Grip.FINGERTIP, "Fingertip Grip", "Bout des doigts seulement"),
+)
+THENAR_OPTIONS = (
+    (Thenar.PETITE, "Petite", "Thénar peu développé"),
+    (Thenar.MOYENNE, "Moyenne", "Thénar dans la moyenne"),
+    (Thenar.GRANDE, "Grande", "Thénar bien développé"),
 )
 BUDGET_OPTIONS = (
-    (BudgetMode.ECONOMIQUE, "Économique", "Petit budget, meilleur rapport prix"),
-    (BudgetMode.QUALITE_PRIX, "Rapport Qualité/Prix", "Bon compromis performance / prix"),
-    (BudgetMode.HAUT_DE_GAMME, "Haut de Gamme (Max Perf)", "Performances documentées les plus élevées"),
-    (BudgetMode.CUSTOM, "Budget Personnalisé Maximal", "Saisir un prix maximum en €"),
+    (BudgetMode.ECONOMIQUE, "Économique", "Le moins cher de la zone compatible"),
+    (BudgetMode.QUALITE_PRIX, "Rapport Qualité/Prix", "Meilleur points/€ (indicatif)"),
+    (BudgetMode.HAUT_DE_GAMME, "Haut de Gamme", "Performances documentées les plus élevées"),
+    (BudgetMode.CUSTOM, "Budget personnalisé", "Saisir un prix maximum en €"),
 )
+# Libellés courts utilisés dans le récapitulatif (le catalogue garde ses libellés complets).
+BUDGET_RECAP_LABELS = {mode: label for mode, label, _ in BUDGET_OPTIONS}
 
 
 # ---------------------------------------------------------------------------
@@ -97,78 +145,47 @@ async def _show_private(interaction: discord.Interaction, **kwargs) -> None:
 
 
 def _image(embed: discord.Embed, key: str) -> discord.Embed:
+    """Attache l'illustration de ``key`` (assets/images.json) si une URL https est disponible."""
     url = load_image_urls(IMAGES_CONFIG_PATH).get(key)
     if url:
         embed.set_image(url=url)
     return embed
 
 
-def _recap(session: FinderSession) -> str:
+def _mm(value: float) -> str:
+    """« 127 mm » plutôt que « 127.0 mm » (lisibilité mobile)."""
+    return f"{value:g} mm"
+
+
+def _size_text(mouse) -> str:
     parts = []
-    if session.grip:
-        parts.append(f"✋ Grip : **{GRIP_LABELS[session.grip]}**")
-    if session.hand_length_mm and session.hand_width_mm:
-        parts.append(f"📏 Main : **{session.hand_length_mm:g} × {session.hand_width_mm:g} mm**")
-    return "\n".join(parts)
-
-
-# ---------------------------------------------------------------------------
-# Embeds
-# ---------------------------------------------------------------------------
-def banner_embed() -> discord.Embed:
-    embed = discord.Embed(
-        title="🖱️ Mouse Shape Finder",
-        description=(
-            "Trouvez la souris dont la géométrie épouse **votre** main.\n\n"
-            "Cliquez sur le bouton ci-dessous : trois questions rapides "
-            "(grip, mesures de la main, budget) et une recommandation personnalisée.\n\n"
-            "*Les réponses sont privées : seul vous voyez le résultat.*"
-        ),
-        color=COLOR,
-    )
-    return _image(embed, "banner")
-
-
-def grip_step_embed() -> discord.Embed:
-    description = "\n".join(f"**{label}** : {desc}" for _, label, desc in GRIP_OPTIONS)
-    embed = discord.Embed(
-        title="Étape 1/3 — Votre style de prise",
-        description=f"Quel grip utilisez-vous le plus souvent ?\n\n{description}",
-        color=COLOR,
-    )
-    return _image(embed, "step1_grip")
-
-
-def measure_step_embed(session: FinderSession) -> discord.Embed:
-    embed = discord.Embed(
-        title="Étape 2/3 — Mesure de votre main",
-        description=(
-            f"{_recap(session)}\n\n"
-            "Avec une règle, mesurez :\n"
-            "• **Longueur** : du pli du poignet jusqu'au bout du majeur.\n"
-            "• **Largeur** : au niveau des articulations, **sans le pouce**.\n\n"
-            "Cliquez sur **Saisir mes mesures** quand vous êtes prêt."
-        ),
-        color=COLOR,
-    )
-    return _image(embed, "step2_measure")
-
-
-def budget_step_embed(session: FinderSession) -> discord.Embed:
-    embed = discord.Embed(
-        title="Étape 3/3 — Budget et gamme",
-        description=f"{_recap(session)}\n\nChoisissez votre gamme de prix.",
-        color=COLOR,
-    )
-    return _image(embed, "step3_budget")
+    if mouse.length_mm is not None:
+        parts.append(f"long. {_mm(mouse.length_mm)}")
+    if mouse.width_max_mm is not None:
+        parts.append(f"larg. {_mm(mouse.width_max_mm)} (coque)")
+    return " · ".join(parts)
 
 
 def _budget_text(session: FinderSession) -> str:
     if session.budget_mode is BudgetMode.CUSTOM and session.max_budget_eur is not None:
         return f"Budget max {session.max_budget_eur:.2f} €"
     if session.budget_mode is not None:
-        return BUDGET_LABELS[session.budget_mode]
+        return BUDGET_RECAP_LABELS.get(session.budget_mode, BUDGET_LABELS[session.budget_mode])
     return "—"
+
+
+def _recap(session: FinderSession) -> str:
+    """Récapitulatif d'une ligne (mobile) : prise, thénar, main, gamme — seules les données connues."""
+    parts = []
+    if session.grip:
+        parts.append(f"✋ **{GRIP_LABELS[session.grip]}**")
+    if session.thenar:
+        parts.append(f"🖐️ Thénar **{THENAR_LABELS[session.thenar]}**")
+    if session.hand_length_mm and session.hand_width_mm:
+        parts.append(f"📏 **{session.hand_length_mm:g} × {session.hand_width_mm:g} mm**")
+    if session.budget_mode is not None:
+        parts.append(f"🎚️ **{_budget_text(session)}**")
+    return "  •  ".join(parts)
 
 
 def _price_text(score: MouseScore) -> str:
@@ -181,28 +198,239 @@ def _price_text(score: MouseScore) -> str:
     return text
 
 
+def _confidence_line(score: MouseScore) -> str:
+    """Badge de confiance en une ligne, avec la raison (jamais une couleur seule)."""
+    badge = CONFIDENCE_BADGES.get(score.confidence or "faible", "🔴")
+    reason = {
+        "élevée": "Dimensions vérifiées et largeur de prise mesurée",
+        "moyenne": "Dimensions vérifiées, largeur de prise estimée (coque − 3 mm, provisoire)",
+        "faible": "Données d'une seule source ou compatibilité non confirmée",
+    }.get(score.confidence or "faible", "Données partielles")
+    return f"{badge} Confiance {score.confidence or 'faible'} — {reason}"
+
+
+def _match_summary(score: MouseScore) -> str:
+    """Phrase humaine (sans points internes) : ce qui colle, ce qui colle moins."""
+    mouse = score.mouse
+    good, weak = [], []
+    if score.breakdown.length_pts == LENGTH_PTS_IN_RANGE:
+        good.append("longueur dans la cible")
+    elif score.breakdown.length_pts > 0:
+        weak.append("longueur à quelques millimètres de la cible")
+    else:
+        weak.append("longueur en léger retrait")
+    if score.breakdown.width_pts == WIDTH_PTS_IN_RANGE:
+        good.append("largeur de prise dans la cible")
+    elif score.breakdown.width_pts > 0:
+        weak.append("largeur de prise proche de la cible")
+    else:
+        weak.append("largeur de prise un peu large")
+    if score.breakdown.grip_pts > 0:
+        good.append(f"prise {score.grip.label} bien soutenue")
+    if mouse.hump_position != "Inconnu" and score.grip is not Grip.FINGERTIP:
+        # En Fingertip, la bosse est ignorée par le barème : ne pas la présenter comme un défaut.
+        (good if score.breakdown.hump_pts > 0 else weak).append(
+            f"bosse {mouse.hump_position} " + ("adaptée" if score.breakdown.hump_pts > 0 else "moins adaptée")
+        )
+    if mouse.button_height != "Inconnu":
+        (good if score.breakdown.button_pts > 0 else weak).append(
+            f"boutons {mouse.button_height} " + ("adaptés" if score.breakdown.button_pts > 0 else "moins adaptés")
+        )
+    sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
+    if weak:
+        sentence += f". À noter : {', '.join(weak[:2])}."
+    else:
+        sentence += "."
+    return sentence[:300]
+
+
 def _candidate_text(score: MouseScore) -> str:
-    lines = [f"**{score.mouse.label}** · {_price_text(score)}", f"Score : **{score.total}/{MAX_SCORE}**"]
-    lines += [f"• {line}" for line in score.details]
-    return "\n".join(lines)[:1024]
+    """Bloc du Match Idéal : souris, prix, score unique, confiance, justification humaine (≤ 600 car.)."""
+    return (
+        f"**{score.mouse.label}** · {_size_text(score.mouse)} · {_price_text(score)}\n"
+        f"Score : **{score.total}/{MAX_SCORE} — {compatibility_percent(score)} % du maximum théorique**  ·  "
+        f"{_confidence_line(score)}\n"
+        f"{_match_summary(score)}"
+    )[:1024]
+
+
+def _alternative_reason(top: MouseScore, alt: MouseScore) -> str:
+    """Explique en une phrase pourquoi l'alternative mérite un coup d'œil."""
+    if top.mouse.price_eur and alt.mouse.price_eur and alt.mouse.price_eur <= top.mouse.price_eur * ALTERNATIVE_PRICE_RATIO:
+        saving = round((1 - alt.mouse.price_eur / top.mouse.price_eur) * 100)
+        return f"Prix inférieur d'environ {saving} % pour une compatibilité équivalente."
+    if performance_index(alt.mouse) != performance_index(top.mouse):
+        if performance_index(alt.mouse) > performance_index(top.mouse):
+            return "Performances documentées supérieures (polling ≥ 8000 Hz et/ou capteur haut de gamme)."
+        return "Performances documentées différentes (moins de caractéristiques haut de gamme)."
+    if top.mouse.hump_position != alt.mouse.hump_position or top.mouse.button_height != alt.mouse.button_height:
+        return (
+            f"Géométrie différente : bosse {alt.mouse.hump_position}, boutons {alt.mouse.button_height} "
+            f"contre {top.mouse.hump_position} / {top.mouse.button_height}."
+        )
+    return "Dimensions sensiblement différentes de celles du match idéal."
+
+
+def _alternative_is_relevant(top: MouseScore | None, alt: MouseScore | None) -> bool:
+    """Une alternative ne s'affiche que si elle apporte une vraie différence (prix, performance, géométrie)."""
+    if top is None or alt is None:
+        return False
+    if top.mouse.hump_position != alt.mouse.hump_position or top.mouse.button_height != alt.mouse.button_height:
+        return True
+    if performance_index(alt.mouse) != performance_index(top.mouse):
+        return True
+    if top.mouse.price_eur and alt.mouse.price_eur and alt.mouse.price_eur <= top.mouse.price_eur * ALTERNATIVE_PRICE_RATIO:
+        return True
+    if (top.mouse.length_mm and alt.mouse.length_mm
+            and abs(top.mouse.length_mm - alt.mouse.length_mm) >= ALTERNATIVE_LENGTH_DELTA_MM):
+        return True
+    return bool(
+        top.width_used_mm and alt.width_used_mm
+        and abs(top.width_used_mm - alt.width_used_mm) >= ALTERNATIVE_WIDTH_DELTA_MM
+    )
+
+
+def _alternative_text(top: MouseScore | None, alt: MouseScore | None) -> str:
+    if not _alternative_is_relevant(top, alt):
+        return "Aucune alternative pertinente dans la gamme choisie (mêmes géométrie, prix et performances documentées)."
+    assert alt is not None and top is not None
+    return f"**{alt.mouse.label}** · {_price_text(alt)}\n{_alternative_reason(top, alt)}"[:1024]
+
+
+def _pending_reason(score: MouseScore) -> str:
+    """Raison courte et lisible — jamais de score partiel ni de « /25 pts » (détails dans la matrice)."""
+    missing = " ".join(score.missing)
+    if "compatibilité" in missing:
+        return f"compatibilité {score.grip.label} non vérifiée"
+    if "longueur" in missing or "conflit" in missing:
+        return "dimensions non vérifiées"
+    if score.mouse.price_eur is None:
+        return "prix non renseigné"
+    if "bosse" in missing:
+        return "position de la bosse non vérifiée"
+    if "boutons" in missing:
+        return "hauteur des boutons non vérifiée"
+    return "données incomplètes"
 
 
 def _pending_text(pending: tuple[MouseScore, ...]) -> str:
-    lines = []
-    for item in pending[:MAX_PENDING_SHOWN]:
-        partial = f" — score partiel {item.total}/{item.computable_max} pts (non classable)" if item.computable_max else ""
-        lines.append(f"• **{item.mouse.label}**{partial}")
+    """Silence visuel : 5 noms maximum, sans score, puis renvoi vers la matrice technique."""
+    if len(pending) > MAX_PENDING_LISTED:
+        return (
+            f"{len(pending)} souris écartées du classement faute de compatibilité vérifiée "
+            f"(prise, bosse ou boutons). Détails techniques : `{PENDING_DOC_REFERENCE}`."
+        )
+    lines = [f"• **{s.mouse.label}** — {_pending_reason(s)}" for s in pending[:MAX_PENDING_SHOWN]]
     if len(pending) > MAX_PENDING_SHOWN:
-        lines.append(f"… et {len(pending) - MAX_PENDING_SHOWN} autre(s).")
+        lines.append(f"… et {len(pending) - MAX_PENDING_SHOWN} autre(s) — détails : `{PENDING_DOC_REFERENCE}`.")
     return "\n".join(lines)[:1024]
 
 
-def results_embed(session: FinderSession, selection: Selection) -> discord.Embed:
-    embed = discord.Embed(title="🎯 Résultat Mouse Shape Finder", color=COLOR)
-    embed.description = f"{_recap(session)}\n🎚️ Gamme : **{_budget_text(session)}**\n"
+# ---------------------------------------------------------------------------
+# Embeds d'accueil et d'étapes
+# ---------------------------------------------------------------------------
+def banner_embed() -> discord.Embed:
+    embed = discord.Embed(
+        title="🖱️ AzeMouse — Mouse Shape Finder",
+        description=(
+            "Trouvez la souris dont la géométrie épouse **votre** main.\n"
+            "4 questions rapides : prise, thénar, mesures, budget.\n"
+            "*Réponses privées : seul vous voyez la recommandation.*"
+        ),
+        color=COLOR,
+    )
+    return _image(embed, "banner")
+
+
+def grip_step_embed() -> discord.Embed:
+    description = "\n".join(f"**{label}** — {desc}" for _, label, desc in GRIP_OPTIONS)
+    embed = discord.Embed(
+        title="Étape 1/4 — Votre prise",
+        description=f"Quelle prise utilisez-vous le plus souvent ?\n{description}",
+        color=COLOR,
+    )
+    return _image(embed, "step1_grip")
+
+
+def thenar_step_embed() -> discord.Embed:
+    embed = discord.Embed(
+        title="Étape 2/4 — Votre éminence thénar",
+        description=(
+            "À titre **informatif** : cette donnée n'influence pas le score.\n"
+            "Elle aide seulement à expliquer l'arrière de souris conseillé."
+        ),
+        color=COLOR,
+    )
+    return _image(embed, "step2_thenar")
+
+
+def measure_step_embed(session: FinderSession) -> discord.Embed:
+    embed = discord.Embed(
+        title="Étape 3/4 — Vos mesures",
+        description=(
+            f"{_recap(session)}\n\n"
+            "Avec une règle :\n"
+            "• **Longueur** : pli du poignet → bout du majeur.\n"
+            "• **Largeur** : articulations, **sans le pouce**."
+        ),
+        color=COLOR,
+    )
+    return _image(embed, "step2_measure")
+
+
+def budget_step_embed(session: FinderSession) -> discord.Embed:
+    embed = discord.Embed(
+        title="Étape 4/4 — Budget et gamme",
+        description=f"{_recap(session)}\nChoisissez votre gamme de prix.",
+        color=COLOR,
+    )
+    return _image(embed, "step3_budget")
+
+
+def _target_line(session: FinderSession) -> str:
+    """Plage cible expliquée en une phrase (jamais de détail de points)."""
+    hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
+    assert session.grip is not None
+    ranges = compute_target_ranges(hand, session.grip)
+    length = (
+        f"jusqu'à {ranges.length_max:.1f} mm"
+        if session.grip is Grip.FINGERTIP
+        else f"{ranges.length_min:.1f}–{ranges.length_max:.1f} mm"
+    )
+    return f"Longueur cible : **{length}** · largeur de prise : **{ranges.width_min:.1f}–{ranges.width_max:.1f} mm**."
+
+
+def result_image_key(winner: MouseScore | None, grip: Grip | None) -> str | None:
+    """Illustration la plus utile : la bosse d'abord (ressenti), les boutons ensuite. Une seule image."""
+    if winner is None:
+        return None
+    mouse = winner.mouse
+    if grip in (Grip.PALM, Grip.CLAW) and mouse.hump_position != "Inconnu":
+        tokens = set(mouse.hump_position.split("-"))
+        if "Rear" in tokens:
+            return "illustration_hump_rear"
+        if "Front" in tokens:
+            return "illustration_hump_front"
+        if "Mid" in tokens:
+            return "illustration_hump_mid"
+    return {
+        "High": "illustration_buttons_high",
+        "Mid": "illustration_buttons_mid",
+        "Low": "illustration_buttons_low",
+    }.get(mouse.button_height)
+
+
+def results_embeds(session: FinderSession, selection: Selection) -> list[discord.Embed]:
+    """Résultat en deux embeds : (1) la recommandation, (2) les repères de taille. Jamais de points internes."""
+    main = discord.Embed(title="🎯 Votre recommandation", color=COLOR)
+    header = _recap(session)
+    if session.budget_mode is None:
+        # Mode absent : le récapitulatif ne porte pas la gamme, on l'indique explicitement.
+        header = f"{header}  •  🎚️ **Classement morphologique**"
+    main.description = header[:4096]
 
     if not selection.ranked:
-        embed.add_field(
+        main.add_field(
             name="Aucun match classable",
             value=(
                 "Aucune souris ne peut être classée avec les données vérifiées pour ces critères. "
@@ -212,28 +440,51 @@ def results_embed(session: FinderSession, selection: Selection) -> discord.Embed
         )
     else:
         top = selection.ranked[0]
-        embed.add_field(name="🥇 Le Match Idéal", value=_candidate_text(top), inline=False)
-        if len(selection.ranked) > 1:
-            embed.add_field(name="🥈 L'Alternative", value=_candidate_text(selection.ranked[1]), inline=False)
-        else:
-            embed.add_field(name="🥈 L'Alternative", value="Aucune autre souris ne correspond à ces critères.", inline=False)
-        embed.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
+        alt = selection.ranked[1] if len(selection.ranked) > 1 else None
+        main.add_field(name="🥇 Le Match Idéal", value=_candidate_text(top), inline=False)
+        main.add_field(name="🥈 L'Alternative", value=_alternative_text(top, alt), inline=False)
+        main.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
+        if selection.pending:
+            main.add_field(name="⏳ À vérifier (non classées)", value=_pending_text(selection.pending), inline=False)
+        image_key = result_image_key(top, session.grip)
+        if image_key:
+            main = _image(main, image_key)
 
-    if selection.pending:
-        embed.add_field(
-            name="⏳ À vérifier (non classées)",
-            value=_pending_text(selection.pending),
+    main.set_footer(text=SCORE_DISCLAIMER)
+    embeds = [main]
+
+    if selection.ranked and session.grip is not None:
+        details = discord.Embed(title="📐 Repères de taille", color=COLOR)
+        details.description = _target_line(session)
+        details.add_field(
+            name="Ce que fait le score",
+            value=(
+                "Le score sur 40 compare longueur, largeur de prise, compatibilité de prise, bosse et boutons. "
+                "C'est un indicateur géométrique provisoire, pas une probabilité d'achat."
+            ),
             inline=False,
         )
-    embed.set_footer(text=SCORE_DISCLAIMER)
-    return embed
+        if session.thenar is Thenar.PETITE:
+            details.add_field(
+                name="🖐️ Thénar Petite (indicatif)",
+                value=(
+                    "Un arrière étroit est souvent plus confortable pour cette morphologie. "
+                    "Recommandation morphologique indicative, **non prise en compte dans le score**."
+                ),
+                inline=False,
+            )
+            details = _image(details, "illustration_rear_narrow")
+        else:
+            details = _image(details, "illustration_mouse_dimensions")
+        embeds.append(details)
+    return embeds
 
 
 def expired_embed() -> discord.Embed:
     return discord.Embed(
         title="⏱️ Session expirée",
         description="Cliquez sur **Start Mouse Shape Finder** dans le salon pour recommencer.",
-        color=discord.Color.orange(),
+        color=COLOR_EXPIRED,
     )
 
 
@@ -241,43 +492,36 @@ def expired_embed() -> discord.Embed:
 # Calcul
 # ---------------------------------------------------------------------------
 def compute_selection(session: FinderSession) -> Selection:
-    if session.grip is None or session.hand_length_mm is None or session.hand_width_mm is None:
-        raise ValueError("Session incomplète : grip ou mesures manquants.")
-    if session.budget_mode is None:
-        raise ValueError("Session incomplète : budget manquant.")
-    hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
+    """Lecture à chaud du catalogue (les données ne sont jamais mises en cache)."""
     mice = load_catalog(MOUSE_DB_PATH)
+    hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
+    assert session.grip is not None
     scores = [
-        evaluate_mouse(m, hand, session.grip, session.budget_mode, session.max_budget_eur)
-        for m in mice
+        evaluate_mouse(mouse, hand, session.grip, session.budget_mode, session.max_budget_eur)
+        for mouse in mice
     ]
     return select(scores, session.budget_mode)
 
 
 # ---------------------------------------------------------------------------
-# Views de base
+# Vues et modals
 # ---------------------------------------------------------------------------
 class FinderView(discord.ui.View):
-    async def on_error(self, interaction: discord.Interaction, error: Exception, item) -> None:
-        log.exception("Erreur dans la vue Mouse Shape Finder", exc_info=error)
-        await _send_ephemeral(interaction, "⚠️ Une erreur est survenue. Relancez le Mouse Shape Finder.")
+    """Base des vues du parcours : aucune donnée n'est publiée dans le salon."""
+
+    def __init__(self, timeout: float | None = VIEW_TIMEOUT) -> None:
+        super().__init__(timeout=timeout)
 
 
 class FinderModal(discord.ui.Modal):
-    async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
-        log.exception("Erreur dans le modal Mouse Shape Finder", exc_info=error)
-        await _send_ephemeral(interaction, "⚠️ Une erreur est survenue. Relancez le Mouse Shape Finder.")
+    def __init__(self, title: str) -> None:
+        super().__init__(title=title)
 
 
 # ---------------------------------------------------------------------------
-# Point d'entrée persistant (SEUL message public du parcours)
+# Accueil (vue persistante : custom_id fixe, enregistrée au démarrage du bot)
 # ---------------------------------------------------------------------------
-class StartView(discord.ui.View):
-    """Vue persistante (timeout=None, custom_id fixe) enregistrée au démarrage du bot.
-
-    Le clic ouvre un parcours PRIVÉ : la réponse est éphémère et n'est jamais publiée.
-    """
-
+class StartView(FinderView):
     def __init__(self) -> None:
         super().__init__(timeout=None)
 
@@ -299,13 +543,13 @@ class StartView(discord.ui.View):
 
 
 # ---------------------------------------------------------------------------
-# Étape 1 : Grip
+# Étape 1 : prise (grip)
 # ---------------------------------------------------------------------------
 class GripSelect(discord.ui.Select):
     def __init__(self, session_id: str) -> None:
         self.session_id = session_id
         super().__init__(
-            placeholder="Choisissez votre grip…",
+            placeholder="Choisissez votre prise…",
             min_values=1,
             max_values=1,
             options=[
@@ -319,17 +563,47 @@ class GripSelect(discord.ui.Select):
         if session is None:
             return
         session.grip = Grip(self.values[0])
-        await _show_private(interaction, embed=measure_step_embed(session), view=MeasureView(self.session_id))
+        await _show_private(interaction, embed=thenar_step_embed(), view=ThenarView(self.session_id))
 
 
 class GripView(FinderView):
     def __init__(self, session_id: str) -> None:
-        super().__init__(timeout=VIEW_TIMEOUT)
+        super().__init__()
         self.add_item(GripSelect(session_id))
 
 
 # ---------------------------------------------------------------------------
-# Étape 2 : Mesures (bouton -> modal)
+# Étape 2 : éminence thénar (informatif — aucun effet sur le score)
+# ---------------------------------------------------------------------------
+class ThenarSelect(discord.ui.Select):
+    def __init__(self, session_id: str) -> None:
+        self.session_id = session_id
+        super().__init__(
+            placeholder="Choisissez la taille de votre thénar…",
+            min_values=1,
+            max_values=1,
+            options=[
+                discord.SelectOption(label=label, value=thenar.value, description=desc)
+                for thenar, label, desc in THENAR_OPTIONS
+            ],
+        )
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        session = await require_session(interaction, self.session_id)
+        if session is None:
+            return
+        session.thenar = Thenar(self.values[0])  # stocké et affiché uniquement
+        await _show_private(interaction, embed=measure_step_embed(session), view=MeasureView(self.session_id))
+
+
+class ThenarView(FinderView):
+    def __init__(self, session_id: str) -> None:
+        super().__init__()
+        self.add_item(ThenarSelect(session_id))
+
+
+# ---------------------------------------------------------------------------
+# Étape 3 : mesures (bouton -> modal)
 # ---------------------------------------------------------------------------
 class MeasureModal(FinderModal):
     def __init__(self, session_id: str) -> None:
@@ -372,7 +646,7 @@ class MeasureModal(FinderModal):
 
 class MeasureView(FinderView):
     def __init__(self, session_id: str) -> None:
-        super().__init__(timeout=VIEW_TIMEOUT)
+        super().__init__()
         self.session_id = session_id
 
     @discord.ui.button(label="Saisir mes mesures", style=discord.ButtonStyle.primary, emoji="📏")
@@ -384,7 +658,7 @@ class MeasureView(FinderView):
 
 
 # ---------------------------------------------------------------------------
-# Étape 3 : Budget (select -> modal si budget personnalisé)
+# Étape 4 : budget (select -> modal si budget personnalisé)
 # ---------------------------------------------------------------------------
 class BudgetSelect(discord.ui.Select):
     def __init__(self, session_id: str) -> None:
@@ -415,7 +689,7 @@ class BudgetSelect(discord.ui.Select):
 
 class BudgetView(FinderView):
     def __init__(self, session_id: str) -> None:
-        super().__init__(timeout=VIEW_TIMEOUT)
+        super().__init__()
         self.add_item(BudgetSelect(session_id))
 
 
@@ -441,7 +715,7 @@ class BudgetModal(FinderModal):
         except InputError as exc:
             await _send_ephemeral(
                 interaction,
-                f"❌ **Saisie invalide**\n{exc}\n\nRouvrez le menu « Budget Personnalisé Maximal ».",
+                f"❌ **Saisie invalide**\n{exc}\n\nRouvrez le menu « Budget personnalisé ».",
             )
             return
         session.budget_mode = BudgetMode.CUSTOM
@@ -460,42 +734,48 @@ async def _show_results(interaction: discord.Interaction, session: FinderSession
     interaction.client.sessions.discard(session.session_id)
     await _show_private(
         interaction,
-        embed=results_embed(session, selection),
+        embeds=results_embeds(session, selection),
         view=ResultsView(owner_id, selection.ranked, links),
     )
 
 
 class ResultsView(FinderView):
-    """Boutons du résultat privé : liens d'achat, Fermer, Refaire le test (propriétaire uniquement)."""
+    """Boutons du résultat privé : achats réels, Liens à venir si aucun lien, Fermer, Refaire (propriétaire)."""
 
     def __init__(self, owner_id: int, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str]) -> None:
-        super().__init__(timeout=VIEW_TIMEOUT)
+        super().__init__()
         self.owner_id = owner_id
-        for score in ranked:
+        purchases = 0
+        for score in ranked[:2]:
             url = links.get(score.mouse.id)
             if url:
                 self.add_item(
                     discord.ui.Button(
-                        label=f"Acheter {score.mouse.label}"[:80],
+                        label=f"Acheter {score.mouse.label}"[:BUTTON_LABEL_MAX],
                         style=discord.ButtonStyle.link,
                         url=url,
                         emoji="🛒",
+                        row=0,
                     )
                 )
-            else:
-                self.add_item(
-                    discord.ui.Button(
-                        label=f"Lien bientôt disponible : {score.mouse.label}"[:80],
-                        style=discord.ButtonStyle.secondary,
-                        disabled=True,
-                        custom_id=f"mouse_finder:nolink:{score.mouse.id}",
-                    )
+                purchases += 1
+        if purchases == 0:
+            # Plus un bouton grisé par souris : un seul bouton informatif, jamais de lien inventé.
+            self.add_item(
+                discord.ui.Button(
+                    label="Liens à venir",
+                    style=discord.ButtonStyle.secondary,
+                    emoji="🔗",
+                    disabled=True,
+                    custom_id="mouse_finder:nolink",
+                    row=0,
                 )
-        close = discord.ui.Button(label="Fermer", style=discord.ButtonStyle.secondary, emoji="✖️")
+            )
+        close = discord.ui.Button(label="Fermer", style=discord.ButtonStyle.secondary, emoji="✖️", row=1)
         close.callback = self._close
         self.add_item(close)
         # Ajouté en dernier : le bouton de relance apparaît après les liens d'achat.
-        restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄")
+        restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄", row=1)
         restart.callback = self._restart
         self.add_item(restart)
 
@@ -512,6 +792,7 @@ class ResultsView(FinderView):
         await interaction.response.edit_message(
             content="✅ Résultat fermé. Cliquez sur **Start Mouse Shape Finder** dans le salon pour un nouveau test.",
             embed=None,
+            embeds=None,
             view=None,
         )
 
@@ -519,4 +800,4 @@ class ResultsView(FinderView):
         if not await self._check_owner(interaction):
             return
         session = interaction.client.sessions.start(interaction.user.id)
-        await interaction.response.edit_message(embed=grip_step_embed(), view=GripView(session.session_id))
+        await interaction.response.edit_message(embed=grip_step_embed(), embeds=None, view=GripView(session.session_id))

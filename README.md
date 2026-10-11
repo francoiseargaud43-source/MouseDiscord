@@ -21,7 +21,8 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 9. [Moteur de scoring](#moteur-de-scoring)
 10. [Architecture](#architecture)
 11. [Tests](#tests)
-12. [Audit et données](docs/audit/AUDIT.md)
+12. [Design et illustrations](docs/REPORTE_DESIGN.md)
+13. [Audit et données](docs/audit/AUDIT.md)
 
 ---
 
@@ -29,13 +30,19 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 
 | Étape | Ce que voit l'utilisateur | Action |
 |---|---|---|
-| Accueil | Message persistant (bannière) dans le salon | Bouton bleu **Start Mouse Shape Finder** |
-| 1/3. Grip | Message éphémère + image des 3 grips | Menu : Palm / Claw / Fingertip Grip |
-| 2/3. Mesures | Le même message est mis à jour + image « règle » | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
-| 3/3. Budget | Le même message est mis à jour | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget Personnalisé (→ modal prix max) |
-| Résultat | Le même message affiche le Match Idéal, l'Alternative, l'explication du choix et les souris « à vérifier » | Boutons 🛒 d'achat (liens URL) et 🔄 Refaire le test |
+| Accueil | Message persistant : bannière AzeMouse (`T08`) | Bouton **Start Mouse Shape Finder** |
+| 1/4. Prise | Message éphémère + illustration des 3 prises (`T09`) | Menu : Palm / Claw / Fingertip Grip |
+| 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score) |
+| 3/4. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
+| 4/4. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
+| Résultat | **Deux embeds privés** : la recommandation (Match Idéal, alternative réellement différente, explication, souris à vérifier) puis les repères de taille illustrés | Boutons 🛒 d'achat (liens réels), ✖️ Fermer, 🔄 Refaire le test |
 
-Le muscle thénar a été retiré du parcours : il était collecté mais n'entrait dans aucun calcul (voir `docs/audit/AUDIT.md`).
+**Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
+il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
+
+**Identité visuelle** : bordeaux `#8A2342` en couleur latérale de tous les embeds (« session expirée » exceptée, en orange),
+illustrations sur fond Nuit `#0B1220` avec liseré bordeaux et une touche de jaune Étincelle `#F0C43C`.
+Aucune image n'est inventée : voir `docs/REPORTE_DESIGN.md`.
 
 Les étapes utilisent `interaction.response.edit_message()` : le salon ne se remplit pas de messages.
 Les saisies invalides (texte, nombre hors bornes, etc.) déclenchent un message d'erreur explicite
@@ -46,8 +53,11 @@ Les sessions sont stockées **en mémoire**, identifiées par un `session_id` al
 Relancer un test remplace le précédent : les anciens menus deviennent inactifs. Un redémarrage du bot efface les sessions
 en cours : le message persistant continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
 
-**Score affiché** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`.
-Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** : c'est une estimation géométrique provisoire.
+**Score affiché** : `Score : X/40 — Y % du maximum théorique du barème`, **une seule fois** (sur le Match Idéal),
+accompagné du badge de confiance (`🟢` élevée / `🟡` moyenne / `🔴` faible) et de sa raison.
+Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans `MouseScore.details`
+et dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** :
+c'est une estimation géométrique provisoire.
 
 ---
 
@@ -138,25 +148,59 @@ Le bouton est une vue persistante (`custom_id` fixe, enregistrée au démarrage)
 Toutes les URL d'images sont dans **`assets/images.json`**. Modifiez le fichier et enregistrez :
 le bot le relit à chaque interaction, aucun redémarrage n'est nécessaire.
 
+Deux façons de renseigner une image (elles peuvent cohabiter) :
+
+1. **Nom de fichier** repris de `assets/illustrations/` — recommandé, c'est ce qui est livré :
+
+   ```json
+   { "banner": "T08_azemouse_banniere.png" }
+   ```
+
+   La résolution se fait avec `IMAGES_BASE_URL` (fichier `.env`), qui désigne le dossier public où vous avez
+   publié les illustrations. **Une seule variable à changer au déploiement** (voir la section
+   « Publier les illustrations » de `docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md`) :
+
+   ```
+   IMAGES_BASE_URL=https://[compte].alwaysdata.net/illustrations/
+   ```
+
+   Un nom de fichier **sans** `IMAGES_BASE_URL` n'affiche aucune image (aucune erreur, aucun plantage).
+
+2. **URL complète** `https://…` (hébergement externe) : utilisée telle quelle, prioritaire sur la base.
+
 ```json
 {
-  "banner": "https://.../banniere.png",
-  "step1_grip": "https://.../3-grips.png",
-  "step2_measure": "https://.../mesure-regle.png",
-  "step3_budget": ""
+  "banner": "T08_azemouse_banniere.png",
+  "step1_grip": "T09_griffe_paume_doigts.png",
+  "step2_thenar": "T10_tailles_de_main.png",
+  "step2_measure": "T11_mesurer_la_main.png",
+  "step3_budget": "",
+  "illustration_mouse_dimensions": "T12_souris_longueur_largeur.png"
 }
 ```
 
-| Clé | Affichée à |
-|---|---|
-| `banner` | Message persistant d'accueil |
-| `step1_grip` | Étape 1/3 — illustration des 3 grips |
-| `step2_measure` | Étape 2/3 — main mesurée à la règle |
-| `step3_budget` | Étape 3/3 — facultatif (vide = aucune image). Remplace l'ancienne clé `step4_budget`, encore lue en repli. |
+| Clé | Affichée à | Illustration livrée |
+|---|---|---|
+| `banner` | Message persistant d'accueil | `T08_azemouse_banniere.png` |
+| `step1_grip` | Étape 1/4 — les 3 prises | `T09_griffe_paume_doigts.png` |
+| `step2_thenar` | Étape 2/4 — thénar (informatif) | `T10_tailles_de_main.png` |
+| `step2_measure` | Étape 3/4 — main mesurée à la règle | `T11_mesurer_la_main.png` |
+| `step3_budget` | Étape 4/4 — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
+| `illustration_mouse_dimensions` | Repères de taille du résultat | `T12_souris_longueur_largeur.png` |
+| `illustration_rear_narrow` | Résultat, si thénar « Petite » (indicatif) | `T13_arriere_etroit.png` |
+| `illustration_hump_mid` | Résultat — bosse centrale du match idéal | `T14_bosse_centrale.png` |
+| `illustration_hump_front` | Résultat — bosse avant / Mid-Front | `T15_bosse_avant.png` |
+| `illustration_hump_rear` | Résultat — bosse arrière | `T07_bosse_arriere.png` |
+| `illustration_buttons_high` | Résultat — boutons hauts | `T01_boutons_hauts.png` |
+| `illustration_buttons_low` | Résultat — boutons bas | `T02_boutons_bas.png` |
+| `illustration_buttons_mid` | Résultat — boutons moyens | `T03_boutons_moyens.png` |
+| `illustration_grip_relaxed` | Documentation (variantes de prise) — non utilisé dans un embed | `T04_griffe_relachee.png` |
+| `illustration_grip_aggressive` | Documentation (variantes de prise) — non utilisé dans un embed | `T05_griffe_agressive.png` |
+| `illustration_grip_pincer` | Documentation (variantes de prise) — non utilisé dans un embed | `T06_griffe_pince.png` |
 
 Les URL doivent être publiques et commencer par `https://`. Une valeur vide ou invalide n'affiche simplement pas d'image.
-**Aucune URL d'image n'est fournie par défaut** : elles seront renseignées par le propriétaire.
-Les fichiers Discord (pièces jointes) ne sont pas utilisés : hébergez les images ailleurs.
+Les 15 fichiers sont livrés dans `assets/illustrations/` (copie de `ImageUse/`) : il suffit de les publier et de
+renseigner `IMAGES_BASE_URL`. Les fichiers Discord (pièces jointes) ne sont pas utilisés : hébergez les images ailleurs.
 
 ---
 
@@ -172,7 +216,8 @@ Les liens d'affiliation sont dans **`data/commercial_links.json`**, séparés du
 ```
 
 - La clé est l'`id` de la souris dans `data/mouse_db.json`.
-- Une souris sans lien affiche un bouton grisé « Lien bientôt disponible » ; ajoutez simplement son `id` pour l'activer.
+- Sans lien, le résultat affiche **un seul** bouton informatif désactivé `🔗 Liens à venir` (jamais un bouton grisé par souris) ;
+  ajoutez simplement l'`id` de la souris pour afficher son bouton 🛒 `Acheter …`.
 - Aucun lien n'est inventé dans le dépôt : le fichier est volontairement vide tant que le propriétaire ne fournit pas les liens.
 - Les entrées dont l'URL ne commence pas par `http(s)://` sont ignorées (un avertissement est écrit dans les logs).
 - Modification à chaud : rechargé à chaque résultat, sans redémarrage.
@@ -312,7 +357,7 @@ MouseDiscord/
 ├── config.py                 # Variables d'environnement et chemins
 ├── cogs/
 │   ├── mouse_finder.py       # !setup_finder (idempotent, verrouillage du salon)
-│   └── finder_flow.py        # Vues, menus, modals, embeds, flux 1/3 à 3/3 et résultat
+│   └── finder_flow.py        # Vues, menus, modals, embeds, flux 1/4 à 4/4 et résultat en 2 embeds
 ├── utils/
 │   ├── matcher.py            # Compatibilité morphologique (points, statuts, largeur de prise)
 │   ├── selection.py          # Modes de sélection (tolérances, classement, explications)
@@ -325,13 +370,15 @@ MouseDiscord/
 │   ├── mouse_db.json         # Catalogue v2 (géométrie + sources, compatibilité, prix)
 │   └── commercial_links.json # Liens d'affiliation (vide tant que non fournis)
 ├── assets/
-│   └── images.json           # URL des images des étapes (vides tant que non fournies)
+│   ├── images.json           # Clé -> nom de fichier (résolu par IMAGES_BASE_URL) ou URL https complète
+│   └── illustrations/        # Les 15 assets ImageUse (T01–T15), à publier en https (voir REPORTE_DESIGN.md)
 ├── tools/
 │   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
 │   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
 │   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
 ├── docs/
-│   ├── DEPLOYMENT_ALWAYSDATA_FILEZILLA.md  # Guide de mise en ligne (Alwaysdata, FileZilla, mise à jour)
+│   ├── DEPLOYMENT_ALWAYSDATA_FILEZILLA.md  # Guide de mise en ligne (Alwaysdata, FileZilla, illustrations)
+│   ├── REPORTE_DESIGN.md     # Charte AzeMouse : assets, mapping image -> écran, hébergement
 │   └── audit/                # Audit, catalogue ATK, matrices, rapports
 ├── state/                    # Message publié par !setup_finder (ignoré par Git)
 ├── tests/                    # pytest
@@ -356,15 +403,15 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 
 - `tests/test_matcher.py` : plages cibles, points pour 180 × 90 mm en Palm (non-régression), bornes strictes, largeur mesurée vs estimée, statuts `scored` / `pending` / `excluded`, budget personnalisé.
 - `tests/test_selection.py` : effet réel de chaque mode, tolérances, prix inconnus, candidats à vérifier jamais classés.
-- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images vides par défaut, repli de clé d'image.
+- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images, résolution `IMAGES_BASE_URL` (nom de fichier), existence réelle des 15 illustrations, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : isolation des sessions par `session_id`, propriétaire, remplacement d'un parcours, expiration.
 - `tests/test_privacy.py` : scénarios de confidentialité P02–P12 (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md`.
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts.
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
-- `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice.
-- `tests/test_flow.py` : parcours complet 1/3 à 3/3 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), confidentialité (aucun envoi public, analyse statique), lien manquant → « Lien bientôt disponible ».
+- `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
+- `tests/test_flow.py` : parcours complet 1/4 à 4/4 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), charte d'embeds, limites Discord des embeds, refus des détails internes (`pts`), thénar stocké mais sans effet sur le score, illustrations branchées, lien manquant → « Liens à venir ».
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main

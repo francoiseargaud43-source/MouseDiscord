@@ -71,3 +71,35 @@ def test_example_domain_link_is_warning(project):
 
 def test_empty_links_and_images_are_not_errors(project):
     assert cd.ERROR not in levels(cd.check(project, {}, python_version=(3, 11)))
+
+
+# ---------------------------------------------------------------------------
+# Illustrations : noms de fichiers résolus par IMAGES_BASE_URL
+# ---------------------------------------------------------------------------
+def test_bare_image_name_without_base_url_is_a_warning(project):
+    (project / "assets" / "images.json").write_text('{"banner": "T08.png"}', encoding="utf-8")
+    results = cd.check(project, {}, python_version=(3, 11))
+    assert any(lvl == cd.WARN and "IMAGES_BASE_URL" in msg for lvl, msg in results)
+    assert cd.ERROR not in levels(results)
+
+
+def test_bare_image_name_with_base_url_is_resolved(project):
+    (project / "assets" / "images.json").write_text('{"banner": "T08.png"}', encoding="utf-8")
+    (project / "assets" / "illustrations").mkdir()
+    (project / "assets" / "illustrations" / "T08.png").write_text("x", encoding="utf-8")
+    results = cd.check(project, {"IMAGES_BASE_URL": "https://compte.alwaysdata.net/illustrations/"},
+                       python_version=(3, 11))
+    assert any(lvl == cd.OK and "images configurées : 1/1" in msg for lvl, msg in results)
+    assert cd.ERROR not in levels(results)
+
+
+def test_non_https_image_base_url_is_blocking(project):
+    (project / "assets" / "images.json").write_text('{"banner": "T08.png"}', encoding="utf-8")
+    results = cd.check(project, {"IMAGES_BASE_URL": "http://compte.alwaysdata.net/"}, python_version=(3, 11))
+    assert any(lvl == cd.ERROR and "IMAGES_BASE_URL" in msg for lvl, msg in results)
+
+
+def test_missing_illustration_on_disk_is_a_warning(project):
+    (project / "assets" / "images.json").write_text('{"banner": "absent.png"}', encoding="utf-8")
+    results = cd.check(project, {"IMAGES_BASE_URL": "https://x.test/"}, python_version=(3, 11))
+    assert any(lvl == cd.WARN and "absent.png" in msg for lvl, msg in results)

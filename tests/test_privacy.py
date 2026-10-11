@@ -42,6 +42,14 @@ async def run_start(store, user_id):
     return inter, view.children[0].session_id
 
 
+async def choose_thenar(store, user_id, session_id, value):
+    inter = make_interaction(user_id=user_id, store=store)
+    view = flow.ThenarView(session_id)
+    select_values(view.children[0], value)
+    await view.children[0].callback(inter)
+    return inter
+
+
 async def choose_grip(store, user_id, session_id, value):
     inter = make_interaction(user_id=user_id, store=store)
     view = flow.GripView(session_id)
@@ -72,17 +80,20 @@ async def test_p02_p03_p06_full_path_is_private_and_result_goes_to_participant_o
     store = SessionStore(ttl_seconds=600)
     start, sid = await run_start(store, 1)
     grip = await choose_grip(store, 1, sid, "palm")
+    thenar = await choose_thenar(store, 1, sid, "moyenne")                # étape 2/4, informative
     measures = await submit_measures(store, 1, sid, "180", "90")          # P03 : soumission de modal
     result = await choose_budget(store, 1, sid, BudgetMode.QUALITE_PRIX)
 
-    for inter in (start, grip, measures, result):
+    for inter in (start, grip, thenar, measures, result):
         assert_private(inter)
     # P02 : chaque étape est affichée en éditant le message éphémère du parcours
     assert grip.response.edit_message.await_count == 1
+    assert thenar.response.edit_message.await_count == 1
     assert measures.response.edit_message.await_count == 1
     # P06 : le résultat n'est édité que dans l'interaction du participant
     assert result.response.edit_message.await_count == 1
-    assert "Match Idéal" in embed_text(result.response.edit_message.call_args.kwargs["embed"])
+    assert store.get(sid, 1) is None  # session consommée après affichage du résultat
+    assert "Match Idéal" in embed_text(result.response.edit_message.call_args.kwargs["embeds"][0])
     # Un second participant n'a rien reçu : vérifié en P07 et P08.
 
 
@@ -153,8 +164,8 @@ async def test_p07_two_simultaneous_participants_do_not_mix_data():
     assert (sb.grip, sb.hand_length_mm, sb.hand_width_mm) == (Grip.CLAW, 170.0, 80.0)
     res_a = await choose_budget(store, 1, a, BudgetMode.ECONOMIQUE)
     res_b = await choose_budget(store, 2, b, BudgetMode.HAUT_DE_GAMME)
-    text_a = embed_text(res_a.response.edit_message.call_args.kwargs["embed"])
-    text_b = embed_text(res_b.response.edit_message.call_args.kwargs["embed"])
+    text_a = embed_text(res_a.response.edit_message.call_args.kwargs["embeds"][0])
+    text_b = embed_text(res_b.response.edit_message.call_args.kwargs["embeds"][0])
     assert "180 × 90" in text_a and "170 × 80" not in text_a
     assert "170 × 80" in text_b and "180 × 90" not in text_b
 

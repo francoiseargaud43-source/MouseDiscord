@@ -9,9 +9,13 @@ Date : 2026-10-10 · Branche : `arena/33e33710-mousediscord` · Base : `68a5bbd`
 - **Données « inconnues » et conflits** : représentés explicitement ; une souris incomplète n'est jamais classée, et aucun point n'est inventé.
 - **Catalogue** : 6 modèles d'origine conservés, 12 variantes ATK ajoutées, sources et statuts pour chaque valeur.
 - **Thénar** : retiré du parcours (aucun rôle fonctionnel documenté).
+  **Note du 2026-10-11** : réintroduit comme **étape 2/4 informative** (stockage et affichage seuls, illustration `T10`,
+  note « arrière étroit » indicative avec `T13`) — toujours **sans aucun effet sur les scores** (décision du propriétaire,
+  voir `AUDIT.md` §3 et `REPORTE_DESIGN.md`).
 - **`!setup_finder`** : idempotent (édition du message existant).
 - **Score affiché** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`, sans probabilité.
-- **Tests** : **219 passent** à la finalisation du 2026-10-10 (72 dans le dépôt d'origine). Contrôle statique de confidentialité : 0 violation. **Aucun test sur serveur Discord réel** n'a été exécuté : la validation en conditions réelles reste à faire (`PROTOCOLE_DISCORD_CONFIDENTIALITE.md`).
+- **Tests** : **219 passent** à la finalisation du 2026-10-10 (72 dans le dépôt d'origine) — **239** après la mission
+  design du 2026-10-11 (voir la note en §4). Contrôle statique de confidentialité : 0 violation. **Aucun test sur serveur Discord réel** n'a été exécuté : la validation en conditions réelles reste à faire (`PROTOCOLE_DISCORD_CONFIDENTIALITE.md`).
 
 ## 2. Fichiers modifiés et créés
 
@@ -22,12 +26,12 @@ Date : 2026-10-10 · Branche : `arena/33e33710-mousediscord` · Base : `68a5bbd`
 | `utils/models.py` | `Mouse` v2 (géométrie séparée, statuts, conflits, sources), `Source`, valeur `Inconnu`, `Thenar` supprimé. |
 | `utils/catalog.py` | Validation du schéma v2 (valeurs, conflits, sources obligatoires, identifiants uniques), liens tolérants. |
 | `utils/session.py` | Thénar retiré de la session. |
-| `utils/assets.py` | Clé `step3_budget` (repli sur `step4_budget`), `step3_thenar` supprimée. |
-| `cogs/finder_flow.py` | Parcours 1/3 → 3/3, résultat avec score, explication, section « À vérifier », erreurs robustes. |
+| `utils/assets.py` | Clé `step3_budget` (repli sur `step4_budget`), `step3_thenar` supprimée. **2026-10-11** : 16 clés (étapes + illustrations de résultat) et résolution des noms de fichiers via `IMAGES_BASE_URL`. |
+| `cogs/finder_flow.py` | Parcours 1/3 → 3/3, résultat avec score, explication, section « À vérifier », erreurs robustes. **2026-10-11** : parcours 1/4 → 4/4 (prise, thénar informatif, mesures, budget), palette Bordeaux, résultat en deux embeds sans détails de barème. |
 | `cogs/mouse_finder.py` | `!setup_finder` idempotent (fichier d'état), salon seul verrouillé. |
 | `config.py` | `FINDER_STATE_PATH`. |
 | `data/mouse_db.json` | Schéma v2 : 18 entrées (6 d'origine + 12 ATK nouvelles). Généré par `tools/build_mouse_db.py`, éditable à la main. |
-| `assets/images.json` | Clé `step3_budget` ; `step3_thenar` retirée ; URL toujours vides. |
+| `assets/images.json` | Clé `step3_budget` ; `step3_thenar` retirée ; URL toujours vides. **2026-10-11** : clés `step2_thenar` et `illustration_*` ajoutées ; les 15 assets `ImageUse` sont référencés par nom de fichier (`assets/illustrations/`). |
 | `data/commercial_links.json` | **Inchangé** (aucun lien inventé). |
 | `.gitignore` | Ajout de `state/`. |
 | `README.md` | Mis à jour (parcours, idempotence, schéma, moteur, modes, tests, reproduction). |
@@ -42,6 +46,11 @@ Sources consultées le 2026-10-10, listées par variante dans `data/mouse_db.jso
 Principales : ATK Store (collections Z1, U2, X1, A9 ; fiches Fierce X et Dragonfly A9 Ultimate ; blogs), EloShapes (comparaisons), Meckeys, MaxGaming, FPSTools, MouseMetric, notice ATK U2 V2 Ultimate.
 
 ## 4. Tests réellement exécutés
+
+> **Note datée 2026-10-11 (mission design)** : après la refonte visuelle, `pytest -q` donne **239 passed**
+> (1 warning `audioop`), `python -m pyflakes bot.py config.py cogs utils tests tools` est propre et
+> `python tools/privacy_scan.py` affiche `0 violation(s)`. Les scores de non-régression (V6 30, Z1 30, A9 Plus 25,
+> X1 20, V8 et F1 exclues) sont inchangés. Détail des adaptations de tests : `docs/REPORTE_DESIGN.md`.
 
 ```
 $ pytest -q
@@ -119,9 +128,13 @@ Le passage à 35 nécessite une décision propriétaire (§7, point 1).
 6. **Z1 originale** : confirmer ses dimensions ou son absence du catalogue.
 7. **Y9 Ultimate** : polling (8000 ou 1000 Hz) et poids (55 ou 58 g).
 8. **Formes** : F1 V3 et X1 V2 — bosse « Mid » (cahier) ou « Back - minimal » (EloShapes) ?
-9. **Thénar** : rôle documenté ou suppression définitive ?
+9. **Thénar** : **tranché le 2026-10-11** — réintroduit comme étape 2/4 **informative** (affichée, sans effet sur le score).
+   Une éventuelle règle de calcul reste à documenter par le propriétaire.
 10. **Libellé de points** : « sur 40 » (appliqué) ou « sur 100 » (cahier des charges) ?
-11. **Liens commerciaux et images** : à fournir par le propriétaire (`data/commercial_links.json`, `assets/images.json`). Aucun n'a été inventé.
+11. **Liens commerciaux et images** : les **15 images** sont livrées dans `assets/illustrations/` et référencées ;
+   il reste à les publier et à renseigner `IMAGES_BASE_URL` (procédure : `docs/REPORTE_DESIGN.md` §3 et guide de déploiement §2.7).
+   Les liens d'achat restent à fournir : `data/commercial_links.json` contient encore des URL d'exemple `url.com`.
+   **Aucun lien ni prix n'a été inventé.**
 12. **Tolérances** de sélection : à valider.
 
 ## 8. Vérifications Discord manuelles (non exécutées)
@@ -142,7 +155,8 @@ Liste de contrôle complémentaire (à faire sur un serveur de test, avec deux c
 - [ ] **Saisies invalides** : mesures hors bornes ou texte dans le modal → message d'erreur éphémère, étape conservée.
 - [ ] **Budget personnalisé** : valeur invalide → erreur ; valeur valide → résultat.
 - [ ] **Résultat** : score affiché `X/40 — Y %`, section « Pourquoi ce choix ? », section « À vérifier » si applicable, pied de page sans mention de probabilité.
-- [ ] **Liens** : une souris sans lien affiche « Lien bientôt disponible » (grisé) ; avec lien, bouton 🛒 actif.
+- [ ] **Liens** : sans lien, un unique bouton « 🔗 Liens à venir » (grisé) ; avec lien, bouton 🛒 actif
+  (vérifié automatiquement depuis le 2026-10-11).
 - [ ] **Refaire le test** : repart à l'étape 1/3.
 
 ## 9. Reproduction

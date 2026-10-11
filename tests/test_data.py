@@ -1,9 +1,12 @@
 """Intégrité des fichiers de données livrés (catalogue v2, liens, images)."""
 import json
+from pathlib import Path
 
 import pytest
 
 from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH
+
+ROOT = Path(__file__).resolve().parents[1]
 from utils.assets import IMAGE_KEYS, load_image_urls
 from utils.catalog import CatalogError, load_catalog, load_commercial_links, parse_mouse
 from utils.matcher import evaluate_mouse
@@ -78,7 +81,48 @@ def test_commercial_links_reference_known_mice():
 def test_images_config_has_all_keys():
     urls = load_image_urls(IMAGES_CONFIG_PATH)
     assert set(urls) == set(IMAGE_KEYS)
-    assert "step3_thenar" not in IMAGE_KEYS and "step3_budget" in IMAGE_KEYS
+    assert "step2_thenar" in IMAGE_KEYS and "step3_budget" in IMAGE_KEYS
+    assert "step3_thenar" not in IMAGE_KEYS  # ancienne clé de l'étape thénar retirée du parcours
+
+
+def test_every_configured_illustration_exists_in_assets_illustrations():
+    """Intégration graphique : chaque nom de fichier de assets/images.json existe vraiment (bons fichiers au bon endroit)."""
+    raw = json.loads(IMAGES_CONFIG_PATH.read_text(encoding="utf-8"))
+    names = [v for k, v in raw.items() if not k.startswith("_") and isinstance(v, str) and v]
+    assert names, "les 15 assets ImageUse doivent être référencés"
+    for name in names:
+        assert not name.startswith("http"), f"{name} doit rester un nom de fichier local (assets/illustrations/)"
+        assert (ROOT / "assets" / "illustrations" / name).is_file(), f"illustration absente du dépôt : {name}"
+
+
+def test_illustration_folder_contains_only_referenced_files():
+    raw = json.loads(IMAGES_CONFIG_PATH.read_text(encoding="utf-8"))
+    referenced = {v for k, v in raw.items() if not k.startswith("_") and isinstance(v, str) and v}
+    on_disk = {p.name for p in (ROOT / "assets" / "illustrations").iterdir() if p.is_file()}
+    assert on_disk == referenced, f"fichiers non référencés : {sorted(on_disk - referenced)}"
+
+
+def test_images_resolve_with_the_base_url(tmp_path):
+    """Un simple nom de fichier est résolu avec IMAGES_BASE_URL (déploiement : une seule variable à changer)."""
+    f = tmp_path / "images.json"
+    f.write_text('{"banner": "T08_azemouse_banniere.png"}', encoding="utf-8")
+    urls = load_image_urls(f, base_url="https://compte.alwaysdata.net/illustrations")
+    assert urls["banner"] == "https://compte.alwaysdata.net/illustrations/T08_azemouse_banniere.png"
+
+
+def test_bare_filename_without_base_url_or_with_bad_scheme_is_ignored(tmp_path):
+    f = tmp_path / "images.json"
+    f.write_text('{"banner": "T08_azemouse_banniere.png"}', encoding="utf-8")
+    assert load_image_urls(f, base_url="")["banner"] is None
+    assert load_image_urls(f, base_url="http://compte.alwaysdata.net/")["banner"] is None
+    assert load_image_urls(f, base_url="https://x.test/")["banner"] is not None
+
+
+def test_full_https_urls_are_used_as_is(tmp_path):
+    """Compatibilité : une URL complète reste prioritaire (hébergement externe possible)."""
+    f = tmp_path / "images.json"
+    f.write_text('{"banner": "https://cdn.test/T08.png"}', encoding="utf-8")
+    assert load_image_urls(f, base_url="https://autre.test/")["banner"] == "https://cdn.test/T08.png"
 
 
 def test_invalid_image_url_is_ignored(tmp_path):

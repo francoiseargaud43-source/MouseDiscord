@@ -19,10 +19,16 @@ ASSETS_DIR = ROOT_DIR / "assets"
 MOUSE_DB_PATH = DATA_DIR / "mouse_db.json"
 COMMERCIAL_LINKS_PATH = DATA_DIR / "commercial_links.json"
 IMAGES_CONFIG_PATH = ASSETS_DIR / "images.json"
-# Mémoire locale du message publié par !setup_finder (ignorée par Git).
-FINDER_STATE_PATH = ROOT_DIR / "state" / "finder_message.json"
 
 load_dotenv(ENV_FILE)  # chemin explicite : ne dépend pas du répertoire courant
+
+# Base publique des illustrations (ex. « https://moncompte.alwaysdata.net/illustrations/ »).
+# Elle permet à assets/images.json de ne contenir que des noms de fichiers repris de
+# assets/illustrations/ : une seule variable à changer au déploiement. Vide = les noms de
+# fichiers ne sont pas résolus (aucune image affichée) ; les URL https:// complètes restent utilisées telles quelles.
+IMAGES_BASE_URL = os.getenv("IMAGES_BASE_URL", "").strip()
+# Mémoire locale du message publié par !setup_finder (ignorée par Git).
+FINDER_STATE_PATH = ROOT_DIR / "state" / "finder_message.json"
 
 
 class ConfigError(ValueError):
