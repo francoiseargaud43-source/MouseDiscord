@@ -22,10 +22,13 @@ class MouseBot(commands.Bot):
         self.sessions = SessionStore(ttl_seconds=SESSION_TTL_SECONDS)
 
     async def setup_hook(self) -> None:
-        from cogs.finder_flow import StartView
+        from cogs.finder_flow import ResultsView, StartView
 
-        # Vue persistante : répond au bouton même après redémarrage du bot.
+        # Vues persistantes : elles répondent même après un redémarrage du bot.
+        # StartView : le bouton du panneau public. ResultsView.persistent() : « Fermer » et
+        # « Refaire le test » d'un résultat déjà affiché (le lien d'achat, lui, ne dépend pas du bot).
         self.add_view(StartView())
+        self.add_view(ResultsView.persistent())
         await self.load_extension("cogs.mouse_finder")
 
     async def on_ready(self) -> None:

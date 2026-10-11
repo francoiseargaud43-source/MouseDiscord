@@ -179,9 +179,9 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
 1. **Illustrations non hébergées à ce jour** : `assets/illustrations/` est livré, `assets/images.json` référence les
    fichiers, mais tant que `IMAGES_BASE_URL` n'est pas renseigné, aucun embed n'affiche d'image (comportement prévu,
    sans erreur). Le contrôle `tools/check_deployment.py` le rappelle en `ATTENTION`.
-2. **Liens commerciaux d'exemple** : `data/commercial_links.json` contient encore `https://url.com/…` (scyrox_v8,
-   atk_a9_plus). Ce sont des espaces réservés du propriétaire : à remplacer ou à vider, sinon le bouton d'achat pointe
-   vers un site tiers. Aucun lien n'a été inventé ni supprimé par cette mission.
+2. **Liens commerciaux** : `data/commercial_links.json` contient les liens officiels vérifiés un par un
+   (2026-10-11) ; les anciens espaces réservés `https://url.com/…` ont disparu. Aucun lien n'est inventé par le bot :
+   un identifiant sans lien affiche « Liens à venir ».
 3. **Thénar** : informatif uniquement, et **non proposé en Fingertip** (décision du propriétaire, 2026-10-11). Aucune
    règle thénar → dimensions n'est documentée ; la note « arrière étroit » (T13) n'entre pas dans le score et le dit.
 4. **Largeur de prise** : toujours estimée (coque − 3 mm) pour toutes les souris, donc confiance plafonnée à
@@ -202,3 +202,23 @@ Le résultat ne s'affiche plus en deux embeds superposés (trop dense sur mobile
 
 Aucune information n'est perdue : tout ce qui a été retiré du résumé est dans cet onglet. Les montants et
 mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).
+
+## 11. Boutons « Fermer » / « Refaire » : une réponse, toujours (2026-10-11)
+
+Signalement du propriétaire : sur le bot déployé, « 🔄 Refaire le test » et « ✖️ Fermer » ne répondaient plus
+(« AzeMouse n'a pas répondu à temps »), alors que les liens d'achat fonctionnaient. Ces boutons étaient des
+composants ordinaires : au redémarrage du bot (ou après expiration de la vue), Discord leur envoyait bien
+l'interaction, mais plus personne ne la traitait — d'où le silence côté utilisateur.
+
+Correctif, sans changer le comportement visible en marche normale :
+
+- les trois boutons du résultat portent des identifiants **stables et fixes** (`mouse_finder:result:close`,
+  `:restart`, `:details`), au lieu d'identifiants tirés au hasard ;
+- `bot.py` enregistre au démarrage une vue **persistante** sans données (`ResultsView.persistent()`) ayant ces
+  identifiants : « Fermer » ferme, « Refaire » relance, et 🔍 Détails explique que le détail technique n'est plus
+  disponible pour un résultat antérieur au redémarrage (aucun message n'est jamais laissé sans réponse) ;
+- en cas de message déjà supprimé, la fermeture et la relance répondent par un message privé de repli, pour ne
+  jamais laisser Discord afficher « n'a pas répondu à temps ».
+
+Un résultat affiché avant cette mise à jour conserve ses anciens boutons : il suffit de relancer un test pour
+obtenir un message à jour.

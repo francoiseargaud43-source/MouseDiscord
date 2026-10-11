@@ -408,6 +408,39 @@ async def test_results_close_is_owner_only_and_clears_message():
     owner.response.send_message.assert_not_awaited()
 
 
+def dispatch_ids(view) -> set[tuple[int, str]]:
+    """Clés (type, custom_id) réellement utilisées par Discord pour retrouver un bouton."""
+    return {
+        (item.type.value, item.custom_id)
+        for item in view.children
+        if getattr(item, "custom_id", None) is not None
+    }
+
+
+def test_result_view_uses_stable_ids_and_a_persistent_twin():
+    """Après expiration/redémarrage, les boutons doivent quand même être reconnus (vue persistante)."""
+    summary, details = discord.Embed(), discord.Embed()
+    live = flow.ResultsView(1, [], {}, embeds=[summary, details])
+    persistent = flow.ResultsView.persistent()
+    assert persistent.is_persistent()
+    assert persistent.timeout is None
+    expected = {
+        (discord.ComponentType.button.value, flow.RESULT_CLOSE_ID),
+        (discord.ComponentType.button.value, flow.RESULT_RESTART_ID),
+        (discord.ComponentType.button.value, flow.RESULT_DETAILS_ID),
+    }
+    assert expected <= dispatch_ids(live)          # le résultat exposé porte bien ces trois boutons
+    assert dispatch_ids(persistent) == dispatch_ids(live)   # la vue de secours utilise les mêmes clés
+    assert flow.ResultsView.persistent().owner_id is None
+
+
+def test_result_view_keeps_a_long_timeout_for_its_real_message():
+    live = flow.ResultsView(1, [], {})
+    assert live.timeout == flow.RESULT_VIEW_TIMEOUT
+    assert flow.RESULT_VIEW_TIMEOUT > flow.VIEW_TIMEOUT     # résultat : bien plus long que les menus
+    assert flow.GripView("sid").timeout == flow.VIEW_TIMEOUT
+
+
 @pytest.mark.asyncio
 async def test_results_restart_is_owner_only():
     store = SessionStore(ttl_seconds=600)

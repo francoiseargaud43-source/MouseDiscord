@@ -55,8 +55,17 @@ from utils.validation import InputError, parse_budget, parse_hand_measures
 
 log = logging.getLogger(__name__)
 
-VIEW_TIMEOUT = 900
+VIEW_TIMEOUT = 3600           # menus d'étapes : 1 h (la session expire avant : SESSION_TTL_SECONDS)
+RESULT_VIEW_TIMEOUT = 86400   # résultat : boutons actifs 24 h, puis la vue persistante prend le relais
 START_CUSTOM_ID = "mouse_finder:start"
+# Identifiants stables : grâce à eux, la vue persistante enregistrée au démarrage du bot répond
+# encore aux boutons d'un résultat affiché avant un redémarrage (voir ResultsView.persistent).
+RESULT_CLOSE_ID = "mouse_finder:result:close"
+RESULT_RESTART_ID = "mouse_finder:result:restart"
+RESULT_DETAILS_ID = "mouse_finder:result:details"
+RESULT_CLOSED_MESSAGE = (
+    "✅ Résultat fermé. Cliquez sur **Start Mouse Shape Finder** dans le salon pour un nouveau test."
+)
 
 # --- Palette AzeMouse (voir docs/REPORTE_DESIGN.md §4) ---------------------
 NAVY = discord.Color.from_rgb(11, 18, 32)        # #0B1220 Nuit  — référencée dans les illustrations
@@ -853,14 +862,18 @@ async def _show_results(interaction: discord.Interaction, session: FinderSession
 class ResultsView(FinderView):
     """Boutons du résultat privé : achats réels, Liens à venir si aucun lien, Fermer, Refaire (propriétaire)."""
 
-    def __init__(self, owner_id: int, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str],
-                 embeds: list[discord.Embed] | None = None) -> None:
-        super().__init__()
+    def __init__(self, owner_id: int | None = None,
+                 ranked: tuple[MouseScore, ...] | list[MouseScore] = (),
+                 links: dict[str, str] | None = None,
+                 embeds: list[discord.Embed] | None = None, *, persistent: bool = False) -> None:
+        super().__init__(timeout=None if persistent else RESULT_VIEW_TIMEOUT)
         self.owner_id = owner_id
+        self.persistent = persistent
         self.embeds = list(embeds or [])   # [résumé, détails] — le résumé seul est envoyé au départ
         self.showing_details = False
+        links = links or {}
         purchases = 0
-        for score in ranked[:2]:
+        for score in (() if persistent else ranked[:2]):
             url = links.get(score.mouse.id)
             if url:
                 self.add_item(
@@ -885,25 +898,41 @@ class ResultsView(FinderView):
                     row=0,
                 )
             )
-        close = discord.ui.Button(label="Fermer", style=discord.ButtonStyle.secondary, emoji="✖️", row=1)
+        close = discord.ui.Button(label="Fermer", style=discord.ButtonStyle.secondary, emoji="✖️", row=1,
+                                  custom_id=RESULT_CLOSE_ID)
         close.callback = self._close
         self.add_item(close)
         # Ajouté en dernier : le bouton de relance apparaît après les liens d'achat.
-        restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄", row=1)
+        restart = discord.ui.Button(label="Refaire le test", style=discord.ButtonStyle.secondary, emoji="🔄", row=1,
+                                    custom_id=RESULT_RESTART_ID)
         restart.callback = self._restart
         self.add_item(restart)
         # Bascule résumé <-> détails : le second embed ne s'affiche que si l'utilisateur le demande.
         self.details_button: discord.ui.Button | None = None
-        if len(self.embeds) > 1:
+        if persistent or len(self.embeds) > 1:
             self.details_button = discord.ui.Button(
-                label="Détails", style=discord.ButtonStyle.secondary, emoji="🔍", row=1
+                label="Détails", style=discord.ButtonStyle.secondary, emoji="🔍", row=1,
+                custom_id=RESULT_DETAILS_ID,
             )
             self.details_button.callback = self._toggle_details
             self.add_item(self.details_button)
 
+    @classmethod
+    def persistent(cls) -> "ResultsView":
+        """Vue sans données, enregistrée au démarrage : les boutons du résultat survivent au redémarrage."""
+        return cls(persistent=True)
+
     async def _toggle_details(self, interaction: discord.Interaction) -> None:
         """Affiche (ou masque) l'embed technique, toujours dans le message privé d'origine."""
         if not await self._check_owner(interaction):
+            return
+        if self.persistent:
+            # Vue de secours : l'embed n'a pas été conservé, on explique au lieu de rester muet.
+            await _send_ephemeral(
+                interaction,
+                "🔍 **Détails indisponibles pour ce résultat** (affiché avant le redémarrage du bot). "
+                "Cliquez sur **🔄 Refaire le test** pour revoir les repères de taille et les souris écartées.",
+            )
             return
         self.showing_details = not self.showing_details
         if self.details_button is not None:
@@ -913,6 +942,9 @@ class ResultsView(FinderView):
         await _show_private(interaction, embeds=embeds, view=self)
 
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
+        if self.owner_id is None:
+            # Vue persistante : un message éphémère n'est cliquable que par la personne qui l'a ouvert.
+            return True
         if interaction.user.id != self.owner_id:
             await _send_ephemeral(interaction, "🔒 Cette action n'est pas disponible pour votre compte.")
             return False
@@ -921,16 +953,37 @@ class ResultsView(FinderView):
     async def _close(self, interaction: discord.Interaction) -> None:
         if not await self._check_owner(interaction):
             return
+        if not self.persistent:
+            self.stop()   # retire la vue du message de la mémoire du bot (la vue persistante reste)
         # Retire le résultat du message privé ; aucun message n'est publié.
-        await interaction.response.edit_message(
-            content="✅ Résultat fermé. Cliquez sur **Start Mouse Shape Finder** dans le salon pour un nouveau test.",
-            embed=None,
-            embeds=None,
-            view=None,
-        )
+        try:
+            await interaction.response.edit_message(
+                content=RESULT_CLOSED_MESSAGE,
+                embed=None,
+                embeds=None,
+                view=None,
+            )
+        except discord.HTTPException as exc:
+            # Message supprimé ou interaction trop ancienne : on répond au moins en privé, jamais de silence.
+            log.warning("Fermeture impossible (%s) : réponse de repli.", exc)
+            await _send_ephemeral(interaction, RESULT_CLOSED_MESSAGE)
 
     async def _restart(self, interaction: discord.Interaction) -> None:
         if not await self._check_owner(interaction):
             return
+        if not self.persistent:
+            self.stop()
         session = interaction.client.sessions.start(interaction.user.id)
-        await interaction.response.edit_message(embed=grip_step_embed(), embeds=None, view=GripView(session.session_id))
+        try:
+            await interaction.response.edit_message(
+                embed=grip_step_embed(), embeds=None, view=GripView(session.session_id)
+            )
+        except discord.HTTPException as exc:
+            # L'ancien message n'existe plus : on explique au lieu de rester muet ; le parcours ouvert ici
+            # sera remplacé au prochain clic sur **Start Mouse Shape Finder**.
+            log.warning("Relance impossible (%s) : message de repli.", exc)
+            await _send_ephemeral(
+                interaction,
+                "🔄 Ce résultat n'existe plus : cliquez sur **Start Mouse Shape Finder** dans le salon "
+                "pour lancer un nouveau test.",
+            )

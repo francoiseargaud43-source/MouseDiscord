@@ -6,6 +6,9 @@ Ces tests ne remplacent PAS une validation sur serveur Discord (voir docs/audit/
 """
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, MagicMock
+
+import discord
 import pytest
 
 from cogs import finder_flow as flow
@@ -268,6 +271,9 @@ async def test_p11_persistent_panel_works_after_restart_in_fresh_bot_instance():
     await new_bot.setup_hook()
     try:
         assert any(isinstance(v, flow.StartView) for v in new_bot.persistent_views)
+        assert any(
+            isinstance(v, flow.ResultsView) and v.is_persistent() for v in new_bot.persistent_views
+        ), "les boutons Fermer/Refaire doivent survivre au redémarrage"
         assert len(new_bot.sessions) == 0
         # Le bouton du panneau répond (même custom_id, enregistré au démarrage)
         inter = make_interaction(user_id=1, store=new_bot.sessions)
@@ -316,6 +322,57 @@ async def test_results_buttons_still_work_after_session_was_discarded():
     restart = make_interaction(user_id=1, store=store)
     await results_view._restart(restart)                     # Refaire le test : fonctionne
     assert isinstance(restart.response.edit_message.call_args.kwargs["view"], flow.GripView)
+
+
+@pytest.mark.asyncio
+async def test_p13_result_buttons_always_answer_even_when_the_message_is_gone():
+    """Message supprimé ou trop ancien : réponse privée de repli, jamais le silence (« n'a pas répondu à temps »)."""
+    def gone(*args, **kwargs):
+        raise discord.HTTPException(MagicMock(), "message inconnu")
+
+    store = SessionStore(ttl_seconds=600)
+    close = make_interaction(user_id=1, store=store)
+    close.response.edit_message = AsyncMock(side_effect=gone)
+    await flow.ResultsView(1, [], {})._close(close)
+    assert "Résultat fermé" in close.response.send_message.call_args.args[0]
+    assert_private(close)
+
+    restart = make_interaction(user_id=1, store=store)
+    restart.response.edit_message = AsyncMock(side_effect=gone)
+    await flow.ResultsView(1, [], {})._restart(restart)
+    assert "n'existe plus" in restart.response.send_message.call_args.args[0]
+    assert_private(restart)
+
+
+# ---------------------------------------------------------------------------
+# P13 : les boutons du résultat répondent même quand la vue d'origine n'existe plus
+# (vue persistante enregistrée au démarrage : « Fermer » ferme, « Refaire » relance, Détails explique)
+# ---------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_p13_persistent_result_view_closes_and_restarts_without_the_original_view():
+    persistent = flow.ResultsView.persistent()
+    assert persistent.is_persistent()
+
+    store = SessionStore(ttl_seconds=600)
+    close = make_interaction(user_id=1, store=store)
+    await persistent._close(close)
+    assert close.response.edit_message.call_args.kwargs["view"] is None
+    assert flow.RESULT_CLOSED_MESSAGE in close.response.edit_message.call_args.kwargs["content"]
+
+    restart = make_interaction(user_id=1, store=store)
+    await persistent._restart(restart)
+    view = restart.response.edit_message.call_args.kwargs["view"]
+    assert isinstance(view, flow.GripView)
+    assert store.lookup(view.children[0].session_id, 1)[1] == LOOKUP_OK
+
+
+@pytest.mark.asyncio
+async def test_p13_persistent_result_view_explains_missing_details_instead_of_staying_mute():
+    persistent = flow.ResultsView.persistent()
+    inter = make_interaction(user_id=1)
+    await persistent._toggle_details(inter)
+    assert "Détails indisponibles" in inter.response.send_message.call_args.args[0]
+    assert_private(inter)
 
 
 # ---------------------------------------------------------------------------
