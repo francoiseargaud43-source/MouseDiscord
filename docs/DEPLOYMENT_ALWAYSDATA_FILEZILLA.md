@@ -1033,7 +1033,7 @@ grep -q IMAGES_BASE_URL config.py             && echo "OK   config.py (IMAGES_BA
 grep -q build_image_url utils/assets.py       && echo "OK   utils/assets.py (résolution)"   || echo "ANCIEN utils/assets.py"
 grep -q step2_thenar assets/images.json       && echo "OK   assets/images.json (clés)"      || echo "ANCIEN assets/images.json"
 grep -q thenar_step_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (4 étapes)" || echo "ANCIEN cogs/finder_flow.py"
-grep -q "Comment lire ce résultat" cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (résultat épuré)" || echo "ANCIEN cogs/finder_flow.py (résultat)"
+grep -q "Vos repères de taille" cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (résultat épuré)" || echo "ANCIEN cogs/finder_flow.py (résultat)"
 grep -q ResultsView bot.py                     && echo "ANCIEN bot.py (vue supprimée — à remplacer)" || echo "OK   bot.py"
 ```
 
@@ -1051,7 +1051,7 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | Élément | Nature | Redémarrage nécessaire ? |
 |---|---|---|
 | `bot.py` | Code : supprime l'enregistrement de la vue persistante des boutons retirés — **obligatoire** : l'ancien `bot.py` référence `ResultsView.persistent()`, qui n'existe plus | **Oui** |
-| `cogs/finder_flow.py` | Code : parcours, résultat épuré (recommandation puis « ❓ Comment lire ce résultat » + paragraphes illustrés), boutons d'achat uniquement | **Oui** |
+| `cogs/finder_flow.py` | Code : parcours, résultat épuré (recommandation courte, puis blocs illustrés : repères de taille, arrière étroit, bosse, variantes de Claw, hauteur des boutons), boutons d'achat uniquement | **Oui** |
 | `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
 | `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
@@ -1099,9 +1099,10 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > **Résultat** : « ✖️ Fermer », « 🔄 Refaire le test » et « 🔍 Détails » ont été **retirés** (2026-10-11) : ces
 > boutons interactifs pouvaient cesser de répondre après un redémarrage du bot (« AzeMouse n'a pas répondu à
 > temps »). Le résultat ne porte plus que les boutons d'achat — des **liens** gérés par Discord, qui fonctionnent
-> toujours — et le mode d'emploi du score (« ❓ Comment lire ce résultat ») s'affiche dans le même message, plus
-> bas. Un résultat affiché **avant** la mise à jour garde ses anciens boutons : relancez un test pour obtenir un
-> message à jour.
+> toujours. Le contenu de l'ancien onglet « Détails » n'est pas perdu : il s'affiche **dans le même message, plus
+> bas**, en petits blocs illustrés (repères de taille, arrière étroit si thénar « Petite », bosse, variantes de
+> Claw, hauteur des boutons). Un résultat affiché **avant** la mise à jour garde ses anciens boutons : relancez un
+> test pour obtenir un message à jour.
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 

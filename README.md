@@ -36,7 +36,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
-| Résultat | **Deux blocs privés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage) puis « ❓ Comment lire ce résultat » (repères de taille, la souris choisie en clair, pourquoi ce choix) | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
+| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -58,12 +58,20 @@ en cours : le message persistant continue de fonctionner, mais un ancien menu é
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
 théorique** pour le match idéal, l'alternative et, quand elle existe, l'économie. Ni score /40, ni souris
-écartées à ce niveau : le détail est expliqué dans le bloc « ❓ Comment lire ce résultat », plus bas dans le
-même message privé (repères de taille, phrase reliant la souris choisie à ces repères, pourquoi ce choix, et
-l'illustration correspondante). Le paragraphe « arrière étroit » (T13) n'apparaît que si le thénar déclaré est
-« Petite ». Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans
-`MouseScore.details` et dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat, ni une
-validation biomécanique** : c'est une estimation géométrique provisoire.
+écartées à ce niveau : le détail vient **plus bas dans le même message privé**, en petits blocs illustrés,
+dans l'ordre de l'outil de référence (Oblivity) :
+
+| Bloc | Contenu | Image |
+|---|---|---|
+| 📐 Vos repères de taille | longueur cible, largeur de prise, score `/40 — %`, la souris retenue « en clair », le pourquoi du choix | T12 |
+| 🖐️ Un arrière étroit pour votre thénar | seulement si le thénar est « Petite » (jamais en Fingertip) | T13 |
+| ⛰️ La bosse | où la placer pour la prise choisie (Palm : milieu/avant ; Claw : milieu/arrière) ; absent en Fingertip | T14 ou T07 |
+| 🦾 Claw relâchée / agressive / pincée | les trois variantes, uniquement en prise Claw | T04, T05, T06 |
+| 🖱️ La hauteur des boutons | niveau conseillé (Palm : hauts ; Claw : bas ; Fingertip : médians à bas) | T01, T02 ou T03 |
+
+Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans `MouseScore.details` et
+dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** :
+c'est une estimation géométrique provisoire.
 
 ---
 
@@ -194,15 +202,15 @@ Deux façons de renseigner une image (elles peuvent cohabiter) :
 | `step3_budget` | Étape 4/4 — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
 | `illustration_mouse_dimensions` | Repères de taille du résultat | `T12_souris_longueur_largeur.png` |
 | `illustration_rear_narrow` | Résultat, si thénar « Petite » (indicatif) | `T13_arriere_etroit.png` |
-| `illustration_hump_mid` | Résultat — bosse centrale du match idéal | `T14_bosse_centrale.png` |
-| `illustration_hump_front` | Résultat — bosse avant / Mid-Front | `T15_bosse_avant.png` |
-| `illustration_hump_rear` | Résultat — bosse arrière | `T07_bosse_arriere.png` |
-| `illustration_buttons_high` | Résultat — boutons hauts | `T01_boutons_hauts.png` |
-| `illustration_buttons_low` | Résultat — boutons bas | `T02_boutons_bas.png` |
-| `illustration_buttons_mid` | Résultat — boutons moyens | `T03_boutons_moyens.png` |
-| `illustration_grip_relaxed` | Documentation (variantes de prise) — non utilisé dans un embed | `T04_griffe_relachee.png` |
-| `illustration_grip_aggressive` | Documentation (variantes de prise) — non utilisé dans un embed | `T05_griffe_agressive.png` |
-| `illustration_grip_pincer` | Documentation (variantes de prise) — non utilisé dans un embed | `T06_griffe_pince.png` |
+| `illustration_hump_mid` | Résultat — bosse centrale de la souris retenue, et conseil « bosse au milieu ou à l'avant » (Palm) | `T14_bosse_centrale.png` |
+| `illustration_hump_front` | Résultat — bosse avant / Mid-Front de la souris retenue | `T15_bosse_avant.png` |
+| `illustration_hump_rear` | Résultat — bosse arrière de la souris retenue, et conseil « bosse au milieu ou à l'arrière » (Claw) | `T07_bosse_arriere.png` |
+| `illustration_buttons_high` | Résultat — boutons hauts (souris retenue ou conseil Palm) | `T01_boutons_hauts.png` |
+| `illustration_buttons_low` | Résultat — boutons bas (souris retenue ou conseil Claw) | `T02_boutons_bas.png` |
+| `illustration_buttons_mid` | Résultat — boutons moyens (souris retenue ou conseil Fingertip) | `T03_boutons_moyens.png` |
+| `illustration_grip_relaxed` | Résultat, prise Claw — variante « Claw relâchée » | `T04_griffe_relachee.png` |
+| `illustration_grip_aggressive` | Résultat, prise Claw — variante « Claw agressive » | `T05_griffe_agressive.png` |
+| `illustration_grip_pincer` | Résultat, prise Claw — variante « Claw pincée » | `T06_griffe_pince.png` |
 
 Les URL doivent être publiques et commencer par `https://`. Une valeur vide ou invalide n'affiche simplement pas d'image.
 Les 15 fichiers sont livrés dans `assets/illustrations/` (copie de `ImageUse/`) : il suffit de les publier et de

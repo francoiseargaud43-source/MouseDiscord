@@ -208,14 +208,16 @@ def build_resultat() -> Image.Image:
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     titres = [
         "Résultat — message éphémère (privé) : la recommandation",
-        "Plus bas dans le même message : « Comment lire ce résultat »",
-        "Encore plus bas, seulement si le thénar est « Petite » : l'arrière étroit",
+        "Plus bas : les repères de taille (illustrés)",
+        "Plus bas : l'arrière étroit, quand le thénar est « Petite »",
+        "Plus bas : la bosse conseillée pour la prise",
+        "Plus bas : la hauteur des boutons conseillée",
     ]
     hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 200
     canvas, draw = nouveau_canvas(hauteur)
     y = PAD
-    for embed, titre in zip(embeds, titres):
-        y = bandeau(draw, y, titre)
+    for index, embed in enumerate(embeds):
+        y = bandeau(draw, y, titres[index] if index < len(titres) else embed.title)
         y = draw_embed(canvas, draw, embed, y)
         # Aucun bouton interactif : uniquement les liens d'achat (ou « 🔗 Liens à venir »).
         y = draw_boutons(draw, y, [("🛒 Acheter Scyrox V6", False), ("🔗 Liens à venir", False)])

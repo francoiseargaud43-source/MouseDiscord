@@ -162,7 +162,9 @@ async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeyp
     session = start_for(store, grip=Grip.FINGERTIP, length=190.0, width=95.0)
     session.budget_mode = BudgetMode.ECONOMIQUE
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "❓ Comment lire ce résultat"]
+    # Fingertip : ni thénar, ni arrière étroit, ni conseil de bosse (elle n'y travaille pas).
+    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "📐 Vos repères de taille",
+                                         "🖱️ La hauteur des boutons"]
     assert not any("Thénar" in field.name for embed in embeds for field in embed.fields)
     assert all("arriere_etroit" not in (embed.image.url or "") for embed in embeds)
     assert "T02_boutons_bas" in embeds[0].image.url  # bosse ignorée en Fingertip → illustration des boutons
@@ -225,9 +227,9 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert isinstance(kwargs["view"], flow.ResultsView)
     # Aucun bouton interactif : seuls des liens d'achat, ou le rappel désactivé « Liens à venir ».
     assert all(getattr(c, "url", None) or getattr(c, "disabled", False) for c in kwargs["view"].children)
-    # Deux blocs : la recommandation (courte), puis l'explication plus bas.
-    assert len(kwargs["embeds"]) == 2
-    main, guide = kwargs["embeds"]
+    # La recommandation (courte) puis les blocs d'explication, plus bas (ici : Palm sans thénar).
+    assert len(kwargs["embeds"]) == 4
+    main, guide = kwargs["embeds"][0], kwargs["embeds"][1]
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
     alt = next(v for k, v in fields.items() if "alternative" in k)
@@ -236,14 +238,14 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
     assert "Z1" in alt
-    assert "Comment lire ce résultat" in guide.title
+    assert guide.title == "📐 Vos repères de taille"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
-    assert "40 points" in guide_text and "30/40" in guide_text      # le score s'explique ici
+    assert "30/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
     assert "Pourquoi ce choix" in " ".join(f.name for f in guide.fields)
     # La souris choisie est reliée aux repères de taille, juste au-dessus.
-    assert any(f.name.startswith("📐 Scyrox V6") and "en clair" in f.name for f in guide.fields)
-    assert "Confiance" not in guide_text                            # indicateur retiré de l'affichage
-    assert "ni une probabilité" in guide.footer.text
+    assert any(f.name.startswith("🔎 Scyrox V6") and "en clair" in f.name for f in guide.fields)
+    assert "Confiance" not in " ".join(str(e.to_dict()) for e in kwargs["embeds"])
+    assert "ni une probabilité" in kwargs["embeds"][-1].footer.text
 
 
 @pytest.mark.asyncio
@@ -259,19 +261,69 @@ async def test_result_never_mentions_the_excluded_mice():
     assert "Phantom" not in text
 
 
-def test_result_shows_the_explanation_block_below_the_recommendation():
-    """Le résumé reste court ; le mode d'emploi du score vit dans un second bloc, plus bas."""
+def test_result_sections_follow_the_reference_tool_order():
+    """Recommandation, puis repères de taille, bosse et boutons — comme l'outil de référence."""
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "❓ Comment lire ce résultat"]
+    assert [e.title for e in embeds] == [
+        "🎯 Votre recommandation",
+        "📐 Vos repères de taille",
+        "⛰️ La bosse",
+        "🖱️ La hauteur des boutons",
+    ]
     assert all("Score" not in f.value and "Confiance" not in f.value for f in embeds[0].fields)
     guide = embeds[1]
     assert "/40" in (guide.description or "")
     names = [f.name for f in guide.fields]
-    assert names[0].startswith("📐 ") and names[0].endswith(" en clair")
+    assert names[0].startswith("🔎 ") and names[0].endswith(" en clair")
     assert names[1] == "🧭 Pourquoi ce choix ?"
+
+
+def test_result_guides_describe_the_grip_and_show_the_matching_illustrations(monkeypatch):
+    """Chaque bloc d'explication porte l'illustration de sa consigne (assets/images.json)."""
+    import dataclasses
+
+    monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
+    titles = lambda embeds: [e.title for e in embeds]
+    image = lambda embed: embed.image.url.split("/")[-1].removesuffix(".png")
+
+    def embeds_for(grip, thenar=None, hump=None, button=None):
+        """Résultat pour une prise donnée, en forçant la bosse et les boutons du match idéal."""
+        store = SessionStore(ttl_seconds=600)
+        session = start_for(store, grip=grip, length=180.0, width=90.0, thenar=thenar)
+        session.budget_mode = BudgetMode.QUALITE_PRIX
+        selection = flow.compute_selection(session)
+        changes = {name: value for name, value in (("hump_position", hump), ("button_height", button))
+                   if value is not None}
+        if changes:
+            winner = dataclasses.replace(selection.ranked[0],
+                                         mouse=dataclasses.replace(selection.ranked[0].mouse, **changes))
+            selection = dataclasses.replace(selection, ranked=(winner,) + tuple(selection.ranked[1:]))
+        return flow.results_embeds(session, selection)
+
+    palm = embeds_for(Grip.PALM, thenar=Thenar.PETITE)
+    assert "T13_arriere_etroit" in image(palm[2])          # arrière étroit, juste après les repères
+    assert "T14_bosse_centrale" in image(palm[3])          # la bosse conseillée pour Palm
+    assert "T01_boutons_hauts" in image(palm[4])           # les boutons conseillés pour Palm
+    assert "Palm Grip → bosse" in palm[3].description and "Palm Grip → boutons hauts" in palm[4].description
+
+    claw = embeds_for(Grip.CLAW)
+    assert titles(claw) == ["🎯 Votre recommandation", "📐 Vos repères de taille", "⛰️ La bosse",
+                            "🦾 Claw relâchée", "🦾 Claw agressive", "🦾 Claw pincée",
+                            "🖱️ La hauteur des boutons"]
+    assert "T07_bosse_arriere" in image(claw[2])           # la bosse de la souris retenue
+    assert ["T04_griffe_relachee", "T05_griffe_agressive", "T06_griffe_pince"] == [
+        image(e) for e in claw[3:6]]
+    assert "T02_boutons_bas" in image(claw[6])
+    assert "Claw Grip → boutons bas" in claw[6].description
+
+    fingertip = embeds_for(Grip.FINGERTIP)
+    assert titles(fingertip) == ["🎯 Votre recommandation", "📐 Vos repères de taille",
+                                 "🖱️ La hauteur des boutons"]
+    assert "T03_boutons_moyens" in image(fingertip[2])
+    assert "médians à bas" in fingertip[2].description
 
 
 @pytest.mark.asyncio
@@ -309,9 +361,9 @@ async def test_custom_budget_invalid_then_valid():
 
     good = make_interaction(store=store)
     await modal_budget(s.session_id, "50").on_submit(good)
-    main, guide = good.response.edit_message.call_args.kwargs["embeds"]
-    assert "A9 Plus" in fields_of(main)["🥇 Le match idéal"]
-    assert "Confiance" not in (guide.description or "") + " ".join(fields_of(guide))
+    embeds = good.response.edit_message.call_args.kwargs["embeds"]
+    assert "A9 Plus" in fields_of(embeds[0])["🥇 Le match idéal"]
+    assert "Confiance" not in " ".join(str(e.to_dict()) for e in embeds)
     assert store.lookup(s.session_id, 99)[1] != "ok"  # session supprimée après résultat
 
 
@@ -479,11 +531,11 @@ def test_embed_colors_follow_the_azemouse_charter():
 def test_embeds_respect_discord_limits_and_stay_short():
     """Limites Discord et lisibilité mobile : champs ≤ 1024, description ≤ 4096, total ≤ 6000."""
     store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
+    session = start_for(store, grip=Grip.CLAW, length=180.0, width=90.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    # Trois blocs au maximum : recommandation, « comment lire ce résultat », arrière étroit (thénar Petite).
-    assert len(embeds) == 3
+    # Cas le plus long : recommandation, repères, arrière étroit, bosse, 3 variantes de Claw, boutons.
+    assert len(embeds) == 8
     total = 0
     for embed in embeds:
         assert len(embed) <= 6000
@@ -544,8 +596,7 @@ def test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration(monkey
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    assert len(embeds) == 3
-    narrow = embeds[2]
+    narrow = next(e for e in embeds if "arrière étroit" in e.title)
     assert "arrière étroit" in narrow.title
     assert "pilule" in narrow.description and "pénalisée à la marge" in narrow.description
     assert narrow.image is not None and "T13_arriere_etroit" in narrow.image.url

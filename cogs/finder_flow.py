@@ -82,6 +82,42 @@ HUMP_DISPLAY = {
 }
 BUTTON_DISPLAY = {"High": "hauts", "Mid": "médians", "Low": "bas"}
 
+# Conseils de forme par prise (vidéo Oblivity et outil de référence) : ils servent au bloc
+# « comment lire ce résultat », jamais au calcul — voir docs/REPORTE_DESIGN.md §9.
+HUMP_GUIDE = {
+    Grip.PALM: ("au milieu ou à l'avant",
+                "la bosse suit l'arche naturelle de la paume : la main repose à plat, le poignet reste libre."),
+    Grip.CLAW: ("au milieu ou à l'arrière",
+                "la bosse soutient l'arche transverse de la main et garde les doigts arqués "
+                "(trois variantes, plus bas)."),
+}
+BUTTON_GUIDE = {
+    Grip.PALM: ("hauts",
+                "les doigts reposent à plat : des boutons hauts évitent de tirer sur les tendons."),
+    Grip.CLAW: ("bas",
+                "les doigts restent relâchés : des boutons hauts les obligeraient à tirer vers l'arrière."),
+    Grip.FINGERTIP: ("médians à bas",
+                     "des boutons hauts poussent les doigts vers le haut et tendent les tendons."),
+}
+# Variantes de la prise Claw : une illustration dédiée chacune (assets/images.json, T04–T06).
+CLAW_VARIANTS = (
+    ("illustration_grip_relaxed", "Claw relâchée",
+     "Bosse **arrière marquée** : l'arrière de la souris vient remplir la paume."),
+    ("illustration_grip_aggressive", "Claw agressive",
+     "Bosse **médiane marquée** : les doigts restent arqués au-dessus de la souris."),
+    ("illustration_grip_pincer", "Claw pincée",
+     "Bosse **arrière** et **flancs peu bombés** : l'auriculaire se pose plus loin, sur le flanc."),
+)
+# Illustration à montrer dans la recommandation, selon la souris retenue (sa bosse, ses boutons).
+HUMP_IMAGE_BY_FAMILY = {"Front": "illustration_hump_front", "Mid": "illustration_hump_mid",
+                        "Rear": "illustration_hump_rear"}
+BUTTON_IMAGE_BY_HEIGHT = {"High": "illustration_buttons_high", "Mid": "illustration_buttons_mid",
+                          "Low": "illustration_buttons_low"}
+# Illustration des conseils de forme : elle montre ce qui est conseillé pour la prise, pas la souris.
+HUMP_IMAGE_BY_GRIP = {Grip.PALM: "illustration_hump_mid", Grip.CLAW: "illustration_hump_rear"}
+BUTTON_IMAGE_BY_GRIP = {Grip.PALM: "illustration_buttons_high", Grip.CLAW: "illustration_buttons_low",
+                        Grip.FINGERTIP: "illustration_buttons_mid"}
+
 GRIP_OPTIONS = (
     (Grip.PALM, "Palm Grip", "Paume posée sur la coque"),
     (Grip.CLAW, "Claw Grip", "Doigts arqués, pulpes en contact"),
@@ -317,8 +353,8 @@ def banner_embed() -> discord.Embed:
     embed = discord.Embed(
         title="🖱️ AzeMouse — Mouse Shape Finder",
         description=(
-            "Trouvez la souris dont la géométrie épouse **votre** main.\n"
-            "4 questions rapides : prise, thénar, mesures, budget.\n"
+            "Trouvez la souris dont la géométrie épouse **votre** main.\n\n"
+            "4 questions rapides : prise, thénar, mesures, budget.\n\n"
             "*Réponses privées : seul vous voyez la recommandation.*"
         ),
         color=COLOR,
@@ -327,11 +363,11 @@ def banner_embed() -> discord.Embed:
 
 
 def grip_step_embed() -> discord.Embed:
-    description = "\n".join(f"**{label}** — {desc}" for _, label, desc in GRIP_OPTIONS)
+    description = "\n\n".join(f"**{label}** — {desc}" for _, label, desc in GRIP_OPTIONS)
     embed = discord.Embed(
         # Pas de dénominateur : le nombre d'étapes dépend de la prise choisie (3 en Fingertip, 4 sinon).
         title="Étape 1 — Votre prise",
-        description=f"Quelle prise utilisez-vous le plus souvent ?\n{description}",
+        description=f"Quelle prise utilisez-vous le plus souvent ?\n\n{description}",
         color=COLOR,
     )
     return _image(embed, "step1_grip")
@@ -342,7 +378,7 @@ def thenar_step_embed() -> discord.Embed:
         title=_step_title(2, Grip.PALM, "Votre éminence thénar"),
         description=(
             "Votre réponse indique l'arrière de souris qui vous convient : un petit thénar préfère un "
-            "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n"
+            "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n\n"
             "Effet **borné à ±2 points** sur le score, et **uniquement** pour les souris à bosse "
             "arrière marquée — sinon le score ne change pas."
         ),
@@ -356,7 +392,7 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
         title=_step_title(2 if session.grip is Grip.FINGERTIP else 3, session, "Vos mesures"),
         description=(
             f"{_recap(session)}\n\n"
-            "Avec une règle :\n"
+            "Avec une règle :\n\n"
             "• **Longueur** : pli du poignet → bout du majeur.\n"
             "• **Largeur** : articulations, **sans le pouce**."
         ),
@@ -368,7 +404,7 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
 def budget_step_embed(session: FinderSession) -> discord.Embed:
     embed = discord.Embed(
         title=_step_title(3 if session.grip is Grip.FINGERTIP else 4, session, "Budget et gamme"),
-        description=f"{_recap(session)}\nChoisissez votre gamme de prix.",
+        description=f"{_recap(session)}\n\nChoisissez votre gamme de prix.",
         color=COLOR,
     )
     return _image(embed, "step3_budget")
@@ -388,24 +424,109 @@ def _target_line(session: FinderSession) -> str:
             f"**{_num(ranges.width_min, 1)}–{_num(ranges.width_max, 1)} mm**.")
 
 
+def _hump_family(mouse) -> str | None:
+    """Famille de bosse d'une souris : « Front », « Mid », « Rear » — None si inconnue."""
+    tokens = set((mouse.hump_position or "").split("-"))
+    for family in ("Rear", "Front", "Mid"):
+        if family in tokens:
+            return family
+    return None
+
+
 def result_image_key(winner: MouseScore | None, grip: Grip | None) -> str | None:
     """Illustration la plus utile : la bosse d'abord (ressenti), les boutons ensuite. Une seule image."""
     if winner is None:
         return None
     mouse = winner.mouse
-    if grip in (Grip.PALM, Grip.CLAW) and mouse.hump_position != "Inconnu":
-        tokens = set(mouse.hump_position.split("-"))
-        if "Rear" in tokens:
-            return "illustration_hump_rear"
-        if "Front" in tokens:
-            return "illustration_hump_front"
-        if "Mid" in tokens:
-            return "illustration_hump_mid"
-    return {
-        "High": "illustration_buttons_high",
-        "Mid": "illustration_buttons_mid",
-        "Low": "illustration_buttons_low",
-    }.get(mouse.button_height)
+    if grip in (Grip.PALM, Grip.CLAW):
+        family = _hump_family(mouse)
+        if family:
+            return HUMP_IMAGE_BY_FAMILY[family]
+    return BUTTON_IMAGE_BY_HEIGHT.get(mouse.button_height)
+
+
+def _dimensions_embed(session: FinderSession, ideal: MouseScore, explanation: str) -> discord.Embed:
+    """Bloc « repères de taille » : les plages cibles, la souris retenue en clair, le pourquoi du choix."""
+    assert session.grip is not None
+    hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
+    ranges = compute_target_ranges(hand, session.grip)
+    length = (
+        f"jusqu'à {_num(ranges.length_max, 1)} mm"
+        if session.grip is Grip.FINGERTIP
+        else f"{_num(ranges.length_min, 1)}–{_num(ranges.length_max, 1)} mm"
+    )
+    embed = discord.Embed(
+        title="📐 Vos repères de taille",
+        description=(
+            f"**Longueur cible : {length}**\n"
+            "du talon arrière de la souris à la pointe avant.\n\n"
+            f"**Largeur de prise : {_num(ranges.width_min, 1)}–{_num(ranges.width_max, 1)} mm**\n"
+            "souris retournée, à hauteur du capteur.\n\n"
+            f"Score : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %** du maximum théorique\n"
+            "(longueur, largeur de prise, compatibilité de prise, bosse, boutons)."
+        ),
+        color=COLOR,
+    )
+    embed.add_field(
+        name=f"🔎 {ideal.mouse.label} en clair",
+        value=f"{_size_text(ideal.mouse)} · {_price_text(ideal)}\n{_match_summary(ideal)}"[:1024],
+        inline=False,
+    )
+    embed.add_field(name="🧭 Pourquoi ce choix ?", value=explanation[:1024], inline=False)
+    return _image(embed, "illustration_mouse_dimensions")
+
+
+def _narrow_rear_embed() -> discord.Embed:
+    """Bloc « arrière étroit », affiché seulement si le thénar déclaré est « Petite » (Palm/Claw)."""
+    embed = discord.Embed(
+        title="🖐️ Un arrière étroit pour votre thénar",
+        description=(
+            "Votre thénar est **Petite** : un arrière étroit, en « pilule », laisse la main se poser "
+            "sans forcer.\n\n"
+            "Une souris à bosse arrière marquée est **pénalisée à la marge** dans le score."
+        ),
+        color=COLOR,
+    )
+    return _image(embed, "illustration_rear_narrow")
+
+
+def _hump_guide_embed(session: FinderSession) -> discord.Embed | None:
+    """Bloc « la bosse » : où la placer pour la prise choisie. Rien en Fingertip (elle n'y travaille pas)."""
+    grip = session.grip
+    if grip not in HUMP_GUIDE:
+        return None
+    position, why = HUMP_GUIDE[grip]
+    embed = discord.Embed(
+        title="⛰️ La bosse",
+        description=f"**{grip.label} → bosse {position}.**\n\n{why[0].upper()}{why[1:]}",
+        color=COLOR,
+    )
+    # L'image montre la bosse conseillée pour la prise (la souris retenue, elle, illustre le bloc du haut).
+    return _image(embed, HUMP_IMAGE_BY_GRIP[grip])
+
+
+def _claw_variant_embeds(session: FinderSession) -> list[discord.Embed]:
+    """Les trois variantes de Claw, chacune illustrée (T04–T06). Affichées pour cette prise seulement."""
+    if session.grip is not Grip.CLAW:
+        return []
+    embeds = []
+    for image_key, title, line in CLAW_VARIANTS:
+        embed = discord.Embed(title=f"🦾 {title}", description=line, color=COLOR)
+        embeds.append(_image(embed, image_key))
+    return embeds
+
+
+def _buttons_guide_embed(session: FinderSession) -> discord.Embed:
+    """Bloc « la hauteur des boutons » : le niveau conseillé pour la prise choisie."""
+    grip = session.grip
+    assert grip is not None
+    level, why = BUTTON_GUIDE[grip]
+    embed = discord.Embed(
+        title="🖱️ La hauteur des boutons",
+        description=f"**{grip.label} → boutons {level}.**\n\n{why[0].upper()}{why[1:]}",
+        color=COLOR,
+    )
+    return _image(embed, BUTTON_IMAGE_BY_GRIP[grip])
 
 
 def results_embeds(session: FinderSession, selection: Selection) -> list[discord.Embed]:
@@ -413,10 +534,11 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
 
     Bloc 1 — **la recommandation** : la ligne du parcours, puis le match idéal, l'alternative et, si
     elle existe, l'économie (nom · prix · pourcentage du maximum théorique). Rien d'autre à l'écran :
-    ni score, ni badge, ni terme technique (voir docs/REPORTE_DESIGN.md §9).
-    Bloc 2 — **« Comment lire ce résultat »** : les repères de taille, la phrase qui relie la souris
-    choisie à ces repères, le pourquoi du choix — et l'illustration des repères de taille.
-    Bloc 3 — **seulement** si un thénar « Petite » a été déclaré : l'arrière étroit conseillé (T13).
+    ni score, ni badge, ni terme technique.
+
+    Puis les blocs de compréhension, dans l'ordre de l'outil de référence : repères de taille,
+    arrière (thénar « Petite »), bosse — et ses trois variantes en Claw —, hauteur des boutons.
+    Chaque bloc porte son illustration (assets/images.json) ; aucun n'est affiché « pour rien ».
     """
     main = discord.Embed(title="🎯 Votre recommandation", color=COLOR)
     header = _recap(session)
@@ -451,31 +573,15 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         main.set_footer(text=SCORE_DISCLAIMER)
         return [main]
 
-    guide = discord.Embed(title="❓ Comment lire ce résultat", color=COLOR)
-    guide.description = (
-        f"{_target_line(session)}\n"
-        f"Chaque souris est notée sur **{MAX_SCORE} points** (longueur, largeur de prise, "
-        "compatibilité de prise, bosse, boutons) ; le pourcentage indique sa part du maximum "
-        f"théorique. Ici : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %**."
-    )
-    guide.add_field(
-        name=f"📐 {ideal.mouse.label} en clair",
-        value=f"{_size_text(ideal.mouse)} · {_price_text(ideal)}\n{_match_summary(ideal)}"[:1024],
-        inline=False,
-    )
-    guide.add_field(name="🧭 Pourquoi ce choix ?", value=selection.explanation[:1024], inline=False)
-    guide = _image(guide, "illustration_mouse_dimensions")
-    guide.set_footer(text=SCORE_DISCLAIMER)
-    embeds = [main, guide]
-
+    embeds = [main, _dimensions_embed(session, ideal, selection.explanation)]
     if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
-        narrow = discord.Embed(title="🖐️ Un arrière étroit pour votre thénar", color=COLOR)
-        narrow.description = (
-            "Votre thénar est **Petite** : un arrière de souris étroit, en « pilule », laisse la main "
-            "se poser sans forcer (méthode Oblivity). Une souris à bosse arrière marquée est "
-            "**pénalisée à la marge** dans le score."
-        )
-        embeds.append(_image(narrow, "illustration_rear_narrow"))
+        embeds.append(_narrow_rear_embed())
+    hump = _hump_guide_embed(session)
+    if hump is not None:
+        embeds.append(hump)
+    embeds.extend(_claw_variant_embeds(session))
+    embeds.append(_buttons_guide_embed(session))
+    embeds[-1].set_footer(text=SCORE_DISCLAIMER)
     return embeds
 
 
