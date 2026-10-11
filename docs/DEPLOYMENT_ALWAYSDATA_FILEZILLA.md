@@ -1032,12 +1032,16 @@ grep -q thenar utils/session.py               && echo "OK   utils/session.py (th
 grep -q IMAGES_BASE_URL config.py             && echo "OK   config.py (IMAGES_BASE_URL)"    || echo "ANCIEN config.py"
 grep -q build_image_url utils/assets.py       && echo "OK   utils/assets.py (résolution)"   || echo "ANCIEN utils/assets.py"
 grep -q step2_thenar assets/images.json       && echo "OK   assets/images.json (clés)"      || echo "ANCIEN assets/images.json"
-grep -q thenar_step_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (4 étapes)" || echo "ANCIEN cogs/finder_flow.py"
+grep -q thenar_step_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (étapes)" || echo "ANCIEN cogs/finder_flow.py"
 grep -q "Vos repères de taille" cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (résultat épuré)" || echo "ANCIEN cogs/finder_flow.py (résultat)"
+grep -q claw_variant_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (variante de Claw)" || echo "ANCIEN cogs/finder_flow.py (variante)"
+grep -q SHAPES utils/models.py                && echo "OK   utils/models.py (forme de coque)" || echo "ANCIEN utils/models.py (forme)"
+grep -q claw_variant utils/session.py         && echo "OK   utils/session.py (variante de Claw)" || echo "ANCIEN utils/session.py (variante)"
+grep -q "SHAPES" utils/catalog.py             && echo "OK   utils/catalog.py (forme sourcée)" || echo "ANCIEN utils/catalog.py (forme)"
 grep -q ResultsView bot.py                     && echo "ANCIEN bot.py (vue supprimée — à remplacer)" || echo "OK   bot.py"
 ```
 
-Les **huit lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
+Les **douze lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
 du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
 `tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
@@ -1053,15 +1057,17 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | `bot.py` | Code : supprime l'enregistrement de la vue persistante des boutons retirés — **obligatoire** : l'ancien `bot.py` référence `ResultsView.persistent()`, qui n'existe plus | **Oui** |
 | `cogs/finder_flow.py` | Code : parcours (étape « variante de Claw » en plus), résultat épuré (recommandation courte, puis blocs illustrés : repères de taille, arrière étroit, bosse et forme, variante de Claw, hauteur des boutons), boutons d'achat uniquement | **Oui** |
 | `utils/models.py`, `utils/session.py` | Code : forme de coque (`shape`), variante de Claw (collectée, jamais notée) | **Oui** |
+| `utils/catalog.py` | Code : une forme de coque renseignée doit citer la source qui l'atteste | **Oui** |
 | `utils/matcher.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
 | `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, forme de coque sourcée, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
 | `tools/check_deployment.py` | Outil de contrôle | Non |
 
-`config.py`, les autres fichiers de `utils/`, `assets/` et `requirements.txt` sont **inchangés** :
-inutile de les retransférer.
+`assets/images.json` (libellés des 15 illustrations) accompagne `data/mouse_db.json` : sans lui, les blocs illustrés
+du résultat ne trouvent pas leurs images. `config.py`, les autres fichiers de `utils/` et `requirements.txt` sont
+**inchangés** : inutile de les retransférer.
 
-**2. FileZilla — huit fichiers à glisser dans `~/MouseDiscord`**
+**2. FileZilla — dix fichiers à glisser dans `~/MouseDiscord`**
 
 Ouvrez le dossier téléchargé à gauche, `~/MouseDiscord` à droite, puis glissez (conflits : **Écraser**,
 jamais « Synchroniser les répertoires ») :
@@ -1069,11 +1075,13 @@ jamais « Synchroniser les répertoires ») :
 ```
 bot.py
 cogs/finder_flow.py
+utils/catalog.py
 utils/matcher.py
 utils/models.py
 utils/session.py
 data/mouse_db.json
 data/commercial_links.json
+assets/images.json
 tools/check_deployment.py
 ```
 
@@ -1109,6 +1117,10 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > **Nouveauté 2026-10-11 (4ᵉ passe)** : le parcours Claw gagne une étape « variante » (2/5) et le résultat un bloc
 > « ⛰️ La bosse et la forme » (forme symétrique/ergonomique, bosse adaptée à la variante). `utils/session.py` et
 > `data/mouse_db.json` font donc partie du transfert.
+>
+> **Le fichier `utils/catalog.py` fait partie du transfert** depuis cette mise à jour : il vérifie qu'une forme de
+> coque renseignée s'appuie sur une source. Sans lui, `data/mouse_db.json` se charge encore (la forme est ignorée) :
+> le bot démarre, mais le bloc « ⛰️ La bosse et la forme » annonce « non vérifiée » pour les 26 souris.
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
