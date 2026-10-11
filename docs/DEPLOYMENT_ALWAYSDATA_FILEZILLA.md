@@ -563,6 +563,94 @@ Causes de démarrage immédiatement interrompu (les journaux les nomment) :
 > Ne lancez **pas** en même temps un `python bot.py` dans le terminal SSH et le service : deux instances du même bot
 > se disputent Discord (§9).
 
+### 7.6 Toutes les commandes SSH utiles (relancer et vérifier)
+
+À copier-coller dans le terminal SSH (`ssh aze129@ssh-aze129.alwaysdata.net`). Remplacez `aze129` par votre compte
+et `APIKEY` par un token créé dans l'administration (**Profil > Tokens**).
+
+**A. Vérifications avant de relancer**
+
+```bash
+cd ~/MouseDiscord
+
+# 1. Une seule instance tourne-t-elle ? (une seule ligne attendue)
+ps -ef | grep "[b]ot.py"
+
+# 2. Version de Python du venv et dépendances importables
+.venv/bin/python -V
+.venv/bin/python -c "import discord, dotenv; print('discord.py', discord.__version__)"
+
+# 3. Contrôle complet : fichiers, token (jamais affiché), catalogue, liens, images, state/
+.venv/bin/python tools/check_deployment.py       # attendu : 0 erreur(s) bloquante(s)
+
+# 4. Les 15 illustrations sont-elles en place, et le .env est-il protégé ?
+ls assets/illustrations | wc -l                  # attendu : 15
+ls -l .env                                       # attendu : -rw-------  (et non rw-r--r--)
+
+# 5. JSON valides (une erreur de syntaxe ne fait pas tomber le bot mais bloque le parcours)
+for f in data/mouse_catalogue data/commercial_links data/mouse_db.json assets/images.json; do :; done
+for f in data/mouse_db.json data/commercial_links.json assets/images.json; do   .venv/bin/python -m json.tool "$f" > /dev/null && echo "OK   $f" || echo "ERREUR $f"; done
+```
+
+**B. Vérifier que le jeton Discord est valide (le token n'est jamais affiché)**
+
+```bash
+cd ~/MouseDiscord
+set -a; . ./.env; set +a
+curl -s -H "Authorization: Bot $DISCORD_TOKEN" https://discord.com/api/v10/users/@me   | .venv/bin/python -c "import json,sys; d=json.load(sys.stdin); print('Bot joignable :', d.get('username'), '(id', str(d.get('id')) + ')') if 'username' in d else print('REFUS DE DISCORD :', d)"
+unset DISCORD_TOKEN
+```
+
+- `Bot joignable : …` : le token est bon, Discord accepte le bot.
+- `REFUS DE DISCORD : {'message': '401: Unauthorized', …}` : token erroné ou révoqué → `Reset Token` dans le portail,
+  puis mettre à jour `.env` (§6.5) et reprendre en B.
+
+**C. Relancer le service depuis SSH (API Alwaysdata)**
+
+```bash
+# 1. Trouver l'identifiant du service et son état
+curl -s --basic --user "APIKEY account=aze129:" https://api.alwaysdata.com/v1/service/   | .venv/bin/python -m json.tool
+
+# 2. Redémarrer (remplacer 1234 par l'« id » trouvé ci-dessus)
+curl -X POST --basic --user "APIKEY account=aze129:" https://api.alwaysdata.com/v1/service/1234/restart/
+
+# 3. Si le service est désactivé, le réactiver d'abord
+curl -X PATCH --basic --user "APIKEY account=aze129:"   -d "is_disabled=false" https://api.alwaysdata.com/v1/service/1234/
+```
+
+La même opération est disponible sans SSH dans l'administration : **Advanced > Processes > Services** (§7.5).
+
+**D. Suivre le démarrage**
+
+```bash
+ls -lt ~/admin/logs/services/ | head            # repérer le fichier le plus récent
+tail -n 50 ~/admin/logs/services/[fichier]      # attendu : INFO mouse_discord : Connecté en tant que …
+tail -f ~/admin/logs/services/[fichier]         # suivi en direct (Ctrl+C pour quitter)
+```
+
+**E. Vérifier que les illustrations sont bien publiées**
+
+```bash
+ls -l ~/www/illustrations | head                # attendu : les 15 fichiers T0*.png
+curl -s -o /dev/null -w "%{http_code}
+" https://aze129.alwaysdata.net/illustrations/T08_azemouse_banniere.png
+# attendu : 200
+```
+
+Un `404` signifie que le dossier `www/illustrations` est mal placé (il doit être à la racine de votre compte, à côté de
+`www`) ou mal nommé. Un `403` vient en général des droits : `chmod 755 ~/www ~/www/illustrations`.
+
+**F. Test manuel en avant-plan (uniquement service ARRÊTÉ)**
+
+```bash
+pkill -f "bot.py"                              # sécurité : aucune instance ne doit rester
+cd ~/MouseDiscord && .venv/bin/python bot.py   # lance le bot au premier plan : les erreurs s'affichent ici
+# Ctrl+C pour arrêter, puis relancer le service (§7.5 ou commande C)
+```
+
+> Ne lancez jamais ce test pendant que le service tourne : deux instances du même bot se disputent Discord (§9).
+> Un service qui se fait tuer sans raison remonte tout seul ; s'il échoue plusieurs fois, Alwaysdata le **désactive**.
+
 ### 7.4 Arrêter le service
 
 Administration : **Advanced > Services** > action **Arrêter** (ou désactiver le service). Ne le faites pas en même temps
