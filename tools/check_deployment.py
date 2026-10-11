@@ -98,10 +98,14 @@ def check(root: Path, env: Mapping[str, str], python_version: tuple = tuple(sys.
             if filenames and not base_url:
                 results.append((WARN, f"IMAGES_BASE_URL n'est pas renseigné : {len(filenames)} illustration(s) de "
                                       "assets/illustrations/ ne seront pas affichées (voir README, section Personnaliser les images)"))
-            missing = [name for name in filenames if not (root / "assets" / "illustrations" / name).is_file()]
-            if missing:
-                shown = ", ".join(missing[:5]) + ("…" if len(missing) > 5 else "")
-                results.append((WARN, f"illustrations absentes de assets/illustrations/ : {shown}"))
+            # Les fichiers peuvent avoir été publiés directement dans l'espace web sans être conservés ici :
+            # on ne signale un manque que si le dossier local existe (copie de référence incomplète).
+            local_dir = root / "assets" / "illustrations"
+            if local_dir.is_dir():
+                missing = [name for name in filenames if not (local_dir / name).is_file()]
+                if missing:
+                    shown = ", ".join(missing[:5]) + ("…" if len(missing) > 5 else "")
+                    results.append((WARN, f"illustrations absentes de assets/illustrations/ : {shown}"))
         except json.JSONDecodeError as exc:
             results.append((ERROR, f"assets/images.json invalide (JSON) : {exc}"))
     else:

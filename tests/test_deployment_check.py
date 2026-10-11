@@ -101,5 +101,14 @@ def test_non_https_image_base_url_is_blocking(project):
 
 def test_missing_illustration_on_disk_is_a_warning(project):
     (project / "assets" / "images.json").write_text('{"banner": "absent.png"}', encoding="utf-8")
+    (project / "assets" / "illustrations").mkdir()          # copie de référence locale incomplète
     results = cd.check(project, {"IMAGES_BASE_URL": "https://x.test/"}, python_version=(3, 11))
     assert any(lvl == cd.WARN and "absent.png" in msg for lvl, msg in results)
+
+
+def test_illustrations_published_elsewhere_without_local_copy_is_not_a_warning(project):
+    """Cas d'un serveur où les images sont publiées dans l'espace web : aucune alerte inutile."""
+    (project / "assets" / "images.json").write_text('{"banner": "absent.png"}', encoding="utf-8")
+    results = cd.check(project, {"IMAGES_BASE_URL": "https://x.test/"}, python_version=(3, 11))
+    assert not any("absent.png" in msg for _, msg in results)
+    assert cd.ERROR not in levels(results)

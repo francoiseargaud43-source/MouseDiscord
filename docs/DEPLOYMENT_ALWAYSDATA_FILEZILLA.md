@@ -875,6 +875,13 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 Un fichier JSON **invalide** modifié à chaud ne fait pas tomber le bot, mais les parcours concernés affichent une erreur
 jusqu'à correction : vérifiez toujours avec `check_deployment.py` avant d'enregistrer un JSON modifié.
 
+### 12.4 Retour arrière
+
+En cas de problème : arrêtez le service, recopiez le dossier sauvegardé (§12.2 étape 1) à la place de `~/AzeMouse`
+(en conservant `.env`, vos liens et `state/` si vous ne les avez pas modifiés), puis redémarrez le service.
+
+---
+
 ### 12.5 Refonte visuelle du 2026-10-11 : quels éléments glisser dans FileZilla (raccourci)
 
 Cas concerné : `~/MouseDiscord` **existe déjà** et fait tourner une version antérieure. **Ne glissez pas le dossier
@@ -914,12 +921,26 @@ Puis, dans cet ordre :
 Contrôle final (SSH) : `~/MouseDiscord/.venv/bin/python ~/MouseDiscord/tools/check_deployment.py` doit afficher
 `images configurées : 15/15` et `0 erreur(s) bloquante(s)`.
 
-### 12.4 Retour arrière
+### 12.6 Contrôle de cohérence après un transfert (éviter un transfert partiel)
 
-En cas de problème : arrêtez le service, recopiez le dossier sauvegardé (§12.2 étape 1) à la place de `~/AzeMouse`
-(en conservant `.env`, vos liens et `state/` si vous ne les avez pas modifiés), puis redémarrez le service.
+Un transfert incomplet ne se voit pas tout de suite : le service démarre alors sur un mélange d'anciens et de nouveaux
+fichiers, puis échoue avec une erreur du genre
+`ImportError: cannot import name 'THENAR_LABELS' from 'utils.models'`
+(nouveau `cogs/finder_flow.py` + ancien `utils/models.py`). Après **tout** transfert de mise à jour, lancez ce contrôle :
 
----
+```bash
+cd ~/MouseDiscord
+grep -q THENAR_LABELS utils/models.py         && echo "OK   utils/models.py (thénar)"        || echo "ANCIEN utils/models.py"
+grep -q thenar utils/session.py               && echo "OK   utils/session.py (thénar)"       || echo "ANCIEN utils/session.py"
+grep -q IMAGES_BASE_URL config.py             && echo "OK   config.py (IMAGES_BASE_URL)"    || echo "ANCIEN config.py"
+grep -q build_image_url utils/assets.py       && echo "OK   utils/assets.py (résolution)"   || echo "ANCIEN utils/assets.py"
+grep -q step2_thenar assets/images.json       && echo "OK   assets/images.json (clés)"      || echo "ANCIEN assets/images.json"
+grep -q thenar_step_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py (4 étapes)" || echo "ANCIEN cogs/finder_flow.py"
+```
+
+Les **six lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
+du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
+`tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
