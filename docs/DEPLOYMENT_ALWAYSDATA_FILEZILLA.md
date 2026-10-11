@@ -710,7 +710,7 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 |---|---|
 | `~/AzeMouse/.env` | Token et réglages propres au serveur |
 | `~/AzeMouse/data/commercial_links.json` | **Vos liens d'achat** (ils ne sont pas dans le dépôt tant que vous ne les y ajoutez pas) |
-| `~/AzeMouse/assets/images.json` | **Vos URL d'images** |
+| `~/MouseDiscord/assets/images.json` | Conservé **seulement** si vous y avez mis vos propres URL. Depuis le 2026-10-11, le fichier du dépôt contient les clés attendues et les noms de fichiers des 15 illustrations : c'est **lui** qu'il faut installer (voir §12.5) |
 | `~/AzeMouse/state/` | Mémoire du message d'accueil (évite les doublons) |
 | `~/AzeMouse/.venv/` | Environnement Python du serveur |
 
@@ -759,6 +759,45 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 
 Un fichier JSON **invalide** modifié à chaud ne fait pas tomber le bot, mais les parcours concernés affichent une erreur
 jusqu'à correction : vérifiez toujours avec `check_deployment.py` avant d'enregistrer un JSON modifié.
+
+### 12.5 Refonte visuelle du 2026-10-11 : quels éléments glisser dans FileZilla (raccourci)
+
+Cas concerné : `~/MouseDiscord` **existe déjà** et fait tourner une version antérieure. **Ne glissez pas le dossier
+téléchargé tel quel** dans la racine du serveur : cela créerait `~/MouseDiscord-arena-…/` à côté du dossier utilisé par le
+service, qui continuerait d'exécuter l'ancien code (piège classique, voir §5.3).
+
+1. Panneau **droit** : double-cliquez sur `MouseDiscord` (le dossier existant) ; la barre de chemin doit indiquer
+   `…/MouseDiscord`.
+2. Panneau **gauche** : ouvrez le dossier téléchargé (celui qui contient `bot.py`).
+3. Sélectionnez et glissez **six éléments seulement**, directement dans `MouseDiscord`.
+
+| Élément | Transférer ? | Raison |
+|---|---|---|
+| `bot.py`, `config.py` | Oui | Configuration et point d'entrée à jour |
+| `cogs/`, `utils/` | Oui | Parcours 4 étapes, charte, résolution des images |
+| `assets/` | Oui | `images.json` (nouvelles clés) **et** `illustrations/` (les 15 PNG) |
+| `tools/` | Oui (recommandé) | `check_deployment.py` contrôle la nouvelle variable `IMAGES_BASE_URL` |
+| `data/` | **Non** | Inchangé par cette mise à jour ; le transférer écraserait vos liens d'achat |
+| `README.md`, `requirements.txt` | Non (facultatif) | Documentation ; dépendances inchangées |
+| `docs/`, `tests/`, `ImageAct/`, `ImageEx/`, `ImageUse/`, `image.png`, `pytest.ini`, `requirements-dev.txt` | **Non** | Utiles au développement seulement (≈ 7 Mo inutiles sur le serveur) |
+| `.env`, `.venv/`, `state/`, `__pycache__/`, `bot.log` | **Jamais** | Secrets, environnement Python et mémoire du panneau, propres au serveur |
+
+4. Conflits de fichiers : **Écraser**, en cochant « Toujours utiliser cette action » (jamais « Synchroniser les répertoires »).
+
+Puis, dans cet ordre :
+
+1. **Publier les illustrations** : panneau droit, clic droit sur `www` > **Créer un répertoire** `illustrations`, puis
+   glissez-y les 15 fichiers de `assets\illustrations`. Vérifiez dans un navigateur que l'image s'affiche :
+   `https://[compte].alwaysdata.net/illustrations/T08_azemouse_banniere.png`.
+2. **`.env`** : clic droit sur `.env` > **Afficher/Éditer**, ajoutez la ligne
+   `IMAGES_BASE_URL=https://[compte].alwaysdata.net/illustrations/`, enregistrez et acceptez le téléversement.
+   Ne remplacez jamais ce fichier par celui du dépôt (il ne contient pas votre token).
+3. **Redémarrer le service** (§7.3) : le code Python et `.env` sont lus au démarrage.
+4. Dans Discord, taper **une fois** `!setup_finder` : le message d'accueil existant est **édité** (nouvelle bannière
+   `T08`), sans créer de doublon.
+
+Contrôle final (SSH) : `~/MouseDiscord/.venv/bin/python ~/MouseDiscord/tools/check_deployment.py` doit afficher
+`images configurées : 15/15` et `0 erreur(s) bloquante(s)`.
 
 ### 12.4 Retour arrière
 
