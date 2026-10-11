@@ -900,6 +900,32 @@ les transferts partiels (cause typique de l'erreur `ImportError: cannot import n
 Si `scp` n'est pas reconnu (« n'est pas reconnu en tant que commande »), utilisez la méthode FileZilla du §12.5 :
 les fichiers de ce dossier doivent être vus dans le **panneau droit, à l'intérieur de `MouseDiscord`**.
 
+### 12.8 Transférer sans aucun outil PC (navigateur uniquement)
+
+Utile si `scp`/PowerShell ne sont pas disponibles et que le glisser-déposer pose problème : il suffit d'un navigateur.
+Alwaysdata ne propose **pas** de gestionnaire de fichiers web ; l'accès aux fichiers se fait par FTP/SFTP/SSH.
+
+Principe : faire héberger temporairement le fichier par Discord (déjà utilisé pour le bot), puis le télécharger sur le
+serveur par une commande `curl`.
+
+1. Dans Discord, ouvrez un salon ou un message privé et **joignez le fichier** (par exemple `models.py`).
+2. Clic droit sur le fichier envoyé > **Copier le lien** (mobile : appui long > « Copier le lien »).
+   Le lien ressemble à `https://cdn.discordapp.com/attachments/…/models.py?ex=…&is=…&hm=…`.
+3. Dans le terminal SSH web (`https://ssh-[compte].alwaysdata.net`) :
+
+   ```bash
+   cd ~/MouseDiscord
+   curl -Lo utils/models.py "COLLEZ_ICI_LE_LIEN"      # guillemets obligatoires : le lien contient des « & »
+   ```
+
+   Répétez pour chaque fichier en adaptant le chemin de destination (`utils/models.py`, `utils/session.py`,
+   `utils/assets.py`, `assets/images.json`).
+4. Contrôlez immédiatement avec les six `grep` du §12.6 : ce qui a été récupéré doit afficher `OK`.
+
+Limites : les liens Discord sont **temporaires** (quelques heures à 24 h) et publics tant qu'ils sont valides — ne
+partagez pas ces URL, et supprimez le message Discord une fois le transfert terminé. Pour un transfert durable, préférez
+FileZilla (§12.5), `scp` (§12.7) ou la sauvegarde Alwaysdata.
+
 ### 12.4 Retour arrière
 
 En cas de problème : arrêtez le service, recopiez le dossier sauvegardé (§12.2 étape 1) à la place de `~/AzeMouse`
