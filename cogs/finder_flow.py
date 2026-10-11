@@ -163,6 +163,8 @@ BUDGET_OPTIONS = (
     (BudgetMode.ECONOMIQUE, "Économique", "Le moins cher de la zone compatible"),
     (BudgetMode.QUALITE_PRIX, "Rapport Qualité/Prix", "Meilleur points/€ (indicatif)"),
     (BudgetMode.HAUT_DE_GAMME, "Haut de Gamme", "Performances documentées les plus élevées"),
+    (BudgetMode.PEU_IMPORTE_PRIX, "Peu importe le prix",
+     "La forme la plus adaptée, puis les composants les plus actuels"),
     (BudgetMode.CUSTOM, "Budget personnalisé", "Saisir un prix maximum en €"),
 )
 # Libellés courts utilisés dans le récapitulatif (le catalogue garde ses libellés complets).
@@ -348,13 +350,37 @@ def _match_summary(score: MouseScore) -> str:
     return sentence[:1024]
 
 
-def _slot_text(score: MouseScore) -> str:
-    """Une souris recommandée en une ligne : nom · prix · pourcentage. Rien d'autre.
+def _components_text(mouse) -> str:
+    """Composants documentés d'une souris : capteur, fréquence, poids — jamais rien de déduit.
 
-    Ni score brut, ni badge de confiance, ni commentaire : tout cela vit dans le second bloc
-    (« Comment lire ce résultat »), pour que la recommandation se lise d'un coup d'œil sur mobile.
+    Un champ absent n'apparaît pas : une donnée manquante n'est pas un défaut de la souris.
     """
-    return f"**{score.mouse.label}** · {_price_text(score)} · **{compatibility_percent(score)} %**"
+    parts = []
+    if mouse.sensor:
+        parts.append(mouse.sensor)
+    if mouse.polling_hz:
+        parts.append(f"{mouse.polling_hz:,}".replace(",", " ") + " Hz")
+    if mouse.weight_g:
+        parts.append(f"{_num(mouse.weight_g)} g")
+    return " · ".join(parts)
+
+
+def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
+    """Une souris recommandée : nom · prix · pourcentage, sur une ligne. Rien d'autre.
+
+    Ni score brut, ni badge de confiance, ni commentaire : tout cela vit dans les blocs plus bas,
+    pour que la recommandation se lise d'un coup d'œil sur mobile. Seul le mode « Peu importe le
+    prix » ajoute une seconde ligne, en tout petit : le prix (sans effet sur ce classement) et les
+    composants documentés, qui départagent les égalités de forme.
+    """
+    percent = compatibility_percent(score)
+    if mode is not BudgetMode.PEU_IMPORTE_PRIX:
+        return f"**{score.mouse.label}** · {_price_text(score)} · **{percent} %**"
+    small = f"-# 💰 {_price_text(score)} — sans effet sur ce classement"
+    components = _components_text(score.mouse)
+    if components:
+        small += f" · ⚙️ {components}"
+    return f"**{score.mouse.label}** · **{percent} %**\n{small}"
 
 
 def _price_or_inf(score: MouseScore) -> float:
@@ -656,11 +682,11 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         main.set_footer(text=SCORE_DISCLAIMER)
         return [main]
 
-    main.add_field(name="🥇 Le match idéal", value=_slot_text(ideal), inline=False)
+    main.add_field(name="🥇 Le match idéal", value=_slot_text(ideal, session.budget_mode), inline=False)
     if alternative is not None:
-        main.add_field(name="🥈 L'alternative", value=_slot_text(alternative), inline=False)
+        main.add_field(name="🥈 L'alternative", value=_slot_text(alternative, session.budget_mode), inline=False)
     if economy is not None:
-        main.add_field(name="💸 L'économie", value=_slot_text(economy), inline=False)
+        main.add_field(name="💸 L'économie", value=_slot_text(economy, session.budget_mode), inline=False)
     image_key = result_image_key(ideal, session.grip)
     if image_key:
         main = _image(main, image_key)

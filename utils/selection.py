@@ -11,6 +11,11 @@ Chaque mode définit :
   biomécanique validé ; elle est centralisée ici et couverte par tests/test_selection.py ;
 - un critère de classement à l'intérieur de cette zone.
 
+Le mode « Peu importe le prix » (2026-10-11, demande du propriétaire) renverse la logique : la forme
+d'abord, sans contrainte budgétaire. Le score morphologique reste seul juge du premier rang ; à score
+égal, les composants DOCUMENTÉS les plus actuels (même indice que le haut de gamme : polling ≥ 8000 Hz,
+capteur haut de gamme) départagent, puis le prix le plus bas. Aucun prix connu n'est exigé.
+
 Les pondérations de performance ne retiennent que des caractéristiques DOCUMENTÉES.
 Une donnée absente compte pour zéro : cela ne signifie pas une performance inférieure.
 """
@@ -26,12 +31,14 @@ from utils.models import BudgetMode, Mouse
 ECONOMIQUE_TOLERANCE_POINTS = 5   # plus large : on accepte une légère baisse de compatibilité pour le prix
 QUALITE_PRIX_TOLERANCE_POINTS = 2
 HAUT_DE_GAMME_TOLERANCE_POINTS = 2
+PEU_IMPORTE_PRIX_TOLERANCE_POINTS = 2
 CUSTOM_TOLERANCE_POINTS = 2
 
 TOLERANCE_BY_MODE = {
     BudgetMode.ECONOMIQUE: ECONOMIQUE_TOLERANCE_POINTS,
     BudgetMode.QUALITE_PRIX: QUALITE_PRIX_TOLERANCE_POINTS,
     BudgetMode.HAUT_DE_GAMME: HAUT_DE_GAMME_TOLERANCE_POINTS,
+    BudgetMode.PEU_IMPORTE_PRIX: PEU_IMPORTE_PRIX_TOLERANCE_POINTS,
     BudgetMode.CUSTOM: CUSTOM_TOLERANCE_POINTS,
 }
 
@@ -75,6 +82,10 @@ def _order_for_mode(mode: BudgetMode, pool: list[MouseScore], rest: list[MouseSc
         key = lambda s: (-(s.total / s.mouse.price_eur), -s.total, idx(s))
     elif mode is BudgetMode.HAUT_DE_GAMME:
         key = lambda s: (-performance_index(s.mouse), -s.total, idx(s))
+    elif mode is BudgetMode.PEU_IMPORTE_PRIX:
+        # Forme d'abord : le score reste maître ; à score égal, les composants documentés les
+        # plus actuels, puis la moins chère. Le prix n'est jamais un critère de premier rang.
+        key = lambda s: (-s.total, -performance_index(s.mouse), _price_key(s), idx(s))
     else:  # CUSTOM : à score égal, le moins cher (ne pas dépenser le budget par défaut)
         key = lambda s: (-s.total, _price_key(s), idx(s))
     return sorted(pool, key=key) + sorted(rest, key=lambda s: (-s.total, _price_key(s), idx(s)))
@@ -98,6 +109,10 @@ def _explanation(mode: BudgetMode, top: MouseScore, pool: list[MouseScore], refe
     if mode is BudgetMode.HAUT_DE_GAMME:
         return (f"Haut de gamme : performances documentées les plus élevées ({performance_index(top.mouse)}/{MAX_PERFORMANCE_INDEX})"
                 f"{zone}. Le prix n'entre pas dans le classement.")
+    if mode is BudgetMode.PEU_IMPORTE_PRIX:
+        return (f"Forme d'abord : {top.mouse.label} est la souris dont la forme colle le mieux à votre main{zone}. "
+                "À score égal, les composants documentés les plus actuels décident, puis le prix le plus bas. "
+                "Le budget ne limite jamais le choix.")
     return (f"Budget personnalisé : meilleur score conforme au budget{zone} ; "
             "à score égal, la moins chère.")
 

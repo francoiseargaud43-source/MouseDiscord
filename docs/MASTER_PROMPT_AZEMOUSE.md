@@ -16,7 +16,7 @@ Bot Discord qui recommande une souris gaming (catalogue ATK/Scyrox) selon :
 - **Mesures de la main** : longueur (pli du poignet → bout du majeur) et largeur sans pouce (au niveau des articulations), en mm.
 - **Grip** : Palm, Claw, Fingertip.
 - **Géométrie de la souris** : longueur, largeur de prise (coque ou mesurée), position de la bosse, hauteur des boutons, compatibilité de grip.
-- **Budget / gamme** : Économique, Qualité-Prix, Haut de Gamme, Budget Personnalisé Maximal (prix max en €).
+- **Budget / gamme** : Économique, Qualité-Prix, Haut de Gamme, **Peu importe le prix** (forme d'abord, ajouté le 2026-10-11), Budget Personnalisé Maximal (prix max en €).
 
 Parcours 100% Discord natif : panneau d'accueil public → parcours éphémère (un seul message qui se met à jour) → résultat privé → boutons d'achat / Fermer / Refaire le test.
 
@@ -326,6 +326,7 @@ Aujourd'hui : toutes les souris sont `estimated` → confiance max `moyenne` (sa
 | Économique | 5 pts | prix le plus bas |
 | Qualité/Prix | 2 pts | `points/€` le plus élevé (indicateur provisoire, le dire) |
 | Haut de Gamme | 2 pts | `performance_index` (0–2 : +1 si `polling≥8000`, +1 si `sensor∈{PAW3950, PAW3950 Ultra, PAW3955, PAW3955 Master}`) puis score |
+| Peu importe le prix (2026-10-11) | 2 pts | **score d'abord**, puis `performance_index`, puis prix le plus bas ; aucun prix exigé |
 | Budget Perso | 2 pts | meilleur score ≤ budget, à score égal le moins cher |
 
 `ranked` = 2 premiers de la zone ordonnée, `pending` = `pending` + (modes à prix : `eligible` sans prix). `explanation` = phrase type fournie par `_explanation()`.
@@ -559,8 +560,9 @@ pytest tests/test_matcher.py tests/test_selection.py
 # Plages Palm/Claw/Fingertip, bornes strictes <3/<2/>8/>5, arrondi 6 décimales,
 # largeur mesurée vs estimée, confidence, budget custom
 pytest tests/test_selection.py
-# Modes : Économique ≤5 pts prix le plus bas, Qualité/Prix points/€, Haut de Gamme perf 0–2, Custom budget ≤
-# pending jamais classé, prix inconnu → pending
+# Modes : Économique ≤5 pts prix le plus bas, Qualité/Prix points/€, Haut de Gamme perf 0–2,
+# Peu importe le prix = forme puis composants documentés, Custom budget ≤
+# pending jamais classé, prix inconnu → pending (sauf Haut de Gamme et Peu importe le prix)
 ```
 
 ### 13.2 Confidentialité

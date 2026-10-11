@@ -12,6 +12,7 @@ from utils.models import BudgetMode, Grip, HandMeasure, Mouse
 from utils.selection import (
     ECONOMIQUE_TOLERANCE_POINTS,
     HAUT_DE_GAMME_TOLERANCE_POINTS,
+    PEU_IMPORTE_PRIX_TOLERANCE_POINTS,
     QUALITE_PRIX_TOLERANCE_POINTS,
     TOLERANCE_BY_MODE,
     performance_index,
@@ -40,6 +41,7 @@ def test_tolerances_are_documented_constants():
     assert TOLERANCE_BY_MODE[BudgetMode.ECONOMIQUE] == ECONOMIQUE_TOLERANCE_POINTS == 5
     assert TOLERANCE_BY_MODE[BudgetMode.QUALITE_PRIX] == QUALITE_PRIX_TOLERANCE_POINTS == 2
     assert TOLERANCE_BY_MODE[BudgetMode.HAUT_DE_GAMME] == HAUT_DE_GAMME_TOLERANCE_POINTS == 2
+    assert TOLERANCE_BY_MODE[BudgetMode.PEU_IMPORTE_PRIX] == PEU_IMPORTE_PRIX_TOLERANCE_POINTS == 2
 
 
 def test_no_mode_is_pure_compatibility_ranking():
@@ -95,6 +97,41 @@ def test_haut_de_gamme_missing_performance_counts_zero_not_negative():
     assert performance_index(mouse("x", 10.0)) == 0
     assert performance_index(mouse("y", 10.0, polling_hz=8000, sensor="PAW3950")) == 2
     assert performance_index(mouse("z", 10.0, polling_hz=1000, sensor="PAW3395")) == 0
+
+
+def test_peu_importe_prix_keeps_the_best_shape_first():
+    """La forme reste maître : une souris plus moderne mais 5 pts en dessous ne passe pas devant."""
+    best = mouse("best", 60.0, hump_position="Front", button_height="High")                 # 30
+    modern_close = mouse("modern", 25.0, hump_position="Mid", button_height="Mid",
+                         polling_hz=8000, sensor="PAW3950 Ultra")                          # 25
+    sel = select([scored(best), scored(modern_close)], BudgetMode.PEU_IMPORTE_PRIX)
+    assert sel.ranked[0].mouse.id == "best"
+
+
+def test_peu_importe_prix_breaks_ties_with_documented_components_then_price():
+    """À score égal : composants documentés les plus actuels (0-2), puis la moins chère."""
+    slow_cheap = mouse("slow_cheap", 20.0, hump_position="Front", button_height="High")     # 30, index 0
+    fast_pricey = mouse("fast_pricey", 60.0, hump_position="Front", button_height="High",
+                        polling_hz=8000, sensor="PAW3950 Ultra")                            # 30, index 2
+    fast_cheap = mouse("fast_cheap", 40.0, hump_position="Front", button_height="High",
+                       polling_hz=8000, sensor="PAW3950 Ultra")                             # 30, index 2
+    sel = select([scored(slow_cheap), scored(fast_pricey), scored(fast_cheap)],
+                 BudgetMode.PEU_IMPORTE_PRIX, top_n=3)
+    assert [s.mouse.id for s in sel.ranked] == ["fast_cheap", "fast_pricey", "slow_cheap"]
+
+
+def test_peu_importe_prix_accepts_a_mouse_without_price():
+    """Le prix n'est jamais exigé dans ce mode : une souris sans prix reste classable."""
+    unpriced = mouse("unpriced", None, hump_position="Front", button_height="High", polling_hz=8000)
+    sel = select([scored(unpriced)], BudgetMode.PEU_IMPORTE_PRIX)
+    assert [s.mouse.id for s in sel.ranked] == ["unpriced"]
+    assert sel.pending == ()
+
+
+def test_peu_importe_prix_explanation_states_the_shape_rule():
+    sel = select([scored(mouse("a", 40.0)), scored(mouse("b", 50.0))], BudgetMode.PEU_IMPORTE_PRIX)
+    assert "Forme d'abord" in sel.explanation
+    assert "Le budget ne limite jamais le choix" in sel.explanation
 
 
 def test_custom_budget_picks_best_score_then_cheapest():

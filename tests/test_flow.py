@@ -610,6 +610,40 @@ def test_embed_colors_follow_the_azemouse_charter():
     assert flow.expired_embed().color == discord.Color.orange()
 
 
+def test_budget_step_proposes_five_modes_including_no_price():
+    view = flow.BudgetView("sid")
+    options = view.children[0].options
+    assert [o.value for o in options] == [
+        "economique", "qualite_prix", "haut_de_gamme", "peu_importe_prix", "custom",
+    ]
+    no_price = options[3]
+    assert no_price.label == "Peu importe le prix"
+    assert "forme la plus adaptée" in no_price.description
+
+
+def test_no_price_mode_shows_the_price_in_small_text_with_the_components():
+    """« Peu importe le prix » : nom · pourcentage, puis le prix en petit + composants documentés."""
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
+    session.budget_mode = BudgetMode.PEU_IMPORTE_PRIX
+    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    ideal = fields_of(embeds[0])["🥇 Le match idéal"]
+    headline, small = ideal.split("\n")
+    assert "%**" in headline and "€" not in headline        # le prix ne concurrence pas le pourcentage
+    assert small.startswith("-# ") and "€" in small         # … il passe en tout petit
+    assert "sans effet sur ce classement" in small
+    assert "⚙️" in small                                    # composants documentés de la souris retenue
+
+
+def test_price_is_still_on_the_main_line_in_the_other_modes():
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session.budget_mode = BudgetMode.QUALITE_PRIX
+    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    ideal = fields_of(embeds[0])["🥇 Le match idéal"]
+    assert "€" in ideal and "- #" not in ideal and "- #" not in ideal and "-#" not in ideal
+
+
 def test_embeds_respect_discord_limits_and_stay_short():
     """Limites Discord et lisibilité mobile : champs ≤ 1024, description ≤ 4096, total ≤ 6000."""
     store = SessionStore(ttl_seconds=600)

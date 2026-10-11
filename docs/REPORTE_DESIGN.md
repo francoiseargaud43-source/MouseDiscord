@@ -127,6 +127,7 @@ carte `#2B2D31`, liseré bordeaux `#8A2342`) :
 |---|---|
 | `docs/apercu_parcours.png` | Accueil (T08) → 1/5 prise (T09) → 2/5 variante de Claw (T04) → 3/5 thénar (T10) → 4/5 mesures (T11) → 5/5 budget |
 | `docs/apercu_resultat.png` | Résultat complet : recommandation (match idéal, alternative, économie) puis repères de taille (T12), arrière étroit (T13, si thénar « Petite »), bosse et forme, variante de Claw et boutons — chaque bloc illustré |
+| `docs/apercu_prix_libre.png` | Mode « Peu importe le prix » : le menu à cinq options (nouvelle option surlignée) puis la ligne de résultat — nom · pourcentage, prix en tout petit et composants documentés |
 
 Régénération (développement uniquement, nécessite Pillow) :
 
@@ -206,7 +207,9 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
 - **🎯 Votre recommandation** (en haut) : une ligne descriptive du parcours (prise, thénar, mesures, gamme),
   puis **🥇 le match idéal**, **🥈 l'alternative** et, quand elle existe, **💸 l'économie** — chacune sur une
   seule ligne « **Nom** · prix · pourcentage du maximum théorique ». Rien d'autre : ni score /40, ni confiance,
-  ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons) ;
+  ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons).
+  **Exception (mode « Peu importe le prix », 2026-10-11)** : la ligne garde « Nom · pourcentage » et le prix descend en
+  tout petit, suivi des composants documentés (capteur, fréquence, poids) — le prix ne concurrence plus la forme ;
 - **📐 Vos repères de taille** : les deux plages cibles, d'où elles se mesurent, le score `/40 — %`, la souris
   retenue « en clair » avec ses dimensions et le « pourquoi ce choix ». Illustration T12 ;
 - **🖐️ Un arrière étroit pour votre thénar** : **seulement** si le thénar déclaré est « Petite » (jamais en
@@ -224,6 +227,13 @@ La **confiance des données** n'est plus affichée (décision du propriétaire, 
 solidité des chiffres disponibles sur la souris, pas la qualité du choix. Elle reste calculée dans
 `MouseScore.confidence` et pourra revenir plus tard. Chaque bloc porte l'illustration de son propos, et seul le
 dernier porte le rappel « score géométrique provisoire… » : les blocs s'enchaînent sans répéter le même texte.
+
+Le mode **« Peu importe le prix »** (demande du propriétaire, 2026-10-11) répond à « cherchons la forme, pas le
+budget » : la zone de tolérance reste de 2 pts, le classement suit le **score** (la forme), puis les composants
+**documentés** les plus actuels (même indice 0–2 que le haut de gamme : polling ≥ 8000 Hz, capteur PAW3950/PAW3955),
+puis le prix le plus bas ; aucun prix connu n'est exigé, donc les souris sans prix redeviennent classables. La
+ligne de prix en petit texte (`-#`) rappelle que le montant n'entre pas dans le classement. Aucun barème n'est
+touché : c'est une stratégie de sélection de plus (`utils/selection.py`), comme demandé dans le master prompt.
 
 Les trois rôles sont choisis dans le classement du mode, sans jamais recalculer un score : le match idéal est la
 tête du classement ; l'alternative est la souris qui correspond le mieux au profil, en préférant une souris un

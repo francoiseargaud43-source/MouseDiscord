@@ -1038,10 +1038,11 @@ grep -q claw_variant_embed cogs/finder_flow.py && echo "OK   cogs/finder_flow.py
 grep -q SHAPES utils/models.py                && echo "OK   utils/models.py (forme de coque)" || echo "ANCIEN utils/models.py (forme)"
 grep -q claw_variant utils/session.py         && echo "OK   utils/session.py (variante de Claw)" || echo "ANCIEN utils/session.py (variante)"
 grep -q "SHAPES" utils/catalog.py             && echo "OK   utils/catalog.py (forme sourcée)" || echo "ANCIEN utils/catalog.py (forme)"
+grep -q PEU_IMPORTE_PRIX utils/selection.py   && echo "OK   utils/selection.py (peu importe le prix)" || echo "ANCIEN utils/selection.py (modes)"
 grep -q ResultsView bot.py                     && echo "ANCIEN bot.py (vue supprimée — à remplacer)" || echo "OK   bot.py"
 ```
 
-Les **douze lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
+Les **treize lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fichier non transféré : reprenez le transfert
 du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
 `tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
@@ -1058,6 +1059,7 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | `cogs/finder_flow.py` | Code : parcours (étape « variante de Claw » en plus), résultat épuré (recommandation courte, puis blocs illustrés : repères de taille, arrière étroit, bosse et forme, variante de Claw, hauteur des boutons), boutons d'achat uniquement | **Oui** |
 | `utils/models.py`, `utils/session.py` | Code : forme de coque (`shape`), variante de Claw (collectée, jamais notée) | **Oui** |
 | `utils/catalog.py` | Code : une forme de coque renseignée doit citer la source qui l'atteste | **Oui** |
+| `utils/selection.py` | Code : **cinquième mode « Peu importe le prix »** (la forme d'abord, puis les composants documentés ; le prix n'est jamais exigé) | **Oui** |
 | `utils/matcher.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
 | `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, forme de coque sourcée, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
@@ -1067,7 +1069,7 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 du résultat ne trouvent pas leurs images. `config.py`, les autres fichiers de `utils/` et `requirements.txt` sont
 **inchangés** : inutile de les retransférer.
 
-**2. FileZilla — dix fichiers à glisser dans `~/MouseDiscord`**
+**2. FileZilla — onze fichiers à glisser dans `~/MouseDiscord`**
 
 Ouvrez le dossier téléchargé à gauche, `~/MouseDiscord` à droite, puis glissez (conflits : **Écraser**,
 jamais « Synchroniser les répertoires ») :
@@ -1078,6 +1080,7 @@ cogs/finder_flow.py
 utils/catalog.py
 utils/matcher.py
 utils/models.py
+utils/selection.py
 utils/session.py
 data/mouse_db.json
 data/commercial_links.json
@@ -1117,6 +1120,11 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > **Nouveauté 2026-10-11 (4ᵉ passe)** : le parcours Claw gagne une étape « variante » (2/5) et le résultat un bloc
 > « ⛰️ La bosse et la forme » (forme symétrique/ergonomique, bosse adaptée à la variante). `utils/session.py` et
 > `data/mouse_db.json` font donc partie du transfert.
+>
+> **Nouveauté 2026-10-11 (5ᵉ passe)** : le menu de l'étape budget gagne **« Peu importe le prix »**
+> (la forme d'abord ; à score égal, les composants documentés, puis le prix le plus bas — le montant
+> s'affiche en tout petit). Le bot démarre sans `utils/selection.py` à jour, mais l'option répondrait
+> « Aucune souris éligible » : ce fichier fait partie du transfert.
 >
 > **Le fichier `utils/catalog.py` fait partie du transfert** depuis cette mise à jour : il vérifie qu'une forme de
 > coque renseignée s'appuie sur une source. Sans lui, `data/mouse_db.json` se charge encore (la forme est ignorée) :

@@ -30,6 +30,7 @@ MODES = [
     ("Économique", BudgetMode.ECONOMIQUE),
     ("Qualité/Prix", BudgetMode.QUALITE_PRIX),
     ("Haut de gamme", BudgetMode.HAUT_DE_GAMME),
+    ("Peu importe le prix", BudgetMode.PEU_IMPORTE_PRIX),
     (f"Budget ≤ {CUSTOM_MAX_EUR:g} €", BudgetMode.CUSTOM),
 ]
 

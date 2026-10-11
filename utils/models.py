@@ -45,6 +45,7 @@ class BudgetMode(Enum):
     ECONOMIQUE = "economique"
     QUALITE_PRIX = "qualite_prix"
     HAUT_DE_GAMME = "haut_de_gamme"
+    PEU_IMPORTE_PRIX = "peu_importe_prix"
     CUSTOM = "custom"
 
     @property
@@ -56,6 +57,7 @@ BUDGET_LABELS = {
     BudgetMode.ECONOMIQUE: "Économique",
     BudgetMode.QUALITE_PRIX: "Rapport Qualité/Prix",
     BudgetMode.HAUT_DE_GAMME: "Haut de Gamme (Max Perf)",
+    BudgetMode.PEU_IMPORTE_PRIX: "Peu importe le prix",
     BudgetMode.CUSTOM: "Budget Personnalisé Maximal",
 }
 

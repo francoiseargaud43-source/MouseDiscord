@@ -71,9 +71,10 @@ def _plain(text: str) -> str:
 
 
 def _draw_rich(draw, xy, text, font, bold_font, width, fill, line_gap=6):
-    """Rend un texte « Discord » : gère le gras (**…**) et le retour à la ligne."""
+    """Rend un texte « Discord » : gras (**…**) et sous-texte (``-# …``), retour à la ligne."""
     x, y = xy
     for paragraph in text.split("\n"):
+        paragraph, font, bold_font, fill, line_gap = _rich_style(paragraph, font, bold_font, fill, line_gap)
         segmentos = paragraph.split("**")
         tokens: list[tuple[str, bool]] = []
         for index, segment in enumerate(segmentos):
@@ -102,17 +103,35 @@ def _draw_rich(draw, xy, text, font, bold_font, width, fill, line_gap=6):
     return y
 
 
+def _rich_style(paragraph, font, bold_font, fill, line_gap):
+    """« -# » = sous-texte Discord : plus petit et gris (mise en page de l'aperçu seulement)."""
+    if paragraph.startswith("-# "):
+        size = max(11, font.size - 3)
+        return paragraph[3:], _font(False, size), _font(True, size), MUTED, 4
+    return paragraph, font, bold_font, fill, line_gap
+
+
+def _text_height(text: str, contenu_largeur: int) -> int:
+    """Hauteur d'un texte riche ligne à ligne (le sous-texte est plus court que le texte normal)."""
+    height = 0
+    for paragraph in text.split("\n"):
+        small = paragraph.startswith("-# ")
+        font = _font(False, 13) if small else _font(False, 16)
+        gap = 4 if small else 6
+        height += len(_wrap(_plain(paragraph[3:] if small else paragraph), font, contenu_largeur)) * (font.size + gap)
+    return height
+
+
 def _embed_height(embed, contenu_largeur: int) -> int:
     """Estimation de hauteur : titre, description, champs, image."""
-    font = _font(False, 16)
     height = PAD + 10
     if embed.title:
         height += 30
     if embed.description:
-        height += len(_wrap(_plain(embed.description), font, contenu_largeur)) * 22 + 10
+        height += _text_height(embed.description, contenu_largeur) + 10
     for field in embed.fields:
         height += 26
-        height += len(_wrap(_plain(field.value), font, contenu_largeur)) * 22 + 10
+        height += _text_height(field.value, contenu_largeur) + 10
     if embed.image and embed.image.url:
         path = ROOT / "assets" / "illustrations" / url_basename(embed.image.url)
         if path.is_file():
@@ -230,8 +249,55 @@ def build_resultat() -> Image.Image:
     return canvas
 
 
+def draw_menu_options(draw, y: int, options, surligne: int | None = None, x: int = PAD,
+                      width: int = LARGEUR - 2 * PAD) -> int:
+    """Aperçu du menu déroulant Discord : libellé en gras, description en gris."""
+    bold, small = _font(True, 15), _font(False, 13)
+    height = sum(28 + len(_wrap(desc, small, width - 2 * PAD + 6)) * 18 for _, _, desc in options) + PAD
+    draw.rounded_rectangle([x, y, x + width, y + height], radius=8, fill=(41, 43, 48))
+    cursor = y + PAD // 2
+    for index, (_, label, desc) in enumerate(options):
+        if index == surligne:
+            draw.rectangle([x + 1, cursor - 4, x + 5, cursor + 30], fill=LISERE)
+        draw.text((x + PAD, cursor), label, font=bold, fill=WHITE if index == surligne else TEXT)
+        cursor += 26
+        for line in _wrap(desc, small, width - 2 * PAD):
+            draw.text((x + PAD, cursor), line, font=small, fill=MUTED)
+            cursor += 18
+        cursor += 4
+    return y + height + 16
+
+
+def build_prix_libre() -> Image.Image:
+    """« Peu importe le prix » : la nouvelle option du menu, puis la ligne de résultat en petit prix."""
+    store = SessionStore(ttl_seconds=600)
+    session = store.start(1)
+    session.grip, session.hand_length_mm, session.hand_width_mm = Grip.PALM, 180.0, 90.0
+    session.thenar = Thenar.PETITE
+    session.budget_mode = BudgetMode.PEU_IMPORTE_PRIX
+    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    etapes = [("Étape 5/5 — budget : cinq options, dont « Peu importe le prix »", flow.budget_step_embed(session),
+               ["Choisissez votre gamme…"], False),
+              ("Résultat « Peu importe le prix » — le prix en tout petit",
+               embeds[0], ["🛒 Acheter ATK Z1 V2 Ultra"], True)]
+    hauteur = PAD
+    for _, embed, _, _ in etapes:
+        hauteur += 28 + _embed_height(embed, LARGEUR - 4 * PAD) + 52 + 16
+    hauteur += sum(28 + len(_wrap(desc, _font(False, 13), LARGEUR - 4 * PAD + 6)) * 18 for _, _, desc in flow.BUDGET_OPTIONS) + PAD
+    canvas, draw = nouveau_canvas(hauteur)
+    y = PAD
+    for titre, embed, boutons, primaire in etapes:
+        y = bandeau(draw, y, titre)
+        y = draw_embed(canvas, draw, embed, y)
+        y = draw_boutons(draw, y, [(b, primaire) for b in boutons])
+        if embed is etapes[0][1]:
+            y = draw_menu_options(draw, y, flow.BUDGET_OPTIONS, surligne=3)
+    return canvas
+
+
 def main() -> int:
-    for nom, image in (("apercu_parcours.png", build_parcours()), ("apercu_resultat.png", build_resultat())):
+    for nom, image in (("apercu_parcours.png", build_parcours()), ("apercu_resultat.png", build_resultat()),
+                       ("apercu_prix_libre.png", build_prix_libre())):
         chemin = ROOT / "docs" / nom
         image.save(chemin, optimize=True)
         print(f"Écrit : {chemin} ({image.width}×{image.height}, {chemin.stat().st_size // 1024} Ko)")

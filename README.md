@@ -36,7 +36,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/5. Variante de Claw | Le même message + les trois variantes (`T04`) | Menu : Claw relâchée / agressive / pincée — **prise Claw uniquement**, aucun effet sur le score (précise le conseil de bosse) |
 | 2/4 – 3/5. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4 – 4/5. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
-| 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
+| 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, **Peu importe le prix**, Budget personnalisé (→ modal prix max) |
 | Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
@@ -289,7 +289,7 @@ explicite, deux sources concordantes à ≤ 0.5 mm pour un statut `verified`.
 
 | Champ | Usage |
 |---|---|
-| `price_eur` | Prix en euros. `null` = inconnu : exclu des modes à prix, autorisé en Haut de Gamme. |
+| `price_eur` | Prix en euros. `null` = inconnu : exclu des modes à prix, autorisé en Haut de Gamme et en « Peu importe le prix ». |
 | `price_status` | `verified`, `owner_spec_unverified` ou `unknown`. Un prix `verified` exige un prix. |
 | `price_note` | Précision (date, devise d'origine…). |
 | `budget_tier` | `Économique`, `Qualité-Prix`, `Haut de Gamme` (étiquette, départage visuel uniquement). |
@@ -370,6 +370,7 @@ il reste dans `MouseScore.confidence` et n'apparaît plus dans le résultat (dé
 | Économique | ≤ 5 pts | prix le plus bas |
 | Rapport Qualité/Prix | ≤ 2 pts | points par euro le plus élevé (indicateur provisoire) |
 | Haut de Gamme | ≤ 2 pts | performance **documentée** (polling ≥ 8000 Hz, capteur PAW3950/PAW3955 : 0 à 2) ; le prix n'entre pas |
+| Peu importe le prix | ≤ 2 pts | **forme d'abord** : meilleur score, puis composants documentés (0 à 2), puis le moins cher ; le prix ne compte jamais |
 | Budget Personnalisé | ≤ 2 pts, parmi les souris ≤ budget | meilleur score, puis le moins cher |
 
 Les souris sans prix connu ne sont jamais recommandées dans les modes à prix : elles passent dans « À vérifier ».
@@ -385,7 +386,7 @@ Une donnée de performance absente compte pour zéro ; cela ne signifie pas une 
 | ATK X1 V2 Ultra Max | **20** | longueur 0 (écart 3.2 mm) · largeur 5 · grip 10 · bosse 5 · boutons 0 |
 | Scyrox V8 / V8S, ATK F1 V3 | exclues | grip Palm « Faible » |
 
-Ces souris donnent, selon le mode : Économique → A9 Plus ; Qualité/Prix → V6 ; Haut de Gamme → Z1 (polling 8000 Hz documenté).
+Ces souris donnent, selon le mode : Économique → A9 Plus ; Qualité/Prix → V6 ; Haut de Gamme et Peu importe le prix → Z1 V2 Ultra (30/40, polling 8000 Hz documenté).
 
 **Matrices complètes** (profils Palm, Claw, Fingertip, toutes les souris du catalogue) : `docs/audit/matrice_profils.md`,
 générées par `python tools/compare_profiles.py`.
