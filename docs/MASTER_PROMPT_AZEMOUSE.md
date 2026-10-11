@@ -326,7 +326,7 @@ Aujourd'hui : toutes les souris sont `estimated` → confiance max `moyenne` (sa
 | Économique | 5 pts | prix le plus bas |
 | Qualité/Prix | 2 pts | `points/€` le plus élevé (indicateur provisoire, le dire) |
 | Haut de Gamme | 2 pts | `performance_index` (0–2 : +1 si `polling≥8000`, +1 si `sensor∈{PAW3950, PAW3950 Ultra, PAW3955, PAW3955 Master}`) puis score |
-| Peu importe le prix (2026-10-11) | 2 pts | **score d'abord**, puis `performance_index`, puis prix le plus bas ; aucun prix exigé |
+| Peu importe le prix (2026-10-11) | 2 pts | **score d'abord**, puis `components_index` (capteur > MCU > switchs > fréquence, chacun 0–5), puis prix le plus bas ; aucun prix exigé. Poids affiché sur la ligne du match idéal et de l'alternative |
 | Budget Perso | 2 pts | meilleur score ≤ budget, à score égal le moins cher |
 
 `ranked` = 2 premiers de la zone ordonnée, `pending` = `pending` + (modes à prix : `eligible` sans prix). `explanation` = phrase type fournie par `_explanation()`.

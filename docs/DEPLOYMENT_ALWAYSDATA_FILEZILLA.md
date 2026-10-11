@@ -1121,6 +1121,11 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > « ⛰️ La bosse et la forme » (forme symétrique/ergonomique, bosse adaptée à la variante). `utils/session.py` et
 > `data/mouse_db.json` font donc partie du transfert.
 >
+> **Nouveauté 2026-10-11 (6ᵉ passe)** : le catalogue documente désormais les **switchs**, le **MCU**
+> et le **poids** des souris (26/26 pour le poids) ; le poids s'affiche sur la ligne du match idéal et de
+> l'alternative, et le départage du mode « Peu importe le prix » suit capteur → MCU → switchs → fréquence.
+> `data/mouse_db.json`, `utils/models.py`, `utils/selection.py` et `cogs/finder_flow.py` sont à jour dans la liste.
+>
 > **Nouveauté 2026-10-11 (5ᵉ passe)** : le menu de l'étape budget gagne **« Peu importe le prix »**
 > (la forme d'abord ; à score égal, les composants documentés, puis le prix le plus bas — le montant
 > s'affiche en tout petit). Le bot démarre sans `utils/selection.py` à jour, mais l'option répondrait

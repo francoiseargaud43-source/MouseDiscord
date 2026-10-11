@@ -20,7 +20,7 @@
     "price_status": "verified",
     "price_note": "Prix EUR issu du cahier des charges (74,90 €), confirmé le 2026-10-11 par le prix public français (74,90 €, noir, en stock ; blanc en promotion à 59,90 €) chez Maxesport.",
     "fit_rationale": "La bosse arrière verrouille parfaitement le Claw grip. Très légère pour le Fingertip.",
-    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK (Maxesport : 74,90 €).",
+    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK (Maxesport : 74,90 €). V8 : 36 ±3 g, capteur PAW3950, 8 000 Hz, switchs optiques, MCU Nordic nRF52840 (inputarena / MouseCompare / PotentGaming, 2026-10-11). La variante V8S partage la coque : poids non vérifié séparément ici.",
     "sources": [
       {
         "label": "Maxesport (revendeur FR, expédition depuis la France) — Scyrox V8 8K Wireless Black",
@@ -37,9 +37,48 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "inputarena — Scyrox V8 (fiche complète)",
+        "url": "https://inputarena.com/product/scyrox-v8-wireless-gaming-mouse-full-specification/",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "MouseCompare — Scyrox V8",
+        "url": "https://mousecompare.com/mouse/scyrox/v8/",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "PotentGaming — Scyrox V8",
+        "url": "https://potentgaming.com/products/scyrox-v8",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "weight_g": 36.0,
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "switches": "Optiques (Omron / Kailh)",
+    "mcu": "Nordic nRF52840"
   },
   {
     "id": "scyrox_v6",
@@ -62,7 +101,7 @@
     "price_status": "owner_spec_unverified",
     "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
     "fit_rationale": "Bosse centrale très polyvalente, parfaite pour le Relaxed Claw.",
-    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK.",
+    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK. Poids 40 g, capteur PAW3950, 8 000 Hz, switchs optiques et MCU Nordic nRF52840 : fiches MaxGaming / EloShapes / MouseCompare (2026-10-11).",
     "sources": [
       {
         "label": "MouseCompare — Scyrox V6 (fiche : Shape « Symmetrical »)",
@@ -71,9 +110,48 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "MaxGaming — Scyrox V6 8K Superlight (fiche)",
+        "url": "https://www.maxgaming.com/en/wireless-mouses/scyrox-v6-blue",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes — comparaison Scyrox V6",
+        "url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v6",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "MouseCompare — Scyrox V6",
+        "url": "https://mousecompare.com/mouse/scyrox/v6/",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "weight_g": 40.0,
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "switches": "Optiques (Omron / Kailh)",
+    "mcu": "Nordic nRF52840"
   },
   {
     "id": "atk_f1_ultimate",
@@ -97,7 +175,7 @@
     "price_status": "owner_spec_unverified",
     "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
     "fit_rationale": "Arrière étroit empêchant les crampes de l'éminence thénar en Fingertip.",
-    "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée. Prix officiel EUR constaté le 2026-10-11 : série F1 V3 « à partir de » 59,95 € (Ultimate+ ; Extreme+ 91,95 €).",
+    "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée. Prix officiel EUR constaté le 2026-10-11 : série F1 V3 « à partir de » 59,95 € (Ultimate+ ; Extreme+ 91,95 €). Version retenue : Ultimate+ (37 ±3 g, PAW3955 Master, Nordic 54LM20, optiques ATK Custom, 8 000 Hz) ; l'Extreme+ est annoncée à 36 g avec switchs Omron optiques et Nordic 54H20.",
     "sources": [
       {
         "label": "ATK Blog — Which mouse is right for you (F1)",
@@ -127,9 +205,49 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Tech4Gamers — ATK Blazing Sky F1 V3 Ultimate+ (test)",
+        "url": "https://tech4gamers.com/atk-blazing-sky-f1-v3-ultimate-review/",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "InputGear — ATK F1 V3 Ultimate (fiche)",
+        "url": "https://inputgear.com/products/atk-f1-v3-ultimate-pearl-blue-mouse",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "GG EZ Gadgets — ATK F1 V3 Ultimate+ (fiche)",
+        "url": "https://ggezgadgets.com/product/atk-blazing-sky-f1-v3-ultimate-esports-wireless-mouse/",
+        "fields": [
+          "weight_g",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "weight_g": 37.0,
+    "sensor": "PAW3955 Master",
+    "polling_hz": 8000,
+    "switches": "Optiques ATK Custom",
+    "mcu": "Nordic 54LM20"
   },
   {
     "id": "atk_x1_ultra_max",
@@ -155,7 +273,7 @@
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
-    "notes": "127 × 64 × 40 mm confirmés par EloShapes et la collection ATK X1. Capteur indiqué différemment selon les sources (PAW3395 Ultra chez EloShapes, PAW3950 Ultra ou PAW3955 Master chez ATK) : non renseigné. EloShapes : bosse « Back - minimal » vs « Mid » du cahier des charges (conflit signalé). Prix officiel EUR constaté le 2026-10-11 : série X1 V2 « à partir de » 41,95 €.",
+    "notes": "127 × 64 × 40 mm confirmés par EloShapes et la collection ATK X1. Capteur indiqué différemment selon les sources (PAW3395 Ultra chez EloShapes, PAW3950 Ultra ou PAW3955 Master chez ATK) : non renseigné. EloShapes : bosse « Back - minimal » vs « Mid » du cahier des charges (conflit signalé). Prix officiel EUR constaté le 2026-10-11 : série X1 V2 « à partir de » 41,95 €. Capteur PAW3395 Ultra, switchs ATK Lightblade mécaniques et MCU Nordic 54L15 (fiches Maxesport / TechnoGeek BD). C'est la seule « Ultra Max » du catalogue sur un capteur 3395 plutôt que 3950/3955.",
     "conflicts": {
       "sensor": {
         "values": [
@@ -198,9 +316,33 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Maxesport — ATK Blazing Sky X1 V2 Ultra Max 8K",
+        "url": "https://maxesport.gg/products/atk-blazing-sky-x1-v2-ultra-max-8k-wireless-black",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "TechnoGeek BD — ATK Blazing Sky X1 V2 Ultra Max",
+        "url": "https://technogeekbd.store/products/atk-blazing-sky-x1-v2-ultra-max-wireless-gaming-mouse.php",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "sensor": "PAW3395 Ultra",
+    "switches": "ATK Lightblade (mécaniques)",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_z1_ultra",
@@ -226,7 +368,7 @@
     "fit_rationale": "Coque ergonomique asymétrique. Boutons hauts. Le choix absolu pour le Palm Grip.",
     "weight_g": 54.0,
     "polling_hz": 8000,
-    "notes": "122.5 × 66.8 × 42.4 mm : ATK (collection Z1), article ATK 2024 et Meckeys. Ne pas confondre avec la Z1 originale (119.57 × 60.99 × 36.26 mm selon ATK, dimensions identiques à la Fierce X : non ajoutée, à vérifier). Bosse « Mid-Front » du cahier des charges, à confirmer. Prix officiel EUR constaté le 2026-10-11 : Z1 V2 « à partir de » 59,95 €.",
+    "notes": "122.5 × 66.8 × 42.4 mm : ATK (collection Z1), article ATK 2024 et Meckeys. Ne pas confondre avec la Z1 originale (119.57 × 60.99 × 36.26 mm selon ATK, dimensions identiques à la Fierce X : non ajoutée, à vérifier). Bosse « Mid-Front » du cahier des charges, à confirmer. Prix officiel EUR constaté le 2026-10-11 : Z1 V2 « à partir de » 59,95 €. Capteur PAW3950 Ultra, switchs optiques et MCU Nordic 54L15 (fiches ATK Store Z1 series / Maxesport). Les premières générations de la coque étaient en Nordic 52840.",
     "sources": [
       {
         "label": "ATK Store — collection Z1 Series",
@@ -267,9 +409,33 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky Z1 Series",
+        "url": "https://www.atk.store/products/atk-blazing-sky-z1-series-wireless-mouse",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Maxesport — ATK Blazing Sky Z1 V2 Ultimate 8K",
+        "url": "https://maxesport.gg/products/atk-blazing-sky-z1-v2-ultimate-8k-wireless-white",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Ergonomic"
+    "shape": "Ergonomic",
+    "sensor": "PAW3950 Ultra",
+    "switches": "Optiques (Omron / ATK Custom)",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_a9_plus",
@@ -480,9 +646,9 @@
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », même coque, prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "fit_rationale": "",
     "weight_g": 48.0,
-    "sensor": null,
-    "polling_hz": null,
-    "notes": "Même coque que le GHOST Ultimate selon la comparaison EloShapes (dimensions identiques). Capteur et autonomie non vérifiés. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire).",
+    "sensor": "PAW3950 Ultra",
+    "polling_hz": 8000,
+    "notes": "Même coque que le GHOST Ultimate selon la comparaison EloShapes (dimensions identiques). Capteur et autonomie non vérifiés. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, 8 000 Hz, MCU Nordic 54H20 (fiches ATK Store GHOST carbone / MaxGaming). Switchs Lightblade ou optiques ATK Custom selon la finition.",
     "sources": [
       {
         "label": "EloShapes — comparaison GHOST Extreme / Ultimate",
@@ -510,9 +676,31 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky GHOST (carbone)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse",
+        "fields": [
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "MaxGaming — ATK GHOST Extreme",
+        "url": "https://www.maxgaming.com/en/wireless-mouses/atk-ghost-extreme-wireless-gaming-mouse-purple",
+        "fields": [
+          "sensor",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "ATK Lightblade / optiques ATK Custom",
+    "mcu": "Nordic 54H20"
   },
   {
     "id": "atk_y9_ultimate",
@@ -711,7 +899,7 @@
     "weight_g": 45.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire).",
+    "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom et MCU Nordic 54L15 (fiche ATK Store U2 V2).",
     "sources": [
       {
         "label": "EloShapes — ATK U2 V2 Ultimate",
@@ -754,9 +942,23 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 V2 Superlight",
+        "url": "https://www.atk.store/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu",
+          "polling_hz",
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "Optiques ATK Custom",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_u2_v2_mini",
@@ -780,9 +982,9 @@
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 77.95 € (produit « ATK Blazing Sky U2 Mini » : le store ne liste pas de « U2 V2 Mini » séparé).",
     "fit_rationale": "",
     "weight_g": 39.0,
-    "sensor": null,
+    "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "119.5 × 63 × 38.5 mm concordants (EloShapes, notice ATK, collection U2). Notice ATK : taille « Small/Medium hands ». Capteur non vérifié. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire).",
+    "notes": "119.5 × 63 × 38.5 mm concordants (EloShapes, notice ATK, collection U2). Notice ATK : taille « Small/Medium hands ». Capteur non vérifié. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). U2 V2 Mini : PAW3950 Ultra et Nordic 54L15, comme l'U2 V2 Ultimate (fiche ATK Store U2 V2).",
     "sources": [
       {
         "label": "EloShapes — comparaison F1 V2 Ultimate / U2 V2 Mini",
@@ -821,9 +1023,32 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 V2 Superlight",
+        "url": "https://www.atk.store/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Amazon — ATK Blazing Sky U2 V2 (fiche constructeur)",
+        "url": "https://www.amazon.com/ATK-Blazing-U2-V2-Wireless/dp/B0GJCT8J8V",
+        "fields": [
+          "sensor",
+          "mcu",
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "Optiques ATK Custom",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_zero",
@@ -984,7 +1209,7 @@
     "weight_g": 53.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié.",
+    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air.",
     "sources": [
       {
         "label": "EloShapes — ATK A9 Ultimate",
@@ -1027,9 +1252,31 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "InputArena — ATK A9 Ultimate (fiche)",
+        "url": "https://inputarena.com/product/atk-a9-ultimate-specification/",
+        "fields": [
+          "switches",
+          "mcu",
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Back2Gaming — ATK GEAR Dragonfly A9 (test)",
+        "url": "https://www.back2gaming.com/review/atk-gear-dragonfly-a9-series-mouse/",
+        "fields": [
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "Optiques SwiftLight",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_a9_air",
@@ -1054,9 +1301,9 @@
     "price_note": "Prix EUR (public France) constaté le 2026-10-11 : 89,90 € (ATK Dragonfly A9 Air 8K, Shadow White, en stock) chez Maxesport.",
     "fit_rationale": "",
     "weight_g": 47.0,
-    "sensor": null,
+    "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €).",
+    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master.",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Air / A9 Ultimate",
@@ -1078,9 +1325,23 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Back2Gaming — ATK GEAR Dragonfly A9 (test)",
+        "url": "https://www.back2gaming.com/review/atk-gear-dragonfly-a9-series-mouse/",
+        "fields": [
+          "sensor",
+          "switches",
+          "mcu",
+          "polling_hz",
+          "weight_g"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "Optiques SwiftLight",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_a9_mini",
@@ -1104,9 +1365,9 @@
     "price_note": "Aucun prix EUR vérifié.",
     "fit_rationale": "",
     "weight_g": 39.0,
-    "sensor": null,
-    "polling_hz": null,
-    "notes": "Dimensions d'une seule source (ATK, fiche produit). Bosse, boutons et grip non vérifiés. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 18,95 € ; pas de prix distinct pour l'A9 Mini.",
+    "sensor": "PAW3955",
+    "polling_hz": 8000,
+    "notes": "Dimensions d'une seule source (ATK, fiche produit). Bosse, boutons et grip non vérifiés. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 18,95 € ; pas de prix distinct pour l'A9 Mini. A9 Mini : PAW3955, 8 000 Hz, switchs optiques ATK et MCU Nordic 54L15 (fiches InputGear FR / ATK Store). La Mini+ est annoncée avec le PAW3955 Master Plus.",
     "sources": [
       {
         "label": "ATK Store — ATK Dragonfly A9 Ultimate",
@@ -1126,9 +1387,31 @@
           "shape"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "InputGear FR — ATK A9 Mini",
+        "url": "https://inputgear.fr/products/atk-a9-mini-black-mouse",
+        "fields": [
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu"
+        ],
+        "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — collection A9 (série Dragonfly)",
+        "url": "https://www.atk.store/collections/atk-a9-series-lightweight-wireless-mouse",
+        "fields": [
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "Optiques ATK Custom",
+    "mcu": "Nordic 54L15"
   },
   {
     "category": "VXE",
@@ -1420,7 +1703,7 @@
     "fit_status": "unverified",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ».",
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ». U2 Mini : switchs Huano Ice Berry et processeur Nordic 52840 (fiche GamerGear).",
     "id": "atk_u2_mini",
     "brand": "ATK",
     "model": "Blazing Sky U2 Mini",
@@ -1482,9 +1765,22 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "GamerGear — ATK Blazing Sky U2 Mini",
+        "url": "https://gamergear.net/product.php?a=INFO&prod=2434",
+        "fields": [
+          "switches",
+          "mcu",
+          "sensor",
+          "polling_hz"
+        ],
+        "date_checked": "2026-10-11"
       }
     ],
-    "shape": "Symmetrical"
+    "shape": "Symmetrical",
+    "switches": "Huano Ice Berry (mécaniques)",
+    "mcu": "Nordic nRF52840"
   },
   {
     "category": "ATK",

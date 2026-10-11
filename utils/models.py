@@ -174,6 +174,8 @@ class Mouse:
     weight_g: float | None = None
     sensor: str | None = None
     polling_hz: int | None = None
+    switches: str = ""                        # type de switchs documenté (texte libre, jamais deviné)
+    mcu: str = ""                             # microcontrôleur documenté (texte libre)
     # Métadonnées de compatibilité
     fit_status: str = "owner_spec"
     family: str = ""

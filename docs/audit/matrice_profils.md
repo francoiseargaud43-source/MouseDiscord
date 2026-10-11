@@ -46,8 +46,8 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 |---|---|---|---|---|
 | Économique | ATK A9 Plus 2.0 (25/40) | Scyrox V6 (30/40) | 3 candidat(s) | Économique : ATK A9 Plus 2.0 est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (30/40). |
 | Qualité/Prix | Scyrox V6 (30/40) | ATK Z1 V2 Ultra (30/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | ATK Z1 V2 Ultra (30/40) | Scyrox V6 (30/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (1/2) parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | ATK Z1 V2 Ultra (30/40) | Scyrox V6 (30/40) | 2 candidat(s) | Forme d'abord : ATK Z1 V2 Ultra est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus actuels décident, puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Haut de gamme | Scyrox V6 (30/40) | ATK Z1 V2 Ultra (30/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
+| Peu importe le prix | ATK Z1 V2 Ultra (30/40) | Scyrox V6 (30/40) | 2 candidat(s) | Forme d'abord : ATK Z1 V2 Ultra est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
 | Budget ≤ 75 € | Scyrox V6 (30/40) | ATK Z1 V2 Ultra (30/40) | 2 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 2 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
@@ -90,8 +90,8 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 |---|---|---|---|---|
 | Économique | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 3 candidat(s) | Économique : ATK F1 V3 Ultimate est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (30/40). |
 | Qualité/Prix | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V8 / V8S (30/40) | ATK F1 V3 Ultimate (30/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 2 candidat(s) | Forme d'abord : ATK F1 V3 Ultimate est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus actuels décident, puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Haut de gamme | Scyrox V8 / V8S (30/40) | ATK F1 V3 Ultimate (30/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
+| Peu importe le prix | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 2 candidat(s) | Forme d'abord : ATK F1 V3 Ultimate est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
 | Budget ≤ 75 € | ATK F1 V3 Ultimate (30/40) | Scyrox V8 / V8S (30/40) | 2 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 2 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
@@ -134,7 +134,7 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 |---|---|---|---|---|
 | Économique | ATK F1 V3 Ultimate (35/40) | Scyrox V6 (40/40) | 3 candidat(s) | Économique : ATK F1 V3 Ultimate est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (40/40). |
 | Qualité/Prix | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
-| Peu importe le prix | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Forme d'abord : Scyrox V6 est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus actuels décident, puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Haut de gamme | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
+| Peu importe le prix | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Forme d'abord : Scyrox V6 est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
 | Budget ≤ 75 € | Scyrox V6 (40/40) | ATK F1 V3 Ultimate (35/40) | 1 candidat(s) | Budget personnalisé : meilleur score conforme au budget, seule souris dans la zone de tolérance ; à score égal, la moins chère. |
 

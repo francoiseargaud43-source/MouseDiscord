@@ -206,7 +206,7 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
 
 - **🎯 Votre recommandation** (en haut) : une ligne descriptive du parcours (prise, thénar, mesures, gamme),
   puis **🥇 le match idéal**, **🥈 l'alternative** et, quand elle existe, **💸 l'économie** — chacune sur une
-  seule ligne « **Nom** · prix · pourcentage du maximum théorique ». Rien d'autre : ni score /40, ni confiance,
+  seule ligne « **Nom** · poids · prix · pourcentage du maximum théorique ». Rien d'autre : ni score /40, ni confiance,
   ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons).
   **Exception (mode « Peu importe le prix », 2026-10-11)** : la ligne garde « Nom · pourcentage » et le prix descend en
   tout petit, suivi des composants documentés (capteur, fréquence, poids) — le prix ne concurrence plus la forme ;
@@ -229,9 +229,11 @@ solidité des chiffres disponibles sur la souris, pas la qualité du choix. Elle
 dernier porte le rappel « score géométrique provisoire… » : les blocs s'enchaînent sans répéter le même texte.
 
 Le mode **« Peu importe le prix »** (demande du propriétaire, 2026-10-11) répond à « cherchons la forme, pas le
-budget » : la zone de tolérance reste de 2 pts, le classement suit le **score** (la forme), puis les composants
-**documentés** les plus actuels (même indice 0–2 que le haut de gamme : polling ≥ 8000 Hz, capteur PAW3950/PAW3955),
-puis le prix le plus bas ; aucun prix connu n'est exigé, donc les souris sans prix redeviennent classables. La
+budget » : la zone de tolérance reste de 2 pts, le classement suit le **score** (la forme), puis le classement des
+**composants documentés** — capteur (génération), puis MCU, puis switchs, puis fréquence (``components_index``,
+``utils/selection.py``) —, puis le prix le plus bas ; aucun prix connu n'est exigé, donc les souris sans prix
+redeviennent classables. Le poids documenté est affiché dès la ligne du match idéal et de l'alternative, pour
+comparer deux formes équivalentes d'un coup d'œil. La
 ligne de prix en petit texte (`-#`) rappelle que le montant n'entre pas dans le classement. Aucun barème n'est
 touché : c'est une stratégie de sélection de plus (`utils/selection.py`), comme demandé dans le master prompt.
 

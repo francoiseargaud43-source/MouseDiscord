@@ -279,3 +279,19 @@ def test_every_mouse_shape_is_sourced():
         assert mouse.shape in SHAPES, mouse.id
         assert mouse.shape != UNKNOWN, f"{mouse.id} : forme non renseignée"
         assert any("shape" in source.fields for source in mouse.sources), mouse.id
+
+
+def test_every_mouse_weight_is_known_and_sourced():
+    """Le poids s'affiche à côté du match idéal et de l'alternative : 26/26, chacun sourcé."""
+    for mouse in load_catalog(MOUSE_DB_PATH):
+        assert mouse.weight_g, f"{mouse.id} : poids manquant"
+        assert 20 <= mouse.weight_g <= 120, f"{mouse.id} : poids invraisemblable ({mouse.weight_g})"
+        assert any("weight_g" in source.fields for source in mouse.sources), mouse.id
+
+
+def test_every_documented_component_is_sourced():
+    """Capteur, fréquence, switchs, MCU : un champ rempli cite la source qui l'atteste."""
+    for mouse in load_catalog(MOUSE_DB_PATH):
+        for field in ("sensor", "polling_hz", "switches", "mcu"):
+            if getattr(mouse, field):
+                assert any(field in source.fields for source in mouse.sources), (mouse.id, field)

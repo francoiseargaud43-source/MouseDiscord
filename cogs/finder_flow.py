@@ -350,8 +350,13 @@ def _match_summary(score: MouseScore) -> str:
     return sentence[:1024]
 
 
+def _weight_text(mouse) -> str:
+    """Poids documenté (« 54 g ») — chaîne vide s'il n'est pas connu : jamais estimé."""
+    return f"{_num(mouse.weight_g)} g" if mouse.weight_g else ""
+
+
 def _components_text(mouse) -> str:
-    """Composants documentés d'une souris : capteur, fréquence, poids — jamais rien de déduit.
+    """Composants documentés d'une souris : capteur, fréquence, switchs, MCU — rien de déduit.
 
     Un champ absent n'apparaît pas : une donnée manquante n'est pas un défaut de la souris.
     """
@@ -360,27 +365,38 @@ def _components_text(mouse) -> str:
         parts.append(mouse.sensor)
     if mouse.polling_hz:
         parts.append(f"{mouse.polling_hz:,}".replace(",", " ") + " Hz")
-    if mouse.weight_g:
-        parts.append(f"{_num(mouse.weight_g)} g")
+    if mouse.switches:
+        parts.append(mouse.switches)
+    if mouse.mcu:
+        parts.append(mouse.mcu)
     return " · ".join(parts)
 
 
 def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
-    """Une souris recommandée : nom · prix · pourcentage, sur une ligne. Rien d'autre.
+    """Une souris recommandée : nom · poids · prix · pourcentage, sur une ligne. Rien d'autre.
 
-    Ni score brut, ni badge de confiance, ni commentaire : tout cela vit dans les blocs plus bas,
-    pour que la recommandation se lise d'un coup d'œil sur mobile. Seul le mode « Peu importe le
-    prix » ajoute une seconde ligne, en tout petit : le prix (sans effet sur ce classement) et les
-    composants documentés, qui départagent les égalités de forme.
+    Le poids documenté est mis en avant dès la première ligne (demande du propriétaire,
+    2026-10-11) : il permet de comparer le match idéal et l'alternative d'un coup d'œil. Ni score
+    brut, ni badge de confiance, ni commentaire : tout cela vit dans les blocs plus bas. Seul le
+    mode « Peu importe le prix » ajoute une seconde ligne, en tout petit : le prix (sans effet sur
+    ce classement) et les composants documentés, qui départagent les égalités de forme.
     """
-    percent = compatibility_percent(score)
+    mouse = score.mouse
+    parts = [f"**{mouse.label}**"]
+    weight = _weight_text(mouse)
+    if weight:
+        parts.append(weight)
     if mode is not BudgetMode.PEU_IMPORTE_PRIX:
-        return f"**{score.mouse.label}** · {_price_text(score)} · **{percent} %**"
+        parts.append(_price_text(score))
+    parts.append(f"**{compatibility_percent(score)} %**")
+    line = " · ".join(parts)
+    if mode is not BudgetMode.PEU_IMPORTE_PRIX:
+        return line
     small = f"-# 💰 {_price_text(score)} — sans effet sur ce classement"
-    components = _components_text(score.mouse)
+    components = _components_text(mouse)
     if components:
         small += f" · ⚙️ {components}"
-    return f"**{score.mouse.label}** · **{percent} %**\n{small}"
+    return f"{line}\n{small}"
 
 
 def _price_or_inf(score: MouseScore) -> float:

@@ -134,6 +134,31 @@ def test_peu_importe_prix_explanation_states_the_shape_rule():
     assert "Le budget ne limite jamais le choix" in sel.explanation
 
 
+def test_components_index_ranks_sensor_then_mcu_then_switches_then_polling():
+    """Capteur (génération) > MCU > switchs > fréquence ; une donnée absente vaut 0 (jamais devinée)."""
+    from utils.selection import components_index
+
+    best = mouse("best", 60.0, sensor="PAW3955 Master", mcu="Nordic 54H20",
+                 switches="Optiques ATK Custom", polling_hz=8000)
+    older = mouse("older", 60.0, sensor="PAW3950", mcu="Nordic 54L15",
+                  switches="Optiques (Omron)", polling_hz=8000)
+    mecha = mouse("mecha", 60.0, sensor="PAW3950", mcu="Nordic 54L15",
+                  switches="ATK Lightblade (mécaniques)", polling_hz=8000)
+    unknown = mouse("unknown", 60.0)
+    assert components_index(best) > components_index(older) > components_index(mecha) > components_index(unknown)
+    assert components_index(unknown) == (0, 0, 0, 0)
+
+
+def test_no_price_mode_breaks_ties_with_the_documented_components():
+    """Deux formes équivalentes : le capteur le plus récent passe devant, quelle que soit la marque."""
+    recent = mouse("recent", 60.0, hump_position="Front", button_height="High",
+                   sensor="PAW3955 Master", mcu="Nordic 54LM20", switches="Optiques ATK Custom", polling_hz=8000)
+    older = mouse("older", 30.0, hump_position="Front", button_height="High",
+                  sensor="PAW3395", polling_hz=8000)
+    sel = select([scored(older), scored(recent)], BudgetMode.PEU_IMPORTE_PRIX)
+    assert [s.mouse.id for s in sel.ranked] == ["recent", "older"]
+
+
 def test_custom_budget_picks_best_score_then_cheapest():
     a = scored(mouse("a", 70.0, hump_position="Front", button_height="High"), BudgetMode.CUSTOM, 75.0)  # 30
     b = scored(mouse("b", 40.0, hump_position="Front", button_height="High"), BudgetMode.CUSTOM, 75.0)  # 30

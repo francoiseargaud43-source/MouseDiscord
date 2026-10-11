@@ -48,6 +48,53 @@ PERFORMANCE_SENSORS = frozenset({"PAW3950", "PAW3950 Ultra", "PAW3955", "PAW3955
 MAX_PERFORMANCE_INDEX = 2
 
 
+# Classement des COMPOSANTS documentés (2026-10-11, demande du propriétaire) : il sert au
+# départage du mode « Peu importe le prix », jamais à modifier un score morphologique. Les rangs
+# suivent les générations annoncées par les fabricants ; les valeurs viennent du catalogue, qui
+# cite la source de chacune. Une donnée absente vaut 0 : elle n'est jamais devinée.
+SENSOR_TIERS = {
+    "PAW3955 Master Plus": 5,
+    "PAW3955 Master": 5,
+    "PAW3955": 5,
+    "PAW3950 Ultra": 4,
+    "PAW3950": 3,
+    "PAW3395 Ultra": 2,
+    "PAW3395": 1,
+}
+MCU_TIERS = {
+    "Nordic 54H20": 3,
+    "Nordic 54L15": 2,
+    "Nordic 54LM20": 2,
+    "Nordic nRF52840": 1,
+}
+SWITCH_OPTICAL, SWITCH_MECHANICAL = 2, 1
+
+
+def _switch_tier(switches: str) -> int:
+    """2 = optique documenté, 1 = mécanique documenté, 0 = non renseigné (jamais deviné)."""
+    text = (switches or "").lower()
+    if "optique" in text or "optical" in text:
+        return SWITCH_OPTICAL
+    if "mécanique" in text or "mechanical" in text or "lightblade" in text or "huano" in text:
+        return SWITCH_MECHANICAL
+    return 0
+
+
+def components_index(mouse: Mouse) -> tuple[int, int, int, int]:
+    """Classement des composants documentés : capteur, MCU, switchs, fréquence (chacun 0 à 5).
+
+    Plus le tuple est grand, plus les composants sont récents et performants — comparaison
+    lexicographique : le capteur d'abord (génération), puis le MCU, puis les switchs, puis la
+    fréquence. À ne pas confondre avec ``performance_index`` (mode haut de gamme, inchangé).
+    """
+    return (
+        SENSOR_TIERS.get((mouse.sensor or "").strip(), 0),
+        MCU_TIERS.get((mouse.mcu or "").strip(), 0),
+        _switch_tier(mouse.switches),
+        1 if mouse.polling_hz is not None and mouse.polling_hz >= PERFORMANCE_POLLING_HZ else 0,
+    )
+
+
 def performance_index(mouse: Mouse) -> int:
     """0 à 2 : +1 si polling ≥ 8000 Hz documenté, +1 si capteur haut de gamme documenté."""
     index = 0
@@ -83,9 +130,10 @@ def _order_for_mode(mode: BudgetMode, pool: list[MouseScore], rest: list[MouseSc
     elif mode is BudgetMode.HAUT_DE_GAMME:
         key = lambda s: (-performance_index(s.mouse), -s.total, idx(s))
     elif mode is BudgetMode.PEU_IMPORTE_PRIX:
-        # Forme d'abord : le score reste maître ; à score égal, les composants documentés les
-        # plus actuels, puis la moins chère. Le prix n'est jamais un critère de premier rang.
-        key = lambda s: (-s.total, -performance_index(s.mouse), _price_key(s), idx(s))
+        # Forme d'abord : le score reste maître ; à score égal, les composants documentés les plus
+        # récents (capteur, MCU, switchs, fréquence), puis la moins chère. Le prix n'est jamais un
+        # critère de premier rang.
+        key = lambda s: (-s.total, tuple(-v for v in components_index(s.mouse)), _price_key(s), idx(s))
     else:  # CUSTOM : à score égal, le moins cher (ne pas dépenser le budget par défaut)
         key = lambda s: (-s.total, _price_key(s), idx(s))
     return sorted(pool, key=key) + sorted(rest, key=lambda s: (-s.total, _price_key(s), idx(s)))
@@ -111,7 +159,8 @@ def _explanation(mode: BudgetMode, top: MouseScore, pool: list[MouseScore], refe
                 f"{zone}. Le prix n'entre pas dans le classement.")
     if mode is BudgetMode.PEU_IMPORTE_PRIX:
         return (f"Forme d'abord : {top.mouse.label} est la souris dont la forme colle le mieux à votre main{zone}. "
-                "À score égal, les composants documentés les plus actuels décident, puis le prix le plus bas. "
+                "À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), "
+                "puis le prix le plus bas. "
                 "Le budget ne limite jamais le choix.")
     return (f"Budget personnalisé : meilleur score conforme au budget{zone} ; "
             "à score égal, la moins chère.")
