@@ -875,6 +875,31 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 Un fichier JSON **invalide** modifié à chaud ne fait pas tomber le bot, mais les parcours concernés affichent une erreur
 jusqu'à correction : vérifiez toujours avec `check_deployment.py` avant d'enregistrer un JSON modifié.
 
+### 12.7 Transférer sans FileZilla : `scp` depuis Windows (méthode de secours)
+
+Windows 10/11 intègre le client `scp` : une seule commande PowerShell remplace un glisser-déposer complet, ce qui évite
+les transferts partiels (cause typique de l'erreur `ImportError: cannot import name …`).
+
+1. Ouvrez **PowerShell** et placez-vous dans le dossier téléchargé (celui qui contient `bot.py`) :
+   ```powershell
+   cd "$env:USERPROFILE\Downloads\"
+   dir MouseDiscord*        # repérez le nom exact du dossier téléchargé
+   cd .\MouseDiscord-arena-87fafd0-…    # Tabulation complète le nom
+   dir bot.py, cogs, utils, assets, config.py, tools   # les 6 éléments doivent apparaître
+   ```
+2. Envoyez uniquement les éléments de la mise à jour (jamais `data/`, `.env`, `state/`, `.venv/`) :
+   ```powershell
+   scp -r cogs utils assets config.py tools aze129@ssh-aze129.alwaysdata.net:/home/aze129/MouseDiscord/
+   ```
+   - Mot de passe : celui de votre **utilisateur SSH** Alwaysdata (pas le mot de passe du compte).
+   - Au premier essai : `Are you sure you want to continue connecting?` → tapez `yes`.
+   - `scp -r` **fusionne** les dossiers et remplace les fichiers ; il ne supprime rien d'autre.
+3. Contrôlez le résultat avec les six `grep` du §12.6 : les six lignes doivent afficher `OK`.
+4. Puis : `IMAGES_BASE_URL` dans `.env` (§2.7), `.venv/bin/python tools/check_deployment.py`, redémarrage du service (§7.5).
+
+Si `scp` n'est pas reconnu (« n'est pas reconnu en tant que commande »), utilisez la méthode FileZilla du §12.5 :
+les fichiers de ce dossier doivent être vus dans le **panneau droit, à l'intérieur de `MouseDiscord`**.
+
 ### 12.4 Retour arrière
 
 En cas de problème : arrêtez le service, recopiez le dossier sauvegardé (§12.2 étape 1) à la place de `~/AzeMouse`
