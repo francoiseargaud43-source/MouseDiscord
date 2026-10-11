@@ -7,9 +7,11 @@ tools/privacy_scan.py, testé par tests/test_privacy_scan.py ; limites : docs/au
   ou ``edit_message`` sur le message éphémère du parcours ;
 - chaque vue et chaque modal porte le ``session_id`` du parcours ; chaque action vérifie l'identifiant ET le propriétaire.
 
-Parcours : 1/4 prise -> 2/4 thénar (informatif) -> 3/4 mesures de la main -> 4/4 budget.
-Le muscle thénar est collecté et affiché mais **n'entre dans aucun calcul** (il n'existe aucune règle
-sourcée thénar -> dimensions : docs/audit/AUDIT.md §3) ; il n'est jamais lu par utils/matcher.py ni utils/selection.py.
+Parcours : 1/4 prise -> 2/4 thénar -> 3/4 mesures de la main -> 4/4 budget (en Fingertip, la question du
+thénar n'est pas posée : 3 étapes). Le thénar sert à lire l'arrière de la souris : ajustement **borné**
+(±2 points au maximum) du sous-score de largeur, appliqué **uniquement** aux souris à bosse arrière
+marquée et jamais en Fingertip (``THENAR_WIDTH_ADJUSTMENT`` dans utils/matcher.py ; méthode :
+docs/REVERSE_ENGINEERING_OBLIVITY.md). Sans thénar renseigné (ou thénar moyen), le barème est inchangé.
 
 CHARTE AZEMOUSE (voir docs/REPORTE_DESIGN.md) :
 - **Bordeaux #8A2342** = couleur latérale de tous les embeds (identité) ; seul « session expirée » reste orange ;
@@ -237,7 +239,7 @@ def _match_summary(score: MouseScore) -> str:
     if score.breakdown.thenar_pts > 0:
         good.append("arrière marqué qui soutient votre thénar")
     elif score.breakdown.thenar_pts < 0:
-        weak.append("arrière large à contre-emploi avec un thénar petite")
+        weak.append("arrière large peu adapté à un petit thénar")
     if mouse.hump_position != "Inconnu" and score.grip is not Grip.FINGERTIP:
         # En Fingertip, la bosse est ignorée par le barème : ne pas la présenter comme un défaut.
         (good if score.breakdown.hump_pts > 0 else weak).append(
@@ -396,8 +398,10 @@ def thenar_step_embed() -> discord.Embed:
     embed = discord.Embed(
         title=_step_title(2, Grip.PALM, "Votre éminence thénar"),
         description=(
-            "À titre **informatif** : cette donnée n'influence pas le score.\n"
-            "Elle aide seulement à expliquer l'arrière de souris conseillé."
+            "Votre réponse indique l'arrière de souris qui vous convient : un petit thénar préfère un "
+            "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n"
+            "Effet **borné à ±2 points** sur le score, et **uniquement** pour les souris à bosse "
+            "arrière marquée — sinon le score ne change pas."
         ),
         color=COLOR,
     )
@@ -499,7 +503,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         details.description = f"{_recap(session)}\n{_target_line(session)}"
         details.add_field(
             name="🧮 Ce que fait le score",
-            value="Score sur 40 : longueur, largeur de prise, compatibilité de prise, bosse, boutons.",
+            value="Score sur 40 : longueur, largeur de prise (ajustement thénar borné à ±2), "
+                  "compatibilité de prise, bosse, boutons.",
             inline=False,
         )
         if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
@@ -616,7 +621,7 @@ class GripView(FinderView):
 
 
 # ---------------------------------------------------------------------------
-# Étape 2 : éminence thénar (informatif — aucun effet sur le score)
+# Étape 2 : éminence thénar (ajustement borné du sous-score de largeur : THENAR_WIDTH_ADJUSTMENT)
 # ---------------------------------------------------------------------------
 class ThenarSelect(discord.ui.Select):
     def __init__(self, session_id: str) -> None:

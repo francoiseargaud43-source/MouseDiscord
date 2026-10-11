@@ -17,10 +17,11 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
 
 ## 0. Ce qu'il faut savoir avant de commencer
 
-1. **Quelle branche déployer ?** Déployez la branche **`arena/33e33710-mousediscord`**, pas `main`.
+1. **Quelle branche déployer ?** Déployez la branche **`arena/87fafd0d-mousediscord`**, pas `main`.
    La branche `main` ne contient que le commit « Initial commit » (`543879e`) ; toutes les évolutions
-   (moteur, confidentialité, guide) sont sur la branche `arena/33e33710-mousediscord`.
-   Aucune Pull Request n'est ouverte à ce jour.
+   (moteur, confidentialité, guide) sont sur la branche `arena/87fafd0d-mousediscord`.
+   Une Pull Request (`#1`) est ouverte de cette branche vers `main` : elle ne bloque pas le
+   déploiement, vous pouvez déployer la branche telle quelle.
 2. **Le dépôt GitHub est privé.** Le téléchargement ZIP ne fonctionne que si vous êtes connecté à GitHub
    avec un compte ayant accès au dépôt. Le `git clone` demande vos identifiants GitHub (sur votre PC uniquement).
 3. **Le fonctionnement permanent passe par « Services » d'Alwaysdata.** D'après la documentation officielle
@@ -46,7 +47,7 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
 |---|---|---|
 | Offre Alwaysdata payante (Services) | Tableau d'administration Alwaysdata | Menu **Advanced > Services** visible |
 | Application Discord + token du bot | https://discord.com/developers/applications | Onglet **Bot** |
-| Accès au dépôt GitHub | Compte GitHub invité sur `francoiseargaud43-source/MouseDiscord` | Vous voyez la branche `arena/33e33710-mousediscord` |
+| Accès au dépôt GitHub | Compte GitHub invité sur `francoiseargaud43-source/MouseDiscord` | Vous voyez la branche `arena/87fafd0d-mousediscord` |
 | FileZilla (version récente) | https://filezilla-project.org | Installé sur votre PC |
 | Un terminal SSH | Windows 10/11 : *Invite de commandes* ou *PowerShell* (client OpenSSH inclus) ; ou PuTTY | `ssh -V` répond une version |
 | Un éditeur de texte | Bloc-notes, VS Code… | — |
@@ -62,20 +63,20 @@ Notation des placeholders : tout ce qui est entre crochets dépend de votre comp
 
 ---
 
-## 2. Ce qui doit se trouver dans `AzeMouse`
+## 2. Ce qui doit se trouver dans `MouseDiscord`
 
-### 2.1 Où se trouve `AzeMouse`
+### 2.1 Où se trouve `MouseDiscord`
 
 | Côté | Chemin | Remarque |
 |---|---|---|
-| Votre PC | Le dossier local que vous avez préparé (ex. `Documents\AzeMouse`) | Contient le code extrait de GitHub (§3) |
+| Votre PC | Le dossier local que vous avez préparé (ex. `Documents\MouseDiscord`) | Contient le code extrait de GitHub (§3) |
 | Serveur | **`/home/[compte]/MouseDiscord`** | Dossier racine du projet. Dans FileZilla : `/home/[compte]/MouseDiscord` |
 
-`AzeMouse` existe **sur les deux côtés** : votre PC reçoit le code GitHub, le serveur reçoit une copie de la partie
+`MouseDiscord` existe **sur les deux côtés** : votre PC reçoit le code GitHub, le serveur reçoit une copie de la partie
 « production » de ce code. Le dossier distant doit être créé à la racine de votre dossier personnel, **pas** dans `www/`.
 
-**Règle essentielle** : le contenu du dépôt doit être placé **directement dans `AzeMouse`**, sans dossier intermédiaire
-(pas de `AzeMouse/MouseDiscord-…/bot.py`, pas de `AzeMouse/AzeMouse/bot.py`). Après transfert, le fichier `bot.py`
+**Règle essentielle** : le contenu du dépôt doit être placé **directement dans `MouseDiscord`**, sans dossier intermédiaire
+(pas de `MouseDiscord/MouseDiscord-…/bot.py`, pas de `MouseDiscord/MouseDiscord/bot.py`). Après transfert, le fichier `bot.py`
 doit se trouver exactement à `/home/[compte]/MouseDiscord/bot.py`.
 
 ### 2.2 Arborescence finale attendue sur le serveur
@@ -125,7 +126,7 @@ directement sur le serveur.
 | `cogs/*.py` (3 fichiers) | Oui | Oui | Commande `!setup_finder` et parcours Discord | Dossier entier |
 | `utils/*.py` (8 fichiers) | Oui | Oui | Moteur, catalogue, sessions, validation | Dossier entier |
 | `data/mouse_db.json` | Oui | Oui | Catalogue des souris | Relu à chaque recherche |
-| `data/commercial_links.json` | Oui | Oui (fichier) | Liens d'achat | Peut contenir `{}`. **Voir §2.5** |
+| `data/commercial_links.json` | Oui | Oui (fichier) | Liens d'achat officiels (26 souris au 2026-10-11) | Relu à chaque résultat. **Voir §2.5** |
 | `assets/images.json` | Oui | Oui (fichier) | Images des étapes et du résultat | Peut être vide (aucune illustration, sans erreur) |
 | `assets/illustrations/` | Oui | Non (recommandé) | Les 15 images `T01`–`T15` prêtes à publier | **Voir §2.7** |
 | `requirements.txt` | Oui | Oui | Dépendances de production (`discord.py`, `python-dotenv`) | Installé à l'étape 6 |
@@ -157,23 +158,24 @@ directement sur le serveur.
 
 ### 2.5 Les liens d'achat : point d'attention avant mise en ligne publique
 
-Le fichier `data/commercial_links.json` **contient aujourd'hui deux URL d'exemple** :
+Le fichier `data/commercial_links.json` **du dépôt est prêt à l'emploi** : depuis le 2026-10-11, il contient les
+**liens d'achat officiels de 26 souris sur 26**, vérifiés un par un (clé = `id` de la souris dans `data/mouse_db.json`,
+détail dans `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`).
 
 ```json
 {
-  "scyrox_v8": "https://url.com/v8",
-  "atk_a9_plus": "https://url.com/a9"
+  "_lisez_moi": "… clés commençant par _ : ignorées par le bot …",
+  "scyrox_v8": "https://scyrox.com/products/scyrox-v8?bg_ref=Q0rHhhBRNv",
+  "atk_a9_nb": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-nb-lightweight-wireless-mouse?country=FR&ref=aze"
 }
 ```
 
-Ces adresses sont des **espaces réservés**, pas vos liens. Tant qu'elles restent en place, le bouton « Acheter … »
-envoie vers un site qui n'est pas le vôtre. Le script de contrôle le signale (`ATTENTION`).
-Avant la mise en ligne publique, **choisissez** :
-- soit remplacer ces URL par vos liens d'achat réels (`https://…`) ;
-- soit vider le fichier : `{}` (aucun bouton d'achat ne sera affiché ; un unique bouton informatif « 🔗 Liens à venir » remplace les boutons manquants).
-
-Le bot **ne plante pas** si une URL est vide ou absente : le résultat affiche un unique bouton informatif
-« 🔗 Liens à venir ». Aucun lien n'est inventé par le code.
+- Les clés qui commencent par `_` (`_lisez_moi`, `_affiliation`, `_sans_lien`) sont de la documentation : le bot les ignore.
+- `?country=FR` force l'affichage en euros chez `atk.store` ; `ref=aze` (atk) et `bg_ref=…` (Scyrox) sont les codes d'affiliation.
+- Le bot **ne plante pas** si une URL est vide ou absente : le résultat affiche un bouton informatif
+  « 🔗 Liens à venir » à la place. Aucun lien n'est inventé par le code.
+- Pour retirer ou remplacer un lien : éditez le fichier (FileZilla, clic droit > **Afficher/Éditer**) ou laissez la
+  clé de côté. Le fichier est relu à chaque résultat : **aucun redémarrage** n'est nécessaire.
 
 ### 2.6 Le `.gitignore`
 
@@ -220,22 +222,22 @@ une modification.
 
 ## 3. Récupérer le code depuis GitHub
 
-Deux méthodes équivalentes. Dans les deux cas, **la branche est `arena/33e33710-mousediscord`**.
+Deux méthodes équivalentes. Dans les deux cas, **la branche est `arena/87fafd0d-mousediscord`**.
 
 ### Méthode A — Archive ZIP (la plus simple, sans Git)
 
 1. Ouvrez https://github.com/francoiseargaud43-source/MouseDiscord (connecté à votre compte GitHub).
-2. Cliquez sur le sélecteur de branche (à gauche, affiche `main` par défaut) et choisissez **`arena/33e33710-mousediscord`**.
+2. Cliquez sur le sélecteur de branche (à gauche, affiche `main` par défaut) et choisissez **`arena/87fafd0d-mousediscord`**.
 3. Bouton vert **Code** > **Download ZIP**.
 4. Extrayez le ZIP (clic droit > *Extraire tout…* sous Windows). Le dossier obtenu s'appelle en général
-   `MouseDiscord-arena-33e33710-mousediscord` (le nom exact peut varier : repérez le dossier qui contient `bot.py`).
+   `MouseDiscord-arena-87fafd0d-mousediscord` (le nom exact peut varier : repérez le dossier qui contient `bot.py`).
 5. **Dossier racine du projet = le dossier qui contient directement `bot.py`, `config.py`, `cogs/`, `utils/`.**
    C'est ce dossier dont vous transférez le **contenu**.
 
 ### Méthode B — `git clone` (si Git est installé sur votre PC)
 
 ```bash
-git clone --branch arena/33e33710-mousediscord https://github.com/francoiseargaud43-source/MouseDiscord.git MouseDiscord-prod
+git clone --branch arena/87fafd0d-mousediscord https://github.com/francoiseargaud43-source/MouseDiscord.git MouseDiscord-prod
 cd MouseDiscord-prod
 git log -1 --oneline
 ```
@@ -305,7 +307,7 @@ Source : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/sftp/ (h�
 ### 5.3 Transférer le contenu du dépôt
 
 1. Dans le panneau droit, allez dans `/home/[compte]`.
-2. Clic droit > **Créer un répertoire** > nom : `AzeMouse` (si le dossier n'existe pas déjà). Double-cliquez dessus.
+2. Clic droit > **Créer un répertoire** > nom : `MouseDiscord` (si le dossier n'existe pas déjà). Double-cliquez dessus.
    **Vérifiez la barre de chemin : `/home/[compte]/MouseDiscord`.**
 3. Dans le panneau gauche, ouvrez le dossier racine du projet (celui qui contient `bot.py`).
 4. Sélectionnez **les éléments à transférer** (voir §2.3) :
@@ -319,7 +321,7 @@ Source : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/sftp/ (h�
 7. **Ne pas** utiliser « Synchroniser les répertoires » pour ce transfert : cette fonction peut supprimer des fichiers distants.
 
 > Piège fréquent : sélectionner le dossier `MouseDiscord-…` lui-même au lieu de son contenu crée
-> `AzeMouse/MouseDiscord-…/bot.py`. Le bot ne démarrera pas (voir §11, « No such file or directory »).
+> `MouseDiscord/MouseDiscord-…/bot.py`. Le bot ne démarrera pas (voir §11, « No such file or directory »).
 
 ### 5.4 Vérifier le transfert
 
@@ -348,7 +350,7 @@ Vous êtes dans votre dossier personnel, `/home/[compte]`. Vérifiez :
 
 ```bash
 pwd
-ls ~/AzeMouse
+ls ~/MouseDiscord
 ```
 
 `pwd` doit afficher `/home/[compte]` et `ls` doit lister les fichiers transférés (`bot.py`, `cogs`, …).
@@ -373,20 +375,20 @@ python --version
 Un environnement virtuel isole les dépendances du bot. Il se crée dans le dossier du projet :
 
 ```bash
-cd ~/AzeMouse
+cd ~/MouseDiscord
 python -m venv .venv
 ```
 
-- `cd ~/AzeMouse` : se placer dans le dossier du projet (`~` = `/home/[compte]`).
+- `cd ~/MouseDiscord` : se placer dans le dossier du projet (`~` = `/home/[compte]`).
 - `python -m venv .venv` : crée le dossier `.venv/` (la commande `python` est celle d'Alwaysdata).
 - Pour une version précise : `PYTHON_VERSION=3.11 python -m venv .venv`.
 
-Si `.venv/` existe déjà et doit être recréé : `rm -rf ~/AzeMouse/.venv` puis relancez la commande.
+Si `.venv/` existe déjà et doit être recréé : `rm -rf ~/MouseDiscord/.venv` puis relancez la commande.
 
 Vérifiez :
 
 ```bash
-~/AzeMouse/.venv/bin/python --version
+~/MouseDiscord/.venv/bin/python --version
 ```
 
 ### 6.4 Installer les dépendances
@@ -394,8 +396,8 @@ Vérifiez :
 Utilisez **le Python de l'environnement virtuel**, avec son chemin complet (ne dépendez pas de l'activation) :
 
 ```bash
-~/AzeMouse/.venv/bin/python -m pip install --upgrade pip
-~/AzeMouse/.venv/bin/python -m pip install -r ~/AzeMouse/requirements.txt
+~/MouseDiscord/.venv/bin/python -m pip install --upgrade pip
+~/MouseDiscord/.venv/bin/python -m pip install -r ~/MouseDiscord/requirements.txt
 ```
 
 - Le premier `pip install --upgrade pip` met seulement à jour l'outil d'installation.
@@ -404,7 +406,7 @@ Utilisez **le Python de l'environnement virtuel**, avec son chemin complet (ne d
   Ne mettez pas à jour les dépendances sans raison.
 - Pour vérifier :
   ```bash
-  ~/AzeMouse/.venv/bin/python -m pip show discord.py python-dotenv
+  ~/MouseDiscord/.venv/bin/python -m pip show discord.py python-dotenv
   ```
 
 Les outils de test (`requirements-dev.txt`) ne sont **pas** nécessaires sur le serveur.
@@ -413,7 +415,7 @@ Les outils de test (`requirements-dev.txt`) ne sont **pas** nécessaires sur le 
 
 **Méthode recommandée : copier le modèle sur le serveur, puis l'éditer dans FileZilla.**
 
-1. Dans le terminal SSH : `cp ~/AzeMouse/.env.example ~/AzeMouse/.env`.
+1. Dans le terminal SSH : `cp ~/MouseDiscord/.env.example ~/MouseDiscord/.env`.
 2. Dans FileZilla, panneau droit, ouvrez `/home/[compte]/MouseDiscord` (rafraîchissez la liste si besoin).
 3. Clic droit sur `.env` > **Afficher/Éditer**. Remplacez les valeurs par les vôtres, enregistrez, et acceptez le téléversement
    de la version modifiée. (FileZilla édite une copie temporaire locale : fermez-la ensuite et ne la conservez pas.)
@@ -438,13 +440,13 @@ IMAGES_BASE_URL=https://[compte].alwaysdata.net/illustrations/
   `https://` et se terminer par `/`. Sans elle, aucun embed n'affiche d'image (aucun plantage).
 - Pas d'espaces autour du `=`, pas de guillemets, une variable par ligne.
 
-**Méthode alternative (terminal)** : éditez `~/AzeMouse/.env` avec `nano` si l'éditeur est installé (`which nano` pour le vérifier), sinon `vi`.
+**Méthode alternative (terminal)** : éditez `~/MouseDiscord/.env` avec `nano` si l'éditeur est installé (`which nano` pour le vérifier), sinon `vi`.
 
 4. Restreignez les droits du fichier (lisible par vous seul) :
 
 ```bash
-chmod 600 ~/AzeMouse/.env
-ls -l ~/AzeMouse/.env
+chmod 600 ~/MouseDiscord/.env
+ls -l ~/MouseDiscord/.env
 ```
 
 La sortie doit commencer par `-rw-------`.
@@ -456,7 +458,7 @@ Choisissez **un seul** endroit pour éviter la confusion.
 ### 6.6 Contrôler la configuration
 
 ```bash
-cd ~/AzeMouse
+cd ~/MouseDiscord
 .venv/bin/python tools/check_deployment.py
 ```
 
@@ -758,7 +760,7 @@ Dans Discord, en tant qu'utilisateur ayant la permission **Gérer le serveur** :
 - ou `!setup_finder #mouse-shape-finder`.
 
 La première exécution publie le message ; les suivantes **l'éditent** (aucun doublon). Le message est mémorisé dans
-`~/AzeMouse/state/finder_message.json` : ce dossier doit rester sur le serveur (ne pas le supprimer, §12.1).
+`~/MouseDiscord/state/finder_message.json` : ce dossier doit rester sur le serveur (ne pas le supprimer, §12.1).
 
 ---
 
@@ -793,7 +795,7 @@ Ces tests **ne se connectent pas à Discord** : ils ne remplacent pas les tests 
 ### 10.2 Sur le serveur (automatique)
 
 ```bash
-cd ~/AzeMouse
+cd ~/MouseDiscord
 .venv/bin/python tools/check_deployment.py
 ```
 
@@ -831,16 +833,16 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 
 | Symptôme (dans les logs) | Cause probable | Action |
 |---|---|---|
-| `DISCORD_TOKEN est vide` | `.env` absent, mal nommé ou token non renseigné | Vérifiez `ls -l ~/AzeMouse/.env` et son contenu (§6.5). Le fichier doit s'appeler exactement `.env` |
+| `DISCORD_TOKEN est vide` | `.env` absent, mal nommé ou token non renseigné | Vérifiez `ls -l ~/MouseDiscord/.env` et son contenu (§6.5). Le fichier doit s'appeler exactement `.env` |
 | `LoginFailure` / « Improper token » | Token incorrect ou révoqué | Reset Token dans le portail, mettez à jour `.env`, redémarrez |
 | `PrivilegedIntentsRequired` | Message Content Intent désactivé dans le portail | Activez-le (§8.1), redémarrez |
 | `ConfigError` / « doit être un nombre entier » | `FINDER_CHANNEL_ID` ou `SESSION_TTL_SECONDS` mal saisi | Corrigez `.env` (chiffres seulement) |
 | `ModuleNotFoundError: No module named 'discord'` | Service lancé avec le mauvais Python, ou dépendances non installées | Utilisez `/home/[compte]/MouseDiscord/.venv/bin/python` ; réinstallez (§6.4) |
-| `No such file or directory: 'bot.py'` ou `can't open file` | Commande ou répertoire de travail incorrect ; ou dossier intermédiaire (§5.3) | Vérifiez §7.1 et que `bot.py` est directement dans `AzeMouse` |
+| `No such file or directory: 'bot.py'` ou `can't open file` | Commande ou répertoire de travail incorrect ; ou dossier intermédiaire (§5.3) | Vérifiez §7.1 et que `bot.py` est directement dans `MouseDiscord` |
 | `Cannot connect to host discord.com` | Pas d'accès réseau sortant au moment du démarrage | Relancez le service ; si le problème persiste, contactez le support Alwaysdata |
 | `Forbidden` / « Le bot ne peut pas écrire » | Permissions du bot insuffisantes dans le salon | Vérifiez les permissions du salon et du rôle du bot (§8.2) |
 | `Impossible de verrouiller le salon` (dans le message de `!setup_finder`) | Permission « Gérer les permissions » absente au niveau du salon | Ajoutez-la au bot sur ce salon, ou mettez `LOCK_FINDER_CHANNEL=false` |
-| `Permission denied` sur `state/` | Droits d'écriture insuffisants | `mkdir -p ~/AzeMouse/state && chmod u+rwx ~/AzeMouse/state` |
+| `Permission denied` sur `state/` | Droits d'écriture insuffisants | `mkdir -p ~/MouseDiscord/state && chmod u+rwx ~/MouseDiscord/state` |
 | Service **désactivé** automatiquement | Échecs répétés rapidement (ex. token vide) | Corrigez la cause dans les logs, puis réactivez le service dans l'administration |
 | Bouton « Start » : « Une erreur est survenue » | Exception pendant le traitement (ex. JSON invalide modifié à chaud) | Lancez `tools/check_deployment.py`, consultez les logs, corrigez le fichier JSON |
 | Message d'accueil **dupliqué** | `state/finder_message.json` supprimé, ou message supprimé à la main | Supprimez le message en double dans Discord ; `!setup_finder` mémorisera le bon |
@@ -861,18 +863,18 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 
 | Élément sur le serveur | Pourquoi le protéger |
 |---|---|
-| `~/AzeMouse/.env` | Token et réglages propres au serveur |
-| `~/AzeMouse/data/commercial_links.json` | **Vos liens d'achat** (ils ne sont pas dans le dépôt tant que vous ne les y ajoutez pas) |
+| `~/MouseDiscord/.env` | Token et réglages propres au serveur |
+| `~/MouseDiscord/data/commercial_links.json` | **Liens d'achat** : depuis le 2026-10-11, le dépôt contient les 26 liens officiels vérifiés — c'est donc le fichier du dépôt qu'il faut installer (§12.9). Ne l'écrasez avec une version plus ancienne que si vous y avez ajouté vos propres liens à la main (comparez d'abord, §2.5) |
 | `~/MouseDiscord/assets/images.json` | Conservé **seulement** si vous y avez mis vos propres URL. Depuis le 2026-10-11, le fichier du dépôt contient les clés attendues et les noms de fichiers des 15 illustrations : c'est **lui** qu'il faut installer (voir §12.5) |
-| `~/AzeMouse/state/` | Mémoire du message d'accueil (évite les doublons) |
-| `~/AzeMouse/.venv/` | Environnement Python du serveur |
+| `~/MouseDiscord/state/` | Mémoire du message d'accueil (évite les doublons) |
+| `~/MouseDiscord/.venv/` | Environnement Python du serveur |
 
 ### 12.2 Procédure pas à pas
 
 1. **Sauvegarde** (sur le serveur, SSH) :
    ```bash
-   mkdir -p ~/backup-azemouse
-   cp -a ~/AzeMouse ~/backup-azemouse/AzeMouse-$(date +%Y-%m-%d)
+   mkdir -p ~/backup-mousediscord
+   cp -a ~/MouseDiscord ~/backup-mousediscord/MouseDiscord-$(date +%Y-%m-%d)
    ```
    Cela copie tout, y compris `.env`, vos liens et `state/` (le venv est volumineux : vous pouvez l'exclure en le
    copiant séparément si l'espace est limité).
@@ -883,15 +885,16 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
    git diff --name-only [ancien-commit] [nouveau-commit]
    ```
    Ne transférez que les fichiers listés, en veillant à ne **pas** toucher aux fichiers protégés (§12.1). Si la liste inclut
-   `data/commercial_links.json` ou `assets/images.json`, c'est une modification du dépôt : n'écrasez **pas** votre version serveur,
-   reportez à la main les seules nouveautés de structure.
-4. **Transférer** : FileZilla, panneau gauche (nouvelle version) > panneau droit (`~/AzeMouse`), uniquement les fichiers modifiés,
+   `data/commercial_links.json`, `data/mouse_db.json` ou `assets/images.json`, ce sont des **données mises à jour dans le dépôt**
+   (liens, catalogue, images) : elles se transfèrent comme le reste, **sans redémarrage** (§12.3). Le raccourci pour la mise à jour
+   du 2026-10-11 est au §12.9.
+4. **Transférer** : FileZilla, panneau gauche (nouvelle version) > panneau droit (`~/MouseDiscord`), uniquement les fichiers modifiés,
    en « Écraser ». Ne pas « Synchroniser ».
 5. **Dépendances** : si `requirements.txt` a changé :
    ```bash
-   ~/AzeMouse/.venv/bin/python -m pip install -r ~/AzeMouse/requirements.txt
+   ~/MouseDiscord/.venv/bin/python -m pip install -r ~/MouseDiscord/requirements.txt
    ```
-6. **Contrôle** : `~/AzeMouse/.venv/bin/python ~/AzeMouse/tools/check_deployment.py` → `0 erreur(s)`.
+6. **Contrôle** : `~/MouseDiscord/.venv/bin/python ~/MouseDiscord/tools/check_deployment.py` → `0 erreur(s)`.
 7. **Redémarrage** : nécessaire si vous avez modifié **un fichier Python** (`bot.py`, `config.py`, `cogs/`, `utils/`), **`.env`**,
    ou `requirements.txt`.
    - **Service** : action *Redémarrer* (§7.3).
@@ -928,10 +931,12 @@ les transferts partiels (cause typique de l'erreur `ImportError: cannot import n
    cd .\MouseDiscord-arena-87fafd0-…    # Tabulation complète le nom
    dir bot.py, cogs, utils, assets, config.py, tools   # les 6 éléments doivent apparaître
    ```
-2. Envoyez uniquement les éléments de la mise à jour (jamais `data/`, `.env`, `state/`, `.venv/`) :
+2. Envoyez uniquement les éléments de la mise à jour (jamais `.env`, `state/`, `.venv/`) :
    ```powershell
-   scp -r cogs utils assets config.py tools aze129@ssh-aze129.alwaysdata.net:/home/aze129/MouseDiscord/
+   scp -r cogs utils assets config.py tools data aze129@ssh-aze129.alwaysdata.net:/home/aze129/MouseDiscord/
    ```
+   `data` ne se justifie que si le catalogue ou les liens ont changé (c'est le cas de la mise à jour
+   du 2026-10-11, §12.9) ; `scp -r` **fusionne** les dossiers et n'efface rien d'autre.
    - Mot de passe : celui de votre **utilisateur SSH** Alwaysdata (pas le mot de passe du compte).
    - Au premier essai : `Are you sure you want to continue connecting?` → tapez `yes`.
    - `scp -r` **fusionne** les dossiers et remplace les fichiers ; il ne supprime rien d'autre.
@@ -969,7 +974,7 @@ FileZilla (§12.5), `scp` (§12.7) ou la sauvegarde Alwaysdata.
 
 ### 12.4 Retour arrière
 
-En cas de problème : arrêtez le service, recopiez le dossier sauvegardé (§12.2 étape 1) à la place de `~/AzeMouse`
+En cas de problème : arrêtez le service, recopiez le dossier sauvegardé (§12.2 étape 1) à la place de `~/MouseDiscord`
 (en conservant `.env`, vos liens et `state/` si vous ne les avez pas modifiés), puis redémarrez le service.
 
 ---
@@ -1034,6 +1039,59 @@ Les **six lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un fich
 du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
 `tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
+### 12.9 Mise à jour du 2026-10-11 : catalogue 26 souris, prix en euros, liens d'achat (raccourci)
+
+Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voulez la mise à jour
+« catalogue enrichi · prix officiels en euros · 26 liens d'achat · boutons alignés sur la vidéo Oblivity ».
+
+**1. Ce qui a changé depuis la refonte visuelle**
+
+| Élément | Nature | Redémarrage nécessaire ? |
+|---|---|---|
+| `cogs/finder_flow.py` | Code : parcours, résultat en 2 embeds, note thénar | **Oui** |
+| `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar (en pause) | **Oui** |
+| `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, sources datées | Non (relu à chaque recherche) |
+| `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
+| `tools/check_deployment.py` | Outil de contrôle | Non |
+
+`bot.py`, `config.py`, les autres fichiers de `utils/`, `assets/` et `requirements.txt` sont **inchangés** :
+inutile de les retransférer.
+
+**2. FileZilla — six fichiers à glisser dans `~/MouseDiscord`**
+
+Ouvrez le dossier téléchargé à gauche, `~/MouseDiscord` à droite, puis glissez (conflits : **Écraser**,
+jamais « Synchroniser les répertoires ») :
+
+```
+cogs/finder_flow.py
+utils/matcher.py
+utils/models.py
+data/mouse_db.json
+data/commercial_links.json
+tools/check_deployment.py
+```
+
+> Doute sur la version qui tourne sur le serveur ? Glissez aussi `bot.py`, `config.py`, `utils/` et `assets/`
+> (transfert complet : il ne casse rien, il écrase par des fichiers identiques ou plus récents).
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 26 souris · liens d'achat valides : 26 · 0 erreur(s) bloquante(s)
+```
+
+**4. Redémarrage** (nécessaire : deux fichiers Python ont changé) — mode tâche planifiée :
+
+```bash
+pkill -f "bot.py"                 # la tâche planifiée relance le bot au prochain créneau (≤ 1 min)
+ps -ef | grep "[b]ot.py"          # une seule ligne = une seule instance
+ls -lt ~/admin/logs/jobs/ | head  # le journal du jour confirme le redémarrage
+```
+
+Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'accueil n'ont pas changé.
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.
@@ -1055,4 +1113,4 @@ Cette méthode n'a **pas été vérifiée** sur votre hébergement : utilisez la
 | Images | `/home/[compte]/MouseDiscord/assets/images.json` |
 | Mémoire du message d'accueil | `/home/[compte]/MouseDiscord/state/finder_message.json` |
 | Journaux du service | `/home/[compte]/admin/logs/services/` |
-| Sauvegardes (recommandé) | `/home/[compte]/backup-azemouse/` |
+| Sauvegardes (recommandé) | `/home/[compte]/backup-mousediscord/` |

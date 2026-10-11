@@ -28,7 +28,8 @@ class FinderSession:
     user_id: int
     session_id: str = field(default_factory=lambda: secrets.token_urlsafe(12))
     grip: Grip | None = None
-    # Éminence thénar : stockée et affichée à titre informatif, JAMAIS utilisée dans un calcul.
+    # Éminence thénar : lue au moment du calcul, elle ajuste de ±2 points au maximum le sous-score
+    # de largeur des souris à bosse arrière marquée (THENAR_WIDTH_ADJUSTMENT, utils/matcher.py).
     thenar: Thenar | None = None
     hand_length_mm: float | None = None
     hand_width_mm: float | None = None

@@ -81,6 +81,8 @@ BUTTON_MAX_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 # uniquement aux souris à bosse arrière marquée (c'est l'arrière qui « remplit » la paume).
 THENAR_WIDTH_ADJUSTMENT = {Thenar.PETITE: -2, Thenar.MOYENNE: 0, Thenar.GRANDE: +2}
 THENAR_REAR_HUMP = "Rear"          # seule géométrie concernée (bosse arrière marquée)
+# Libellé accordé au masculin dans la phrase « Thénar <taille> × arrière marqué ».
+THENAR_SIZE_LABEL = {Thenar.PETITE: "petit", Thenar.MOYENNE: "moyen", Thenar.GRANDE: "grand"}
 
 # Précision de comparaison : les écarts sont arrondis à 6 décimales avant d'être comparés
 # aux seuils stricts, pour qu'un écart « exact » ne soit jamais classé à côté par bruit flottant.
@@ -294,8 +296,9 @@ def evaluate_mouse(
         combined = min(WIDTH_PTS_IN_RANGE, max(0, width_pts + adjustment))
         thenar_pts = combined - width_pts
         if thenar_pts:
+            size = THENAR_SIZE_LABEL.get(thenar, thenar.value)
             thenar_note = (
-                f"Thénar {thenar.value.lower()} × arrière marqué : {thenar_pts:+d} pt sur la largeur"
+                f"Thénar {size} × arrière marqué : {thenar_pts:+d} pt sur la largeur de prise"
             )
             details.append(thenar_note)
 

@@ -2,8 +2,10 @@
 
 Tes 37 URL ont été vérifiées **une par une** sur les boutiques officielles (le jour même), puis
 rangées dans `data/commercial_links.json` (clés = identifiants de `data/mouse_db.json`).
-Les deux liens d'exemple `https://url.com/...` ont été supprimés : le bot affichera de vrais
-boutons « 🛒 Acheter … » pour **25 souris sur 26**.
+Les deux liens d'exemple `https://url.com/...` ont été supprimés, et le **lien A9 NB fourni en dernier**
+(2026-10-11) a été ajouté : le bot affiche de vrais boutons « 🛒 Acheter … » pour **26 souris sur 26**
+(§2). Le lien A9 NB a été vérifié sur la page FR : ATK Dragonfly A9 NB Ultra, **72,95 €** (122,95 € barré),
+en stock, modèle « Ultra » par défaut — donc aucune variante figée dans l'URL.
 
 ## 1. Comment chaque lien a été vérifié
 
@@ -18,7 +20,7 @@ Rappel : sans `?country=FR`, atk.store affiche des **dollars**. Tous les liens d
 donc `country=FR` (prix en euros) et ton code d'affiliation (`ref=aze` chez atk.store,
 `bg_ref=Q0rHhhBRNv` chez scyrox.com).
 
-## 2. Les 25 liens validés
+## 2. Les 26 liens validés
 
 Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
 
@@ -49,6 +51,7 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
 | atk_u2_mini | ATK Blazing Sky U2 Mini | U2 Mini Superlight | — (coloris) | 77,95 € |
 | atk_f1_v2 | ATK Blazing Sky F1 V2 | F1 V2 Series | défaut (V2) | dès 41,95 € (63,95) |
 | atk_u2 | ATK Blazing Sky U2 | U2 Series | défaut (U2) | dès 22,95 € (28,95) |
+| atk_a9_nb | ATK Dragonfly A9 NB Ultra | A9 NB | défaut (Ultra) — aucune variante figée | 72,95 € (122,95) |
 
 ## 3. Ce qui doit être corrigé (écarts relevés)
 
@@ -81,10 +84,10 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
 
 ## 4. Ce qui manque
 
-| Manque | Détail | Ce qu'il me faut |
+| Manque | Détail | État |
 | --- | --- | --- |
-| **A9 NB** (`atk_a9_nb`) | ATK Dragonfly A9 NB, 72,95 €, seul id **sans lien** (le bot affichera « Liens à venir ») | ton lien atk.store (même page : `atk-dragonfly-a9-nb-lightweight-wireless-mouse`) |
-| **Scyrox V6S / V8S** | tu as fourni 4 liens scyrox, mais seuls V8 et V6 existent en base (V6S/V8S = 74,99 $, Kailh Optical, publiés en 2026-09) | ton accord pour les **ajouter à la base** (dimensions + prix + sources), sinon les 2 liens restent inutilisés |
+| ~~**A9 NB** (`atk_a9_nb`)~~ | ATK Dragonfly A9 NB, 72,95 € | **Résolu** : lien fourni par le propriétaire et ajouté au fichier (26/26) |
+| **Scyrox V6S / V8S** | tu as fourni 4 liens scyrox, mais seuls V8 et V6 existent en base (V6S/V8S = 74,99 $, Kailh Optical, publiés en 2026-09) | **Accord donné** : les deux modèles sont ajoutés à la base (dimensions, poids, prix, sources), les 2 liens servent alors d'entrée d'achat |
 
 ## 5. Règles suivies
 
@@ -94,5 +97,6 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
 - Les clés commençant par `_` du fichier sont des commentaires : `load_commercial_links()` et
   `tools/check_deployment.py` les ignorent (un test dédié couvre ce cas).
 - Test adapté : `tests/test_data.py::test_commercial_links_are_official_and_verified` vérifie que
-  chaque lien est une URL atk.store/scyrox.com, qu'aucun lien d'exemple ne subsiste et qu'un id sans
-  lien fourni (A9 NB) reste sans lien.
+  chaque lien est une URL atk.store/scyrox.com, qu'aucun lien d'exemple ne subsiste, que `country=FR`
+  est présent sur toutes les pages atk.store (prix en euros) et que l'A9 NB — dernier lien fourni —
+  est bien présent.

@@ -1,7 +1,7 @@
 {
   "_lisez_moi": "Liens d'achat officiels vérifiés un par un le 2026-10-11 (docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md). Clés = identifiants de data/mouse_db.json. Les clés qui commencent par _ sont ignorées par le bot.",
   "_affiliation": "atk.store : ?ref=aze ; scyrox.com : ?bg_ref=Q0rHhhBRNv. ?country=FR est ajouté pour forcer les prix en euros (sans lui, atk.store sert des dollars).",
-  "_sans_lien": "atk_a9_nb : aucun lien fourni par le propriétaire, donc volontairement absent (le bot affiche « Liens à venir »).",
+  "_sans_lien": "Depuis le 2026-10-11, chaque souris vendue du catalogue a son lien (A9 NB ajouté en dernier, lien fourni par le propriétaire). Principe conservé : un lien qui n'a pas été fourni n'est jamais inventé, la souris reste absente de ce fichier et le bot affiche « Liens à venir ».",
   "scyrox_v8": "https://scyrox.com/products/scyrox-v8?bg_ref=Q0rHhhBRNv",
   "scyrox_v6": "https://scyrox.com/products/scyrox-v6?bg_ref=Q0rHhhBRNv",
   "atk_f1_ultimate": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR&ref=aze&variant=48175399370970",
@@ -20,6 +20,7 @@
   "atk_a9_ultimate": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=46878654005466",
   "atk_a9_air": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47193565364442",
   "atk_a9_mini": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47852235718874",
+  "atk_a9_nb": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-nb-lightweight-wireless-mouse?country=FR&ref=aze",
   "vxe_v3": "https://www.atk.store/en-fr/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse?country=FR&ref=aze",
   "vxe_r1": "https://www.atk.store/en-fr/products/vxe-dragonfly-r1-series-wireless-mouse?country=FR&ref=aze",
   "vxe_mad_r": "https://www.atk.store/en-fr/products/vxe-mad-r-series-wireless-mouse?country=FR&ref=aze",

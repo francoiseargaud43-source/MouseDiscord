@@ -114,7 +114,8 @@ def test_commercial_links_are_official_and_verified():
         url.startswith(("https://www.atk.store/", "https://scyrox.com/")) for url in links.values()
     )
     assert not any("url.com" in url for url in links.values())
-    assert "atk_a9_nb" not in links  # lien jamais fourni : aucune invention
+    assert "atk_a9_nb" in links  # 26e lien, fourni par le propriétaire le 2026-10-11 (A9 NB Ultra, 72,95 €)
+    assert all("country=FR" in url for key, url in links.items() if "atk.store" in url)  # prix en euros
 
 
 def test_commercial_links_reference_known_mice():
