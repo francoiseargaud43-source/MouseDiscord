@@ -32,10 +32,11 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | Étape | Ce que voit l'utilisateur | Action |
 |---|---|---|
 | Accueil | Message persistant : bannière AzeMouse (`T08`) | Bouton **Start Mouse Shape Finder** |
-| 1/4. Prise | Message éphémère + illustration des 3 prises (`T09`) | Menu : Palm / Claw / Fingertip Grip |
-| 2/4. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
-| 3/4. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
-| 4/4. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
+| 1/… Prise | Message éphémère + illustration des 3 prises (`T09`) | Menu : Palm / Claw / Fingertip Grip |
+| 2/5. Variante de Claw | Le même message + les trois variantes (`T04`) | Menu : Claw relâchée / agressive / pincée — **prise Claw uniquement**, aucun effet sur le score (précise le conseil de bosse) |
+| 2/4 – 3/5. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
+| 3/4 – 4/5. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
+| 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, Budget personnalisé (→ modal prix max) |
 | Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, économie — nom, prix, pourcentage), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
@@ -65,8 +66,8 @@ dans l'ordre de l'outil de référence (Oblivity) :
 |---|---|---|
 | 📐 Vos repères de taille | longueur cible, largeur de prise, score `/40 — %`, la souris retenue « en clair », le pourquoi du choix | T12 |
 | 🖐️ Un arrière étroit pour votre thénar | seulement si le thénar est « Petite » (jamais en Fingertip) | T13 |
-| ⛰️ La bosse | où la placer pour la prise choisie (Palm : milieu/avant ; Claw : milieu/arrière) ; absent en Fingertip | T14 ou T07 |
-| 🦾 Claw relâchée / agressive / pincée | les trois variantes, uniquement en prise Claw | T04, T05, T06 |
+| ⛰️ La bosse et la forme | où placer la bosse (**selon la variante de Claw déclarée**), quelle forme de coque convient (symétrique / ergonomique) et la forme de la souris retenue ; absent en Fingertip | T14 ou T07 |
+| 🦾 Votre variante de Claw | la variante déclarée (ou les trois à titre indicatif si le parcours a été ouvert sans cette étape) | T04, T05 ou T06 |
 | 🖱️ La hauteur des boutons | niveau conseillé (Palm : hauts ; Claw : bas ; Fingertip : médians à bas) | T01, T02 ou T03 |
 
 Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans `MouseScore.details` et
@@ -202,6 +203,7 @@ Deux façons de renseigner une image (elles peuvent cohabiter) :
 | `step3_budget` | Étape 4/4 — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
 | `illustration_mouse_dimensions` | Repères de taille du résultat | `T12_souris_longueur_largeur.png` |
 | `illustration_rear_narrow` | Résultat, si thénar « Petite » (indicatif) | `T13_arriere_etroit.png` |
+| `illustration_grip_relaxed` | Étape « variante de Claw » et résultat (variante relâchée) | `T04_griffe_relachee.png` |
 | `illustration_hump_mid` | Résultat — bosse centrale de la souris retenue, et conseil « bosse au milieu ou à l'avant » (Palm) | `T14_bosse_centrale.png` |
 | `illustration_hump_front` | Résultat — bosse avant / Mid-Front de la souris retenue | `T15_bosse_avant.png` |
 | `illustration_hump_rear` | Résultat — bosse arrière de la souris retenue, et conseil « bosse au milieu ou à l'arrière » (Claw) | `T07_bosse_arriere.png` |
@@ -349,6 +351,12 @@ Le pourcentage n'est jamais présenté comme une probabilité.
 - `excluded` : longueur > 8 mm hors plage, largeur de prise > 5 mm hors plage, grip « Faible », prix > budget (mode budget personnalisé).
 - `pending` : aucune exclusion, mais grip, bosse, boutons ou longueur `Inconnu` / en conflit. Le score partiel est affiché, jamais classé.
 - `scored` : toutes les données présentes.
+
+**Forme de coque** : `shape` (`Symmetrical` / `Ergonomic`) est renseignée pour les 26 souris, chacune sourcée
+(fiche ATK/VXE, EloShapes, test indépendant) — jamais devinée. Elle sert au bloc « ⛰️ La bosse et la forme » :
+une forme symétrique convient aux trois prises, une ergonomique épouse un peu mieux l'arche de la main en Palm.
+En Claw, la **variante déclarée** précise la bosse attendue (relâchée → arrière marquée, agressive → médiane,
+pincée → arrière à flancs plats) : conseil d'affichage uniquement, aucun point ni classement ne change.
 
 **Niveau de confiance** (calculé, **non affiché**) : `élevée` si dimensions vérifiées et largeur de prise mesurée ;
 `moyenne` si dimensions vérifiées mais largeur estimée ; `faible` sinon (dimensions d'une seule source, non

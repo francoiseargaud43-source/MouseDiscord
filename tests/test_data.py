@@ -266,3 +266,16 @@ def test_missing_required_field_rejected():
     del raw["palm_grip_fit"]
     with pytest.raises(CatalogError):
         parse_mouse(raw, 1)
+
+def test_every_mouse_shape_is_sourced():
+    """La forme de coque (« Symmetrical » / « Ergonomic ») est renseignée et attestée par une source.
+
+    Elle sert au bloc « la bosse et la forme » du résultat : jamais de forme devinée, et toute
+    donnée vient d'une source qui la liste explicitement (champ « shape »).
+    """
+    from utils.models import SHAPES, UNKNOWN
+
+    for mouse in load_catalog(MOUSE_DB_PATH):
+        assert mouse.shape in SHAPES, mouse.id
+        assert mouse.shape != UNKNOWN, f"{mouse.id} : forme non renseignée"
+        assert any("shape" in source.fields for source in mouse.sources), mouse.id

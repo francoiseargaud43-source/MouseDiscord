@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from cogs import finder_flow as flow
-from utils.models import THENAR_LABELS, BudgetMode, Grip, Thenar
+from utils.models import THENAR_LABELS, BudgetMode, ClawVariant, Grip, Thenar
 from utils.session import SessionStore
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -93,17 +93,52 @@ async def test_start_button_sends_ephemeral_step1_with_grip_select():
 
 @pytest.mark.asyncio
 async def test_grip_selection_edits_message_to_thenar_step():
+    """En Palm : prise → thénar (étape 2/4). En Claw, la variante s'intercale (voir test dédié)."""
+    store = SessionStore(ttl_seconds=600)
+    s = store.start(99)
+    inter = make_interaction(store=store)
+    view = flow.GripView(s.session_id)
+    select_values(view.children[0], "palm")
+    await view.children[0].callback(inter)
+    inter.response.edit_message.assert_awaited_once()
+    assert store.get(s.session_id, 99).grip is Grip.PALM
+    kwargs = inter.response.edit_message.call_args.kwargs
+    assert isinstance(kwargs["view"], flow.ThenarView)
+    assert "Étape 2/4" in kwargs["embed"].title
+
+
+@pytest.mark.asyncio
+async def test_claw_selection_asks_the_variant_before_the_thenar_step():
+    """Claw : étape 2/5 = variante de la prise (aucun effet sur le score), puis thénar 3/5."""
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
     inter = make_interaction(store=store)
     view = flow.GripView(s.session_id)
     select_values(view.children[0], "claw")
     await view.children[0].callback(inter)
-    inter.response.edit_message.assert_awaited_once()
     assert store.get(s.session_id, 99).grip is Grip.CLAW
     kwargs = inter.response.edit_message.call_args.kwargs
-    assert isinstance(kwargs["view"], flow.ThenarView)
-    assert "Étape 2/4" in kwargs["embed"].title
+    assert isinstance(kwargs["view"], flow.ClawVariantView)
+    assert "Étape 2/5" in kwargs["embed"].title
+    options = [(o.label, o.value) for o in kwargs["view"].children[0].options]
+    assert options == [("Claw relâchée", "relachee"), ("Claw agressive", "aggressive"),
+                       ("Claw pincée", "pincee")]
+
+    suite = make_interaction(store=store)
+    select = kwargs["view"].children[0]
+    select_values(select, "relachee")
+    await select.callback(suite)
+    assert store.get(s.session_id, 99).claw_variant is ClawVariant.RELACHEE
+    suivant = suite.response.edit_message.call_args.kwargs
+    assert isinstance(suivant["view"], flow.ThenarView)
+    assert "Étape 3/5" in suivant["embed"].title
+
+    # Le récapitulatif des étapes suivantes porte la variante, sous forme courte.
+    fin = make_interaction(store=store)
+    select_thenar = suivant["view"].children[0]
+    select_values(select_thenar, "moyenne")
+    await select_thenar.callback(fin)
+    assert "(relâchée)" in fin.response.edit_message.call_args.kwargs["embed"].description
 
 
 @pytest.mark.asyncio
@@ -118,8 +153,52 @@ async def test_thenar_selection_stores_value_and_moves_to_measures():
     assert store.get(s.session_id, 99).thenar is Thenar.MOYENNE
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.MeasureView)
-    assert "Étape 3/4" in kwargs["embed"].title
+    assert "Étape 4/5" in kwargs["embed"].title       # Claw : variante (2/5) puis thénar (3/5)
     assert "Thénar" in kwargs["embed"].description
+
+
+@pytest.mark.asyncio
+async def test_full_claw_walkthrough_follows_the_five_steps():
+    """Claw : prise (1/5) → variante (2/5) → thénar (3/5) → mesures (4/5) → budget (5/5) → résultat."""
+    store = SessionStore(ttl_seconds=600)
+    s = store.start(99)
+
+    prise = make_interaction(store=store)
+    view = flow.GripView(s.session_id)
+    select_values(view.children[0], "claw")
+    await view.children[0].callback(prise)
+    assert "Étape 1" not in prise.response.edit_message.call_args.kwargs["embed"].title  # déjà passé
+
+    variante = make_interaction(store=store)
+    variante_view = flow.ClawVariantView(s.session_id)
+    select_values(variante_view.children[0], "pincee")
+    await variante_view.children[0].callback(variante)
+    assert "Étape 2/5" in flow.claw_variant_step_embed().title
+    assert "Étape 3/5" in variante.response.edit_message.call_args.kwargs["embed"].title
+
+    thenar = make_interaction(store=store)
+    thenar_view = flow.ThenarView(s.session_id)
+    select_values(thenar_view.children[0], "petite")
+    await thenar_view.children[0].callback(thenar)
+    assert "Étape 4/5" in thenar.response.edit_message.call_args.kwargs["embed"].title
+
+    mesures = make_interaction(store=store)
+    await modal_with(flow.MeasureModal(s.session_id), "180", "100").on_submit(mesures)
+    assert "Étape 5/5" in mesures.response.edit_message.call_args.kwargs["embed"].title
+
+    resultat = make_interaction(store=store)
+    budget_view = flow.BudgetView(s.session_id)
+    select_values(budget_view.children[0], BudgetMode.QUALITE_PRIX.value)
+    await budget_view.children[0].callback(resultat)
+    embeds = resultat.response.edit_message.call_args.kwargs["embeds"]
+    assert [e.title for e in embeds] == [
+        "🎯 Votre recommandation", "📐 Vos repères de taille",
+        "🖐️ Un arrière étroit pour votre thénar", "⛰️ La bosse et la forme",
+        "🦾 Claw pincée", "🖱️ La hauteur des boutons",
+    ]
+    assert "(pincée)" in embeds[0].description                      # la variante apparaît en haut
+    assert "Claw pincée → bosse arrière, flancs peu bombés" in embeds[3].description
+    assert store.lookup(s.session_id, 99)[1] != "ok"                # session consommée
 
 
 def test_thenar_select_only_proposes_the_three_valid_sizes():
@@ -171,7 +250,9 @@ async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeyp
 
 
 def test_steps_total_follows_the_grip():
-    assert flow._steps_total(Grip.PALM) == 4 and flow._steps_total(Grip.CLAW) == 4
+    """Palm 4 étapes, Claw 5 (la variante s'ajoute), Fingertip 3 (le thénar est sauté)."""
+    assert flow._steps_total(Grip.PALM) == 4
+    assert flow._steps_total(Grip.CLAW) == 5
     assert flow._steps_total(Grip.FINGERTIP) == 3
 
 
@@ -270,7 +351,7 @@ def test_result_sections_follow_the_reference_tool_order():
     assert [e.title for e in embeds] == [
         "🎯 Votre recommandation",
         "📐 Vos repères de taille",
-        "⛰️ La bosse",
+        "⛰️ La bosse et la forme",
         "🖱️ La hauteur des boutons",
     ]
     assert all("Score" not in f.value and "Confiance" not in f.value for f in embeds[0].fields)
@@ -283,24 +364,17 @@ def test_result_sections_follow_the_reference_tool_order():
 
 def test_result_guides_describe_the_grip_and_show_the_matching_illustrations(monkeypatch):
     """Chaque bloc d'explication porte l'illustration de sa consigne (assets/images.json)."""
-    import dataclasses
-
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     titles = lambda embeds: [e.title for e in embeds]
     image = lambda embed: embed.image.url.split("/")[-1].removesuffix(".png")
 
-    def embeds_for(grip, thenar=None, hump=None, button=None):
-        """Résultat pour une prise donnée, en forçant la bosse et les boutons du match idéal."""
+    def embeds_for(grip, thenar=None, variant=None):
+        """Résultat pour une prise donnée (la variante de Claw peut être précisée)."""
         store = SessionStore(ttl_seconds=600)
         session = start_for(store, grip=grip, length=180.0, width=90.0, thenar=thenar)
+        session.claw_variant = variant
         session.budget_mode = BudgetMode.QUALITE_PRIX
         selection = flow.compute_selection(session)
-        changes = {name: value for name, value in (("hump_position", hump), ("button_height", button))
-                   if value is not None}
-        if changes:
-            winner = dataclasses.replace(selection.ranked[0],
-                                         mouse=dataclasses.replace(selection.ranked[0].mouse, **changes))
-            selection = dataclasses.replace(selection, ranked=(winner,) + tuple(selection.ranked[1:]))
         return flow.results_embeds(session, selection)
 
     palm = embeds_for(Grip.PALM, thenar=Thenar.PETITE)
@@ -308,16 +382,24 @@ def test_result_guides_describe_the_grip_and_show_the_matching_illustrations(mon
     assert "T14_bosse_centrale" in image(palm[3])          # la bosse conseillée pour Palm
     assert "T01_boutons_hauts" in image(palm[4])           # les boutons conseillés pour Palm
     assert "Palm Grip → bosse" in palm[3].description and "Palm Grip → boutons hauts" in palm[4].description
+    assert "**Forme**" in palm[3].description              # la forme de coque est conseillée ici aussi
 
-    claw = embeds_for(Grip.CLAW)
-    assert titles(claw) == ["🎯 Votre recommandation", "📐 Vos repères de taille", "⛰️ La bosse",
-                            "🦾 Claw relâchée", "🦾 Claw agressive", "🦾 Claw pincée",
+    # Claw avec variante déclarée : un seul bloc de variante, illustré, et le conseil de bosse adapté.
+    claw = embeds_for(Grip.CLAW, variant=ClawVariant.AGGRESSIVE)
+    assert titles(claw) == ["🎯 Votre recommandation", "📐 Vos repères de taille",
+                            "⛰️ La bosse et la forme", "🦾 Claw agressive",
                             "🖱️ La hauteur des boutons"]
-    assert "T07_bosse_arriere" in image(claw[2])           # la bosse de la souris retenue
+    assert "T07_bosse_arriere" in image(claw[2])           # la bosse conseillée pour la prise
+    assert "T05_griffe_agressive" in image(claw[3])        # l'illustration de la variante déclarée
+    assert "T02_boutons_bas" in image(claw[4])
+    assert "Claw agressive → bosse médiane marquée" in claw[2].description
+    assert "Claw Grip → boutons bas" in claw[4].description
+
+    # Sans variante (parcours ouvert avant l'ajout de l'étape) : les trois variantes, en repli.
+    legacy = embeds_for(Grip.CLAW)
     assert ["T04_griffe_relachee", "T05_griffe_agressive", "T06_griffe_pince"] == [
-        image(e) for e in claw[3:6]]
-    assert "T02_boutons_bas" in image(claw[6])
-    assert "Claw Grip → boutons bas" in claw[6].description
+        image(e) for e in legacy[3:6]]
+    assert "Claw Grip → bosse au milieu ou à l'arrière" in legacy[2].description
 
     fingertip = embeds_for(Grip.FINGERTIP)
     assert titles(fingertip) == ["🎯 Votre recommandation", "📐 Vos repères de taille",

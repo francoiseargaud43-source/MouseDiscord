@@ -21,6 +21,8 @@ from utils.models import (
     FIT_STATUSES,
     HUMP_POSITIONS,
     PRICE_STATUSES,
+    SHAPES,
+    UNKNOWN,
     Mouse,
     Source,
 )
@@ -57,6 +59,9 @@ def parse_mouse(raw: Mapping[str, Any], index: int) -> Mouse:
         raise CatalogError(f"{mouse_id} : button_height invalide ({raw['button_height']!r})")
     if raw["hump_position"] not in HUMP_POSITIONS:
         raise CatalogError(f"{mouse_id} : hump_position invalide ({raw['hump_position']!r})")
+    shape = raw.get("shape", UNKNOWN)
+    if shape not in SHAPES:
+        raise CatalogError(f"{mouse_id} : shape invalide ({shape!r})")
     if raw["budget_tier"] not in BUDGET_TIERS:
         raise CatalogError(f"{mouse_id} : budget_tier invalide ({raw['budget_tier']!r})")
 
@@ -85,6 +90,9 @@ def parse_mouse(raw: Mapping[str, Any], index: int) -> Mouse:
     sources = tuple(Source.from_dict(s) for s in raw.get("sources", []))
     if dimension_status in {"verified", "single_source"} and not sources:
         raise CatalogError(f"{mouse_id} : dimensions déclarées vérifiées sans source")
+    # Une forme renseignée doit citer la source qui l'atteste (jamais de forme devinée).
+    if shape != UNKNOWN and not any("shape" in source.fields for source in sources):
+        raise CatalogError(f"{mouse_id} : shape renseigné sans source listant « shape »")
 
     polling = raw.get("polling_hz")
     if polling is not None and (not isinstance(polling, int) or polling <= 0):

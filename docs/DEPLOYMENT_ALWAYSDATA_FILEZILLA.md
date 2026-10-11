@@ -1051,16 +1051,17 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | Élément | Nature | Redémarrage nécessaire ? |
 |---|---|---|
 | `bot.py` | Code : supprime l'enregistrement de la vue persistante des boutons retirés — **obligatoire** : l'ancien `bot.py` référence `ResultsView.persistent()`, qui n'existe plus | **Oui** |
-| `cogs/finder_flow.py` | Code : parcours, résultat épuré (recommandation courte, puis blocs illustrés : repères de taille, arrière étroit, bosse, variantes de Claw, hauteur des boutons), boutons d'achat uniquement | **Oui** |
-| `utils/matcher.py`, `utils/models.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
-| `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, sources datées | Non (relu à chaque recherche) |
+| `cogs/finder_flow.py` | Code : parcours (étape « variante de Claw » en plus), résultat épuré (recommandation courte, puis blocs illustrés : repères de taille, arrière étroit, bosse et forme, variante de Claw, hauteur des boutons), boutons d'achat uniquement | **Oui** |
+| `utils/models.py`, `utils/session.py` | Code : forme de coque (`shape`), variante de Claw (collectée, jamais notée) | **Oui** |
+| `utils/matcher.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
+| `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, forme de coque sourcée, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
 | `tools/check_deployment.py` | Outil de contrôle | Non |
 
 `config.py`, les autres fichiers de `utils/`, `assets/` et `requirements.txt` sont **inchangés** :
 inutile de les retransférer.
 
-**2. FileZilla — sept fichiers à glisser dans `~/MouseDiscord`**
+**2. FileZilla — huit fichiers à glisser dans `~/MouseDiscord`**
 
 Ouvrez le dossier téléchargé à gauche, `~/MouseDiscord` à droite, puis glissez (conflits : **Écraser**,
 jamais « Synchroniser les répertoires ») :
@@ -1070,6 +1071,7 @@ bot.py
 cogs/finder_flow.py
 utils/matcher.py
 utils/models.py
+utils/session.py
 data/mouse_db.json
 data/commercial_links.json
 tools/check_deployment.py
@@ -1103,6 +1105,10 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > bas**, en petits blocs illustrés (repères de taille, arrière étroit si thénar « Petite », bosse, variantes de
 > Claw, hauteur des boutons). Un résultat affiché **avant** la mise à jour garde ses anciens boutons : relancez un
 > test pour obtenir un message à jour.
+>
+> **Nouveauté 2026-10-11 (4ᵉ passe)** : le parcours Claw gagne une étape « variante » (2/5) et le résultat un bloc
+> « ⛰️ La bosse et la forme » (forme symétrique/ergonomique, bosse adaptée à la variante). `utils/session.py` et
+> `data/mouse_db.json` font donc partie du transfert.
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 

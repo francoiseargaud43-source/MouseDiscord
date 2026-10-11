@@ -16,6 +16,8 @@ UNKNOWN = "Inconnu"  # valeur explicite pour une donnée non vérifiée (ni Faib
 FIT_LEVELS = frozenset({"Élevé", "Moyen", "Faible", UNKNOWN})
 BUTTON_HEIGHTS = frozenset({"Low", "Mid", "High", UNKNOWN})
 HUMP_POSITIONS = frozenset({"Front", "Mid", "Rear", "Mid-Front", "Mid-Rear", "Any", UNKNOWN})
+# Forme générale de la coque (bloc « la bosse et la forme » du résultat, méthode Oblivity).
+SHAPES = frozenset({"Symmetrical", "Ergonomic", UNKNOWN})
 
 DIMENSION_STATUSES = frozenset({"verified", "single_source", "conflicting", "owner_spec", "owner_spec_unverified"})
 PRICE_STATUSES = frozenset({"owner_spec_unverified", "verified", "unknown"})
@@ -84,6 +86,30 @@ THENAR_LABELS = {
 }
 
 
+class ClawVariant(Enum):
+    """Variante de la prise Claw : collectée UNIQUEMENT en Claw, et jamais utilisée dans un calcul.
+
+    Elle précise le conseil de bosse (méthode Oblivity) : une bosse arrière pour la Claw relâchée,
+    médiane pour l'agressive, arrière à flancs plats pour la pincée. Aucun point, aucun classement
+    ne change : le barème reste identique pour les trois variantes.
+    """
+
+    RELACHEE = "relachee"
+    AGGRESSIVE = "aggressive"
+    PINCEE = "pincee"
+
+    @property
+    def label(self) -> str:
+        return CLAW_VARIANT_LABELS[self]
+
+
+CLAW_VARIANT_LABELS = {
+    ClawVariant.RELACHEE: "Claw relâchée",
+    ClawVariant.AGGRESSIVE: "Claw agressive",
+    ClawVariant.PINCEE: "Claw pincée",
+}
+
+
 @dataclass(frozen=True)
 class HandMeasure:
     length_mm: float
@@ -134,6 +160,7 @@ class Mouse:
     # Géométrie : None = non vérifiée / en conflit (ne doit pas être comblée par défaut)
     length_mm: float | None = None
     height_mm: float | None = None
+    shape: str = UNKNOWN                      # "Symmetrical" | "Ergonomic" | "Inconnu"
     grip_width_mm: float | None = None        # largeur de prise MESURÉE uniquement
     dimension_status: str = "owner_spec_unverified"
     conflicts: dict[str, Any] = field(default_factory=dict)  # ex. {"length_mm": {"values": [...], "sources": [...]}}

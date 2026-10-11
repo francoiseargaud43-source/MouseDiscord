@@ -15,7 +15,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable
 
-from utils.models import BudgetMode, Grip, Thenar
+from utils.models import BudgetMode, ClawVariant, Grip, Thenar
 
 # Issues possibles de ``SessionStore.lookup``.
 LOOKUP_OK = "ok"
@@ -31,6 +31,9 @@ class FinderSession:
     # Éminence thénar : lue au moment du calcul, elle ajuste de ±2 points au maximum le sous-score
     # de largeur des souris à bosse arrière marquée (THENAR_WIDTH_ADJUSTMENT, utils/matcher.py).
     thenar: Thenar | None = None
+    # Variante de Claw : demandée seulement pour cette prise, et seulement pour affiner le conseil
+    # de bosse (elle n'entre dans aucun calcul). Voir ClawVariant dans utils/models.py.
+    claw_variant: ClawVariant | None = None
     hand_length_mm: float | None = None
     hand_width_mm: float | None = None
     budget_mode: BudgetMode | None = None

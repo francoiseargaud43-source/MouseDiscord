@@ -26,10 +26,13 @@ Date : 2026-10-11 · Branche : `arena/87fafd0d-mousediscord` · Périmètre : pr
 | # | Fichier livré (`ImageUse/` → `assets/illustrations/`) | Clé `assets/images.json` | Où l'image apparaît | Statut |
 |---|---|---|---|---|
 | T08 | `T08_azemouse_banniere.png` | `banner` | Message persistant d'accueil (`banner_embed`) | **Branchée** |
-| T09 | `T09_griffe_paume_doigts.png` | `step1_grip` | **Étape 1/4 — prise** (`grip_step_embed`) | **Branchée** |
-| T10 | `T10_tailles_de_main.png` | `step2_thenar` | **Étape 2/4 — thénar** (`thenar_step_embed`), informatif — **étape sautée en Fingertip** | **Branchée** |
-| T11 | `T11_mesurer_la_main.png` | `step2_measure` | **Étape 3/4 — mesures** (`measure_step_embed`) | **Branchée** |
-| — | *(aucun fichier)* | `step3_budget` | Étape 4/4 — budget : laissée vide, aucune image imposée | Disponible |
+| T09 | `T09_griffe_paume_doigts.png` | `step1_grip` | **Étape 1 — prise** (`grip_step_embed`) | **Branchée** |
+| T04 | `T04_griffe_relachee.png` | `illustration_grip_relaxed` | **Étape 2/5 « variante de Claw »** (Claw uniquement) **et** bloc de variante du résultat | **Branchée** |
+| T05 | `T05_griffe_agressive.png` | `illustration_grip_aggressive` | Résultat, prise **Claw** — variante « Claw agressive » | **Branchée** |
+| T06 | `T06_griffe_pince.png` | `illustration_grip_pincer` | Résultat, prise **Claw** — variante « Claw pincée » | **Branchée** |
+| T10 | `T10_tailles_de_main.png` | `step2_thenar` | **Thénar** (`thenar_step_embed`) : 2/4 en Palm, 3/5 en Claw, informatif — **sautée en Fingertip** | **Branchée** |
+| T11 | `T11_mesurer_la_main.png` | `step2_measure` | **Mesures** (`measure_step_embed`) : 3/4 en Palm, 4/5 en Claw, 2/3 en Fingertip | **Branchée** |
+| — | *(aucun fichier)* | `step3_budget` | Budget : laissée vide, aucune image imposée | Disponible |
 | T12 | `T12_souris_longueur_largeur.png` | `illustration_mouse_dimensions` | Résultat, bloc 2 « 📐 Vos repères de taille » | **Branchée** |
 | T13 | `T13_arriere_etroit.png` | `illustration_rear_narrow` | Résultat, bloc 3 **si thénar « Petite »** et prise Palm/Claw (jamais en Fingertip) | **Branchée** |
 | T14 | `T14_bosse_centrale.png` | `illustration_hump_mid` | Résultat : bosse Mid de la souris retenue (bloc 1) **et** conseil « bosse au milieu ou à l'avant » en Palm | **Branchée** |
@@ -38,20 +41,18 @@ Date : 2026-10-11 · Branche : `arena/87fafd0d-mousediscord` · Périmètre : pr
 | T01 | `T01_boutons_hauts.png` | `illustration_buttons_high` | Résultat : boutons High de la souris retenue (bloc 1) **et** conseil « boutons hauts » en Palm | **Branchée** |
 | T02 | `T02_boutons_bas.png` | `illustration_buttons_low` | Résultat : boutons Low de la souris retenue **et** conseil « boutons bas » en Claw | **Branchée** |
 | T03 | `T03_boutons_moyens.png` | `illustration_buttons_mid` | Résultat : boutons Mid de la souris retenue **et** conseil « boutons médians à bas » en Fingertip | **Branchée** |
-| T04 | `T04_griffe_relachee.png` | `illustration_grip_relaxed` | Résultat, prise **Claw** — variante « Claw relâchée » | **Branchée** |
-| T05 | `T05_griffe_agressive.png` | `illustration_grip_aggressive` | Résultat, prise **Claw** — variante « Claw agressive » | **Branchée** |
-| T06 | `T06_griffe_pince.png` | `illustration_grip_pincer` | Résultat, prise **Claw** — variante « Claw pincée » | **Branchée** |
 
-**Parcours adaptatif** : en **Fingertip**, l'étape thénar n'est pas proposée (3 étapes : 1 → 2/3 → 3/3) et ni la note
-« arrière étroit » ni l'illustration T13 n'apparaissent : cette prise ne s'appuie pas sur l'arrière de la souris, et le
-barème y ignore déjà la bosse. La numérotation s'adapte (`_steps_total`) ; elle reste 1/4 → 4/4 pour Palm et Claw.
+**Parcours adaptatif** (`_steps_total`, `STEP_NUMBERS`) : **Palm** 1 → 4 (prise, thénar, mesures, budget),
+**Claw** 1 → 5 (la **variante de Claw** s'insère en 2/5), **Fingertip** 1 → 3 (thénar sauté : ni thénar ni note
+« arrière étroit » ni illustration T13, cette prise ne s'appuyant pas sur l'arrière de la souris).
 
 **Règle de choix de l'image de la recommandation** (`result_image_key`) : la **bosse** d'abord (plus déterminante pour
 le ressenti), puis les **boutons** si la bosse est inconnue ou non lue (Fingertip). Une seule image par bloc.
 
 Signalement et correction de conception (2026-10-11, 3ᵉ passe) : les illustrations T04/T05/T06 étaient réservées à la
-documentation. Elles sont **désormais affichées** dans les trois blocs « variantes de Claw » du résultat — l'outil de
-référence (Oblivity) consacre une section illustrée à chacune, et le propriétaire veut la même complétude.
+documentation. Elles sont **désormais affichées** — au choix de la variante de Claw (étape 2/5) puis dans le bloc de
+variante du résultat. L'outil de référence (Oblivity) consacre une section illustrée à chacune, et le propriétaire veut
+la même complétude.
 Chaque conseil de forme a son image : la recommandation illustre la souris retenue, les blocs d'explication illustrent
 la consigne pour la prise choisie.
 
@@ -124,8 +125,8 @@ carte `#2B2D31`, liseré bordeaux `#8A2342`) :
 
 | Fichier | Contenu |
 |---|---|
-| `docs/apercu_parcours.png` | Accueil (T08) → 1/4 prise (T09) → 2/4 thénar (T10) → 3/4 mesures (T11) → 4/4 budget |
-| `docs/apercu_resultat.png` | Résultat complet : recommandation (match idéal, alternative, économie) puis repères de taille (T12), arrière étroit (T13, si thénar « Petite »), bosse, variantes de Claw (T04–T06) et boutons — chaque bloc illustré |
+| `docs/apercu_parcours.png` | Accueil (T08) → 1/5 prise (T09) → 2/5 variante de Claw (T04) → 3/5 thénar (T10) → 4/5 mesures (T11) → 5/5 budget |
+| `docs/apercu_resultat.png` | Résultat complet : recommandation (match idéal, alternative, économie) puis repères de taille (T12), arrière étroit (T13, si thénar « Petite »), bosse et forme, variante de Claw et boutons — chaque bloc illustré |
 
 Régénération (développement uniquement, nécessite Pillow) :
 
@@ -187,13 +188,15 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
    un identifiant sans lien affiche « Liens à venir ».
 3. **Thénar** : informatif uniquement, et **non proposé en Fingertip** (décision du propriétaire, 2026-10-11). Aucune
    règle thénar → dimensions n'est documentée ; la note « arrière étroit » (T13) n'entre pas dans le score et le dit.
-4. **Largeur de prise** : toujours estimée (coque − 3 mm) pour toutes les souris ; les mesures locales
+4. **Variante de Claw** : collectée (étape 2/5, Claw uniquement) mais **jamais utilisée dans un calcul** : elle
+   ne change que le texte du conseil de bosse. Un parcours ouvert sans cette réponse affiche les trois variantes.
+5. **Largeur de prise** : toujours estimée (coque − 3 mm) pour toutes les souris ; les mesures locales
    (`docs/MESURES_LARGEUR_2026-10-11.md`) ne sont pas encore inscrites dans `data/mouse_db.json`. La confiance
    des données reste donc plafonnée à « moyenne » (Scyrox : « faible ») — mais elle n'est **plus affichée**
    depuis le 2026-10-11.
-5. **T04/T05/T06** affichées depuis le 2026-10-11, uniquement en prise Claw (voir §2 et §9). Les aperçus de §6 sont des rendus
+6. **T04/T05/T06** affichées depuis le 2026-10-11, uniquement en prise Claw (voir §2 et §9). Les aperçus de §6 sont des rendus
    simulés : les emojis y apparaissent sous forme de carrés (police de la machine de génération), pas dans Discord.
-6. **Aucune vérification sur un serveur Discord réel** : les rendus mobile/desktop restent à contrôler par le
+7. **Aucune vérification sur un serveur Discord réel** : les rendus mobile/desktop restent à contrôler par le
    propriétaire (`docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`).
 
 ## 9. Résultat : la recommandation d'abord, l'explication plus bas (2026-10-11)
@@ -208,9 +211,12 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
   retenue « en clair » avec ses dimensions et le « pourquoi ce choix ». Illustration T12 ;
 - **🖐️ Un arrière étroit pour votre thénar** : **seulement** si le thénar déclaré est « Petite » (jamais en
   Fingertip). Illustration T13 ;
-- **⛰️ La bosse** : où la placer pour la prise choisie (Palm → au milieu ou à l'avant ; Claw → au milieu ou à
-  l'arrière), avec le pourquoi. Illustration T14 ou T07. Absent en Fingertip (la bosse n'y travaille pas) ;
-- **🦾 Claw relâchée / agressive / pincée** : trois blocs illustrés (T04–T06), **uniquement** en prise Claw ;
+- **⛰️ La bosse et la forme** : où placer la bosse — **selon la variante de Claw déclarée** (relâchée → arrière
+  marquée ; agressive → médiane ; pincée → arrière à flancs plats) — quelle forme de coque convient à la prise
+  (Palm : symétrique comme ergonomique ; Claw : symétrique avant tout) et la forme de la souris retenue
+  (`shape`). Illustration T14 ou T07. Absent en Fingertip (la bosse n'y travaille pas) ;
+- **🦾 Votre variante de Claw** : la variante déclarée à l'étape 2/5, illustrée (T04, T05 ou T06) ; en repli, les
+  trois variantes sont présentées si le parcours a été ouvert avant l'ajout de l'étape ;
 - **🖱️ La hauteur des boutons** : le niveau conseillé pour la prise (Palm → hauts ; Claw → bas ; Fingertip →
   médians à bas) et le pourquoi. Illustration T01, T02 ou T03.
 
@@ -237,3 +243,21 @@ liens (`discord.ui.Button(url=…)`) gérés par Discord, qui fonctionnent toujo
 aucune interaction à traiter — ou, à défaut de lien, un unique rappel désactivé « 🔗 Liens à venir ». Le message
 se ferme avec la croix du client Discord et un nouveau test se lance depuis le panneau public : plus rien du
 résultat ne peut rester muet.
+
+## 12. Forme de coque et variante de Claw (2026-10-11, 4ᵉ passe)
+
+Deux manques restaient par rapport à l'outil de référence (Oblivity) :
+
+1. **« Mouse Design » (symétrique / ergonomique)** — la donnée n'existait pas. Elle a été levée pour les
+   **26 souris** et inscrite dans `data/mouse_db.json` (champ `shape`, `Symmetrical` ou `Ergonomic`), chacune
+   avec la source qui l'atteste (fiche ATK/VXE, EloShapes, Maxesport, test indépendant…). `utils/catalog.py`
+   refuse désormais une forme renseignée sans source listant `shape` : aucune forme n'est devinée.
+   Elle s'affiche dans le bloc « ⛰️ La bosse et la forme » (conseil par prise + forme de la souris retenue).
+   Résultat du relevé : **24 souris symétriques**, **2 ergonomiques** (ATK Z1 V2 Ultra, ATK Y9 Ultimate).
+2. **Les trois variantes de Claw** étaient listées sans savoir laquelle s'appliquait. Le parcours Claw pose
+   maintenant une **étape 2/5 « Votre variante de Claw »** (relâchée / agressive / pincée, illustrée par T04).
+   La réponse n'entre dans **aucun** calcul : elle choisit le texte du conseil de bosse (relâchée → arrière
+   marquée ; agressive → médiane ; pincée → arrière à flancs plats) et le bloc de variante du résultat.
+   Sans réponse (parcours ouvert avant cette version), les trois variantes sont présentées.
+
+`_steps_total` et `STEP_NUMBERS` portent la numérotation : Palm 1 → 4, Claw 1 → 5, Fingertip 1 → 3.

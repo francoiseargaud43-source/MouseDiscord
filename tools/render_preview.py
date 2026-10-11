@@ -184,10 +184,13 @@ def build_parcours() -> Image.Image:
     session.thenar = Thenar.MOYENNE
     etapes = [
         ("Accueil — message persistant (public)", flow.banner_embed(), ["🖱️  Start Mouse Shape Finder"], True),
-        ("Étape 1/4 — prise", flow.grip_step_embed(), ["Choisissez votre prise…"], False),
-        ("Étape 2/4 — thénar (arrière de la souris)", flow.thenar_step_embed(), ["Choisissez la taille de votre thénar…"], False),
-        ("Étape 3/4 — mesures", flow.measure_step_embed(session), ["📏  Saisir mes mesures"], True),
-        ("Étape 4/4 — budget", flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
+        ("Étape 1/5 — prise", flow.grip_step_embed(), ["Choisissez votre prise…"], False),
+        ("Étape 2/5 — variante de Claw (aucun effet sur le score)",
+         flow.claw_variant_step_embed(), ["Choisissez votre variante de Claw…"], False),
+        ("Étape 3/5 — thénar (arrière de la souris)",
+         flow.thenar_step_embed(Grip.CLAW), ["Choisissez la taille de votre thénar…"], False),
+        ("Étape 4/5 — mesures", flow.measure_step_embed(session), ["📏  Saisir mes mesures"], True),
+        ("Étape 5/5 — budget", flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
     ]
     hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 52 + 28 + 16 for _, e, _, _ in etapes) + PAD
     canvas, draw = nouveau_canvas(hauteur)

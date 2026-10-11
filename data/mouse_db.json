@@ -29,8 +29,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "RTINGS — Scyrox V8 (test) : forme symétrique, bosse arrière",
+        "url": "https://www.rtings.com/mouse/reviews/scyrox/v8",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "scyrox_v6",
@@ -54,7 +63,17 @@
     "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
     "fit_rationale": "Bosse centrale très polyvalente, parfaite pour le Relaxed Claw.",
     "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK.",
-    "sources": []
+    "sources": [
+      {
+        "label": "MouseCompare — Scyrox V6 (fiche : Shape « Symmetrical »)",
+        "url": "https://mousecompare.com/mouse/scyrox/v6/",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
+      }
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_f1_ultimate",
@@ -100,8 +119,17 @@
           "weight_g"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "Maxesport (revendeur FR) — ATK Blazing Sky F1 V3 Ultimate+ (Shape : Symmetrical)",
+        "url": "https://maxesport.gg/products/atk-blazing-sky-f1-v3-ultimate-plus-8k-wireless-white",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_x1_ultra_max",
@@ -162,8 +190,17 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky X1 V2 Series (fiche : « Shape: Symmetrical »)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_z1_ultra",
@@ -222,8 +259,17 @@
           "height_mm"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky Z1 V2 (fiche : « Shape: Ergonomic », main droite)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Ergonomic"
   },
   {
     "id": "atk_a9_plus",
@@ -280,8 +326,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=atk-a9-vs.-atk-a9-plus-vs.-atk-a9-pro-vs.-atk-a9-se-vs.-atk-a9-ultra",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_phantom_ultimate",
@@ -313,13 +368,14 @@
         "label": "EloShapes — ATK Phantom Ultimate",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-phantom-ultimate",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
-          "sensor",
+          "hump_position",
+          "length_mm",
           "polling_hz",
-          "hump_position"
+          "sensor",
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-10"
       },
@@ -331,7 +387,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_ghost_ultimate",
@@ -388,8 +445,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "HLPlanet — test de l'ATK Blazing Sky GHOST : « medium-sized symmetrical mouse »",
+        "url": "https://www.hlplanet.com/atk-ghost-review/",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_ghost_extreme",
@@ -436,8 +502,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "HLPlanet — test de l'ATK Blazing Sky GHOST : « medium-sized symmetrical mouse »",
+        "url": "https://www.hlplanet.com/atk-ghost-review/",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_y9_ultimate",
@@ -526,8 +601,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Amazon (boutique ATK) — Dragonfly Y9 Ultimate : « RIGHT-HAND ERGONOMIC SHAPE »",
+        "url": "https://www.amazon.com/ATK-Dragonfly-Y9-Lightweight-Switches/dp/B0G529KH82",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Ergonomic"
   },
   {
     "id": "atk_fierce_x",
@@ -585,9 +669,10 @@
         "label": "MouseMetric — ATK Fierce X",
         "url": "https://www.mousemetric.com/mice/atk-fierce-x",
         "fields": [
+          "height_mm",
           "length_mm",
-          "width_max_mm",
-          "height_mm"
+          "shape",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-10"
       },
@@ -599,7 +684,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_u2_v2_ultimate",
@@ -654,9 +740,10 @@
         "label": "ATK Store — collection U2 Series",
         "url": "https://www.atk.store/collections/atk-u2-series-esports-wireless-mouse",
         "fields": [
+          "height_mm",
           "length_mm",
-          "width_max_mm",
-          "height_mm"
+          "shape",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-10"
       },
@@ -668,7 +755,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_u2_v2_mini",
@@ -725,8 +813,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — collection U2 : profil symétrique de la famille (U2 V2 Mini 119,5 × 63 × 38,5 mm)",
+        "url": "https://www.atk.store/collections/atk-u2-series-esports-wireless-mouse",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_zero",
@@ -758,11 +855,12 @@
         "label": "EloShapes — ATK Zero",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-zero",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
+          "length_mm",
+          "polling_hz",
+          "shape",
           "weight_g",
-          "polling_hz"
+          "width_max_mm"
         ],
         "date_checked": "2026-10-10"
       },
@@ -774,7 +872,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_duckbill",
@@ -829,12 +928,13 @@
         "label": "EloShapes — ATK Duckbill",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-duckbill",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
+          "length_mm",
+          "polling_hz",
           "sensor",
-          "polling_hz"
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-10"
       },
@@ -856,7 +956,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_a9_ultimate",
@@ -918,8 +1019,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=atk-a9-vs.-atk-a9-plus-vs.-atk-a9-pro-vs.-atk-a9-se-vs.-atk-a9-ultra",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_a9_air",
@@ -952,11 +1062,12 @@
         "label": "EloShapes — comparaison A9 Air / A9 Ultimate",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-a9-air-vs.-atk-a9-ultimate",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
+          "length_mm",
+          "polling_hz",
+          "shape",
           "weight_g",
-          "polling_hz"
+          "width_max_mm"
         ],
         "date_checked": "2026-10-10"
       },
@@ -968,7 +1079,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "id": "atk_a9_mini",
@@ -1006,8 +1118,17 @@
           "weight_g"
         ],
         "date_checked": "2026-10-10"
+      },
+      {
+        "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=atk-a9-vs.-atk-a9-plus-vs.-atk-a9-pro-vs.-atk-a9-se-vs.-atk-a9-ultra",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "VXE",
@@ -1042,13 +1163,14 @@
         "label": "ATK Store — VXE Dragonfly V3 Series",
         "url": "https://www.atk.store/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
-          "sensor",
+          "length_mm",
           "polling_hz",
-          "price_note"
+          "price_note",
+          "sensor",
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1074,7 +1196,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "VXE",
@@ -1109,13 +1232,14 @@
         "label": "EloShapes — VXE MAD R vs R1",
         "url": "https://www.eloshapes.com/mouse/compare?p=vxe-mad-r-vs.-vxe-r1",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
           "hump_position",
+          "length_mm",
+          "polling_hz",
           "sensor",
-          "polling_hz"
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1154,7 +1278,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "VXE",
@@ -1215,11 +1340,13 @@
         "label": "ATK Store — VXE MAD R Series",
         "url": "https://www.atk.store/products/vxe-mad-r-series-wireless-mouse",
         "fields": [
-          "price_note"
+          "price_note",
+          "shape"
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "VXE",
@@ -1254,13 +1381,14 @@
         "label": "ATK Store — VXE Dragonfly X3 Series",
         "url": "https://www.atk.store/products/vxe-dragonfly-x3-series-lightweight-wireless-mouse",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
-          "sensor",
+          "length_mm",
           "polling_hz",
-          "price_note"
+          "price_note",
+          "sensor",
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1280,7 +1408,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "ATK",
@@ -1329,7 +1458,8 @@
         "label": "ATK Store — ATK Blazing Sky U2 Mini",
         "url": "https://www.atk.store/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse",
         "fields": [
-          "price_note"
+          "price_note",
+          "shape"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1353,7 +1483,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "ATK",
@@ -1424,8 +1555,17 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=atk-a9-vs.-atk-a9-plus-vs.-atk-a9-pro-vs.-atk-a9-se-vs.-atk-a9-ultra",
+        "fields": [
+          "shape"
+        ],
+        "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "ATK",
@@ -1460,13 +1600,14 @@
         "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
         "url": "https://www.atk.store/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
-          "sensor",
+          "length_mm",
           "polling_hz",
-          "price_note"
+          "price_note",
+          "sensor",
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1489,7 +1630,8 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   },
   {
     "category": "ATK",
@@ -1524,12 +1666,13 @@
         "label": "ATK Store — ATK Blazing Sky U2 Series",
         "url": "https://www.atk.store/products/atk-blazing-sky-u2-series-wireless-mouse",
         "fields": [
-          "length_mm",
-          "width_max_mm",
           "height_mm",
-          "weight_g",
+          "length_mm",
+          "price_note",
           "sensor",
-          "price_note"
+          "shape",
+          "weight_g",
+          "width_max_mm"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1563,6 +1706,7 @@
         ],
         "date_checked": "2026-10-11"
       }
-    ]
+    ],
+    "shape": "Symmetrical"
   }
 ]

@@ -42,6 +42,8 @@ from utils.matcher import (
 )
 from utils.models import (
     BUDGET_LABELS,
+    CLAW_VARIANT_LABELS,
+    ClawVariant,
     GRIP_LABELS,
     THENAR_LABELS,
     BudgetMode,
@@ -88,9 +90,25 @@ HUMP_GUIDE = {
     Grip.PALM: ("au milieu ou à l'avant",
                 "la bosse suit l'arche naturelle de la paume : la main repose à plat, le poignet reste libre."),
     Grip.CLAW: ("au milieu ou à l'arrière",
-                "la bosse soutient l'arche transverse de la main et garde les doigts arqués "
-                "(trois variantes, plus bas)."),
+                "la bosse soutient l'arche transverse de la main et garde les doigts arqués."),
 }
+# Bosse conseillée selon la variante de Claw déclarée (l'outil de référence en distingue trois).
+CLAW_HUMP_GUIDE = {
+    ClawVariant.RELACHEE: ("arrière marquée",
+                           "l'arrière de la souris vient remplir la paume : appui franc, main stable."),
+    ClawVariant.AGGRESSIVE: ("médiane marquée",
+                             "l'appui se fait au-dessus du milieu de la souris, les doigts restent arqués."),
+    ClawVariant.PINCEE: ("arrière, flancs peu bombés",
+                         "l'auriculaire se pose plus loin, sur un flanc plat : la souris reste « pincée »."),
+}
+# Forme de coque conseillée selon la prise (la forme de la souris retenue est citée à côté).
+SHAPE_GUIDE = {
+    Grip.PALM: ("formes **symétriques** comme **ergonomiques** conviennent au palm grip — "
+                "une forme **ergonomique** épouse un peu mieux l'arche de la main."),
+    Grip.CLAW: ("en claw grip, les formes **symétriques** conviennent aux trois variantes "
+                "(une ergonomique basse peut aussi faire l'affaire)."),
+}
+SHAPE_DISPLAY = {"Symmetrical": "symétrique", "Ergonomic": "ergonomique", "Inconnu": "non vérifiée"}
 BUTTON_GUIDE = {
     Grip.PALM: ("hauts",
                 "les doigts reposent à plat : des boutons hauts évitent de tirer sur les tendons."),
@@ -99,15 +117,19 @@ BUTTON_GUIDE = {
     Grip.FINGERTIP: ("médians à bas",
                      "des boutons hauts poussent les doigts vers le haut et tendent les tendons."),
 }
-# Variantes de la prise Claw : une illustration dédiée chacune (assets/images.json, T04–T06).
-CLAW_VARIANTS = (
-    ("illustration_grip_relaxed", "Claw relâchée",
-     "Bosse **arrière marquée** : l'arrière de la souris vient remplir la paume."),
-    ("illustration_grip_aggressive", "Claw agressive",
-     "Bosse **médiane marquée** : les doigts restent arqués au-dessus de la souris."),
-    ("illustration_grip_pincer", "Claw pincée",
-     "Bosse **arrière** et **flancs peu bombés** : l'auriculaire se pose plus loin, sur le flanc."),
-)
+# Variantes de la prise Claw : (illustration T04–T06, libellé, conseil pratique de la variante).
+# La bosse attendue, elle, est décrite une seule fois dans CLAW_HUMP_GUIDE.
+CLAW_VARIANTS = {
+    ClawVariant.RELACHEE: ("illustration_grip_relaxed", "Claw relâchée",
+                           "Doigts légèrement arqués et paume posée : cherchez une souris qui remplit la "
+                           "main sans forcer, avec une bosse franche sous la paume."),
+    ClawVariant.AGGRESSIVE: ("illustration_grip_aggressive", "Claw agressive",
+                             "Doigts très arqués : la bosse doit tomber sous le milieu de la paume et "
+                             "l'avant de la souris rester bas."),
+    ClawVariant.PINCEE: ("illustration_grip_pincer", "Claw pincée",
+                         "Souris pincée entre le pouce et l'annulaire : des flancs plats et un arrière "
+                         "étroit rendent la prise plus sûre."),
+}
 # Illustration à montrer dans la recommandation, selon la souris retenue (sa bosse, ses boutons).
 HUMP_IMAGE_BY_FAMILY = {"Front": "illustration_hump_front", "Mid": "illustration_hump_mid",
                         "Rear": "illustration_hump_rear"}
@@ -127,6 +149,15 @@ THENAR_OPTIONS = (
     (Thenar.PETITE, "Petite", "Thénar peu développé"),
     (Thenar.MOYENNE, "Moyenne", "Thénar dans la moyenne"),
     (Thenar.GRANDE, "Grande", "Thénar bien développé"),
+)
+# Étape supplémentaire, posée UNIQUEMENT en Claw (méthode Oblivity : trois variantes de prise).
+CLAW_VARIANT_OPTIONS = (
+    (ClawVariant.RELACHEE, "Claw relâchée",
+     "Main posée, doigts légèrement arqués — l'arrière de la souris remplit la paume"),
+    (ClawVariant.AGGRESSIVE, "Claw agressive",
+     "Doigts très arqués, paume peu posée — appui au-dessus du milieu de la souris"),
+    (ClawVariant.PINCEE, "Claw pincée",
+     "Souris pincée, auriculaire posé plus loin sur le flanc"),
 )
 BUDGET_OPTIONS = (
     (BudgetMode.ECONOMIQUE, "Économique", "Le moins cher de la zone compatible"),
@@ -213,9 +244,26 @@ def _size_text(mouse) -> str:
 
 
 def _steps_total(session_or_grip) -> int:
-    """Nombre d'étapes du parcours : 3 en Fingertip (l'étape thénar n'est pas proposée), 4 sinon."""
+    """Nombre d'étapes : 3 en Fingertip (pas de thénar), 5 en Claw (variante en plus), 4 sinon."""
     grip = getattr(session_or_grip, "grip", session_or_grip)
-    return 3 if grip is Grip.FINGERTIP else 4
+    if grip is Grip.FINGERTIP:
+        return 3
+    if grip is Grip.CLAW:
+        return 5
+    return 4
+
+
+# Numéro d'étape par type, selon la prise : Claw insère « variante » en 2, Fingertip saute le thénar.
+STEP_NUMBERS = {
+    Grip.PALM: {"thenar": 2, "measure": 3, "budget": 4},
+    Grip.CLAW: {"variant": 2, "thenar": 3, "measure": 4, "budget": 5},
+    Grip.FINGERTIP: {"measure": 2, "budget": 3},
+}
+
+
+def _step_number(kind: str, session_or_grip) -> int:
+    grip = getattr(session_or_grip, "grip", session_or_grip)
+    return STEP_NUMBERS[grip][kind]
 
 
 def _step_title(index: int, session_or_grip, label: str) -> str:
@@ -234,7 +282,11 @@ def _recap(session: FinderSession) -> str:
     """Récapitulatif d'une ligne (mobile) : prise, thénar, main, gamme — seules les données connues."""
     parts = []
     if session.grip:
-        parts.append(f"✋ **{GRIP_LABELS[session.grip]}**")
+        grip = f"✋ **{GRIP_LABELS[session.grip]}**"
+        if session.claw_variant is not None:
+            # La variante ne s'affiche que pour la prise Claw, sous forme courte (« (relâchée) »).
+            grip += f" ({CLAW_VARIANT_LABELS[session.claw_variant].removeprefix('Claw ')})"
+        parts.append(grip)
     if session.thenar:
         parts.append(f"🖐️ Thénar **{THENAR_LABELS[session.thenar]}**")
     if session.hand_length_mm and session.hand_width_mm:
@@ -354,7 +406,8 @@ def banner_embed() -> discord.Embed:
         title="🖱️ AzeMouse — Mouse Shape Finder",
         description=(
             "Trouvez la souris dont la géométrie épouse **votre** main.\n\n"
-            "4 questions rapides : prise, thénar, mesures, budget.\n\n"
+            "Quelques questions rapides : prise, mesures, budget — thénar et variante de Claw "
+            "selon la prise.\n\n"
             "*Réponses privées : seul vous voyez la recommandation.*"
         ),
         color=COLOR,
@@ -373,9 +426,23 @@ def grip_step_embed() -> discord.Embed:
     return _image(embed, "step1_grip")
 
 
-def thenar_step_embed() -> discord.Embed:
+def claw_variant_step_embed() -> discord.Embed:
+    description = "\n\n".join(f"**{label}** — {desc}" for _, label, desc in CLAW_VARIANT_OPTIONS)
     embed = discord.Embed(
-        title=_step_title(2, Grip.PALM, "Votre éminence thénar"),
+        title=_step_title(2, Grip.CLAW, "Votre variante de Claw"),
+        description=(
+            "Les trois variantes de Claw ne placent pas la bosse au même endroit.\n\n"
+            f"{description}\n\n"
+            "Cette réponse **ne change pas le score** : elle précise le conseil de bosse."
+        ),
+        color=COLOR,
+    )
+    return _image(embed, "illustration_grip_relaxed")
+
+
+def thenar_step_embed(grip: Grip = Grip.PALM) -> discord.Embed:
+    embed = discord.Embed(
+        title=_step_title(_step_number("thenar", grip), grip, "Votre éminence thénar"),
         description=(
             "Votre réponse indique l'arrière de souris qui vous convient : un petit thénar préfère un "
             "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n\n"
@@ -389,7 +456,7 @@ def thenar_step_embed() -> discord.Embed:
 
 def measure_step_embed(session: FinderSession) -> discord.Embed:
     embed = discord.Embed(
-        title=_step_title(2 if session.grip is Grip.FINGERTIP else 3, session, "Vos mesures"),
+        title=_step_title(_step_number("measure", session), session, "Vos mesures"),
         description=(
             f"{_recap(session)}\n\n"
             "Avec une règle :\n\n"
@@ -403,7 +470,7 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
 
 def budget_step_embed(session: FinderSession) -> discord.Embed:
     embed = discord.Embed(
-        title=_step_title(3 if session.grip is Grip.FINGERTIP else 4, session, "Budget et gamme"),
+        title=_step_title(_step_number("budget", session), session, "Budget et gamme"),
         description=f"{_recap(session)}\n\nChoisissez votre gamme de prix.",
         color=COLOR,
     )
@@ -490,15 +557,30 @@ def _narrow_rear_embed() -> discord.Embed:
     return _image(embed, "illustration_rear_narrow")
 
 
-def _hump_guide_embed(session: FinderSession) -> discord.Embed | None:
-    """Bloc « la bosse » : où la placer pour la prise choisie. Rien en Fingertip (elle n'y travaille pas)."""
+def _hump_guide_embed(session: FinderSession, ideal: MouseScore) -> discord.Embed | None:
+    """Bloc « la bosse et la forme » : où placer la bosse et quelle coque choisir pour la prise choisie.
+
+    Rien en Fingertip : cette prise n'utilise ni l'arrière ni la bosse (barème et outil de référence
+    sont d'accord là-dessus).
+    """
     grip = session.grip
     if grip not in HUMP_GUIDE:
         return None
-    position, why = HUMP_GUIDE[grip]
+    if grip is Grip.CLAW and session.claw_variant is not None:
+        # La variante déclarée précise la bosse attendue (Claw relâchée ≠ agressive ≠ pincée).
+        position, why = CLAW_HUMP_GUIDE[session.claw_variant]
+        entete = f"**{CLAW_VARIANT_LABELS[session.claw_variant]} → bosse {position}.**"
+    else:
+        position, why = HUMP_GUIDE[grip]
+        entete = f"**{grip.label} → bosse {position}.**"
+    shape = SHAPE_DISPLAY.get(ideal.mouse.shape, SHAPE_DISPLAY["Inconnu"])
     embed = discord.Embed(
-        title="⛰️ La bosse",
-        description=f"**{grip.label} → bosse {position}.**\n\n{why[0].upper()}{why[1:]}",
+        title="⛰️ La bosse et la forme",
+        description=(
+            f"{entete}\n\n{why[0].upper()}{why[1:]}\n\n"
+            f"**Forme** — {SHAPE_GUIDE[grip]}\n\n"
+            f"La souris retenue est **{shape}**."
+        ),
         color=COLOR,
     )
     # L'image montre la bosse conseillée pour la prise (la souris retenue, elle, illustre le bloc du haut).
@@ -506,14 +588,28 @@ def _hump_guide_embed(session: FinderSession) -> discord.Embed | None:
 
 
 def _claw_variant_embeds(session: FinderSession) -> list[discord.Embed]:
-    """Les trois variantes de Claw, chacune illustrée (T04–T06). Affichées pour cette prise seulement."""
+    """La variante de Claw déclarée, illustrée (T04–T06). Affichée pour cette prise seulement.
+
+    Repli : si la variante n'a pas été demandée (parcours ouvert avant l'ajout de l'étape), les trois
+    variantes sont présentées, faute de savoir laquelle s'applique.
+    """
     if session.grip is not Grip.CLAW:
         return []
-    embeds = []
-    for image_key, title, line in CLAW_VARIANTS:
-        embed = discord.Embed(title=f"🦾 {title}", description=line, color=COLOR)
-        embeds.append(_image(embed, image_key))
-    return embeds
+    if session.claw_variant is None:
+        # Repli : les trois variantes, avec la bosse attendue pour chacune.
+        embeds = []
+        for variant, (image_key, title, _) in CLAW_VARIANTS.items():
+            position, why = CLAW_HUMP_GUIDE[variant]
+            embeds.append(_image(
+                discord.Embed(title=f"🦾 {title}", description=f"Bosse **{position}** : {why}", color=COLOR),
+                image_key,
+            ))
+        return embeds
+    image_key, title, tip = CLAW_VARIANTS[session.claw_variant]
+    embed = discord.Embed(title=f"🦾 {title}",
+                          description=f"**Votre variante.** {tip}",
+                          color=COLOR)
+    return [_image(embed, image_key)]
 
 
 def _buttons_guide_embed(session: FinderSession) -> discord.Embed:
@@ -576,7 +672,7 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     embeds = [main, _dimensions_embed(session, ideal, selection.explanation)]
     if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
         embeds.append(_narrow_rear_embed())
-    hump = _hump_guide_embed(session)
+    hump = _hump_guide_embed(session, ideal)
     if hump is not None:
         embeds.append(hump)
     embeds.extend(_claw_variant_embeds(session))
@@ -675,9 +771,17 @@ class GripSelect(discord.ui.Select):
             # L'arrière de la souris n'est pas utilisé dans cette prise (bosse ignorée par le barème,
             # thénar non collecté) : l'étape thénar est sautée et aucune note « arrière étroit » ne s'affiche.
             session.thenar = None
+            session.claw_variant = None
             await _show_private(interaction, embed=measure_step_embed(session), view=MeasureView(self.session_id))
             return
-        await _show_private(interaction, embed=thenar_step_embed(), view=ThenarView(self.session_id))
+        if session.grip is Grip.CLAW:
+            # Claw : la variante est demandée d'abord (elle précise le conseil de bosse), puis le thénar.
+            await _show_private(interaction, embed=claw_variant_step_embed(),
+                                view=ClawVariantView(self.session_id))
+            return
+        session.claw_variant = None
+        await _show_private(interaction, embed=thenar_step_embed(session.grip),
+                            view=ThenarView(self.session_id))
 
 
 class GripView(FinderView):
@@ -687,7 +791,38 @@ class GripView(FinderView):
 
 
 # ---------------------------------------------------------------------------
-# Étape 2 : éminence thénar (ajustement borné du sous-score de largeur : THENAR_WIDTH_ADJUSTMENT)
+# Étape 2 (Claw uniquement) : variante de la prise — n'entre dans aucun calcul, précise le conseil
+# ---------------------------------------------------------------------------
+class ClawVariantSelect(discord.ui.Select):
+    def __init__(self, session_id: str) -> None:
+        self.session_id = session_id
+        super().__init__(
+            placeholder="Choisissez votre variante de Claw…",
+            min_values=1,
+            max_values=1,
+            options=[
+                discord.SelectOption(label=label, value=variant.value, description=desc)
+                for variant, label, desc in CLAW_VARIANT_OPTIONS
+            ],
+        )
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        session = await require_session(interaction, self.session_id)
+        if session is None:
+            return
+        session.claw_variant = ClawVariant(self.values[0])   # stocké et affiché uniquement
+        await _show_private(interaction, embed=thenar_step_embed(session.grip),
+                            view=ThenarView(self.session_id))
+
+
+class ClawVariantView(FinderView):
+    def __init__(self, session_id: str) -> None:
+        super().__init__()
+        self.add_item(ClawVariantSelect(session_id))
+
+
+# ---------------------------------------------------------------------------
+# Étape 3 : éminence thénar (ajustement borné du sous-score de largeur : THENAR_WIDTH_ADJUSTMENT)
 # ---------------------------------------------------------------------------
 class ThenarSelect(discord.ui.Select):
     def __init__(self, session_id: str) -> None:
