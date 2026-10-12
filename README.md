@@ -349,9 +349,11 @@ n'est donc pas dans la zone supérieure. Les écarts sont arrondis à 6 décimal
 | Largeur de prise | dans la plage / écart < 2 mm / écart > 5 mm (`WIDTH_EXCLUDE_DELTA_MM`) | 10 / 5 / exclusion |
 | Grip | Élevé / Moyen / Faible | 10 / 5 / exclusion |
 | Bosse | Palm : Front ou Mid · Claw : Mid ou Rear · Fingertip : ignorée | 5 · 5 · 0 |
-| Boutons | Palm : High · Claw : Low ou Mid · Fingertip : Low | 5 · 5 · 10 |
+| Boutons | Palm : High · Claw : Low · Fingertip : Low ou Mid | 5 · 5 · 10 |
 
 Les règles de bosse et de boutons sont centralisées dans `HUMP_IDEAL` et `BUTTON_IDEAL` (`utils/matcher.py`).
+Règle des boutons, mot pour mot identique dans les quatre documents normatifs (vérifiée par
+`tests/test_doc_references.py`) : `Palm → {High} · Claw → {Low} · Fingertip → {Low, Mid}` — `High` en Palm, `Low` en Claw, `Low` ou `Mid` en Fingertip.
 
 **Affichage** : `Score de correspondance : X/40 — Y % du maximum théorique du barème`, où `Y = X / 40 × 100` arrondi à l'entier (demi vers le haut).
 Le pourcentage n'est jamais présenté comme une probabilité.
@@ -386,7 +388,8 @@ il reste dans `MouseScore.confidence` et n'apparaît plus dans le résultat (dé
 Les souris sans prix connu ne sont jamais recommandées dans les modes à prix : elles passent dans « À vérifier ».
 Une donnée de performance absente compte pour zéro ; cela ne signifie pas une performance inférieure.
 
-**Exemple : main 180 × 90 mm, Palm** (plages 118.8–123.8 mm et 55.6–59.6 mm, valeurs de non-régression) :
+**Valeurs de non-régression du moteur** (main 180 × 90 mm, Palm ; plages 118.8–123.8 mm et 55.6–59.6 mm) :
+elles sont figées par `tests/test_matcher.py` et ne doivent jamais bouger sans décision explicite.
 
 | Souris | Résultat | Détail |
 |---|---|---|
@@ -396,10 +399,16 @@ Une donnée de performance absente compte pour zéro ; cela ne signifie pas une 
 | ATK X1 V2 Ultra Max | **20** | longueur 0 (écart 3.2 mm) · largeur 5 · grip 10 · bosse 5 · boutons 0 |
 | Scyrox V8 / V8S, ATK F1 V3 | exclues | grip Palm « Faible » |
 
-Ces souris donnent, selon le mode : Économique → A9 Plus ; Qualité/Prix → V6 ; Haut de Gamme et Peu importe le prix → Z1 V2 Ultra (30/40, polling 8000 Hz documenté).
+**Réponse réelle du bot pour ce profil** : en *Rapport Qualité/Prix*, match idéal **ATK Phantom Ultimate**
+(35/40 — 88 %, 91,95 €) et alternative **ATK Z1 V2 Ultra** (30/40 — 75 %, 59,95 €) ; le gagnant dépend du mode
+(en *Économique*, la Z1 V2 Ultra passe devant, parce qu'elle est la moins chère de la fenêtre). Ce résultat est
+vérifié par `tests/test_flow.py` ; le classement des cinq modes, pour les trois profils de référence, est dans
+la matrice ci-dessous — c'est elle qui fait foi, pas ce paragraphe.
 
-**Matrices complètes** (profils Palm, Claw, Fingertip, toutes les souris du catalogue) : `docs/audit/matrice_profils.md`,
-générées par `python tools/compare_profiles.py`.
+**Matrices complètes** (profils Palm, Claw, Fingertip, toutes les souris du catalogue, les deux places
+affichées par mode) : `docs/audit/matrice_profils.md`, générées par `python tools/compare_profiles.py`.
+Chaque mode y est calculé **comme dans le bot** (le plafond du mode budget ne s'applique qu'à sa propre
+ligne) ; `tests/test_compare_profiles.py` le vérifie.
 
 ---
 

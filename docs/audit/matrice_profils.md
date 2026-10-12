@@ -4,7 +4,7 @@ _Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json`. Ne
 
 **Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; « ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.
 
-Budget personnalisé de comparaison : 75 €. Tolérances de sélection : Économique 5 pts, Qualité/Prix 2 pts, Haut de gamme 2 pts, Budget 2 pts (provisoires).
+Budget personnalisé de comparaison : 75 € (il ne s'applique QU'À la ligne « Budget » des classements : les autres modes classent le catalogue entier, comme le bot). Tolérances de sélection : Économique 5 pts, Qualité/Prix 2 pts, Haut de gamme 2 pts, Budget 2 pts (provisoires).
 
 
 ## Profil P — Palm 180 × 90 mm
@@ -50,14 +50,16 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.4) | Élevé | Mid | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (écart 2.8 mm) | 66.5 mm (estimée, écart 6.9) | Élevé | Mid | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
-**Classement par mode (profil P, budget ≤ 75 € pour le mode budget)**
+**Classement par mode (profil P, calculé comme dans le bot)**
+
+Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = match idéal ; 2e = alternative, qui préfère une autre coque et n'élargit qu'une fois à ±5 points) : ce n'est pas le 2e brut du classement.
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | VXE Dragonfly V3 / V3 Pro (25/40) | VXE Dragonfly R1 / R1 Pro (25/40) | 12 candidat(s) | Économique : VXE Dragonfly V3 / V3 Pro est la moins chère parmi les 12 souris à 5 pts ou moins du meilleur score (30/40). |
-| Qualité/Prix | ATK Z1 V2 Ultra (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 4 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V6 (30/40) | ATK Z1 V2 Ultra (30/40) | 4 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 4 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | ATK A9 Mini (30/40) | ATK Z1 V2 Ultra (30/40) | 4 candidat(s) | Forme d'abord : ATK A9 Mini est la souris dont la forme colle le mieux à votre main parmi les 4 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Économique | ATK Z1 V2 Ultra (30/40) | ATK Phantom Ultimate (35/40) | 6 candidat(s) | Économique : ATK Z1 V2 Ultra est la moins chère parmi les 6 souris à 5 pts ou moins du meilleur score (35/40). |
+| Qualité/Prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
+| Peu importe le prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Forme d'abord : ATK Phantom Ultimate est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
 | Budget ≤ 75 € | ATK Z1 V2 Ultra (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
@@ -104,15 +106,17 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (écart 6.1 mm) | 63.0 mm (estimée, écart 4.6) | Élevé | Mid | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (écart 10.7 mm) | 66.5 mm (estimée, écart 8.1) | Élevé | Mid | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
-**Classement par mode (profil C, budget ≤ 75 € pour le mode budget)**
+**Classement par mode (profil C, calculé comme dans le bot)**
+
+Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = match idéal ; 2e = alternative, qui préfère une autre coque et n'élargit qu'une fois à ±5 points) : ce n'est pas le 2e brut du classement.
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | VXE Dragonfly V3 / V3 Pro (25/40) | ATK Blazing Sky F1 V2 (30/40) | 9 candidat(s) | Économique : VXE Dragonfly V3 / V3 Pro est la moins chère parmi les 9 souris à 5 pts ou moins du meilleur score (30/40). |
-| Qualité/Prix | ATK Blazing Sky F1 V2 (30/40) | ATK F1 V3 Ultimate (30/40) | 4 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 4 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V8 / V8S (30/40) | ATK F1 V3 Ultimate (30/40) | 4 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 4 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | ATK F1 V3 Ultimate (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Forme d'abord : ATK F1 V3 Ultimate est la souris dont la forme colle le mieux à votre main parmi les 4 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
-| Budget ≤ 75 € | ATK Blazing Sky F1 V2 (30/40) | ATK F1 V3 Ultimate (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
+| Économique | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Économique : Pulsar X2 v3 Mini est la moins chère parmi les 2 souris à 5 pts ou moins du meilleur score (40/40). |
+| Qualité/Prix | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). Le prix n'entre pas dans le classement. |
+| Peu importe le prix | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Forme d'abord : Pulsar X2 v3 Mini est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Budget ≤ 75 € | ATK Blazing Sky F1 V2 (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
 ## Profil F — Fingertip 200 × 100 mm
@@ -158,13 +162,15 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (dans la plage) | 66.5 mm (estimée, écart 7.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
-**Classement par mode (profil F, budget ≤ 75 € pour le mode budget)**
+**Classement par mode (profil F, calculé comme dans le bot)**
+
+Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = match idéal ; 2e = alternative, qui préfère une autre coque et n'élargit qu'une fois à ±5 points) : ce n'est pas le 2e brut du classement.
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | ATK Blazing Sky F1 V2 (35/40) | ATK A9 Ultimate (35/40) | 8 candidat(s) | Économique : ATK Blazing Sky F1 V2 est la moins chère parmi les 8 souris à 5 pts ou moins du meilleur score (40/40). |
-| Qualité/Prix | Scyrox V6 (40/40) | ATK Blazing Sky F1 V2 (35/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Scyrox V6 (40/40) | ATK Blazing Sky F1 V2 (35/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
-| Peu importe le prix | Scyrox V6 (40/40) | ATK Blazing Sky F1 V2 (35/40) | 1 candidat(s) | Forme d'abord : Scyrox V6 est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Économique | ATK Blazing Sky F1 V2 (35/40) | Scyrox V6 (40/40) | 12 candidat(s) | Économique : ATK Blazing Sky F1 V2 est la moins chère parmi les 12 souris à 5 pts ou moins du meilleur score (40/40). |
+| Qualité/Prix | Scyrox V6 (40/40) | Pulsar X2 v3 Mini (40/40) | 3 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 3 souris à 2 pts ou moins du meilleur score (40/40). Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | Scyrox V6 (40/40) | Pulsar X2 v3 Mini (40/40) | 3 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 3 souris à 2 pts ou moins du meilleur score (40/40). Le prix n'entre pas dans le classement. |
+| Peu importe le prix | Scyrox V6 (40/40) | Pulsar X2 v3 Mini (40/40) | 3 candidat(s) | Forme d'abord : Scyrox V6 est la souris dont la forme colle le mieux à votre main parmi les 3 souris à 2 pts ou moins du meilleur score (40/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
 | Budget ≤ 75 € | Scyrox V6 (40/40) | ATK Blazing Sky F1 V2 (35/40) | 1 candidat(s) | Budget personnalisé : meilleur score conforme au budget, seule souris dans la zone de tolérance ; à score égal, la moins chère. |
 

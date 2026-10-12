@@ -13,6 +13,7 @@ import pytest
 from config import MOUSE_DB_PATH
 from utils.catalog import load_catalog
 from utils.matcher import (
+    BUTTON_IDEAL,
     GRIP_WIDTH_ESTIMATE_OFFSET_MM,
     THENAR_WIDTH_ADJUSTMENT,
     MAX_SCORE,
@@ -385,6 +386,19 @@ def test_hump_compound_label_matches_any_ideal_token():
     # « Mid-Front » contient « Front » et « Mid » : adapté en Palm, pas en Fingertip (ignoré)
     assert evaluate_mouse(make_mouse(hump_position="Mid-Front"), HAND, Grip.PALM).breakdown.hump_pts == 5
     assert evaluate_mouse(make_mouse(hump_position="Mid-Rear"), HAND, Grip.PALM).breakdown.hump_pts == 5
+
+
+def test_button_rule_matches_the_oblivity_reverse_engineering():
+    """La règle des boutons est celle de l'outil Oblivity — et elle seule (garde-fou documentaire).
+
+    Quatre documents (README, REVERSE_ENGINEERING_OBLIVITY, AMELIORATIONS_MOTEUR_ET_RECHERCHE,
+    PROMPT_RECHERCHE_SOURIS_ATK) ont annoncé pendant des semaines la règle inverse
+    (Claw {Low, Mid} / Fingertip {Low}). Ce test fige la règle en vigueur : si quelqu'un la change,
+    les quatre documents doivent être mis à jour dans le même commit, sinon la divergence repart.
+    """
+    assert BUTTON_IDEAL[Grip.PALM] == frozenset({"High"})
+    assert BUTTON_IDEAL[Grip.CLAW] == frozenset({"Low"})          # « Low » seulement
+    assert BUTTON_IDEAL[Grip.FINGERTIP] == frozenset({"Low", "Mid"})  # « Mid-to-Low », jamais High
 
 
 # ---------------------------------------------------------------------------

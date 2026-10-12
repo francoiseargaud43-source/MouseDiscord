@@ -311,9 +311,17 @@ Constantes dans `utils/matcher.py` : `LENGTH_BASE_MM`, `LENGTH_SLOPE`, `LENGTH_S
 | Largeur prise | 10 / 5 / 0 + exclusion | `dans la plage →10` ; `écart <2.0 →5` ; `écart >5.0 →exclusion` |
 | Grip | 10 / 5 / excl. / pending | `Élevé→10, Moyen→5, Faible→exclusion, Inconnu→pending` |
 | Bosse | 5 / 0 / pending | `Palm→{Front,Mid}`, `Claw→{Mid,Rear}`, `Fingertip→ignorée (0)` ; `Inconnu→pending` |
-| Boutons | 5 ou 10 / 0 / pending | `Palm→{High}:5`, `Claw→{Low,Mid}:5`, `Fingertip→{Low}:10` ; `Inconnu→pending` |
+| Boutons | 5 ou 10 / 0 / pending | `Palm→{High}:5`, `Claw→{Low}:5`, `Fingertip→{Low,Mid}:10` ; `Inconnu→pending` |
 
 Tables centralisées : `HUMP_IDEAL`, `BUTTON_IDEAL`, `BUTTON_POINTS`, `GRIP_POINTS`.
+
+> **Correction du 2026-10-12 (28e passe)** : ce tableau acceptait `Mid` en Claw et refusait `Mid` en
+> Fingertip — l'inverse du moteur depuis le reverse engineering de l'outil Oblivity (2026-10-11) et
+> depuis les captures du propriétaire (Fingertip : « Mid Buttons / Low Buttons » ; Claw : « Button
+> Low »). Règle de référence, **mot pour mot identique dans les quatre documents normatifs**
+> (vérifiée par `tests/test_doc_references.py`) :
+>
+> `Palm → {High} · Claw → {Low} · Fingertip → {Low, Mid}`
 
 Affichage : `Score de correspondance : X/40 — Y% du maximum théorique du barème` où `Y = round(X*100/40)` (demi vers le haut, via `int(X*100/40+0.5)`). **Ne jamais présenter comme probabilité d'achat.**
 

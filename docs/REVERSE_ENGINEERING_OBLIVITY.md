@@ -43,8 +43,10 @@ Trois enseignements :
 | Thénar | posé, puis : arrière étroit en pilule si Petite **ou** Moyenne ; **rien** si Grande | idem | **question non posée** |
 
 Notre moteur applique déjà : `HUMP_IDEAL` Palm {Front, Mid} / Claw {Mid, Rear} / Fingertip (ignorée),
-`BUTTON_IDEAL` Palm {High} / Claw {Low, Mid} / Fingertip {Low}. Les deux premières lignes sont
-identiques ; les écarts sont traités au §4.
+`BUTTON_IDEAL` Palm {High} / Claw {Low} / Fingertip {Low, Mid}. Les deux premières lignes sont
+identiques ; les écarts de boutons ont été **alignés sur leur outil le 2026-10-12** — voir le §4,
+qui est aussi le journal de cette décision (l'ancienne règle Claw {Low, Mid} / Fingertip {Low} avait
+été écrite dès l'origine dans le code puis recopiée dans quatre documents : elle était fausse).
 
 ## 3. Le thénar : leur logique, la tienne, la nôtre
 
@@ -100,16 +102,31 @@ rapportée à la largeur maximale. On peut alors remplacer « bosse = Rear » pa
 (ex. largeur à 90 % ≥ 0,90 × largeur maximale) et donner à l'ajustement une base mesurable — c'est
 précisément ce que les images EloShapes + `tools/measure_grip_width.py` permettent de faire.
 
-## 4. Deux écarts assumés (non corrigés sans ton accord)
+## 4. Écarts de boutons : alignés sur leur outil le 2026-10-12
 
-| Écart | Leur outil | Nous | Impact chiffré |
-|---|---|---|---|
-| Hauteur des boutons en **Claw** | « Low » seulement | Low **ou Mid** acceptés | 1 souris classable concernée (Scyrox V6, 30 → 25 en Claw 150 × 75) |
-| Hauteur des boutons en **Fingertip** | « Mid-to-Low » | Low seulement | 2 souris (Scyrox V6 30 → 35 ; A9 Plus 2.0 20 → 25 en Fingertip 200 × 100) |
+| Écart | Leur outil | Nous (depuis le 2026-10-12) |
+|---|---|---|
+| Hauteur des boutons en **Claw** | « Low » seulement | **Low** seulement (`Mid` = 0 pt) |
+| Hauteur des boutons en **Fingertip** | « Mid-to-Low » (jamais hauts) | **Low ou Mid** (High = 0 pt) |
 
-Ces deux alignements sont **prêts** (une ligne chacun dans `BUTTON_IDEAL`) mais non appliqués : ils
-changeraient des scores déjà validés par tes tests de non-régression et par la matrice de profils.
-Dis-moi si tu veux que je les applique — c'est un choix, pas une évidence.
+Le commentaire « alignement sur le reverse engineering » et la règle vivaient **déjà** dans
+`utils/matcher.py` depuis l'origine, alors que quatre documents (ce fichier, `README.md`,
+`docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md`, `docs/PROMPT_RECHERCHE_SOURIS_ATK.md`) annonçaient
+l'ancienne règle Claw {Low, Mid} / Fingertip {Low}. Constat du 2026-10-12 : c'était **une
+documentation fausse, pas un moteur faux** — personne n'avait le droit de l'apprendre ailleurs que
+dans le code. Les quatre documents sont désormais alignés sur le code, et un test
+(`tests/test_matcher.py::test_button_rule_matches_the_oblivity_reverse_engineering`) grave la règle
+en vigueur pour que la prochaine divergence se voie en trois secondes.
+
+Ce que l'alignement change, mesuré sur les 6 souris à boutons `Mid` de la base (Claw : 5 pts en jeu,
+Fingertip : 10 pts) :
+
+| Souris (boutons `Mid`) | Claw avant → après | Fingertip avant → après |
+|---|---|---|
+| Scyrox V6, ATK X1 V2 Ultra Max 2.0, A9 Plus, A9 Ultimate, A9 Air, A9 NB | 5 → **0** | 0 → **10** |
+
+Aucun test de non-régression ne bouge (les canaris Palm 180 × 90 et la matrice de profils sont
+inchangés) : le changement ne touche que les profils Claw et Fingertip.
 
 ## 5. Ce que le reverse engineering confirme aussi
 

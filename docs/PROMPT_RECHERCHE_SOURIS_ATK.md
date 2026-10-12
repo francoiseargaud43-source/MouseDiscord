@@ -77,7 +77,7 @@ CONTEXTE TECHNIQUE (lis les fichiers joints avant de commencer)
     `width_max_mm − 3.0` (estimation provisoire) ;
   * compatibilité de prise (10 / 5 / exclusion) : `Élevé` / `Moyen` / `Faible` / `Inconnu` ;
   * position de la bosse (5 / 0) : idéale = Palm → {Front, Mid}, Claw → {Mid, Rear}, Fingertip → ignorée ;
-  * hauteur des boutons (5 ou 10 / 0) : idéale = Palm → {High}, Claw → {Low, Mid}, Fingertip → {Low}.
+  * hauteur des boutons (5 ou 10 / 0) : idéale = Palm → {High} · Claw → {Low} · Fingertip → {Low, Mid} (règle unique des quatre documents normatifs).
 - Une donnée absente vaut « Inconnu » : la souris sort alors du classement (« à vérifier ») au lieu de recevoir un
   score inventé. C'est un comportement VOULU.
 - Mode « Haut de Gamme » : +1 si `polling_hz` ≥ 8000 est documenté, +1 si `sensor` ∈ {PAW3950, PAW3950 Ultra,

@@ -86,3 +86,56 @@ def test_no_citation_of_nonexistent_audit_section():
     assert "Points non vérifiés" not in _read("docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md")
     # « AUDIT.md §3.3 » n'existe pas (la séparation des largeurs est au constat C2, §2)
     assert "AUDIT.md, §3.3" not in _read("utils/models.py")
+
+
+# ---------------------------------------------------------------------------
+# Règles du moteur recopiées dans les documents normatifs (2026-10-12)
+# ---------------------------------------------------------------------------
+# Bug de la 28e passe : quatre documents (dont ce README et le prompt de référence) annonçaient
+# « Claw → {Low, Mid} · Fingertip → {Low} », alors que `utils/matcher.py` applique l'inverse depuis le
+# reverse engineering de l'outil Oblivity. Un document qui décrit une règle du moteur est un document
+# qui peut se périmer : ces quatre-là portent désormais la MÊME phrase de référence, et le test
+# ci-dessous la compare au moteur. Changer la règle sans changer la phrase fait échouer la suite.
+RULE_DOCUMENTS = [
+    "README.md",
+    "docs/MASTER_PROMPT_AZEMOUSE.md",
+    "docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md",
+    "docs/PROMPT_RECHERCHE_SOURIS_ATK.md",
+]
+
+
+def _canonical_button_sentence() -> str:
+    from utils.matcher import BUTTON_IDEAL
+    from utils.models import Grip
+    parts = [f"{grip.name.capitalize()} → {{{', '.join(sorted(BUTTON_IDEAL[grip]))}}}"
+             for grip in (Grip.PALM, Grip.CLAW, Grip.FINGERTIP)]
+    return " · ".join(parts)
+
+
+@pytest.mark.parametrize("rel", RULE_DOCUMENTS)
+def test_button_rule_sentence_is_the_same_in_every_normative_document(rel):
+    sentence = _canonical_button_sentence()
+    assert sentence == "Palm → {High} · Claw → {Low} · Fingertip → {Low, Mid}", (
+        "la phrase de référence du test ne correspond plus au moteur : mettre à jour les quatre "
+        f"documents normatifs et ce test dans le même commit (moteur : {sentence})"
+    )
+    assert sentence in _read(rel), (
+        f"{rel} n'annonce pas la règle des boutons du moteur ({sentence})"
+    )
+
+
+def test_no_document_announces_the_retired_button_rule():
+    """Les formulations périmées ne doivent pas revenir (hors mention historique explicite)."""
+    retired = ("Claw→{Low,Mid}", "Claw→{Low, Mid}", "Claw : Low ou Mid", "Claw -> {Low, Mid}",
+               "Fingertip→{Low}", "Claw → {Low, Mid}")
+    offenders = []
+    for path in sorted(ROOT.glob("*.md")) + sorted(ROOT.glob("docs/**/*.md")):
+        text = path.read_text(encoding="utf-8")
+        # `docs/REVERSE_ENGINEERING_OBLIVITY.md` §4 conserve l'ancienne règle comme HISTORIQUE daté
+        # (journal de décision) : c'est le seul endroit autorisé à la citer.
+        if path.name == "REVERSE_ENGINEERING_OBLIVITY.md":
+            continue
+        for phrase in retired:
+            if phrase in text:
+                offenders.append(f"{path.relative_to(ROOT)} : « {phrase} »")
+    assert offenders == [], "formulations de la règle boutons périmée : " + " ; ".join(offenders)

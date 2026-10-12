@@ -15,6 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from cogs.finder_flow import result_slots  # noqa: E402
 from config import MOUSE_DB_PATH  # noqa: E402
 from utils.catalog import load_catalog  # noqa: E402
 from utils.matcher import MAX_SCORE, compute_target_ranges, distance_outside, evaluate_mouse, grip_width_for_scoring  # noqa: E402
@@ -32,7 +33,7 @@ MODES = [
     ("Qualité/Prix", BudgetMode.QUALITE_PRIX),
     ("Haut de gamme", BudgetMode.HAUT_DE_GAMME),
     ("Peu importe le prix", BudgetMode.PEU_IMPORTE_PRIX),
-    (f"Budget ≤ {CUSTOM_MAX_EUR:g} €", BudgetMode.CUSTOM),
+    ("Budget ≤ {cap:g} €", BudgetMode.CUSTOM),   # le plafond est formaté à l'affichage
 ]
 
 
@@ -53,7 +54,13 @@ def _status_cell(s) -> str:
     return f"✅ {s.total}/{MAX_SCORE}"
 
 
-def build() -> str:
+def build(custom_max_eur: float = CUSTOM_MAX_EUR) -> str:
+    """Construit la matrice complète.
+
+    ``custom_max_eur`` est le plafond du mode « Budget personnalisé ». Il ne doit influencer QUE la
+    ligne « Budget » des classements par mode — c'est le sens du contrôle de non-régression
+    `tests/test_compare_profiles.py::test_only_the_budget_row_depends_on_the_custom_budget`.
+    """
     mice = load_catalog(MOUSE_DB_PATH)
     out: list[str] = []
     out.append("# Matrices de comparaison par profil\n")
@@ -61,8 +68,10 @@ def build() -> str:
                "Ne pas modifier à la main : relancer le script._\n")
     out.append("**Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; "
                "« ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.\n")
-    out.append(f"Budget personnalisé de comparaison : {CUSTOM_MAX_EUR:g} €. Tolérances de sélection : "
-               "Économique 5 pts, Qualité/Prix 2 pts, Haut de gamme 2 pts, Budget 2 pts (provisoires).\n")
+    out.append(f"Budget personnalisé de comparaison : {custom_max_eur:g} € (il ne s'applique QU'À la ligne « Budget » "
+               "des classements : les autres modes classent le catalogue entier, comme le bot). "
+               "Tolérances de sélection : Économique 5 pts, Qualité/Prix 2 pts, Haut de gamme 2 pts, Budget 2 pts "
+               "(provisoires).\n")
 
     for code, title, hand, grip in PROFILES:
         ranges = compute_target_ranges(hand, grip)
@@ -75,7 +84,7 @@ def build() -> str:
         out.append("|---|---|---|---|---|---|---|---|---|")
         scores = []
         for m in mice:
-            s = evaluate_mouse(m, hand, grip, BudgetMode.CUSTOM, CUSTOM_MAX_EUR)
+            s = evaluate_mouse(m, hand, grip, BudgetMode.CUSTOM, custom_max_eur)
             scores.append(s)
             width_used, src = grip_width_for_scoring(m)
             width_txt = f"{width_used:.1f} mm ({'mesurée' if src == 'measured' else 'estimée'}, écart {distance_outside(width_used, ranges.width_min, ranges.width_max):.1f})"
@@ -88,13 +97,24 @@ def build() -> str:
                 f"{s.confidence or '—'} | {missing} |"
             )
 
-        out.append(f"\n**Classement par mode (profil {code}, budget ≤ {CUSTOM_MAX_EUR:g} € pour le mode budget)**\n")
+        out.append(f"\n**Classement par mode (profil {code}, calculé comme dans le bot)**\n")
+        out.append("Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = match idéal ; "
+                   "2e = alternative, qui préfère une autre coque et n'élargit qu'une fois à ±5 points) : "
+                   "ce n'est pas le 2e brut du classement.\n")
         out.append("| Mode | 1er | 2e | Zone de tolérance | Explication du 1er |")
         out.append("|---|---|---|---|---|")
+        # Chaque mode est jugé sur la liste que le bot utilise pour ce mode : le plafond de budget
+        # personnalisé ne concerne que le mode « Budget » (avant le 2026-10-12, ce script classait les
+        # cinq modes sur la liste plafonnée à 75 € et se trompait de gagnant sur 8 lignes sur 15).
+        free_scores = [evaluate_mouse(m, hand, grip) for m in mice]
         for label, mode in MODES:
-            sel = select(scores, mode)
-            first = f"{sel.ranked[0].mouse.label} ({sel.ranked[0].total}/{MAX_SCORE})" if sel.ranked else "aucun classable"
-            second = f"{sel.ranked[1].mouse.label} ({sel.ranked[1].total}/{MAX_SCORE})" if len(sel.ranked) > 1 else "—"
+            pool_scores = scores if mode is BudgetMode.CUSTOM else free_scores
+            # Comme le bot : classement complet, puis les deux places affichées (règle de coque incluse).
+            sel = select(pool_scores, mode, top_n=len(pool_scores))
+            label = label.format(cap=custom_max_eur)
+            ideal, alternative, _economy = result_slots(sel)
+            first = f"{ideal.mouse.label} ({ideal.total}/{MAX_SCORE})" if ideal else "aucun classable"
+            second = f"{alternative.mouse.label} ({alternative.total}/{MAX_SCORE})" if alternative else "—"
             out.append(f"| {label} | {first} | {second} | {sel.pool_size} candidat(s) | {sel.explanation} |")
         out.append("")
     return "\n".join(out) + "\n"
@@ -115,10 +135,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--sortie", default=str(DEFAULT_TARGET),
                         help="fichier Markdown à écrire (défaut : docs/audit/matrice_profils.md)")
+    parser.add_argument("--budget", type=float, default=CUSTOM_MAX_EUR,
+                        help=f"plafond du mode « Budget personnalisé » (défaut : {CUSTOM_MAX_EUR:g} €) ; "
+                             "il ne doit modifier que la ligne « Budget »")
     args = parser.parse_args(argv)
     target = Path(args.sortie)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(build(), encoding="utf-8")
+    target.write_text(build(args.budget), encoding="utf-8")
     print(f"Écrit : {target}")
     return 0
 

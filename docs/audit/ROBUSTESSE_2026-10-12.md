@@ -1108,3 +1108,104 @@ Aucun canari n'a bougé : Palm 180 × 90 reste Phantom 35/40 (V6 30, Z1 30, A9 P
   `tools/image_identity_check.py --reference … --candidate …` → « même coque » (0,24 %).
 - `tools/qa_flow_matrix.py` (grille complète, 27 170 profils) : **0 problème**.
 - `tools/recommendation_stats.py` et `tools/compare_profiles.py` régénérés (jamais édités à la main).
+
+---
+
+## 16. Vingt-huitième passe (2026-10-12) : cinq documents décrivaient un autre moteur que celui qui tourne
+
+**La question posée** : « continue de vérifier, bugs cachés un peu plus enfouis, et un bug majeur ».
+
+**La méthode** : au lieu de relire le code (déjà couvert par 366 tests et un banc d'essai de 27 170
+profils), confronter **chaque règle chiffrée écrite dans un document** à la constante ou à la fonction
+qui la fait tourner. Les documents sont des traductions du moteur : une traduction peut mentir sans
+qu'aucun test ne s'en aperçoive, parce qu'aucun test ne lit la traduction.
+
+### 16.1 Bug majeur nº 1 — la règle des boutons était fausse dans CINQ documents
+
+`utils/matcher.py` applique (`BUTTON_IDEAL`) :
+
+| Prise | Règle du moteur | Ancienne règle écrite dans les documents |
+|---|---|---|
+| Palm | `{High}` | identique |
+| Claw | `{Low}` — les boutons **médians rapportent 0** | `{Low, Mid}` — 5 points accordés à tort |
+| Fingertip | `{Low, Mid}` — jamais `High` | `{Low}` — 10 points perdus à tort |
+
+Le moteur avait raison **depuis le reverse engineering de l'outil Oblivity** (2026-10-11) : les captures
+du propriétaire montrent, pour un profil Fingertip, « Mid Buttons / **Low Buttons** », et pour les trois
+variantes de Claw « Button **Low** ». Ce sont ces captures qui avaient fait changer le barème — mais
+cinq documents étaient restés sur l'ancien texte : `README.md` (tableau du barème), le
+**prompt de référence** (`docs/MASTER_PROMPT_AZEMOUSE.md` §7.2), `docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md`,
+`docs/PROMPT_RECHERCHE_SOURIS_ATK.md` et `docs/REVERSE_ENGINEERING_OBLIVITY.md` (qui annonçait même les
+deux alignements comme « non appliqués » alors qu'ils l'étaient).
+
+**Effet réel de l'ancien texte, mesuré sur le catalogue** : 6 souris à boutons `Mid` (Scyrox V6,
+ATK X1 V2 Ultra Max, A9 Plus / Ultimate / Air / NB)
+
+| | Claw (5 pts en jeu) | Fingertip (10 pts en jeu) |
+|---|---|---|
+| Ancien texte | 5 points accordés | 0 point |
+| Moteur (et règle correcte) | **0 point** | **10 points** |
+
+Aucun score n'a été modifié : **le bot a toujours calculé juste** ; c'est la documentation qui
+décrivait un autre barème. Les quatre documents normatifs portent désormais la **même phrase de
+référence** — `Palm → {High} · Claw → {Low} · Fingertip → {Low, Mid}` — que deux tests comparent au
+moteur (`tests/test_matcher.py::test_button_rule_matches_the_oblivity_reverse_engineering` et
+`tests/test_doc_references.py::test_button_rule_sentence_is_the_same_in_every_normative_document`,
+plus `test_no_document_announces_the_retired_button_rule`). Changer le moteur sans changer les
+documents fait désormais échouer la suite — c'est exactement ce qui manquait.
+
+### 16.2 Bug majeur nº 2 — la matrice de traçabilité annonçait un autre gagnant que le bot sur 8 lignes sur 15
+
+`tools/compare_profiles.py` évaluait **toutes** les souris avec le mode « Budget personnalisé »
+plafonné à 75 €, puis classait les **cinq** modes sur cette même liste. Le plafond fuyait donc dans
+quatre modes que le bot ne plafonne jamais (`cogs/finder_flow.py` passe le mode choisi à
+`evaluate_mouse` : seul le mode budget plafonne). Mesure, mode par mode, matrice contre bot :
+
+| Profil | Mode | Ancienne matrice | Bot (et matrice corrigée) |
+|---|---|---|---|
+| Palm 180 × 90 | Économique | VXE Dragonfly V3 / V3 Pro | **ATK Z1 V2 Ultra** |
+| Palm 180 × 90 | Qualité/Prix | ATK Z1 V2 Ultra | **ATK Phantom Ultimate** |
+| Palm 180 × 90 | Haut de gamme | Scyrox V6 | **ATK Phantom Ultimate** |
+| Palm 180 × 90 | Peu importe le prix | ATK A9 Mini | **ATK Phantom Ultimate** |
+| Claw 150 × 75 | Économique | VXE Dragonfly V3 / V3 Pro | **Pulsar X2 v3 Mini** |
+| Claw 150 × 75 | Qualité/Prix | ATK Blazing Sky F1 V2 | **Pulsar X2 v3 Mini** |
+| Claw 150 × 75 | Haut de gamme | Scyrox V8 / V8S | **Pulsar X2 v3 Mini** |
+| Claw 150 × 75 | Peu importe le prix | ATK F1 V3 Ultimate | **Pulsar X2 v3 Mini** |
+
+C'est **8 lignes sur 15** — et c'est ce document que le README citait comme « matrice complète », ce
+qui avait propagé l'erreur jusque dans le paragraphe d'exemple du README (corrigé aussi).
+
+**Correctif** : chaque mode est classé sur la liste que le bot lui donne (plafond réservé au mode
+budget), les deux colonnes sont les **deux places réellement affichées** (`result_slots`, règle de
+coque incluse, élargissement unique à ±5 points), et l'en-tête du document dit lequel des deux est
+le match idéal. Un argument `--budget` permet de rejouer la vérification.
+
+**Preuve que le garde-fou attrape le bug** : `tests/test_compare_profiles.py` contient deux tests —
+l'invariant « changer le plafond de 75 € à 200 € ne doit changer que la ligne Budget » et la
+reproduction, ligne par ligne, de ce que le bot calcule. Rejoués contre l'**ancienne** version de
+l'outil (chargée depuis `git show HEAD:tools/compare_profiles.py`), les deux échouent : le premier sur
+« le plafond du mode budget change la ligne « Économique » du profil P », le second sur « la matrice
+n'annonce pas le gagnant que le moteur calcule (ATK Z1 V2 Ultra) ».
+
+### 16.3 Ce qui a été vérifié sans rien trouver (et pourquoi c'est noté)
+
+- Les **plages cibles** (150/180/210 × 75/90/110, trois prises) recalculées par le moteur : identiques
+  à la documentation au dixième de millimètre.
+- Les **quatre valeurs de non-régression** du README (V6 30, Z1 30, A9 Plus 25, X1 20) rejouées avec
+  leur détail par critère : exactes.
+- Le **catalogue** : 36 souris, 13 coques nommées et 13 souris isolées (26 groupes distincts), 21
+  hauteurs de boutons inconnues, 1 bosse inconnue (`vxe_x3`) — conforme à ce que dit le README.
+- Les **36 liens d'affiliation** : un par souris, aucun orphelin, `?country=FR&ref=aze` chez atk.store,
+  `?ref=AZE` chez Pulsar (forme fournie par le propriétaire), `?bg_ref=…` chez Scyrox.
+- La **« coque jumelle »** du profil Claw (Pulsar X2 v3 Mini / X2 CrazyLight Mini) n'est **pas** un
+  bug : c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance
+  ne contient que des variantes de la même coque — le banc d'essai les compte séparément.
+
+### 16.4 Suites après les corrections
+
+- `pytest -q` : **371 tests** — 363 avant la passe, +1 pour la règle des boutons, +2 pour la matrice,
+  +5 pour la cohérence documentaire (dont un test paramétré sur les quatre documents normatifs).
+- `tools/qa_flow_matrix.py` (grille complète) : **0 problème**, 7 476 profils à score partiel,
+  1 194 replis de coque, 6 779 profils à trois places (24,95 %).
+- `python tools/compare_profiles.py` : matrice régénérée (23 insertions, 17 suppressions).
+- `pyflakes` : aucun avertissement.
