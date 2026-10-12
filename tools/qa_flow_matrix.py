@@ -42,12 +42,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from cogs.finder_flow import (ALTERNATIVE_EXTENSION_POINTS, ECONOMY_SLOT_TOLERANCE_POINTS,  # noqa: E402
-                              ResultsView, compute_selection, result_slots, results_embeds)
+                              ResultsView, compute_selection, mode_tolerance, result_slots,
+                              results_embeds)
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.matcher import MAX_SCORE, compatibility_percent  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
-from utils.selection import TOLERANCE_BY_MODE, _same_shell  # noqa: E402
+from utils.selection import _same_shell  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
 
 LINKS = load_commercial_links(COMMERCIAL_LINKS_PATH)
@@ -82,7 +83,10 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
         return problems
     texte = message_text(embeds)
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
-    tolerance = TOLERANCE_BY_MODE.get(selection.mode, 2)
+    # La tolérance vient du MOTEUR (`mode_tolerance`), jamais d'une valeur recopiée : si la
+    # tolérance d'un mode change, le banc d'essai change avec lui (sinon il vérifierait
+    # l'ancienne règle et laisserait passer la nouvelle).
+    tolerance = mode_tolerance(selection.mode)
 
     # Zone de chaque place (décision du 2026-10-12) : le match idéal est la tête du classement ;
     # l'alternative reste dans la zone du mode, sauf si cette zone ne contient que des variantes de la

@@ -1568,7 +1568,13 @@ a produit un faux positif de 11 champs pendant cet audit. Les 22 clés vides (11
 source du propriétaire déclare maintenant aussi les **cotes** de sa souris, écart de 0,5 mm inclus (dans la
 tolérance de concordance). Aucune valeur n'a bougé.
 
-**6. Deux corrections de forme (affichage et documentation).** Le bloc « arrière étroit » écrivait
+**6. Deux défauts d'outil (repérés en relisant les outils qui produisent les preuves).** L'outil de
+mesure affichait « classe « None » » sur une vue refusée ou non tranchée — il écrit maintenant « classe
+aucune (voir le verdict ci-dessous) ». Et le banc d'essai recopiait la tolérance de repli (`2`) au lieu de
+la demander au moteur (`mode_tolerance`) : si la tolérance d'un mode change, le banc change avec lui, sinon
+il vérifierait l'ancienne règle. Aucun des deux défauts ne touchait une valeur du catalogue ou un score.
+
+**7. Deux corrections de forme (affichage et documentation).** Le bloc « arrière étroit » écrivait
 « Votre thénar est **Petite** » (article masculin, adjectif féminin) : il dit désormais « Votre éminence
 thénar est **petite** », le terme du master prompt. Et `REPORTE_DESIGN.md` ne citait que deux titres pour la
 troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme dans le README.
@@ -1579,7 +1585,7 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 |---|---|
 | Le pied de message renvoie au bloc « Comment lire ce résultat », **qui n'existe plus** dans le résultat actuel (les explications vivent dans « 🧭 Pourquoi ce choix ? » et les blocs illustrés). Renvoi mort, visible par le membre. | Le master prompt dit **« `set_footer(text=SCORE_DISCLAIMER)` — garder tel quel »** : le texte est verrouillé volontairement. **Signalé au propriétaire** ; un mot de sa part et le renvoi est corrigé. |
 | L'emoji 🔎 sert à deux choses : le titre « 🔎 Autre piste » et le champ « 🔎 *souris* en clair » du bloc des repères. | Collision bénigne, **verrouillée par un test** (`tests/test_flow.py`) : la changer est une décision de libellé, pas un bug. Signalée. |
-| Les deux entrées de la coque A9 « large » diffèrent de **0,5 mm** en largeur (63,5 mm cahier des charges / 64,0 mm EloShapes). | Dans la tolérance de concordance (0,5 mm) appliquée partout ; et « ne pas modifier les valeurs géométriques pour faire joli » (master prompt). Un **invariant de tolérance** est ajouté pour que l'écart ne puisse pas grandir en silence. |
+| Les entrées de la coque A9 « large » divergeaient de **0,5 mm** en largeur (63,5 mm propriétaire et fabricant / 64,0 mm EloShapes). | **Tranché à la 33e passe** (§21.6) : la fiche officielle ATK relue le 2026-10-12 annonce « 125 x 63.5 x 40 mm », le fabricant prime et le propriétaire a mesuré 63,5 mm sur la sienne — la coque est alignée à 63,5 mm, l'écart reste écrit dans `conflicts`. Deux invariants le verrouillent désormais (cohérence exacte des cotes d'une même coque, conflit obligatoire si un écart subsiste). |
 | La **VXE X3** partage la coque de l'ATK X1 V2 Ultra Max sans hériter de sa bosse ni de ses boutons. | Exception **nommée et testée** depuis le 2026-10-12 : la bosse de l'X1 est contestée par une source tierce, et rien ne prouve que la X3 (gamme VXE, switchs Omron, puce Broadcom) reprenne les siens. |
 | `grip_width_mm` reste `null` pour les 36 souris : la confiance « élevée » n'est donc atteignable par personne (la largeur de prise est estimée « coque − 3 mm »). | La mesure de la largeur de prise exige une photo retournée, calibrée : c'est une **campagne** à part entière, pas un correctif d'audit. Déjà documenté (`docs/audit/MESURE_BOUTONS_2026-10-12.md`). |
 | Un salon verrouillé (`LOCK_FINDER_CHANNEL=true`) : les réponses **éphémères** d'interaction ne dépendent pas du droit « Envoyer des messages », mais un repli par `followup` en dépendrait. | Déjà écrit noir sur blanc dans le guide de déploiement §8.3 (« à confirmer lors de votre test manuel »). Rien à corriger dans le code : le repli est journalisé, jamais silencieux. |
@@ -1589,7 +1595,7 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **391 passed** (386 avant : 5 tests d'audit ajoutés, aucun test modifié) |
+| `pytest -q` | **391 passed** (386 avant : 5 tests d'audit ajoutés à cette étape, aucun test modifié) |
 | `pyflakes` (cogs, utils, tools, tests, bot.py) | 0 avertissement |
 | `tools/privacy_scan.py` | **0 violation** |
 | `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places **23 231 (85,50 %)** · 2 places 1 196 · 1 place 182 · 0 place 2 561 · repli « même coque » 990 · match idéal partiel 3 118 — **chiffres identiques à la 31e passe : aucune valeur du moteur n'a bougé** |
@@ -1597,9 +1603,10 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 | `tools/compare_profiles.py` | matrice régénérée **identique** (aucun diff Git) |
 | `tools/flow_effect.py --rapide` | « aucun changement » (0 profil modifié, 0 point perdu) |
 | `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
-| Diff des valeurs du catalogue | 36 souris × 30 champs comparés **avant/après** : seuls `conflicts` (2 souris) changent — **aucune cote, aucun prix, aucun score** |
+| Registre d'audit | `docs/audit/AUDIT.md` : cinq constats consignés (C23 provenance non vérifiable, C24 statut `verified`, C25 valeurs vides, C26 documentation de la 3ᵉ place, C27 renvoi mort du pied de message) |
+| Diff des valeurs du catalogue | 36 souris × 30 champs comparés **avant/après** : seuls `conflicts` (2 souris) changent à cette étape — **aucune cote, aucun prix, aucun score** (les deux corrections de la 33e passe, qui changent bel et bien des cotes, sont décrites et mesurées au §21.6) |
 
-### 21.5 Les cinq invariants ajoutés (les bugs corrigés ne peuvent plus revenir)
+### 21.5 Les huit invariants ajoutés (les bugs corrigés ne peuvent plus revenir)
 
 1. `test_chaque_valeur_du_catalogue_cite_la_source_qui_l_atteste` — 492 valeurs inventoriées, 0 tolérée
    sans source déclarante (et le test refuse de passer si l'inventaire devient vide : un contrôle vide ne
@@ -1612,3 +1619,111 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
    cotes, soit la boutique du fabricant.
 5. `test_deux_entrees_de_la_meme_coque_ne_divergent_pas_hors_tolerance` — une même coque ne peut pas
    annoncer deux largeurs à plus de 0,5 mm d'écart.
+6. `test_aucune_source_ne_declare_un_champ_resté_vide` — une source qui déclare un champ (c'est une preuve)
+   ne peut pas pointer une valeur absente : c'était le cas de la hauteur des deux Scyrox (§21.6).
+7. `test_deux_entrees_de_la_meme_coque_publient_les_memes_cotes` — une coque publie exactement les mêmes
+   cotes ; un écart n'est admis que s'il est **consigné** dans `conflicts`.
+8. `test_la_note_de_l_x1_ne_contredit_pas_ses_champs` — une fiche ne peut pas annoncer « non renseigné » un
+   champ qui porte une valeur (§21.6).
+
+---
+
+## 22. Trente-troisième passe : trois corrections de données prouvées (et l'effet mesuré, avant/après)
+
+**Suite de l'audit du 2026-10-12** (même commande du propriétaire : audit et chasse aux bugs). Cette passe
+corrige trois défauts de **données** — et non de code — trouvés en relisant le catalogue avec les contrôles
+automatisés du §21. Deux d'entre eux changent des **cotes** : leur effet est mesuré sur les deux bancs
+(27 170 profils du parcours, 18 522 profils statistiques) et écrit ici, avant/après.
+
+### 22.1 Une source attestait une valeur… qui n'existait pas (Scyrox V6/V8)
+
+Les deux Scyrox déclaraient `height_mm` dans leur source « cahier des charges du propriétaire » (V6S :
+119 × 61 × 40 mm ; V8S : 118 × 63 × 40 mm) alors que la valeur était restée `null`. Un lecteur — humain ou
+script — voyait donc à la fois « hauteur attestée » et « hauteur inconnue ». **Correction** : la hauteur
+publiée devient **40,0 mm** pour les deux, valeur déjà écrite dans la source qui la déclarait. Effet sur les
+scores : **aucun** (la hauteur n'entre dans aucun barème ; elle sert à l'affichage et aux documents).
+Invariant ajouté : `test_aucune_source_ne_declare_un_champ_resté_vide` (0 tolérance, sur tout le catalogue).
+
+### 22.2 Une même coque décrite avec deux largeurs (ATK A9 « large »)
+
+La coque A9 pleine taille (125 mm) était publiée avec **deux largeurs** : 63,5 mm pour l'A9 Plus 2.0 (cahier
+des charges du propriétaire) et l'A9 NB (ATK Store, Ryugear), 64,0 mm pour l'A9 Ultimate et l'A9 Air
+(EloShapes). Une même pièce de plastique, deux cotes — l'écart de 0,5 mm ne choquait pas la tolérance de
+concordance, mais il n'était écrit nulle part pour l'A9 Ultimate et l'A9 Air.
+
+**Ce qui a été vérifié le 2026-10-12** (relecture de la fiche fabricant, pas d'un revendeur) :
+`atk.store` — page de la série A9 — annonce **« Dimensions 125 x 63.5 x 40 mm »** pour la coque pleine
+taille, et « 118.4 x 61.2 x 38.6 mm » pour la Mini, avec l'A9 Air **parmi les variantes de cette page**
+(deuxième section « Variety of Sizes » : « A9 Ultimate: 125*63.5*40(mm) »).
+
+**Décision** (règle du 2026-10-12 : *le fabricant prime sur une tierce* ; le propriétaire a par ailleurs
+mesuré sa propre souris — une A9 Plus 2.0, même coque — à **63,5 mm**) : la coque publie **63,5 mm
+partout**. L'écart n'est pas effacé : il reste dans `conflicts` pour les trois entrées que la source tierce
+relève à 64,0 mm, avec la note qui explique la règle appliquée.
+
+**Effet mesuré** (moteur inchangé : seules deux valeurs de données, 64,0 → 63,5, pour l'A9 Ultimate et
+l'A9 Air) :
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Profils du parcours dont une place change (27 170) | — | **1 043 (3,8 %)** |
+| dont place occupée par une **autre variante de la même coque** | — | **977 (93,7 % des changements)** : la forme montrée ne change pas |
+| dont une **autre forme** prend la place (ZERO, R1, A9 Mini, F1 V3, Z1 V2) | — | 66 (0,24 % des profils) |
+| Score de l'A9 Ultimate modifié (grille des profils notés) | — | **96 profils** : +5 pts quand l'écart de largeur passe de 2,2 à 1,7 mm sous le seuil strict des 2 mm (`WIDTH_NEAR_DELTA_MM`) |
+| Sorties de l'A9 Ultimate (grille statistique) | 5 120 (27,6 %) | **5 829 (31,5 %)** |
+| Sorties de l'A9 Plus 2.0 | 1 401 (7,6 %) | **852 (4,6 %)** |
+| Sorties de l'A9 NB Ultra | 138 (0,7 %) | **0** (devancée par sa jumelle de coque, moins chère) |
+| Places remplies dans le message (banc du parcours) | 85,50 % · 0 problème | **85,50 % · 0 problème** (inchangé) |
+| Profils à deux places sur la même coque | 1 341 | **1 339** (inchangé à 2 près) |
+
+Autrement dit : dans 93,7 % des profils touchés, **c'est la même forme qui reste affichée** (l'A9 Plus 2.0 ou
+l'A9 NB cèdent la place à l'A9 Ultimate, même coque de 125 mm, plus légère — 55 g — et moins chère —
+41,95 € contre 45,00 € et 72,95 €). C'est exactement la règle suprême du propriétaire : l'expérience
+d'abord, et la personne doit être contente de son achat pour le prix.
+
+**Retour arrière** : une seule valeur, deux entrées (`atk_a9_ultimate`, `atk_a9_air`, `width_max_mm`),
+et la grille revient à l'état précédent — c'est mesuré, pas supposé (`tools/flow_effect.py` compare le code,
+et un script de comparaison de données a servi ici, sans être ajouté au dépôt).
+
+### 22.3 Une fiche qui se contredisait (ATK X1 V2 Ultra Max)
+
+La note du capteur annonçait « **non renseigné** » alors que le champ publiait « PAW3395 Ultra » — et deux
+phrases plus loin la même note le citait. Deux versions de la même fiche dans le même champ. Le conflit
+correspondant, lui, citait des sources vagues (« EloShapes », « ATK Store ») sans dire ce qu'elles
+annonçaient.
+
+**Correction** : la note dit désormais la valeur retenue et pourquoi ; la source EloShapes (dont le relevé
+du 2026-10-10 donnait « PAW3395 Ultra ») **déclare** le champ `sensor` — la valeur est donc attestée par
+trois sources du modèle exact (EloShapes, Maxesport, TechnoGeek BD) ; le conflit nomme la variante et
+renvoie au tableau du fabricant. **Aucune valeur n'a changé ici** : la page ATK de la série X1 V2 liste
+« PAW3950 Ultra » et « PAW3955 Master » pour ses six modèles, sans que la correspondance ligne à ligne de
+la variante « Ultra Max » soit lisible sur la page — changer le capteur sur cette ambiguïté aurait modifié
+les classements « Haut de gamme » et « Peu importe le prix » sans preuve. Le point est **signalé au
+propriétaire** (AUDIT.md §8) au lieu d'être deviné. Invariant ajouté :
+`test_la_note_de_l_x1_ne_contredit_pas_ses_champs`.
+
+### 22.4 Ce que la passe a aussi vérifié, sans rien changer
+
+- **Les 36 notes et les 36 prix** ont été relus ligne à ligne contre les champs : aucune autre contradiction
+  du type « non renseigné » sur un champ rempli, aucune valeur sans source.
+- **Les hachures du moteur** (non-régression du master prompt, main 180 × 90 Palm) : Scyrox V6 **30/40**,
+  ATK Z1 V2 Ultra **30/40**, ATK A9 Plus 2.0 **25/40**, ATK X1 V2 Ultra Max **20/40** — inchangées.
+- **`utils/validation.py`** (saisies du membre) : 22 saisies hostiles testées à la main (nombres négatifs,
+  `nan`, `inf`, chiffres non latins, espace fine insécable, `1 800 €`, `180mm`, `180.555`…) → toutes
+  acceptées ou refusées avec un message clair, aucune exception non gérée.
+- **Les bornes Discord** (10 blocs, 25 champs, 1 024 caractères par champ) sont déjà contrôlées par le banc
+  d'essai sur les 27 170 profils ; le plus long texte produit aujourd'hui mesure **435 caractères**
+  (bloc « Vos repères ») et la plus longue ligne de place **87 caractères** — aucune limite approchée.
+
+### 22.5 Preuves d'exécution (33e passe)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **395 passed** (391 avant la passe : 4 tests ajoutés, dont trois invariants nouveaux) |
+| `pyflakes` (cogs, utils, tools, tests, bot.py) | 0 avertissement |
+| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places 23 231 (85,50 %) · 2 places 1 196 · 1 place 182 · 0 place 2 561 · repli « même coque » 990 · match idéal partiel 3 118 |
+| `tools/recommendation_stats.py` (18 522 profils) | rapport régénéré : A9 Ultimate 27,6 % → **31,5 %**, A9 Plus 7,6 % → **4,6 %**, A9 NB 0,7 % → **0 %** |
+| `tools/compare_profiles.py` | matrice régénérée (deux lignes A9 mises à jour) |
+| `tools/flow_effect.py --rapide` | « aucun changement » : le **code** n'a pas bougé, seules des données |
+| `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
+| `tools/privacy_scan.py` | 0 violation |

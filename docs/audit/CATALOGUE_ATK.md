@@ -1,6 +1,6 @@
 # Catalogue ATK vérifié (livrable B)
 
-Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma v2).
+Date de vérification : **2026-10-10**, corrigé le **2026-10-12** (33e passe : largeur de la coque A9 tranchée à 63,5 mm pour ses quatre entrées). Données courantes : `data/mouse_db.json` (schéma v2) ; l'état d'un point ouvert est tenu à jour dans `docs/audit/AUDIT.md` §8.
 
 > **Ce catalogue n'est pas exhaustif.** La collection ATK (store) listait 23 produits, mais la correspondance produit ↔ statut
 > de disponibilité n'a pas été extraite, et seule la première page de la collection a été lue. Plusieurs variantes
@@ -25,7 +25,7 @@ Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma
 | ATK F1 | F1 V3 Ultimate | Compacte, symétrique, bosse « Mid » (cahier) / « Back-minimal » (EloShapes) | 118.2 × 62.4 × 38.8 | — (39 g sur V2, non transposé) | 8000 Hz (V2) | — | non vérifiée | ATK blog F1 ; EloShapes (F1 V2) | verified | P exclue (grip Palm « Faible ») · C 30 · F 35 |
 | ATK X1 | X1 V2 Ultra Max | Large, bosse « Mid » (cahier) / « Back-minimal » (EloShapes) | 127.0 × 64.0 × 40.0 | 55 g | 8000 Hz ; capteur **en conflit** (PAW3395 Ultra vs PAW3950/3955) | — | non vérifiée | EloShapes ; ATK collection X1 | verified | P 20 · C exclue (longueur 11.1 mm) · F exclue (grip Fingertip « Faible ») |
 | ATK Z1 | Z1 V2 Ultra (« Blazing Sky Z1 V2 ») | Asymétrique ergonomique | 122.5 × 66.8 × 42.4 | 54 g | 8000 Hz | — | non vérifiée | ATK collection Z1 ; ATK blog Z1 ; Meckeys | verified | **P 30** (écart largeur 4.2 mm → 0 pt) · C exclue (largeur 5.4 mm) · F exclue (grip « Faible ») |
-| ATK A9 | A9 Plus 2.0 | « Patate » universelle, symétrique | 125.0 × 63.5 (cahier) / 64.0 (EloShapes) × 40.0 | 57 g | 1000 Hz (EloShapes) | 45 € (cahier, non daté) | non vérifiée | EloShapes compare A9 / A9 Plus | verified (écart 0.5 mm) | **P 25** · C exclue (longueur 9.1 mm) · F 20 |
+| ATK A9 | A9 Plus 2.0 | « Patate » universelle, symétrique | 125.0 × **63.5** (cahier et fiche ATK) / 64.0 (EloShapes) × 40.0 | 57 g | 1000 Hz (EloShapes) | 45 € (cahier, non daté) | non vérifiée | EloShapes compare A9 / A9 Plus | verified (écart 0.5 mm) | **P 25** · C exclue (longueur 9.1 mm) · F 20 |
 | ATK Phantom | Phantom Ultimate | Moyenne, symétrique, carbone | 119.7 × 62.5 × 37.3 | 44 g | PAW3955 Master, 8000 Hz | — | non vérifiée | EloShapes | single_source | P / C / F : à vérifier (grip et boutons non vérifiés) |
 | ATK GHOST | GHOST Ultimate | Moyenne, bosse arrière | 121.0 × 61.3 × 38.0 | 48 g | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes | single_source | à vérifier (P, C, F) |
 | ATK GHOST | GHOST Extreme | Même coque que GHOST Ultimate (EloShapes) | 121.0 × 61.3 × 38.0 | 48 g | capteur non vérifié | — | non vérifiée | EloShapes (comparaison) | single_source | à vérifier |
@@ -35,8 +35,8 @@ Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma
 | ATK U2 | U2 V2 Mini | Petite à moyenne | 119.5 × 63.0 × 38.5 | 39 g | 8000 Hz ; capteur non vérifié | — | non vérifiée | EloShapes ; notice ATK ; ATK collection U2 | verified | à vérifier |
 | ATK | ZERO | Moyenne, symétrique | 120.1 × 63.2 × 38.1 | 39 g | 8000 Hz | — | non vérifiée | EloShapes | single_source | à vérifier |
 | ATK | Duckbill | Forme canard, bosse arrière | **118.0 × 55.0 × 37.4** (fiche officielle, 2026-10-12 ; les deux écarts sont consignés dans `conflicts`) | 46 ± 2 g (blog : ≈49 g) | PAW3950 Ultra, 8000 Hz, Nordic 54H20 | **81,95 €** (prix normal 118,95 €) | en vente (modèle « Ultra », 3 coloris) | ATK Store — fiche officielle (2026-10-12) ; EloShapes ; blog ATK Duck Bill | single_source | **classable depuis le 2026-10-12** — hauteur des boutons non documentée |
-| ATK A9 | A9 Ultimate | Grande, symétrique | 125.0 × 64.0 (EloShapes) / 63.5 (ATK) × 40.0 | 53 g (ATK : 55 ± 3 g) | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; ATK Store (Dragonfly A9 Ultimate) | verified (écart 0.5 mm) | à vérifier |
-| ATK A9 | A9 Air | Même taille que A9 Ultimate (EloShapes) | 125.0 × 64.0 × 40.0 | 47 g | 8000 Hz | — | non vérifiée | EloShapes (comparaison) | single_source | à vérifier |
+| ATK A9 | A9 Ultimate | Grande, symétrique | 125.0 × **63.5** (fiche ATK) / 64.0 (EloShapes) × 40.0 | 53 g (ATK : 55 ± 3 g) | PAW3950 Ultra, 8000 Hz | **41,95 €** | en vente (coque pleine taille) | EloShapes ; ATK Store (fiche de la série A9 : « 125 x 63.5 x 40 mm ») | verified (écart 0.5 mm consigné) | **31,5 % des sorties** (grille statistique) |
+| ATK A9 | A9 Air | Même taille que A9 Ultimate (EloShapes et fiche ATK) | 125.0 × **63.5** / 64.0 (EloShapes) × 40.0 | 47 g | 8000 Hz | **59,95 €** | en vente | EloShapes (comparaison) ; ATK Store (fiche de la série A9) | single_source (écart consigné) | devancée par sa jumelle de coque, moins chère |
 | ATK A9 | A9 Mini | Petite | 118.4 × 61.2 × 38.6 | 39 ± 3 g | PAW3955, 8 000 Hz | **59,95 €** | **vérifiée** (ATK + EloShapes) | ATK Store ; EloShapes | verified | **classable** depuis le 2026-10-12 (bosse « Center » → Mid) — hauteur des boutons non documentée |
 
 Dans le tableau, « à vérifier » signifie que la souris est en attente (`pending`) : le score partiel est affiché mais jamais classé.

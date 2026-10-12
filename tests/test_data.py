@@ -41,6 +41,12 @@ def mice():
     return {m.id: m for m in load_catalog(MOUSE_DB_PATH)}
 
 
+@pytest.fixture(scope="module")
+def raw_entries():
+    """Le fichier tel qu'il est écrit, sans passer par le chargeur (contrôles de forme des données)."""
+    return json.loads(MOUSE_DB_PATH.read_text(encoding="utf-8"))
+
+
 def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert set(OWNER_IDS) <= set(mice)
     assert set(NEW_ATK_IDS) <= set(mice)
@@ -887,3 +893,106 @@ def test_deux_entrees_de_la_meme_coque_ne_divergent_pas_hors_tolerance(mice):
             assert valeurs, f"{coque}.{champ} : aucune valeur"
             ecart = max(valeurs) - min(valeurs)
             assert ecart <= TOLERANCE_CONCORDANCE_MM, (coque, champ, valeurs, ecart)
+
+
+def test_aucune_source_ne_declare_un_champ_resté_vide(raw_entries):
+    """Une source qui déclare un champ est une preuve : le champ doit porter une valeur.
+
+    Défaut trouvé le 2026-10-12 : les deux Scyrox déclaraient ``height_mm`` (« cahier des charges du
+    propriétaire ») alors que la valeur était restée ``null`` — un auditeur lisait donc « hauteur
+    attestée » et « hauteur inconnue » en même temps. Le contrôle porte sur TOUT le catalogue, pour
+    que la même erreur ne puisse pas revenir à la faveur d'une édition manuelle.
+    """
+    assert len(raw_entries) >= 36, "catalogue incomplet : le contrôle serait vide"
+    declarees = vides = 0
+    for entree in raw_entries:
+        for source in entree.get("sources", []):
+            for champ in source.get("fields", []):
+                declarees += 1
+                if entree.get(champ) in (None, ""):
+                    vides += 1
+                    print(f"{entree.get('id')} : {champ} déclaré par « {source.get('label', '')[:60]} » mais vide")
+    assert declarees >= 500, f"trop peu de champs déclarés ({declarees}) : le contrôle ne prouve rien"
+    assert vides == 0, f"{vides} champ(s) déclaré(s) par une source mais resté(s) vide(s)"
+
+
+def test_l_ecart_de_largeur_de_la_coque_a9_est_consigne(mice):
+    """La coque A9 « large » publie **63,5 mm** partout, et l'écart avec EloShapes reste écrit.
+
+    Historique (tranché le 2026-10-12, 33e passe) : la coque avait deux largeurs publiées — 63,5 mm
+    (cahier des charges du propriétaire, boutique ATK, A9 NB) et 64,0 mm (EloShapes, pour l'A9
+    Ultimate et l'A9 Air) — soit une même pièce de plastique décrite de deux façons. La fiche
+    officielle ATK de la série A9 a été relue le 2026-10-12 : elle annonce « 125 x 63.5 x 40 mm »
+    pour la coque pleine taille. Règle du projet : le fabricant prime sur une tierce, et le
+    propriétaire a mesuré la sienne à 63,5 mm — la coque est donc alignée à 63,5 mm.
+    L'écart n'est pas effacé : il reste dans ``conflicts``, avec ses deux sources.
+    """
+    for ident in A9_LARGE_SHELL:
+        mouse = mice[ident]
+        assert mouse.width_max_mm == 63.5, (ident, mouse.width_max_mm)
+        # La valeur publiée est attestée par une source datée qui déclare le champ.
+        assert any("width_max_mm" in s.fields and s.date_checked for s in mouse.sources), ident
+    # Les trois entrées que la source tierce relève à 64,0 mm gardent l'écart consigné.
+    for ident in ("atk_a9_plus", "atk_a9_ultimate", "atk_a9_air"):
+        mouse = mice[ident]
+        conflit = mouse.conflicts.get("width_max_mm")
+        assert conflit, f"{ident} : écart de largeur non consigné dans « conflicts »"
+        assert sorted(conflit["values"]) == [63.5, 64.0], conflit["values"]
+        assert mouse.width_max_mm in conflit["values"], "la valeur publiée doit être une des valeurs du conflit"
+        assert len(conflit["sources"]) >= 2 and conflit.get("note"), conflit
+        assert TOLERANCE_CONCORDANCE_MM == 0.5 and max(conflit["values"]) - min(conflit["values"]) <= 0.5
+        assert "63.5" in mouse.notes and "64.0" in mouse.notes, "la note doit donner les deux valeurs"
+        # La source fabricant qui fonde la valeur est bien présente et datée — sauf pour l'A9 Plus,
+        # dont la largeur vient de la souris du propriétaire (le fabricant dit la même chose : 63,5 mm).
+        if ident == "atk_a9_plus":
+            assert any("width_max_mm" in s.fields and "propriétaire" in s.label for s in mouse.sources), ident
+        else:
+            assert any("atk.store" in s.url and "width_max_mm" in s.fields and s.date_checked
+                       for s in mouse.sources), ident
+
+
+def test_la_note_de_l_x1_ne_contredit_pas_ses_champs(mice):
+    """Une fiche ne peut pas dire « non renseigné » d'un champ qui porte une valeur.
+
+    Défaut trouvé le 2026-10-12 (33e passe) : la note de l'ATK X1 V2 Ultra Max annonçait un capteur
+    « non renseigné » alors que le champ publiait « PAW3395 Ultra », et deux paragraphes plus loin la
+    même note le citait — deux versions de la même fiche dans le même champ. Le capteur reste la
+    valeur des trois sources du modèle exact (EloShapes, Maxesport, TechnoGeek BD) ; le tableau du
+    fabricant couvre toute la série et reste consigné dans ``conflicts``.
+    """
+    mouse = mice["atk_x1_ultra_max"]
+    assert "non renseigné" not in mouse.notes, "la note contredit un champ renseigné"
+    assert mouse.sensor == "PAW3395 Ultra", mouse.sensor
+    declarants = [s for s in mouse.sources if "sensor" in s.fields]
+    assert len(declarants) >= 3, [s.label for s in declarants]
+    conflict = mouse.conflicts.get("sensor")
+    assert conflict and len(conflict["values"]) >= 2 and conflict.get("note"), conflict
+    assert mouse.sensor in conflict["values"], conflict["values"]
+
+
+def test_deux_entrees_de_la_meme_coque_publient_les_memes_cotes(mice):
+    """Une coque est une seule pièce de plastique : deux entrées publient les mêmes cotes.
+
+    L'égalité est exigée exactement ; un écart n'est admis QUE s'il est consigné dans ``conflicts``
+    (une divergence non documentée n'est pas une mesure, c'est un défaut de données).
+
+    Cas tranché le 2026-10-12 : la largeur de la coque A9 « large » valait 63,5 mm côté propriétaire
+    et fabricant, 64,0 mm côté EloShapes. La fiche officielle ATK annonce « 125 x 63.5 x 40 mm » pour
+    la coque pleine taille (relevé du 2026-10-12) : la règle « le fabricant prime » s'applique, les
+    quatre entrées publient 63,5 mm, et l'écart reste écrit dans ``conflicts`` pour ne pas disparaître.
+    """
+    par_coque: dict[str, list] = {}
+    for mouse in mice.values():
+        if mouse.shell_id:
+            par_coque.setdefault(mouse.shell_id, []).append(mouse)
+    assert len(par_coque) >= 8, "trop peu de coques enregistrées : le contrôle ne prouve rien"
+    ecarts: list[str] = []
+    for coque, groupe in par_coque.items():
+        for champ in COTES_MM:
+            valeurs = {m.id: getattr(m, champ) for m in groupe if getattr(m, champ) is not None}
+            if len(set(valeurs.values())) <= 1:
+                continue
+            non_consigne = [ident for ident in valeurs if champ not in mice[ident].conflicts]
+            if non_consigne:
+                ecarts.append(f"{coque}.{champ} = {valeurs} (non consigné pour {non_consigne})")
+    assert ecarts == [], "cotes divergentes entre entrées d'une même coque : " + " ; ".join(ecarts)

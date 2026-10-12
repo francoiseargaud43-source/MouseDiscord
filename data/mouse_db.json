@@ -8,7 +8,7 @@
     "budget_tier": "Haut de Gamme",
     "length_mm": 118.0,
     "width_max_mm": 63.0,
-    "height_mm": null,
+    "height_mm": 40.0,
     "hump_position": "Rear",
     "button_height": "Low",
     "palm_grip_fit": "Faible",
@@ -110,7 +110,7 @@
     "budget_tier": "Qualité-Prix",
     "length_mm": 119.0,
     "width_max_mm": 61.0,
-    "height_mm": null,
+    "height_mm": 40.0,
     "hump_position": "Mid",
     "button_height": "Mid",
     "palm_grip_fit": "Moyen",
@@ -350,7 +350,7 @@
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
-    "notes": "127 × 64 × 40 mm confirmés par EloShapes et la collection ATK X1. Capteur indiqué différemment selon les sources (PAW3395 Ultra chez EloShapes, PAW3950 Ultra ou PAW3955 Master chez ATK) : non renseigné. EloShapes : bosse « Back - minimal » vs « Mid » du cahier des charges (conflit signalé). Prix officiel EUR constaté le 2026-10-11 : série X1 V2 « à partir de » 41,95 €. Capteur PAW3395 Ultra, switchs ATK Lightblade mécaniques et MCU Nordic 54L15 (fiches Maxesport / TechnoGeek BD). C'est la seule « Ultra Max » du catalogue sur un capteur 3395 plutôt que 3950/3955.",
+    "notes": "127 × 64 × 40 mm confirmés par EloShapes et la collection ATK X1. Capteur retenu : PAW3395 Ultra (trois sources du modèle exact — EloShapes, Maxesport, TechnoGeek BD). La page ATK de la série X1 V2 liste, elle, « PAW3950 Ultra » et « PAW3955 Master » selon le modèle, sans que la correspondance exacte de la variante « Ultra Max » soit lisible sur la page : l'écart est consigné dans « conflicts » et reste un point à trancher avec le fabricant (aucune valeur changée sans certitude, la variante « Ultra Max » du catalogue publiant 55 g, poids de la première colonne du tableau fabricant). EloShapes : bosse « Back - minimal » vs « Mid » du cahier des charges (conflit signalé). Prix officiel EUR constaté le 2026-10-11 : série X1 V2 « à partir de » 41,95 €. Capteur PAW3395 Ultra, switchs ATK Lightblade mécaniques et MCU Nordic 54L15 (fiches Maxesport / TechnoGeek BD). C'est la seule « Ultra Max » du catalogue sur un capteur 3395 plutôt que 3950/3955.",
     "conflicts": {
       "sensor": {
         "values": [
@@ -358,9 +358,10 @@
           "PAW3950 Ultra / PAW3955 Master"
         ],
         "sources": [
-          "EloShapes",
-          "ATK Store"
-        ]
+          "EloShapes — X1 V2 Ultra Max (PAW3395 Ultra)",
+          "ATK Store — page de la série X1 V2 (tableau « Sensor » : PAW3950 Ultra / PAW3955 Master selon le modèle)"
+        ],
+        "note": "La variante exacte est donnée pour PAW3395 Ultra par trois sources (EloShapes, Maxesport, TechnoGeek BD) ; le tableau du fabricant couvre toute la série et ses six modèles, et sa correspondance ligne à ligne n'est pas lisible sur la page. La valeur des sources du modèle exact est donc retenue, l'écart reste écrit, et le point est signalé au propriétaire."
       },
       "hump_position": {
         "values": [
@@ -383,7 +384,8 @@
           "width_max_mm",
           "height_mm",
           "weight_g",
-          "polling_hz"
+          "polling_hz",
+          "sensor"
         ],
         "date_checked": "2026-10-10"
       },
@@ -674,7 +676,20 @@
     "shape": "Symmetrical",
     "sensor": "PAW3950",
     "switches": "Huano Transparent Blue (mécaniques)",
-    "mcu": "Puce NearLink / HiSilicon"
+    "mcu": "Puce NearLink / HiSilicon",
+    "conflicts": {
+      "width_max_mm": {
+        "values": [
+          63.5,
+          64.0
+        ],
+        "sources": [
+          "Cahier des charges du propriétaire (63,5 mm, sa souris)",
+          "EloShapes — famille A9 (64,0 mm)"
+        ],
+        "note": "Écart de 0,5 mm, dans la tolérance de concordance (0,5 mm) : la valeur du propriétaire est conservée (règle « le propriétaire prime »), l'écart reste consigné. Les autres variantes de la coque annoncent 63,5 mm sur la fiche officielle ATK (125 x 63.5 x 40 mm) et 64,0 mm chez EloShapes."
+      }
+    }
   },
   {
     "id": "atk_phantom_ultimate",
@@ -1652,7 +1667,7 @@
     "shell_id": "atk_a9_large",
     "budget_tier": "Qualité-Prix",
     "length_mm": 125.0,
-    "width_max_mm": 64.0,
+    "width_max_mm": 63.5,
     "height_mm": 40.0,
     "hump_position": "Mid",
     "button_height": "Mid",
@@ -1668,7 +1683,7 @@
     "weight_g": 53.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air. Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » au cahier des charges, CONFIRMÉE par la mesure du 2026-10-12 sur deux rendus de profil officiels de cette souris (47,3 %, page A9 Ultimate) — c'est la référence de la classe « moyens » de l'outil de mesure (docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
+    "notes": "Largeur 63.5 mm (tableau des dimensions de la fiche officielle A9, relevé du 2026-10-12) contre 64.0 mm chez EloShapes : écart 0.5 mm, consigné dans « conflicts » — la valeur du fabricant est retenue (règle du 2026-10-12) et elle est identique à celle de l'A9 Plus 2.0 du propriétaire, même coque A9 pleine taille. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air. Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » au cahier des charges, CONFIRMÉE par la mesure du 2026-10-12 sur deux rendus de profil officiels de cette souris (47,3 %, page A9 Ultimate) — c'est la référence de la classe « moyens » de l'outil de mesure (docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
     "sources": [
       {
         "label": "EloShapes — ATK A9 Ultimate",
@@ -1757,11 +1772,34 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle de la série A9 (tableau des dimensions : « 125 x 63.5 x 40 mm » pour la coque pleine taille — variantes Ultimate, Ultra Max, Ultimate+, Air, Air+ — et « 118.4 x 61.2 x 38.6 mm » pour la Mini)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
     "switches": "Optiques SwiftLight",
-    "mcu": "Nordic 54L15"
+    "mcu": "Nordic 54L15",
+    "conflicts": {
+      "width_max_mm": {
+        "values": [
+          63.5,
+          64.0
+        ],
+        "sources": [
+          "ATK Store — fiche officielle de la série A9 (125 x 63.5 x 40 mm)",
+          "EloShapes (famille A9 / variante : 64,0 mm)"
+        ],
+        "note": "Écart de 0,5 mm entre le fabricant (63,5 mm) et la source tierce (64,0 mm). Règle du 2026-10-12 : le fabricant prime sur une tierce — la valeur du catalogue passe donc de 64,0 (EloShapes) à 63,5 (fiche ATK). Elle rejoint ainsi celle de l'A9 Plus 2.0 du propriétaire, relevée à 63,5 mm sur sa propre souris (même coque). Les deux valeurs restent dans la tolérance de concordance (0,5 mm)."
+      }
+    }
   },
   {
     "id": "atk_a9_air",
@@ -1772,7 +1810,7 @@
     "shell_id": "atk_a9_large",
     "budget_tier": "Qualité-Prix",
     "length_mm": 125.0,
-    "width_max_mm": 64.0,
+    "width_max_mm": 63.5,
     "height_mm": 40.0,
     "hump_position": "Mid",
     "button_height": "Mid",
@@ -1788,7 +1826,7 @@
     "weight_g": 47.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master. Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » héritée de la coque « A9 large » (mesurée à 47,3 % sur l'ATK Dragonfly A9 Ultimate — docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
+    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe), et même largeur de coque que la fiche officielle de la série A9 (125 x 63.5 x 40 mm : la variante Air figure sur cette fiche). Largeur 63.5 mm (fabricant) contre 64.0 mm (EloShapes) : écart de 0.5 mm, consigné dans « conflicts », la valeur du fabricant est retenue (règle du 2026-10-12). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master. Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » héritée de la coque « A9 large » (mesurée à 47,3 % sur l'ATK Dragonfly A9 Ultimate — docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Air / A9 Ultimate",
@@ -1856,11 +1894,34 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle de la série A9 (tableau des dimensions : « 125 x 63.5 x 40 mm » pour la coque pleine taille — variantes Ultimate, Ultra Max, Ultimate+, Air, Air+ — et « 118.4 x 61.2 x 38.6 mm » pour la Mini)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
     "switches": "Optiques SwiftLight",
-    "mcu": "Nordic 54L15"
+    "mcu": "Nordic 54L15",
+    "conflicts": {
+      "width_max_mm": {
+        "values": [
+          63.5,
+          64.0
+        ],
+        "sources": [
+          "ATK Store — fiche officielle de la série A9 (125 x 63.5 x 40 mm)",
+          "EloShapes (famille A9 / variante : 64,0 mm)"
+        ],
+        "note": "Écart de 0,5 mm entre le fabricant (63,5 mm, tableau des dimensions de la fiche officielle de la série A9, où la variante Air figure) et la source tierce (64,0 mm). Règle du 2026-10-12 : le fabricant prime sur une tierce — la valeur du catalogue passe donc de 64,0 (EloShapes) à 63,5 (fiche ATK), comme pour l'A9 Ultimate, dont la coque est identique."
+      }
+    }
   },
   {
     "id": "atk_a9_mini",

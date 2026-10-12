@@ -227,8 +227,11 @@ def main() -> int:
           f"(rapport {result.aspect_measured:.2f} vs {result.aspect_reference:.2f} attendu, "
           f"écart {result.aspect_error * 100:.1f} %)")
     print(f"Échelle : {result.scale_mm_per_px:.4f} mm/px")
+    # Vue refusée ou mesure non tranchée : la classe vaut ``None`` — on l'écrit en clair plutôt que
+    # d'afficher « classe « None » » (l'outil est lu par un humain, pas par une machine).
+    classe = f"« {result.klass} »" if result.klass else "aucune (voir le verdict ci-dessous)"
     print(f"Hauteur d'appui : {result.click_height_mm:.1f} mm "
-          f"({result.click_ratio * 100:.0f} % de la hauteur totale) → classe « {result.klass} »")
+          f"({result.click_ratio * 100:.0f} % de la hauteur totale) → classe {classe}")
     print(result.verdict)
     return 0
 

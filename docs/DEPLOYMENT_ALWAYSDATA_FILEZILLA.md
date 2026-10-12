@@ -1554,6 +1554,72 @@ sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
 
 ---
 
+### 12.16 Mise à jour du 2026-10-12 (7e) : trois corrections de données prouvées
+
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §22) :
+
+1. **La coque A9 pleine taille (125 mm) publiait deux largeurs** — 63,5 mm (souris du propriétaire, fiche
+   ATK) et 64,0 mm (EloShapes, pour l'A9 Ultimate et l'A9 Air) : une même pièce, deux cotes. La fiche
+   officielle ATK a été relue le 2026-10-12 : elle annonce **« Dimensions 125 x 63.5 x 40 mm »** pour la
+   coque pleine taille. **La coque publie 63,5 mm partout**, et l'écart avec EloShapes reste écrit dans
+   `conflicts` (jamais effacé).
+2. **Deux hauteurs déclarées mais restées vides** : les Scyrox V6/V8 annonçaient `height_mm` dans leur
+   source et publiaient `null`. Elles publient **40,0 mm** (valeur déjà écrite dans la source). Sans effet
+   sur les scores : la hauteur n'entre dans aucun barème.
+3. **Une note qui se contredisait** (ATK X1 V2 Ultra Max : capteur « non renseigné » alors que le champ
+   portait « PAW3395 Ultra ») : note réécrite, conflit nommé, **aucune valeur changée** (la page du
+   fabricant liste deux capteurs pour six modèles, sans correspondance lisible).
+
+> **Les résultats changent** — c'est l'effet de la correction n° 1, et il est mesuré : **1 043 profils sur
+> 27 170 (3,8 %)** changent d'une place, dont **977 (93,7 %) au profit d'une autre variante de la MÊME
+> coque**, plus légère et moins chère (l'A9 Ultimate, 41,95 €, remplace l'A9 Plus 2.0, 45,00 €, ou l'A9 NB,
+> 72,95 € : forme identique). Les places remplies (85,50 %) et le banc d'essai (**0 problème**) sont
+> inchangés. Retour arrière possible en une valeur : `atk_a9_ultimate` et `atk_a9_air`, `width_max_mm`.
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+data/mouse_db.json                   (décisif : largeur A9, hauteurs Scyrox, notes et conflits)
+tests/test_data.py                   (facultatif : 4 invariants d'audit ajoutés)
+tools/qa_flow_matrix.py              (facultatif : le banc lit la tolérance du moteur)
+tools/measure_button_height.py       (facultatif : affichage d'une classe non tranchée)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : §21 et §22, l'audit complet)
+docs/audit/AUDIT.md                  (facultatif : C10 résolu, C23 à C30)
+docs/audit/CATALOGUE_ATK.md, docs/MASTER_PROMPT_AZEMOUSE.md,
+docs/audit/RAPPORT_FINAL.md          (facultatif : points ouverts mis à jour)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md,
+docs/audit/matrice_profils.md        (facultatif : rapports régénérés)
+```
+
+`cogs/`, `utils/`, `assets/`, `data/commercial_links.json` **ne changent pas** : aucun barème, aucun seuil,
+aucune fenêtre, aucun prix, aucun lien. Le moteur est identique.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 395 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"`.
+
+**5. Vérification en 60 secondes dans Discord**
+
+1. Parcours **Palm**, main **200 × 110**, **Haut de Gamme** : le match idéal doit être **ATK A9 Ultimate**
+   (41,95 €), suivi de l'ATK X1 V2 Ultra Max et de l'ATK A9 Plus 2.0 — trois souris à 88 %. Avant la mise à
+   jour, la première ligne était l'A9 Plus 2.0 au même prix supérieur.
+2. Parcours **Palm** 180 × 90, Qualité/Prix : le résultat doit rester **ATK Phantom Ultimate** (91,95 €),
+   puis **ATK Z1 V2 Ultra** (59,95 €), puis **ATK A9 Mini** (59,95 €) — exemple documenté du README.
+3. Aucun libellé ne doit promettre une économie qui n'en est pas une, et aucune souris au-dessus du budget
+   personnalisé ne doit apparaître.
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.

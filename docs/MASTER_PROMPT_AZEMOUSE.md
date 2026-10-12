@@ -816,12 +816,12 @@ Aucun autre fichier ne lit `thenar` pour calculer.
 ## 17. LIMITES ET POINTS OUVERTS À NE PAS MASQUER
 
 - **Aucune largeur de prise mesurée** : toutes les souris restent en `estimated` → confiance plafonnée à `moyenne`. Documenter.
-- **Prix EUR non vérifiés** pour les 12 nouvelles variantes (ATK en USD) → modes à prix partiels. Ne pas convertir.
-- **Bosse F1/X1** : conflit `Mid` (cahier) vs `Back - minimal` (EloShapes) — valeur propriétaire conservée, à confirmer.
-- **A9 Plus largeur** 63.5 vs 64.0 → conservé 63.5 (écart 0.5 mm toléré).
-- **Duckbill longueur** 118.0 vs 117 → `conflicting`, souris pending.
+- ~~**Prix EUR non vérifiés** pour les 12 nouvelles variantes~~ **Résolu le 2026-10-12** : les 36 souris ont un prix EUR relevé sur la boutique officielle (jamais de conversion depuis les dollars) ; le contrôle de déploiement vérifie que les 36 liens d'achat existent.
+- **Bosse F1/X1** : conflit `Mid` (cahier) vs `Back - minimal` (EloShapes) — valeur propriétaire conservée, consignée dans `conflicts` ; à confirmer par une vue de profil officielle le jour où elle sera mesurable.
+- **A9 Plus largeur** 63.5 vs 64.0 → **tranché le 2026-10-12** : 63,5 mm pour toute la coque A9 pleine taille (la fiche officielle ATK annonce « 125 x 63.5 x 40 mm », le propriétaire a mesuré la sienne à 63,5 mm) ; l'écart avec EloShapes reste consigné dans `conflicts`.
+- **Duckbill longueur** 118.0 vs 117 → **tranché le 2026-10-12** (fiche officielle : 118 × 55 × 37,4 mm), écarts consignés, souris classable (score partiel si la hauteur des boutons manque).
 - **Y9 polling** 8000 vs 1000 → `polling_hz = null`, conflit listé.
-- **Capteur X1** PAW3395 vs PAW3950/3955 → `sensor = null`, conflit listé.
+- **Capteur X1** PAW3395 vs PAW3950/3955 → **point signalé au propriétaire (2026-10-12)** : `sensor = PAW3395 Ultra` (trois sources du modèle exact) et le conflit reste listé — la page du fabricant couvre six modèles sans correspondance lisible, aucune valeur n'est changée sur une ambiguïté.
 - **Hébergement d'images** : le bot ne sert pas d'images ; il ne fait qu'afficher des URLs `https://` publiques. Prévoir un hébergement durable (pas d'URL éphémère Discord CDN).
 - **Thème Discord clair** : tester la lisibilité (embed bordeaux sur fond clair reste OK, mais vérifier).
 
