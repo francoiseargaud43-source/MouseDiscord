@@ -27,7 +27,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from config import MOUSE_DB_PATH  # noqa: E402
-from cogs.finder_flow import compute_selection, result_slots  # noqa: E402
+from cogs.finder_flow import compute_selection, result_slots, third_slot_title  # noqa: E402
+
+ECONOMIE_TITLE = "💸 L'économie"        # libellés exacts de la troisième place (cogs/finder_flow.py)
+AUTRE_OPTION_TITLE = "➕ L'autre option"
 from utils.catalog import load_catalog  # noqa: E402
 from utils.matcher import evaluate_mouse  # noqa: E402
 from utils.models import THENAR_LABELS, BudgetMode, ClawVariant, Grip, HandMeasure, Thenar  # noqa: E402
@@ -97,6 +100,8 @@ def run(fast: bool = False):
     empty = 0
     empty_with_unusable = 0
     same_shell_profiles = 0
+    third_titles: Counter = Counter()                          # « 💸 L'économie » / « ➕ L'autre option »
+    filled = Counter()                                         # nombre de places réellement remplies
     for grip, thenar, length, width, mode, budget in profiles(fast):
         session = make_session(grip, thenar, length, width, mode, budget)
         selection = compute_selection(session)
@@ -127,6 +132,9 @@ def run(fast: bool = False):
                 empty_causes["autre cause (exclusion de prise, de longueur ou de largeur)"] += 1
         else:
             places = [s for s in (ideal, alternative, economy) if s is not None]
+            filled[len(places)] += 1
+            if economy is not None:
+                third_titles[third_slot_title(economy, ideal, alternative)] += 1
             for premier, second in itertools.combinations(places, 2):
                 if _same_shell(premier, second):
                     same_shell_profiles += 1
@@ -172,6 +180,7 @@ def run(fast: bool = False):
         "empty_causes": empty_causes, "empty_with_unusable": empty_with_unusable,
         "dominated_by": dominated_by, "twin_ahead": twin_ahead,
         "same_shell_profiles": same_shell_profiles, "same_shell_pairs": same_shell_pairs,
+        "third_titles": third_titles, "filled": filled,
     }
 
 
@@ -195,8 +204,9 @@ def main(argv: list[str] | None = None) -> int:
     add(f"Grille : **{total:,} profils** (longueurs 140–240 mm, largeurs 60–125 mm, trois prises, "
         "trois thénars (sauté en Fingertip), cinq modes et cinq budgets personnalisés).\n".replace(",", " "))
     add("Une « recommandation » = une souris affichée dans le résultat, à l'une des trois places "
-        "(match idéal, alternative, économie). Comptage fait avec le moteur et la sélection réels, "
-        "sans aucune donnée ajoutée pour l'étude.\n")
+        "(match idéal, alternative, troisième place — intitulée « 💸 L'économie » quand elle est moins "
+        "chère que les deux autres, « ➕ L'autre option » sinon). Comptage fait avec le moteur et la "
+        "sélection réels, sans aucune donnée ajoutée pour l'étude.\n")
 
     add("## Résultats vides et repli de coque (2026-10-12)\n")
     empty = data["empty"]
@@ -207,9 +217,11 @@ def main(argv: list[str] | None = None) -> int:
         f"(compatibilité de prise) : **{data['empty_with_unusable']}**")
     add(f"- **Profils où DEUX places montrent la même coque : {data['same_shell_profiles']}** "
         f"({100 * data['same_shell_profiles'] / total:.1f} %).")
-    add("  C'est le repli documenté de `result_slots()` : quand la zone de tolérance du mode ne contient "
-        "que des variantes de la coque retenue, la deuxième place reprend la même coque plutôt que de "
-        "disparaître. Les paires concernées, par fréquence :")
+    add("  C'est le repli documenté de `result_slots()` : quand la zone ne contient rien d'autre, une "
+        "place reprend la même coque plutôt que de disparaître — mesuré, jamais supposé. Depuis la "
+        "décision du 2026-10-12, la préférence « jamais deux fois la même coque » vaut pour les TROIS "
+        "places : la troisième ne prend une variante déjà affichée que si aucune autre coque n'existe "
+        "dans sa fenêtre. Les paires concernées, par fréquence :")
     for (premier, second), nombre in data["same_shell_pairs"].most_common(6):
         add(f"  - `{premier}` + `{second}` : {nombre} profils")
     add("  Depuis la décision du 2026-10-12, l'alternative est déjà élargie une fois au-delà de la "
@@ -218,7 +230,18 @@ def main(argv: list[str] | None = None) -> int:
         "retenue. Le repli ci-dessus ne subsiste donc que là où même cet élargissement ne trouve pas "
         "d'autre coque à prix égal ou inférieur.\n")
     add("## Nombre de fois où chaque souris est recommandée\n")
-    add("| Souris | Idéal | Alternative | Économie | Total | % des profils |")
+    titres = data["third_titles"]
+    remplis = data["filled"]
+    trois_places = remplis.get(3, 0)
+    repartition = f"0 place(s) : {data['empty']} · " + " · ".join(
+        f"{n} place(s) : {remplis.get(n, 0)}" for n in (1, 2, 3))
+    add(f"- **Places remplies** : {repartition} — dont **{trois_places} profils à trois places** "
+        f"({100 * trois_places / total:.2f} % de la grille). Troisième place : "
+        f"« {ECONOMIE_TITLE} » {titres.get(ECONOMIE_TITLE, 0)} fois, "
+        f"« {AUTRE_OPTION_TITLE} » {titres.get(AUTRE_OPTION_TITLE, 0)} fois. "
+        "Le libellé suit le prix réel (décision du propriétaire du 2026-10-12) : la place reste remplie "
+        "même quand plus rien n'est moins cher, et elle ne ment pas sur son rôle.\n")
+    add("| Souris | Idéal | Alternative | 3e place | Total | % des profils |")
     add("|---|---:|---:|---:|---:|---:|")
     for mouse in ranked:
         c = counter[mouse.id]

@@ -37,7 +37,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/4 – 3/5. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4 – 4/5. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, **Peu importe le prix**, Budget personnalisé (→ modal prix max) |
-| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, économie — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
+| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, troisième place — « 💸 L'économie » ou « ➕ L'autre option », toujours remplie depuis le 2026-10-12 — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -65,7 +65,7 @@ et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'uti
 - toute erreur inattendue est tracée et expliquée en privé au membre — jamais un silence.
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
-théorique** pour le match idéal, l'alternative et, quand elle existe, l'économie. Ni score /40, ni souris
+théorique** pour le match idéal, l'alternative et la troisième place (toujours remplie : « économie » si elle en est une, « autre option » sinon). Ni score /40, ni souris
 écartées à ce niveau : le détail vient **plus bas dans le même message privé**, en petits blocs illustrés,
 dans l'ordre de l'outil de référence (Oblivity) :
 

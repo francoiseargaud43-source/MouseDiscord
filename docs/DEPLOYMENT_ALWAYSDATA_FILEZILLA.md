@@ -1360,6 +1360,80 @@ pkill -f "bot.py"                 # la tâche planifiée relance le bot au proch
 
 ---
 
+### 12.13 Mise à jour du 2026-10-12 (4e) : la troisième place est toujours remplie, et son titre dit la vérité
+
+**Ce que change cette mise à jour** (décisions, mesures et preuves : `docs/audit/ROBUSTESSE_2026-10-12.md`
+§19 ; mesure des boutons : `docs/audit/MESURE_BOUTONS_2026-10-12.md` §16 et §17) :
+
+1. **Troisième place toujours remplie** (décision du propriétaire, 2026-10-12). Avant, elle disparaissait
+   dès que plus rien n'était moins cher que le match idéal — le cas courant depuis que la **VXE V3**
+   (13,95 €, la moins chère du catalogue) est publiée. Désormais la place prend **l'option la moins chère
+   de sa fenêtre (±5 points)**, même un peu plus chère. Mesure sur le banc du parcours (27 170 profils) :
+   **3 places 6 185 → 20 171 profils (22,76 % → 74,24 %)** ; 0 place inchangé (2 561, budgets trop serrés).
+2. **Le libellé suit le prix réel** : « 💸 L'économie » quand la souris est moins chère que les deux
+   affichées, « ➕ L'autre option » sinon (4 233 « économie » / 10 505 « autre option » sur la grille
+   statistique). Plus de troisième ligne qui s'annonce « économie » sans l'être.
+3. **Jamais deux fois la même coque — sur les trois places.** La troisième ne montre une variante d'une
+   coque déjà affichée que si aucune autre coque n'existe dans sa fenêtre : **2 175 → 1 095 profils**
+   (13,0 % → 5,9 %) à deux places de même coque, dont 837 où il n'y a réellement rien d'autre à montrer.
+4. **Deux hauteurs de boutons publiées** (mesurées sur les visuels officiels, protocole calibré) :
+   **VXE Dragonfly V3 = Mid** et **ATK Blazing Sky U2 / U2 V2 Ultimate = High**. Elles sortent donc de
+   « Jeu partiel » : l'U2 passe de 3 177 à 6 141 sorties et les profils à score partiel baissent de 39 %.
+5. **Prix promotionnels d'Halloween** intégrés (20 souris sur 36), prix normal conservé dans la note.
+
+> **Les résultats changent** : c'est l'objet de la mise à jour. La troisième ligne apparaît presque
+> toujours, elle peut être plus chère que le match idéal (c'est alors écrit « L'autre option »), et deux
+> souris affichent une hauteur de boutons documentée au lieu de « non documentée ».
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+cogs/finder_flow.py                  (décisif : troisième place + libellés, coques distinctes)
+data/mouse_db.json                   (décisif : V3 Mid, U2 High, prix promotionnels)
+tests/test_flow.py                   (facultatif : verrouille les nouvelles règles)
+tests/test_qa_flow_matrix.py         (facultatif : verrouille le banc d'essai)
+tools/qa_flow_matrix.py              (facultatif : banc d'essai corrigé, 0 problème sur 27 170 profils)
+tools/recommendation_stats.py        (facultatif : rapport statistique, colonne « 3e place »)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : documentation, §18 et §19)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md  (facultatif : tableau régénéré)
+docs/audit/MESURE_BOUTONS_2026-10-12.md (facultatif : protocole et mesures)
+README.md, docs/REPORTE_DESIGN.md     (facultatif : libellés de la troisième place)
+```
+
+`utils/matcher.py`, `utils/selection.py`, `utils/catalog.py`, `cogs/mouse_finder.py` et
+`data/commercial_links.json` **ne changent pas** dans cette mise à jour : aucun barème, aucun lien.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 36 souris · liens d'achat valides : 36 · 1 erreur attendue (.env sur le serveur)
+
+grep -q "def third_slot_title" cogs/finder_flow.py \
+  && echo "OK   cogs/finder_flow.py (libellé honnête de la troisième place)" || echo "ANCIEN cogs/finder_flow.py"
+
+.venv/bin/python -c "import json; d={m['id']: m for m in json.load(open('data/mouse_db.json'))}; \
+  print(d['vxe_v3']['button_height'], '· V3', d['atk_u2']['button_height'], '· U2', d['pulsar_x2_v3_mini']['price_eur'], '€ X2 v3 Mini')"
+# attendu : Mid · V3 High · U2 119.99 € X2 v3 Mini
+```
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
+
+**5. Vérification en 60 secondes dans Discord**
+
+1. Faire un parcours en **Palm** avec des mesures courantes (ex. 185 × 85) : la troisième ligne doit
+   **presque toujours** être là, avec « 💸 L'économie » ou « ➕ L'autre option » selon le prix.
+2. Si les trois lignes sont là, vérifier qu'aucune ne montre une souris de la même coque que les autres
+   (même forme = même famille : par exemple « A9 Plus » et « A9 Ultimate » ne doivent pas être ensemble).
+3. Vérifier que la **VXE V3** ne dit plus « hauteur des boutons non documentée » : elle est notée sur ce
+   critère (classe **Mid**).
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.

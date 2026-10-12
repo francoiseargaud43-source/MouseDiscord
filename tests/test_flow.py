@@ -927,8 +927,8 @@ async def test_result_message_links_cover_exactly_the_displayed_mice():
 
     embeds = inter.response.edit_message.call_args.kwargs["embeds"]
     fields = fields_of(embeds[0])
-    shown = [fields[name] for name in ("🥇 Le match idéal", "🥈 L'alternative", "💸 L'économie")
-             if name in fields]
+    noms_possibles = ("🥇 Le match idéal", "🥈 L'alternative", "💸 L'économie", "➕ L'autre option")
+    shown = [fields[name] for name in noms_possibles if name in fields]
     labels = [c.label for c in inter.response.edit_message.call_args.kwargs["view"].children]
     assert len(labels) == len(shown)
     for line, label in zip(shown, labels):
@@ -1002,13 +1002,81 @@ def test_result_slots_never_show_the_same_mouse_twice():
     assert len(slots) == len({s.mouse.id for s in slots})
 
 
-def test_economy_slot_stays_empty_when_nothing_is_cheaper():
+def test_third_slot_takes_the_cheapest_other_option_when_nothing_is_cheaper():
+    """Décision du propriétaire (2026-10-12) : quand plus rien n'est moins cher que le match idéal
+    (cas d'une souris qui est déjà la moins chère du catalogue), la troisième place reste remplie par
+    l'option la moins chère de la fenêtre — donc « un peu plus chère » au minimum — et son libellé dit
+    la vérité (``third_slot_title``) : ce n'est plus « l'économie »."""
     ideal = _fake_score("ideal", 30, 40.0)          # déjà la moins chère de la zone
-    other = _fake_score("other", 29, 55.0)
-    selection = _fake_selection([ideal, other], reference=30)
+    alternative = _fake_score("alternative", 29, 55.0)
+    option = _fake_score("option", 28, 60.0)
+    selection = _fake_selection([ideal, alternative, option], reference=30)
 
-    _, _, economy = flow.result_slots(selection)
-    assert economy is None
+    got_ideal, got_alternative, third = flow.result_slots(selection)
+    assert (got_ideal, got_alternative) == (ideal, alternative)
+    assert third is option, "la troisième place doit rester remplie"
+    assert third.mouse.price_eur > ideal.mouse.price_eur
+    assert flow.third_slot_title(third, ideal, alternative) == "➕ L'autre option"
+
+
+def test_third_slot_is_the_cheapest_of_the_window_not_an_expensive_one():
+    """« Un peu plus chère » : c'est la moins chère des options restantes, pas la plus chère."""
+    ideal = _fake_score("ideal", 30, 20.0)
+    proche = _fake_score("proche", 29, 45.0)
+    loin = _fake_score("loin", 28, 150.0)
+    selection = _fake_selection([ideal, loin, proche], reference=30)
+
+    _, alternative, third = flow.result_slots(selection)
+    assert alternative is proche, "l'alternative est le meilleur profil des moins chères"
+    assert third is loin, "il ne reste que la plus chère"
+    assert flow.third_slot_title(third, ideal, alternative) == "➕ L'autre option"
+
+
+def test_third_slot_prefers_another_shell_over_a_variant_of_a_shown_mouse():
+    """Décision du 2026-10-12 appliquée à la troisième place : « deux places ne montrent jamais la
+    même coque ». Quand la moins chère des options restantes est une variante d'une coque déjà
+    affichée, la place prend la moins chère des coques DIFFÉRENTES — mesuré sur la grille de
+    référence : 1 338 profils concernés, surcoût médian +4,00 € (61 % sous +10 €), et 837 profils où
+    aucune autre coque n'existe dans la fenêtre (là, la variante reste la seule option)."""
+    ideal = _fake_score("ideal", 30, 20.0, shell_id="s1")
+    alternative = _fake_score("alternative", 29, 45.0, shell_id="s2")
+    variante = _fake_score("variante", 28, 41.95, shell_id="s2")   # même coque que l'alternative
+    autre = _fake_score("autre", 27, 59.95, shell_id="s3")
+    selection = _fake_selection([ideal, alternative, variante, autre], reference=30)
+
+    got_ideal, got_alternative, third = flow.result_slots(selection)
+    assert (got_ideal, got_alternative) == (ideal, alternative)
+    assert variante.mouse.price_eur < autre.mouse.price_eur      # la moins chère est une variante…
+    assert third is autre, "…mais la même coque deux fois n'offre aucun choix"
+    assert flow.third_slot_title(third, ideal, alternative) == "➕ L'autre option"
+
+
+def test_third_slot_keeps_a_variant_when_no_other_shell_exists_in_the_window():
+    """Repli : s'il n'y a AUCUNE autre coque dans la fenêtre, la variante reste montrée (place
+    remplie) — 837 profils sur la grille de référence. Jamais de place vide par principe."""
+    ideal = _fake_score("ideal", 30, 45.0, shell_id="s1")
+    alternative = _fake_score("alternative", 29, 22.95, shell_id="s2")
+    variante = _fake_score("variante", 28, 41.95, shell_id="s1")
+    selection = _fake_selection([ideal, alternative, variante], reference=30)
+
+    _, _, third = flow.result_slots(selection)
+    assert third is variante
+    assert flow.third_slot_title(third, ideal, alternative) == "➕ L'autre option"
+
+
+def test_economy_slot_stays_price_first_when_no_other_shell_is_cheaper():
+    """« L'économie » d'abord au prix : si la seule souris moins chère que les deux autres partage une
+    coque déjà affichée, elle reste montrée — c'est le prix qui fait le rôle de cette place (18 profils
+    sur la grille de référence)."""
+    ideal = _fake_score("ideal", 30, 90.0, shell_id="s1")
+    alternative = _fake_score("alternative", 29, 55.0, shell_id="s2")
+    meme_coque = _fake_score("meme_coque", 28, 40.0, shell_id="s1")
+    selection = _fake_selection([ideal, alternative, meme_coque], reference=30)
+
+    _, _, third = flow.result_slots(selection)
+    assert third is meme_coque
+    assert third.mouse.price_eur < min(ideal.mouse.price_eur, alternative.mouse.price_eur)
+    assert flow.third_slot_title(third, ideal, alternative) == "💸 L'économie"
 
 
 def test_match_summary_does_not_lowercase_the_grip_label():

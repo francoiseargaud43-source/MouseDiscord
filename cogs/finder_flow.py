@@ -523,7 +523,9 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         sert alors à accepter un léger surcoût). Elle reste dans la zone du mode ; elle n'en sort que
         si cette zone ne contient rien d'autre que la coque déjà montrée (élargissement unique).
     (3) **L'économie** : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``) qui
-        est vraiment moins chère que les deux autres ; sinon la ligne n'est pas affichée.
+        est vraiment moins chère que les deux autres. À défaut, depuis la décision du propriétaire du
+        2026-10-12, l'option la moins chère restante de cette fenêtre — même un peu plus chère que le
+        match idéal — et la ligne s'intitule alors « L'autre option » (``third_slot_title``).
 
     Aucun barème n'est modifié : les trois souris sortent du classement existant, jamais recalculé.
     """
@@ -568,12 +570,12 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         alternative = best_match([score for score in extension if _price_or_inf(score) <= ideal_price]) \
             or best_match(zone)
 
-    # (3) L'économie : la moins chère de la zone de compatibilité, d'une AUTRE coque si possible, et
-    # strictement moins chère que les deux souris déjà montrées. Mesure du 2026-10-12 : cette place
-    # n'était remplie que dans 0,3 % des profils tant qu'elle partageait la zone étroite du mode
-    # (±2 points sur 40). Depuis la décision du 2026-10-12, elle a sa propre fenêtre de ±5 points
-    # (``ECONOMY_SLOT_TOLERANCE_POINTS``) : l'option moins chère est montrée plus souvent, avec son
-    # pourcentage affiché à côté (voir docs/audit/ROBUSTESSE_2026-10-12.md §10).
+    # (3) La troisième place : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``)
+    # qui est vraiment moins chère que les deux autres (« l'économie ») ; **à défaut**, depuis la
+    # décision du propriétaire du 2026-10-12, l'option la moins chère restante de la fenêtre, même un
+    # peu plus chère que le match idéal — sans quoi la place disparaissait quand le match idéal était
+    # déjà la souris la moins chère du catalogue (VXE V3 à 13,95 € : 594 profils passaient de trois
+    # places à deux, mesuré). Le libellé suit la réalité du prix (``third_slot_title``).
     shown_ids = {ideal.mouse.id}
     if alternative is not None:
         shown_ids.add(alternative.mouse.id)
@@ -590,9 +592,45 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
     # jamais au prix de la place elle-même. Correctif du 2026-10-12 : en filtrant d'abord sur la
     # coque, la place disparaissait dès que la moins chère d'une autre coque dépassait le plafond
     # (mesure sur 1 029 profils : 2 profils au lieu de 4) — l'inverse de la règle annoncée.
-    different_shell = [score for score in below if not_same_shell(score)]
+    def other_shell(score: MouseScore) -> bool:
+        """Aucune des deux places déjà affichées ne partage sa coque avec cette souris.
+
+        Le principe « deux places du résultat ne montrent jamais la même coque » (décision du
+        2026-10-12) vaut pour les TROIS places : une troisième ligne qui reprend la coque du match
+        idéal ou de l'alternative n'offre aucun choix de forme.
+        """
+        if _same_shell(ideal, score):
+            return False
+        return alternative is None or not _same_shell(alternative, score)
+
+    different_shell = [score for score in below if other_shell(score)]
     economy = (different_shell or below)[0] if (different_shell or below) else None
+    if economy is None and candidates:
+        # Aucune souris moins chère que le plafond : décision du propriétaire (2026-10-12), la place
+        # reste remplie par l'option la MOINS CHÈRE de la fenêtre du mode — donc « un peu plus chère »
+        # au minimum possible. À prix comparable, une autre coque passe devant : mesuré sur la grille
+        # de référence, 2 175 profils (15,84 % des trois places) montraient une variante d'une coque
+        # déjà affichée, dont 1 338 avec une autre coque disponible (surcoût médian +4,00 €, 61 % sous
+        # +10 €) et 837 sans aucune autre coque dans la fenêtre.
+        autre_coque = [score for score in candidates if other_shell(score)]
+        economy = (autre_coque or candidates)[0]
     return ideal, alternative, economy
+
+
+def third_slot_title(economy: MouseScore, ideal: MouseScore,
+                     alternative: MouseScore | None = None) -> str:
+    """Titre de la troisième place : « économie » seulement si elle l'est vraiment.
+
+    Une souris plus chère que le match idéal — ou que l'alternative déjà affichée — n'est pas une
+    économie : elle est montrée comme une autre option (décision du propriétaire, 2026-10-12). Le
+    reste de la ligne (nom · prix · % du maximum théorique) ne change pas.
+    """
+    plafond = _price_or_inf(ideal)
+    if alternative is not None:
+        plafond = min(plafond, _price_or_inf(alternative))
+    if _price_or_inf(economy) < plafond:
+        return "💸 L'économie"
+    return "➕ L'autre option"
 
 
 # ---------------------------------------------------------------------------
@@ -865,7 +903,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     if alternative is not None:
         main.add_field(name="🥈 L'alternative", value=_slot_text(alternative, session.budget_mode), inline=False)
     if economy is not None:
-        main.add_field(name="💸 L'économie", value=_slot_text(economy, session.budget_mode), inline=False)
+        main.add_field(name=third_slot_title(economy, ideal, alternative),
+                       value=_slot_text(economy, session.budget_mode), inline=False)
     image_key = result_image_key(ideal, session.grip)
     if image_key:
         main = _image(main, image_key)

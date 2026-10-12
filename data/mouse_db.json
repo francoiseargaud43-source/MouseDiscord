@@ -1083,7 +1083,7 @@
     "width_max_mm": 64.6,
     "height_mm": 39.1,
     "hump_position": "Rear",
-    "button_height": "Inconnu",
+    "button_height": "High",
     "palm_grip_fit": "Moyen",
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
@@ -1096,7 +1096,7 @@
     "weight_g": 45.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom et MCU Nordic 54L15 (fiche ATK Store U2 V2). Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, palm : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-v2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
+    "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom et MCU Nordic 54L15 (fiche ATK Store U2 V2). Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, palm : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-v2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.\n\nHauteur des boutons (2026-10-12) : MESURÉE sur le rendu officiel de la fiche ATK « U2 V2 Superlight », portant « U2 ULTIMATE » imprimé en doré sur la coque (molette à droite, vue de profil stricte : rapport longueur/hauteur à 1,7 % de la cote officielle). Hauteur d'appui 20,8 mm, soit 53,2 % de la hauteur totale — au-dessus de la frontière « moyens/hauts » (51,2 %), à 1,9 point de la référence « hauts » (ATK Z1 V2, 55,1 %) → classe « High ». UNE seule vue exploitable à ce jour (les autres rendus de la page sont des vues de dessus ou de trois quarts, refusées par le contrôle de perspective) ; réserve écrite au §17.1 de docs/audit/MESURE_BOUTONS_2026-10-12.md : le profil avant complet (0-20 %) est plus proche de la référence « moyens » (A9 Plus) que de la « hauts ». Critère retenu : l'arbitrage du propriétaire du 2026-10-12 (le rapport mesuré sur l'image est le critère). Reproductible : `python tools/measure_button_height.py IMAGE --length-mm 123.7 --height-mm 39.1 --front right`.",
     "sources": [
       {
         "label": "EloShapes — ATK U2 V2 Ultimate",
@@ -1167,6 +1167,14 @@
         "url": "https://mouseshape.com/mice/atk-u2-v2-ultimate",
         "fields": [
           "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle U2 V2 Superlight : rendu de profil mesuré (hauteur d'appui des boutons)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "button_height"
         ],
         "date_checked": "2026-10-12"
       }
@@ -2513,7 +2521,7 @@
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté. Séries U2 anciennes (notre entrée) : switchs Huano mécaniques ; les U2 V2 Ultimate/Mini sont documentées à part (optiques ATK Custom + Nordic 54L15). MCU non tranché pour ces séries. Fabricant : « its inward-curved symmetrical profile is shaped for secure claw and palm control on medium-to-large hands ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
+    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté. Séries U2 anciennes (notre entrée) : switchs Huano mécaniques ; les U2 V2 Ultimate/Mini sont documentées à part (optiques ATK Custom + Nordic 54L15). MCU non tranché pour ces séries. Fabricant : « its inward-curved symmetrical profile is shaped for secure claw and palm control on medium-to-large hands ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.\n\nHauteur des boutons (2026-10-12) : MESURÉE sur le rendu officiel de la fiche ATK « U2 V2 Superlight », portant « U2 ULTIMATE » imprimé en doré sur la coque (molette à droite, vue de profil stricte : rapport longueur/hauteur à 1,7 % de la cote officielle). Hauteur d'appui 20,8 mm, soit 53,2 % de la hauteur totale — au-dessus de la frontière « moyens/hauts » (51,2 %), à 1,9 point de la référence « hauts » (ATK Z1 V2, 55,1 %) → classe « High ». UNE seule vue exploitable à ce jour (les autres rendus de la page sont des vues de dessus ou de trois quarts, refusées par le contrôle de perspective) ; réserve écrite au §17.1 de docs/audit/MESURE_BOUTONS_2026-10-12.md : le profil avant complet (0-20 %) est plus proche de la référence « moyens » (A9 Plus) que de la « hauts ». Critère retenu : l'arbitrage du propriétaire du 2026-10-12 (le rapport mesuré sur l'image est le critère). Reproductible : `python tools/measure_button_height.py IMAGE --length-mm 123.7 --height-mm 39.1 --front right`. Cette entrée (U2 / U2 Plus / U2 Ultimate) partage la coque et les cotes exactes du U2 V2 Ultimate (123,7 × 64,6 × 39,1 mm, vérifiées sur les deux fiches officielles) : la hauteur de boutons relevée sur le rendu s'applique à la coque elle-même, donc à cette entrée comme à la V2.",
     "id": "atk_u2",
     "brand": "ATK",
     "model": "Blazing Sky U2 / U2 Plus / U2 Ultimate",
@@ -2521,7 +2529,7 @@
     "length_mm": 123.7,
     "width_max_mm": 64.6,
     "hump_position": "Rear",
-    "button_height": "Inconnu",
+    "button_height": "High",
     "palm_grip_fit": "Élevé",
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
@@ -2586,6 +2594,14 @@
           "switches"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle U2 V2 Superlight : rendu de profil mesuré (hauteur d'appui des boutons)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "button_height"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",

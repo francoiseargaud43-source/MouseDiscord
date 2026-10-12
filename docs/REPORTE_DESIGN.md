@@ -205,7 +205,8 @@ V8 et F1 exclues ; le thénar renseigné ne change **aucun** score (`test_thenar
 Le message privé ne montre plus ni score, ni badge de confiance, ni repères de taille en premier niveau :
 
 - **🎯 Votre recommandation** (en haut) : une ligne descriptive du parcours (prise, thénar, mesures, gamme),
-  puis **🥇 le match idéal**, **🥈 l'alternative** et, quand elle existe, **💸 l'économie** — chacune sur une
+  puis **🥇 le match idéal**, **🥈 l'alternative** et la **troisième place** — **💸 l'économie** quand elle en est
+  vraiment une, **➕ l'autre option** sinon, et **toujours remplie** depuis le 2026-10-12 — chacune sur une
   seule ligne « **Nom** · poids · prix · pourcentage du maximum théorique · forme de coque ». Rien d'autre : ni score /40, ni confiance,
   ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons).
   **Exception (mode « Peu importe le prix », 2026-10-11)** : la ligne garde « Nom · pourcentage » et le prix descend en
@@ -240,9 +241,11 @@ touché : c'est une stratégie de sélection de plus (`utils/selection.py`), com
 
 Les trois rôles sont choisis dans le classement du mode, sans jamais recalculer un score : le match idéal est la
 tête du classement ; l'alternative est la souris qui correspond le mieux au profil, en préférant une souris un
-peu moins chère (son pourcentage sert sinon à faire accepter un léger surcoût) ; l'économie n'apparaît que si une
-souris reste dans la zone de compatibilité du mode (tolérance `TOLERANCE_BY_MODE`) tout en étant vraiment moins
-chère que les deux autres. Les montants et mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).
+peu moins chère (son pourcentage sert sinon à faire accepter un léger surcoût) ; la troisième place a sa propre
+fenêtre (`ECONOMY_SLOT_TOLERANCE_POINTS`, ±5 points) et prend **la moins chère des options restantes**, en
+préférant une autre coque que celles déjà affichées ; elle est **toujours remplie** (décision du propriétaire du
+2026-10-12) et son titre suit le prix réel — « 💸 L'économie » si elle est moins chère que les deux autres,
+« ➕ L'autre option » sinon. Les montants et mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).
 
 ## 11. Boutons « Fermer » / « Refaire » / « Détails » : retirés (2026-10-11)
 

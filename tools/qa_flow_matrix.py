@@ -20,8 +20,11 @@ Contrôles effectués, profil par profil :
 - aucune souris « en attente » (donnée manquante) ni « écartée » (prise faible) n'est affichée ;
 - chaque place est contrôlée contre SA fenêtre : le match idéal est la tête du classement du mode,
   l'alternative reste dans la zone du mode ou n'en sort que si aucune autre coque ne s'y trouve (et
-  jamais plus chère que le match idéal), l'économie reste dans sa fenêtre propre (±5 points) et coûte
-  strictement moins cher que les deux autres ;
+  jamais plus chère que le match idéal, hors le repli « même coque » documenté), la troisième place
+  reste dans sa fenêtre propre (±5 points), est la moins chère des options restantes de cette fenêtre
+  qui ne reprennent pas une coque déjà affichée (préférence « jamais deux fois la même coque »,
+  appliquée aux trois places le 2026-10-12) et porte le bon libellé : « 💸 L'économie » si elle est moins chère que tout ce qui est affiché,
+  « ➕ L'autre option » sinon (décision du propriétaire du 2026-10-12) ;
 - comptage, sans le compter comme une faute, des profils où DEUX places montrent la même coque :
   c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance ne
   contient que des variantes de la coque retenue — il est mesuré, pas supposé.
@@ -64,12 +67,17 @@ def message_text(embeds) -> str:
     return "\n".join(morceaux)
 
 
-def check_result_message(session, selection, embeds, displayed, repli_coque=None, etiquette="") -> list[str]:
-    """Contrôles du CONTENU du message : chaque souris montrée doit l'être avec ses vrais chiffres."""
+def check_result_message(session, selection, embeds, ideal, alternative, economy,
+                         repli_coque=None, etiquette="") -> list[str]:
+    """Contrôles du CONTENU du message : chaque souris montrée doit l'être avec ses vrais chiffres.
+
+    Les trois places sont passées **par rôle** (et non en liste filtrée) : quand l'alternative est
+    vide, une liste de souris montrées décale l'économie à sa place et le banc la juge alors comme
+    une alternative — c'est la cause des 40 avertissements fantômes du 2026-10-12, corrigée ici.
+    """
     problems: list[str] = []
-    if not displayed:
+    if ideal is None and alternative is None and economy is None:
         return problems
-    ideal, alternative, economy = (list(displayed) + [None, None, None])[:3]
     texte = message_text(embeds)
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
     tolerance = TOLERANCE_BY_MODE.get(selection.mode, 2)
@@ -108,13 +116,35 @@ def check_result_message(session, selection, embeds, displayed, repli_coque=None
             if autres:
                 problems.append(f"alternative hors zone alors qu'une autre coque y est : {mouse.label}")
             if mouse.price_eur is not None and ideal.mouse.price_eur is not None \
-                    and mouse.price_eur > ideal.mouse.price_eur:
+                    and mouse.price_eur > ideal.mouse.price_eur and not _same_shell(ideal, score):
+                # Exemption : le repli documenté « jamais moins de résultats qu'avant » — quand la zone
+                # ne contient QUE des variantes de la coque déjà montrée et qu'aucune n'est moins
+                # chère, la place reprend la zone telle quelle. C'est compté ailleurs, pas sanctionné.
                 problems.append(f"alternative élargie mais plus chère : {mouse.label}")
         if role == "l'économie" and score is not None:
+            # Décision du propriétaire du 2026-10-12 : la troisième place est « l'économie » quand elle
+            # est moins chère que tout ce qui est affiché ; sinon c'est « l'autre option » — la moins
+            # chère des options restantes de sa fenêtre — et le libellé doit dire la vérité.
             plafond = min([s.mouse.price_eur for s in (ideal, alternative)
                            if s is not None and s.mouse.price_eur is not None] or [float("inf")])
-            if mouse.price_eur is not None and mouse.price_eur >= plafond:
-                problems.append(f"économie pas strictement moins chère que les deux autres : {mouse.label}")
+            est_economie = mouse.price_eur is not None and mouse.price_eur < plafond
+            attendu = "💸 L'économie" if est_economie else "➕ L'autre option"
+            if attendu not in texte:
+                problems.append(f"troisième place mal étiquetée : {mouse.label} (attendu « {attendu} »)")
+            plancher = mouse.price_eur if mouse.price_eur is not None else float("inf")
+            montrees = {s.mouse.id for s in (ideal, alternative) if s is not None}
+            for autre in selection.ranked[1:]:
+                if autre.mouse.id in montrees or autre.mouse.price_eur is None:
+                    continue
+                # Même préférence de coque que le moteur (décision du 2026-10-12) : une variante
+                # d'une coque déjà affichée n'est pas « une autre option », elle ne compte donc pas
+                # comme un meilleur candidat pour cette place.
+                if _same_shell(ideal, autre) or (alternative is not None and _same_shell(alternative, autre)):
+                    continue
+                if autre.total >= reference - ECONOMY_SLOT_TOLERANCE_POINTS \
+                        and autre.mouse.price_eur < plancher:
+                    problems.append(f"troisième place plus chère qu'une autre option de sa fenêtre : {mouse.label}")
+                    break
         if mouse.price_eur is not None and prix_fr(mouse.price_eur) not in texte:
             problems.append(f"prix absent ou faux pour {mouse.label} : attendu {prix_fr(mouse.price_eur)}")
         if session.budget_mode is BudgetMode.CUSTOM and mouse.price_eur is not None \
@@ -249,11 +279,10 @@ def run(fast: bool) -> int:
                     continue
                 problems.extend(f"{where} : {p}" for p in check_embed_limits(embeds))
                 ideal, alternative, economy = result_slots(selection)
-                montrees = [s for s in (ideal, alternative, economy) if s is not None]
-                places[len(montrees)] += 1
+                places[len([s for s in (ideal, alternative, economy) if s is not None])] += 1
                 problems.extend(f"{where} : {p}"
-                                for p in check_result_message(session, selection, embeds, montrees,
-                                                             same_shell_slots, where))
+                                for p in check_result_message(session, selection, embeds, ideal, alternative,
+                                                             economy, same_shell_slots, where))
                 if ideal is None:
                     empties.append(where)
                 else:

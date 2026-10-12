@@ -1358,3 +1358,93 @@ de parcours rend **0 problème** sur les 27 170 profils.
 > l'état actuel, 2 561 profils n'ayant aucune souris à montrer restant inchangés —, (b) afficher une
 > souris un peu plus chère à la place de l'économie, ou (c) garder trois places en changeant le critère
 > de la troisième ? Aucune de ces trois options n'a été appliquée : elle modifie le moteur.
+
+## 19. Trentième passe : la troisième place est toujours remplie, et son titre dit la vérité
+
+**Décision du propriétaire (2026-10-12, question posée explicitement)** : plutôt que de laisser la
+troisième place vide quand plus rien n'est moins cher que le match idéal, elle accepte qu'une souris
+**un peu plus chère** soit montrée — le moteur ne change que sur feu vert, et il a été donné. Deuxième
+décision du même jour, appliquée dans la foulée : le critère « hauteur des boutons » se juge sur le
+**rapport mesuré sur les visuels** (protocole `tools/measure_button_height.py`), pas sur une hauteur en
+millimètres — c'est ce qui a permis de publier la VXE V3 en « Mid » et l'U2 en « High ».
+
+### 19.1 Ce qui change dans le moteur (`cogs/finder_flow.py`)
+
+| Règle | Avant | Après (2026-10-12) |
+|---|---|---|
+| Troisième place quand rien n'est moins cher | **vide** | la **moins chère de sa fenêtre (±5 points)**, même plus chère |
+| Titre de la troisième place | « 💸 L'économie » toujours | « 💸 L'économie » si elle est moins chère que les deux affichées, « ➕ L'autre option » sinon (`third_slot_title`) |
+| Coques distinctes | les deux premières places | **les trois** : la troisième ne reprend une coque déjà affichée que si sa fenêtre n'offre rien d'autre |
+
+Aucun barème, aucun seuil, aucun classement n'est touché : les trois souris sortent du classement déjà
+calculé (`result_slots()`), jamais recalculé.
+
+### 19.2 Effet mesuré — banc du parcours (27 170 profils, `tools/qa_flow_matrix.py`)
+
+| Places remplies | Après §18 | **Après §19** |
+|---|---:|---:|
+| 3 places | 6 185 (22,76 %) | **20 171 (74,24 %)** |
+| 2 places | 15 095 | 2 880 |
+| 1 place | 3 329 | 1 558 |
+| 0 place (budget trop serré) | 2 561 | **2 561** (inchangé) |
+
+Prix de cette troisième place, quand elle est **plus chère que le match idéal** : **9 881 profils sur
+20 171 (49 %)** — écart médian **×1,83 / +19,00 €**, 30 % des cas sous +25 %, maximum ×10,75 (match idéal
+VXE V3 à 13,95 €, troisième place ATK GHOST Ultimate à 68,95 € ; autre exemple : V3 13,95 € → VXE MAD R
+40,95 €). Dans tous ces cas, le titre affiché est « ➕ L'autre option » : le message ne promet jamais une
+économie qui n'en est pas une.
+
+### 19.3 « Jamais deux fois la même coque », sur les trois places
+
+Mesure directe sur la grille statistique (18 522 profils) : **2 175 profils (15,84 % des trois places)**
+montraient, en troisième ligne, une variante d'une coque déjà affichée. Après la préférence de coque
+appliquée à cette place :
+
+| Cas | Profils |
+|---|---:|
+| Une autre coque existait dans la fenêtre → elle est montrée | 1 338 (surcoût médian **+4,00 €**, 61 % sous +10 €) |
+| Aucune autre coque dans la fenêtre → la variante reste | 837 |
+| Cas « économie » : une variante **strictement moins chère** que les deux autres | 18 (règle du prix d'abord, assumée) |
+| **Total restant à deux places de même coque** | **1 095 profils (5,9 %)** — avant : 2 415 (13,0 %) |
+
+### 19.4 Grille statistique complète (18 522 profils)
+
+- Troisième place remplie sur **13 733 profils (74,14 %)** : « 💸 L'économie » **4 233** fois,
+  « ➕ L'autre option » **10 505** fois (rapport régénéré : `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`).
+- Souris jamais recommandées : **8 sur 36** (inchangé — mais la liste change de contenu) :
+  A9 Air, U2 Mini, X2 CrazyLight Medium, X2H CrazyLight Mini, Xlite CrazyLight Medium, Xlite v4 Large,
+  Xlite v4 Medium, X3. Motifs mesurés (rapport §« Souris jamais recommandées ») : une variante de leur
+  **propre coque est moins chère et classée devant** (A9 Air, U2 Mini, X2 CL Medium, X2H CL Mini) ou il
+  manque une donnée (**hauteur des boutons** : U2 Mini, X2H CL Mini, Xlite CL Medium, Xlite v4 Large,
+  Xlite v4 Medium ; **position de la bosse** en plus : X3). C'est exactement ce que la campagne de mesure
+  d'images doit débloquer.
+- Trois souris **sortent du zéro** grâce à la nouvelle règle : **Y9 Ultimate 24 → 294**,
+  **Duckbill 3 → 63**, **U2 V2 Mini 6 → 108** ; Fierce X 81 → 96.
+- **U2 / U2 Plus / U2 V2 Ultimate** (hauteur de boutons publiée « High ») : 3 177 → **6 141 sorties**,
+  dont 2 097 en match idéal ; les profils à match idéal **partiel** baissent encore.
+
+### 19.5 Deux bugs du banc d'essai trouvés et corrigés (le banc jugeait mal)
+
+1. **Rôles décalés** : `check_result_message()` recevait la liste des souris montrées et relisait
+   « idéal / alternative / économie » **par position**. Dès que l'alternative était vide, l'économie
+   était jugée comme une alternative → **40 avertissements fantômes** (« alternative élargie mais plus
+   chère »). Les trois places sont désormais passées **par rôle**.
+2. **Invariants périmés** : le banc exigeait encore « l'économie est strictement moins chère que les deux
+   autres » et « l'alternative élargie n'est jamais plus chère » — 15 064 alertes produites après la
+   décision du propriétaire, toutes du même type. Les contrôles suivent maintenant la règle réelle
+   (libellé attendu, place la moins chère de sa fenêtre hors coques déjà affichées).
+
+**Après correction : 0 problème sur les 27 170 profils.** Verrous ajoutés : `tests/test_qa_flow_matrix.py`
+(5 tests : rôles, libellés des deux cas, contre-épreuve du titre menteur, constantes du rapport) et
+`tests/test_flow.py` (3 tests : préférence de coque sur la troisième place, repli quand il n'y a rien
+d'autre, « économie » au prix d'abord).
+
+### 19.6 Ce qui reste ouvert
+
+- **8 souris jamais recommandées** : cinq attendent une hauteur de boutons mesurée (priorité de la
+  campagne d'images), trois perdent uniquement contre une variante moins chère de leur propre coque.
+- **Poids** : la décision « le poids compte-t-il dans le score ? » reste au propriétaire (elle décide du
+  sort des quatre jumelles légères).
+- **Crédibilité du critère « hauteur des boutons »** : le critère est le **rapport mesuré** (décision du
+  propriétaire), mais l'écart entre la classe « Mid » mesurée (47,3 % sur deux rendus) et la classe
+  « Low » (43,3 %) reste de **4 points** : une souris qui tombe au milieu est refusée, jamais devinée.
