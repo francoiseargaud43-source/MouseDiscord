@@ -723,6 +723,8 @@ variante « Ultra Max 2.0 / Black », prix normal 63,95 €, relevé le 2026-10-
 - `pytest -q` : **346 tests** (344 + 2 ajoutés) — dont deux nouveaux tests dans `tests/test_data.py` :
   la F1 V2 porte exactement les verdicts de sa coque jumelle et une source déclare chaque champ ;
   **aucune souris du catalogue n'est `unverified`**.
-- `tools/qa_flow_matrix.py --rapide` : 0 problème, aucune impasse.
+- `tools/qa_flow_matrix.py` (grille complète, 27 170 profils) : **0 problème**, aucune impasse ;
+  2 561 profils sans résultat (inchangé), 1 410 replis de coque, **6 523 profils à trois places
+  (24,01 %)** ; la grille rapide (720 profils) donne elle aussi 0 problème.
 - `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` et `docs/audit/matrice_profils.md`
   régénérés par leurs outils (jamais édités à la main).
