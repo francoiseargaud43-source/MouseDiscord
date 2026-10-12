@@ -2206,5 +2206,389 @@
     ],
     "shape": "Symmetrical",
     "switches": "Huano (mécaniques)"
+  },
+  {
+    "id": "pulsar_x2_v3_mini",
+    "brand": "Pulsar",
+    "model": "X2 v3 Mini",
+    "category": "Pulsar",
+    "family": "X2",
+    "shell_id": "pulsar_x2_v3_mini",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 115.6,
+    "width_max_mm": 61.0,
+    "height_mm": 36.6,
+    "weight_g": 51.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Low",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Le fabricant la recommande pour le claw et le fingertip grip (« Recommended for Claw / Fingertip Grip ») ; prise palm non publiée.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "mcu": "",
+    "price_eur": 119.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Coque symétrique, taille large et bosse basse : le fabricant la destine au claw et au fingertip grip (« Recommended for Claw / Fingertip Grip ») ; aucune recommandation palm publiée. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2 v3 Mini",
+        "url": "https://eu.pulsar.gg/products/x2-v3-mini-gaming-mouse",
+        "fields": [
+          "price_eur",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "hump_position",
+          "button_height",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X2 CrazyLight Medium (famille de coque X2 : bosse et implantation des boutons décrites)",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse",
+        "fields": [
+          "hump_position",
+          "button_height"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
+        "url": "https://eu.pulsar.gg/collections/mice",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_x2h_v3_mini",
+    "brand": "Pulsar",
+    "model": "X2H v3 Mini",
+    "category": "Pulsar",
+    "family": "X2H",
+    "shell_id": "pulsar_x2h_v3_mini",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 115.6,
+    "width_max_mm": 62.0,
+    "height_mm": 38.0,
+    "weight_g": 51.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Le fabricant la recommande pour le claw et le « palm claw » (« Recommended for Claw / Palm Claw Grip ») ; prises palm et fingertip non publiées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "mcu": "",
+    "price_eur": 119.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Coque symétrique à taille resserrée et bosse haute arrière : le fabricant la destine au claw grip et au « palm claw » (« Recommended for Claw / Palm Claw Grip ») ; le palm claw n'étant pas le palm complet, la prise palm reste « Inconnu ». Position de la bosse : « Narrow Waist / High Hump » sur la fiche de ce modèle ; la fiche officielle Pulsar de la X2 CrazyLight précise que « la X2H a une bosse centrale plus haute et une pente arrière plus marquée que la X2 » → « Rear » retenu. Hauteur des boutons : aucune valeur publiée par le fabricant → champ laissé « Inconnu », la souris reste « à vérifier » tant que ce relevé n'est pas fait.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2H v3 Mini",
+        "url": "https://eu.pulsar.gg/products/x2h-v3-mini-gaming-mouse",
+        "fields": [
+          "price_eur",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "hump_position",
+          "claw_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X2 CrazyLight Medium (comparaison officielle X2 / X2H : hauteur et pente de bosse)",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
+        "url": "https://eu.pulsar.gg/collections/mice",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_x2a_v3_medium",
+    "brand": "Pulsar",
+    "model": "X2A v3",
+    "category": "Pulsar",
+    "family": "X2A",
+    "shell_id": "pulsar_x2a_v3_medium",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 120.4,
+    "width_max_mm": 63.0,
+    "height_mm": 38.0,
+    "weight_g": 56.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Low",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque ambidextre recommandée par le fabricant pour le claw et le fingertip grip (« Recommended for Claw / Fingertip Grip ») ; prise palm non publiée.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "mcu": "",
+    "price_eur": 119.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Coque symétrique ambidextre (boutons latéraux amovibles) à bosse basse et taille large : « Recommended for Claw / Fingertip Grip » chez le fabricant ; aucune recommandation palm publiée. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2A v3",
+        "url": "https://eu.pulsar.gg/products/x2a-v3-gaming-mouse",
+        "fields": [
+          "price_eur",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "hump_position",
+          "button_height",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X2 CrazyLight Medium (famille de coque X2 : bosse et implantation des boutons décrites)",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse",
+        "fields": [
+          "hump_position",
+          "button_height"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
+        "url": "https://eu.pulsar.gg/collections/mice",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_x2_crazylight_medium",
+    "brand": "Pulsar",
+    "model": "X2 CrazyLight Medium",
+    "category": "Pulsar",
+    "family": "X2",
+    "shell_id": "pulsar_x2_crazylight_medium",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 120.4,
+    "width_max_mm": 63.0,
+    "height_mm": 38.0,
+    "weight_g": 39.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Low",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque X2 allégée, « optimisée pour le claw et le fingertip grip » selon le fabricant ; prise palm non publiée.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "mcu": "",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Poids de la fiche officielle : 39 ±1 g avec patins « dot skates », 41 ±1 g avec patins classiques (les deux valeurs sont publiées par le fabricant). « Optimized for Claw and fingertip grip players » : claw et fingertip renseignés, palm non. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2 CrazyLight Medium",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse",
+        "fields": [
+          "price_eur",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "hump_position",
+          "button_height",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
+        "url": "https://eu.pulsar.gg/collections/mice",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_xlite_v4_mini",
+    "brand": "Pulsar",
+    "model": "Xlite v4 Mini",
+    "category": "Pulsar",
+    "family": "Xlite",
+    "shell_id": "pulsar_xlite_v4_mini",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 115.6,
+    "width_max_mm": 63.4,
+    "height_mm": 40.7,
+    "weight_g": 52.0,
+    "shape": "Ergonomic",
+    "hump_position": "Inconnu",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque ergonomique main droite « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "mcu": "",
+    "price_eur": 119.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Seule souris ergonomique main droite du catalogue au format 115,6 mm. Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip (« Recommended for Palm Grip ») : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (et aucune fiche MouseShape pour cette génération) → champs laissés « Inconnu », la souris reste « à vérifier » tant que ces deux relevés n'existent pas. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite v4 Mini",
+        "url": "https://eu.pulsar.gg/products/xlite-v4-mini-gaming-mouse",
+        "fields": [
+          "price_eur",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
+        "url": "https://eu.pulsar.gg/collections/mice",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_xlite_v4_medium",
+    "brand": "Pulsar",
+    "model": "Xlite v4 Medium",
+    "category": "Pulsar",
+    "family": "Xlite",
+    "shell_id": "pulsar_xlite_v4_medium",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 122.0,
+    "width_max_mm": 66.0,
+    "height_mm": 43.0,
+    "weight_g": 54.0,
+    "shape": "Ergonomic",
+    "hump_position": "Inconnu",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque ergonomique main droite « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "mcu": "",
+    "price_eur": 119.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Coque ergonomique main droite haute (43 mm) et large (66 mm). Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip (« Recommended for Palm Grip ») : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (et aucune fiche MouseShape pour cette génération) → champs laissés « Inconnu », la souris reste « à vérifier » tant que ces deux relevés n'existent pas. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite v4 Medium",
+        "url": "https://eu.pulsar.gg/products/xlite-v4-gaming-mouse",
+        "fields": [
+          "price_eur",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
+        "url": "https://eu.pulsar.gg/collections/mice",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      }
+    ]
   }
 ]

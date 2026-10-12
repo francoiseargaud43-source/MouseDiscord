@@ -20,9 +20,26 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from cogs import finder_flow as flow  # noqa: E402
+from config import COMMERCIAL_LINKS_PATH  # noqa: E402
 from utils.assets import IMAGE_KEYS  # noqa: E402
+from utils.catalog import load_commercial_links  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 from utils.session import SessionStore  # noqa: E402
+
+
+def _boutons_achat(selection) -> list[tuple[str, bool]]:
+    """Reproduit les boutons RÉELS du résultat : un lien d'achat par souris classée qui en a un.
+
+    Aucun libellé n'est écrit en dur : si le classement change, l'aperçu change avec lui
+    (jamais de bouton montrant une souris qui n'est plus recommandée).
+    """
+    links = load_commercial_links(COMMERCIAL_LINKS_PATH)
+    labels = [
+        "🛒 " + f"Acheter {score.mouse.label}"[: flow.BUTTON_LABEL_MAX]
+        for score in selection.ranked
+        if links.get(score.mouse.id)
+    ]
+    return [(label, False) for label in labels] or [("🔗 Liens à venir", False)]
 
 # Les images locales sont référencées par un faux domaine : l'aperçu dessine les fichiers de
 # assets/illustrations/ sans exiger qu'ils soient déjà publiés en https.
@@ -229,7 +246,8 @@ def build_resultat() -> Image.Image:
     session.thenar = Thenar.PETITE
     session.claw_variant = ClawVariant.PINCEE
     session.budget_mode = BudgetMode.QUALITE_PRIX
-    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    selection = flow.compute_selection(session)
+    embeds = flow.results_embeds(session, selection)
     titres = [
         "Résultat — message éphémère (privé) : la recommandation",
         "Plus bas : les repères de taille (illustrés)",
@@ -245,7 +263,7 @@ def build_resultat() -> Image.Image:
         y = bandeau(draw, y, titres[index] if index < len(titres) else embed.title)
         y = draw_embed(canvas, draw, embed, y)
         # Aucun bouton interactif : uniquement les liens d'achat (ou « 🔗 Liens à venir »).
-        y = draw_boutons(draw, y, [("🛒 Acheter Scyrox V6", False), ("🔗 Liens à venir", False)])
+        y = draw_boutons(draw, y, _boutons_achat(selection))
     return canvas
 
 
@@ -275,11 +293,12 @@ def build_prix_libre() -> Image.Image:
     session.grip, session.hand_length_mm, session.hand_width_mm = Grip.PALM, 180.0, 90.0
     session.thenar = Thenar.PETITE
     session.budget_mode = BudgetMode.PEU_IMPORTE_PRIX
-    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    selection = flow.compute_selection(session)
+    embeds = flow.results_embeds(session, selection)
     etapes = [("Étape 5/5 — budget : cinq options, dont « Peu importe le prix »", flow.budget_step_embed(session),
                ["Choisissez votre gamme…"], False),
               ("Résultat « Peu importe le prix » — le prix en tout petit",
-               embeds[0], ["🛒 Acheter ATK Z1 V2 Ultra"], True)]
+               embeds[0], [label for label, _ in _boutons_achat(selection)], True)]
     hauteur = PAD
     for _, embed, _, _ in etapes:
         hauteur += 28 + _embed_height(embed, LARGEUR - 4 * PAD) + 52 + 16

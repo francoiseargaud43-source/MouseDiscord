@@ -39,6 +39,12 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | ATK Dragonfly A9 NB Ultra | ⏳ à vérifier (15/25 pts partiels) | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Inconnu | Mid | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK Blazing Sky F1 V2 | ⏳ à vérifier (20/30 pts partiels) | 118.2 mm (écart 0.6 mm) | 59.4 mm (estimée, écart 0.0) | Inconnu | Mid | Low | faible | compatibilité Palm Grip non vérifiée |
 | ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | ⏳ à vérifier (10/25 pts partiels) | 123.7 mm (dans la plage) | 61.6 mm (estimée, écart 2.0) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| Pulsar X2 v3 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 58.0 mm (estimée, écart 0.0) | Inconnu | Mid | Low | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2H v3 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 59.0 mm (estimée, écart 0.0) | Inconnu | Rear | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2A v3 | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (dans la plage) | 60.0 mm (estimée, écart 0.4) | Inconnu | Mid | Low | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (dans la plage) | 60.0 mm (estimée, écart 0.4) | Inconnu | Mid | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 60.4 mm (estimée, écart 0.8) | Élevé | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Medium | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.4) | Élevé | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil P, budget ≤ 75 € pour le mode budget)**
 
@@ -83,6 +89,12 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | ATK Dragonfly A9 NB Ultra | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Inconnu | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK Blazing Sky F1 V2 | ⏳ à vérifier (20/30 pts partiels) | 118.2 mm (écart 2.3 mm) | 59.4 mm (estimée, écart 1.0) | Inconnu | Mid | Low | faible | compatibilité Claw Grip non vérifiée |
 | ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | ⏳ à vérifier (5/25 pts partiels) | 123.7 mm (écart 7.8 mm) | 61.6 mm (estimée, écart 3.2) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
+| Pulsar X2 v3 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | Mid | Low | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2H v3 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 59.0 mm (estimée, écart 0.6) | Élevé | Rear | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2A v3 | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (écart 4.5 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Mid | Low | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (écart 4.5 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Mid | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 60.4 mm (estimée, écart 2.0) | Inconnu | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Medium | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 122.0 mm (écart 6.1 mm) | 63.0 mm (estimée, écart 4.6) | Inconnu | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil C, budget ≤ 75 € pour le mode budget)**
 
@@ -127,6 +139,12 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | ATK Dragonfly A9 NB Ultra | ⏳ à vérifier (15/20 pts partiels) | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK Blazing Sky F1 V2 | ⏳ à vérifier (25/30 pts partiels) | 118.2 mm (dans la plage) | 59.4 mm (estimée, écart 0.2) | Inconnu | ignorée (Fingertip) | Low | faible | compatibilité Fingertip Grip non vérifiée |
 | ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | ⏳ à vérifier (10/20 pts partiels) | 123.7 mm (dans la plage) | 61.6 mm (estimée, écart 2.4) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
+| Pulsar X2 v3 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Low | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2H v3 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2A v3 | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Élevé | ignorée (Fingertip) | Low | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Élevé | ignorée (Fingertip) | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 60.4 mm (estimée, écart 1.2) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Medium | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil F, budget ≤ 75 € pour le mode budget)**
 

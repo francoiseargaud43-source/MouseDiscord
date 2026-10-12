@@ -126,7 +126,7 @@ directement sur le serveur.
 | `cogs/*.py` (3 fichiers) | Oui | Oui | Commande `!setup_finder` et parcours Discord | Dossier entier |
 | `utils/*.py` (8 fichiers) | Oui | Oui | Moteur, catalogue, sessions, validation | Dossier entier |
 | `data/mouse_db.json` | Oui | Oui | Catalogue des souris | Relu à chaque recherche |
-| `data/commercial_links.json` | Oui | Oui (fichier) | Liens d'achat officiels (26 souris au 2026-10-11) | Relu à chaque résultat. **Voir §2.5** |
+| `data/commercial_links.json` | Oui | Oui (fichier) | Liens d'achat officiels (32 souris au 2026-10-12) | Relu à chaque résultat. **Voir §2.5** |
 | `assets/images.json` | Oui | Oui (fichier) | Images des étapes et du résultat | Peut être vide (aucune illustration, sans erreur) |
 | `assets/illustrations/` | Oui | Non (recommandé) | Les 15 images `T01`–`T15` prêtes à publier | **Voir §2.7** |
 | `requirements.txt` | Oui | Oui | Dépendances de production (`discord.py`, `python-dotenv`) | Installé à l'étape 6 |
@@ -864,7 +864,7 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 | Élément sur le serveur | Pourquoi le protéger |
 |---|---|
 | `~/MouseDiscord/.env` | Token et réglages propres au serveur |
-| `~/MouseDiscord/data/commercial_links.json` | **Liens d'achat** : depuis le 2026-10-11, le dépôt contient les 26 liens officiels vérifiés — c'est donc le fichier du dépôt qu'il faut installer (§12.9). Ne l'écrasez avec une version plus ancienne que si vous y avez ajouté vos propres liens à la main (comparez d'abord, §2.5) |
+| `~/MouseDiscord/data/commercial_links.json` | **Liens d'achat** : depuis le 2026-10-11, le dépôt contient les liens officiels vérifiés (32 depuis le 2026-10-12) — c'est donc le fichier du dépôt qu'il faut installer (§12.9). Ne l'écrasez avec une version plus ancienne que si vous y avez ajouté vos propres liens à la main (comparez d'abord, §2.5) |
 | `~/MouseDiscord/assets/images.json` | Conservé **seulement** si vous y avez mis vos propres URL. Depuis le 2026-10-11, le fichier du dépôt contient les clés attendues et les noms de fichiers des 15 illustrations : c'est **lui** qu'il faut installer (voir §12.5) |
 | `~/MouseDiscord/state/` | Mémoire du message d'accueil (évite les doublons) |
 | `~/MouseDiscord/.venv/` | Environnement Python du serveur |
@@ -1046,10 +1046,12 @@ Les **treize lignes** doivent afficher `OK`. Une ligne `ANCIEN …` signale un f
 du dossier correspondant (`utils/`, `assets/`, `cogs/`, `config.py`) avant de démarrer le service. Le contrôle
 `tools/check_deployment.py` complète ce diagnostic (fichiers, token, JSON, images, `state/`).
 
-### 12.9 Mise à jour du 2026-10-11 : catalogue 26 souris, prix en euros, liens d'achat (raccourci)
+### 12.9 Mise à jour du 2026-10-11 : catalogue enrichi, prix en euros, liens d'achat (raccourci)
 
 Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voulez la mise à jour
-« catalogue enrichi · prix officiels en euros · 26 liens d'achat · boutons alignés sur la vidéo Oblivity ».
+« catalogue enrichi · prix officiels en euros · liens d'achat · boutons alignés sur la vidéo Oblivity »
+(26 souris et 26 liens le 2026-10-11 ; **32 et 32** depuis l'ajout des six Pulsar le 2026-10-12, voir le bloc
+« Nouveauté 2026-10-12 » plus bas).
 
 **1. Ce qui a changé depuis la refonte visuelle**
 
@@ -1061,8 +1063,8 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | `utils/catalog.py` | Code : une forme de coque renseignée doit citer la source qui l'atteste | **Oui** |
 | `utils/selection.py` | Code : **cinquième mode « Peu importe le prix »** (la forme d'abord, puis les composants documentés ; le prix n'est jamais exigé) | **Oui** |
 | `utils/matcher.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
-| `data/mouse_db.json` | Données : 26 souris vendues, prix en euros, forme de coque sourcée, sources datées | Non (relu à chaque recherche) |
-| `data/commercial_links.json` | Données : 26 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
+| `data/mouse_db.json` | Données : 32 souris vendues (26 ATK/VXE/Scyrox + 6 Pulsar), prix en euros, forme de coque sourcée, sources datées | Non (relu à chaque recherche) |
+| `data/commercial_links.json` | Données : 32 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
 | `tools/check_deployment.py` | Outil de contrôle | Non |
 
 `assets/images.json` (libellés des 15 illustrations) accompagne `data/mouse_db.json` : sans lui, les blocs illustrés
@@ -1096,7 +1098,7 @@ tools/check_deployment.py
 ```bash
 cd ~/MouseDiscord
 .venv/bin/python tools/check_deployment.py
-# attendu : catalogue lisible : 26 souris · liens d'achat valides : 26 · 0 erreur(s) bloquante(s)
+# attendu : catalogue lisible : 32 souris · liens d'achat valides : 32 · 0 erreur(s) bloquante(s)
 ```
 
 **4. Redémarrage** (nécessaire : plusieurs fichiers Python ont changé) — mode tâche planifiée :
@@ -1122,7 +1124,7 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > `data/mouse_db.json` font donc partie du transfert.
 >
 > **Nouveauté 2026-10-11 (6ᵉ passe)** : le catalogue documente désormais les **switchs**, le **MCU**
-> et le **poids** des souris (26/26 pour le poids) ; le poids s'affiche sur la ligne du match idéal et de
+> et le **poids** des souris (32/32 pour le poids) ; le poids s'affiche sur la ligne du match idéal et de
 > l'alternative, et le départage du mode « Peu importe le prix » suit capteur → MCU → switchs → fréquence.
 > `data/mouse_db.json`, `utils/models.py`, `utils/selection.py` et `cogs/finder_flow.py` sont à jour dans la liste.
 >
@@ -1131,9 +1133,16 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > s'affiche en tout petit). Le bot démarre sans `utils/selection.py` à jour, mais l'option répondrait
 > « Aucune souris éligible » : ce fichier fait partie du transfert.
 >
+> **Nouveauté 2026-10-12 (9ᵉ passe)** : six souris **Pulsar** entrent au catalogue (X2 v3 Mini, X2H v3 Mini,
+> X2A v3, X2 CrazyLight Medium, Xlite v4 Mini, Xlite v4 Medium), relevées sur la fiche officielle de chaque
+> modèle (dimensions, poids, capteur XS-1, fréquence publiée, switchs, forme, recommandations de prise).
+> `data/mouse_db.json`, `data/commercial_links.json`, `utils/models.py` (statut `manufacturer_guide`) et
+> `utils/selection.py` (rang du capteur Pulsar XS-1, départage uniquement) sont à jour dans la liste.
+> Le contrôle attend alors **32 souris / 32 liens** ; le profil Palm 180 × 90 mm ne change pas de résultat.
+>
 > **Le fichier `utils/catalog.py` fait partie du transfert** depuis cette mise à jour : il vérifie qu'une forme de
 > coque renseignée s'appuie sur une source. Sans lui, `data/mouse_db.json` se charge encore (la forme est ignorée) :
-> le bot démarre, mais le bloc « ⛰️ La bosse et la forme » annonce « non vérifiée » pour les 26 souris.
+> le bot démarre, mais le bloc « ⛰️ La bosse et la forme » annonce « non vérifiée » pour toutes les souris.
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 

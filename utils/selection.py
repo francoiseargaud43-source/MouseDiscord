@@ -58,6 +58,10 @@ SENSOR_TIERS = {
     "PAW3955": 5,
     "PAW3950 Ultra": 4,
     "PAW3950": 3,
+    # Capteur maison Pulsar (2026-10-12) : ses caractéristiques PUBLIÉES (32 000 dpi, 750 IPS, 50 g)
+    # sont celles de la classe PAW3950 — rang aligné, aucune valeur inventée. Le classement reste un
+    # départage de composants DOCUMENTÉS, jamais un score morphologique.
+    "Pulsar XS-1": 3,
     "PAW3395 Ultra": 2,
     "PAW3395": 1,
 }

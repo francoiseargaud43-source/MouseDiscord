@@ -21,7 +21,13 @@ SHAPES = frozenset({"Symmetrical", "Ergonomic", UNKNOWN})
 
 DIMENSION_STATUSES = frozenset({"verified", "single_source", "conflicting", "owner_spec", "owner_spec_unverified"})
 PRICE_STATUSES = frozenset({"owner_spec_unverified", "verified", "unknown"})
-FIT_STATUSES = frozenset({"owner_spec", "unverified"})
+# Provenance des compatibilités de prise (palm / claw / fingertip) :
+# - « owner_spec »         : valeurs fournies par le propriétaire (cahier des charges) ;
+# - « manufacturer_guide » : valeurs reprises d'une recommandation ÉCRITE du fabricant
+#                            (« Recommended for Claw / Fingertip Grip ») — jamais d'une déduction :
+#                            une prise absente des recommandations reste « Inconnu » ;
+# - « unverified »         : aucune compatibilité renseignée (toutes « Inconnu »).
+FIT_STATUSES = frozenset({"owner_spec", "manufacturer_guide", "unverified"})
 
 
 class Grip(Enum):
