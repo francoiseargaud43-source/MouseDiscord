@@ -37,6 +37,25 @@ def _profil(grip: Grip, length: float, width: float, thenar: Thenar | None,
     return session
 
 
+class _BlocFactice:
+    """Bloc minimal au texte choisi.
+
+    Piège de discord.py 2.7 : ``Embed.fields`` renvoie des ``EmbedProxy`` en **lecture seule** — une
+    écriture dessus est acceptée puis **silencieusement perdue**. Pour la contre-épreuve, on fabrique
+    donc un bloc dont le texte est celui qu'on veut faire lire au banc.
+    """
+
+    def __init__(self, texte: str) -> None:
+        self.title = texte
+        self.description = None
+        self.fields: list = []
+        self.footer = _PiedVide()
+
+
+class _PiedVide:
+    text = None
+
+
 def _juger(session: FinderSession) -> tuple[list[str], str, tuple]:
     """Rejoue le résultat complet et renvoie (problèmes du banc, texte affiché, les trois places)."""
     selection = compute_selection(session)
@@ -47,13 +66,27 @@ def _juger(session: FinderSession) -> tuple[list[str], str, tuple]:
 
 
 def test_le_banc_ne_confond_pas_les_places_quand_l_alternative_est_vide():
-    """Régression : alternative vide → l'économie reste l'économie (aucun faux positif de prix)."""
+    """Régression : l'économie n'est jamais jugée comme une alternative (faux positif de prix).
+
+    Le décalage se produisait dès que la deuxième place était vide : le banc relisait la liste des
+    souris montrées **par position**. Depuis, chaque place est contrôlée par rôle. Le cas est donc
+    provoqué explicitement (l'alternative passée à ``None`` alors que le message, lui, montre trois
+    lignes) : les trois places restent lues séparément.
+    """
     session = _profil(Grip.PALM, 150.0, 65.0, Thenar.PETITE, BudgetMode.CUSTOM, 25.0)
     problems, texte, (ideal, alternative, economy) = _juger(session)
-    assert alternative is None                     # la situation qui déclenchait le décalage
-    assert economy is not None and economy.mouse.price_eur == 22.95
-    assert problems == []
+    assert problems == [] and alternative is not None and economy is not None
+    selection = compute_selection(session)
+    embeds = results_embeds(session, selection)
+    problems = check_result_message(session, selection, embeds, ideal, None, economy)
+    assert problems == [], "l'économie hors zone ne doit PAS être reprochée comme une alternative"
     assert f"{economy.mouse.price_eur:.2f}".replace(".", ",") + " €" in texte
+
+    # Contre-épreuve : si le message annonce « L'alternative » là où le moteur propose une piste
+    # (ici l'U2, hors de la zone du mode et plus chère que le match idéal), le banc le dit.
+    menteur = _BlocFactice(texte.replace("🔎 Autre piste", "🥈 L'alternative"))
+    problems = check_result_message(session, selection, [menteur], ideal, alternative, economy)
+    assert any("deuxième place « autre piste » sans le dire" in p for p in problems), problems
 
 
 def test_le_banc_accepte_le_libelle_l_autre_option_quand_la_troisieme_place_coute_plus_cher():
@@ -76,25 +109,6 @@ def test_le_banc_accepte_le_libelle_economie_quand_la_troisieme_place_coute_moin
     assert third_slot_title(economy, ideal, alternative) == "💸 L'économie"
     assert "💸 L'économie" in texte
     assert problems == []
-
-
-class _BlocFactice:
-    """Bloc minimal au texte choisi.
-
-    Piège de discord.py 2.7 : ``Embed.fields`` renvoie des ``EmbedProxy`` en **lecture seule** — une
-    écriture dessus est acceptée puis **silencieusement perdue**. Pour la contre-épreuve, on fabrique
-    donc un bloc dont le texte est celui qu'on veut faire lire au banc.
-    """
-
-    def __init__(self, texte: str) -> None:
-        self.title = texte
-        self.description = None
-        self.fields: list = []
-        self.footer = _PiedVide()
-
-
-class _PiedVide:
-    text = None
 
 
 def test_le_banc_detecte_un_libelle_de_troisieme_place_qui_ment():

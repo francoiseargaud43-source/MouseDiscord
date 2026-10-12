@@ -1434,6 +1434,69 @@ sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
 
 ---
 
+### 12.14 Mise à jour du 2026-10-12 (5e) : trois lignes dès que le budget le permet, titres qui disent la vérité
+
+**Ce que change cette mise à jour** (décision du propriétaire, mesures et preuves :
+`docs/audit/ROBUSTESSE_2026-10-12.md` §20) :
+
+1. **Deuxième et troisième lignes toujours remplies** quand une souris est montrable dans le budget :
+   3 lignes **74,24 % → 85,50 %** des profils (banc du parcours, 27 170 profils ; grille statistique :
+   74,14 % → **87,11 %**). Les trous restants viennent **exclusivement** de budgets épuisés — vérifié
+   souris par souris, les deux grilles.
+2. **Chaque ligne porte le titre de son rôle réel** : « 🥈 L'alternative », « 💸 L'économie » (moins chère
+   que tout ce qui est affiché), « ➕ L'autre option », et **« 🔎 Autre piste »** quand la souris vient du
+   dernier palier (zone vide ou budget serré). Le pourcentage affiché à côté du nom montre aussitôt que
+   la piste est loin (écart médian de 10 points sur 40).
+3. **Le budget reste la règle** : aucune souris au-dessus du plafond n'est jamais montrée.
+
+> **Les résultats changent** : c'est l'objet de la mise à jour. Là où le message n'affichait qu'une ou
+> deux lignes, il en affiche trois — avec, quand c'est le cas, la mention « Autre piste ».
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+cogs/finder_flow.py                  (décisif : dernier palier des 2e et 3e places + titres)
+tests/test_flow.py                   (facultatif : verrouille la règle)
+tools/qa_flow_matrix.py              (facultatif : banc d'essai, contrôles de titre)
+tools/recommendation_stats.py        (facultatif : rapport statistique, titres comptés)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : documentation, §20)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md  (facultatif : tableau régénéré)
+README.md, docs/REPORTE_DESIGN.md     (facultatif : titres de la troisième place)
+```
+
+`data/mouse_db.json`, `utils/matcher.py`, `utils/selection.py`, `utils/catalog.py`,
+`cogs/mouse_finder.py` et `data/commercial_links.json` **ne changent pas** : aucun barème, aucun prix,
+aucun lien.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 36 souris · liens d'achat valides : 36 · 1 erreur attendue (.env sur le serveur)
+
+grep -q "PISTE_TITLE" cogs/finder_flow.py \
+  && echo "OK   cogs/finder_flow.py (dernier palier « Autre piste »)" || echo "ANCIEN cogs/finder_flow.py"
+grep -q "def alternative_slot_title" cogs/finder_flow.py \
+  && echo "OK   cogs/finder_flow.py (titres des deux premières places)" || echo "ANCIEN cogs/finder_flow.py"
+```
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
+
+**5. Vérification en 60 secondes dans Discord**
+
+1. Faire un parcours en **Palm** 150 × 65 avec un **budget personnalisé de 25 €** : les trois lignes
+   doivent apparaître (VXE V3, puis ATK U2, puis VXE R1), les deux dernières sous le titre « 🔎 Autre
+   piste » — aucune souris au-dessus de 25 €.
+2. Faire un parcours ordinaire (ex. 180 × 90, Qualité/Prix) : « 🥇 Le match idéal », « 🥈 L'alternative »
+   puis « 💸 L'économie » ou « ➕ L'autre option ».
+3. Vérifier qu'aucun titre ne promet une économie qui n'en est pas une : chaque ligne affiche son prix.
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.

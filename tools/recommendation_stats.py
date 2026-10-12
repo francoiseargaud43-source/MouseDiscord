@@ -27,10 +27,18 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from config import MOUSE_DB_PATH  # noqa: E402
-from cogs.finder_flow import compute_selection, result_slots, third_slot_title  # noqa: E402
+from cogs.finder_flow import (  # noqa: E402
+    PISTE_TITLE,
+    alternative_slot_title,
+    compute_selection,
+    mode_tolerance,
+    result_slots,
+    third_slot_title,
+)
 
-ECONOMIE_TITLE = "💸 L'économie"        # libellés exacts de la troisième place (cogs/finder_flow.py)
+ECONOMIE_TITLE = "💸 L'économie"        # libellés exacts des places (cogs/finder_flow.py)
 AUTRE_OPTION_TITLE = "➕ L'autre option"
+ALTERNATIVE_TITLE = "🥈 L'alternative"
 from utils.catalog import load_catalog  # noqa: E402
 from utils.matcher import evaluate_mouse  # noqa: E402
 from utils.models import THENAR_LABELS, BudgetMode, ClawVariant, Grip, HandMeasure, Thenar  # noqa: E402
@@ -100,7 +108,8 @@ def run(fast: bool = False):
     empty = 0
     empty_with_unusable = 0
     same_shell_profiles = 0
-    third_titles: Counter = Counter()                          # « 💸 L'économie » / « ➕ L'autre option »
+    third_titles: Counter = Counter()                          # les trois libellés de la 3e place
+    second_titles: Counter = Counter()                          # « 🥈 L'alternative » / « 🔎 Autre piste »
     filled = Counter()                                         # nombre de places réellement remplies
     for grip, thenar, length, width, mode, budget in profiles(fast):
         session = make_session(grip, thenar, length, width, mode, budget)
@@ -133,8 +142,12 @@ def run(fast: bool = False):
         else:
             places = [s for s in (ideal, alternative, economy) if s is not None]
             filled[len(places)] += 1
+            if alternative is not None:
+                second_titles[alternative_slot_title(alternative, ideal, selection.reference_score,
+                                                     mode_tolerance(selection.mode))] += 1
             if economy is not None:
-                third_titles[third_slot_title(economy, ideal, alternative)] += 1
+                third_titles[third_slot_title(economy, ideal, alternative,
+                                              selection.reference_score)] += 1
             for premier, second in itertools.combinations(places, 2):
                 if _same_shell(premier, second):
                     same_shell_profiles += 1
@@ -180,7 +193,7 @@ def run(fast: bool = False):
         "empty_causes": empty_causes, "empty_with_unusable": empty_with_unusable,
         "dominated_by": dominated_by, "twin_ahead": twin_ahead,
         "same_shell_profiles": same_shell_profiles, "same_shell_pairs": same_shell_pairs,
-        "third_titles": third_titles, "filled": filled,
+        "third_titles": third_titles, "second_titles": second_titles, "filled": filled,
     }
 
 
@@ -231,16 +244,20 @@ def main(argv: list[str] | None = None) -> int:
         "d'autre coque à prix égal ou inférieur.\n")
     add("## Nombre de fois où chaque souris est recommandée\n")
     titres = data["third_titles"]
+    titres_2e = data["second_titles"]
     remplis = data["filled"]
     trois_places = remplis.get(3, 0)
     repartition = f"0 place(s) : {data['empty']} · " + " · ".join(
         f"{n} place(s) : {remplis.get(n, 0)}" for n in (1, 2, 3))
+    libelles_3e = " · ".join(f"« {titre} » {nombre} fois"
+                             for titre, nombre in titres.most_common())
     add(f"- **Places remplies** : {repartition} — dont **{trois_places} profils à trois places** "
-        f"({100 * trois_places / total:.2f} % de la grille). Troisième place : "
-        f"« {ECONOMIE_TITLE} » {titres.get(ECONOMIE_TITLE, 0)} fois, "
-        f"« {AUTRE_OPTION_TITLE} » {titres.get(AUTRE_OPTION_TITLE, 0)} fois. "
+        f"({100 * trois_places / total:.2f} % de la grille). Troisième place : {libelles_3e}. "
         "Le libellé suit le prix réel (décision du propriétaire du 2026-10-12) : la place reste remplie "
-        "même quand plus rien n'est moins cher, et elle ne ment pas sur son rôle.\n")
+        "même quand plus rien n'est moins cher, et elle ne ment pas sur son rôle. "
+        f"Deuxième place : « {ALTERNATIVE_TITLE} » {titres_2e.get(ALTERNATIVE_TITLE, 0)} fois, "
+        f"« {PISTE_TITLE} » {titres_2e.get(PISTE_TITLE, 0)} fois (dernier palier : la zone du mode ne "
+        "contenait rien de comparable, la ligne le dit).\n")
     add("| Souris | Idéal | Alternative | 3e place | Total | % des profils |")
     add("|---|---:|---:|---:|---:|---:|")
     for mouse in ranked:

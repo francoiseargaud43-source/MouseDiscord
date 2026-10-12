@@ -1448,3 +1448,65 @@ d'autre, « économie » au prix d'abord).
 - **Crédibilité du critère « hauteur des boutons »** : le critère est le **rapport mesuré** (décision du
   propriétaire), mais l'écart entre la classe « Mid » mesurée (47,3 % sur deux rendus) et la classe
   « Low » (43,3 %) reste de **4 points** : une souris qui tombe au milieu est refusée, jamais devinée.
+
+## 20. Trente et unième passe : « 3 lignes partout où le budget le permet » (décision du 2026-10-12)
+
+Question posée au propriétaire, réponse retenue : **remplir quand même, avec un titre explicite**. Le
+message affiche trois lignes dès que le budget le permet, et chaque ligne qui n'est pas ce qu'elle
+prétend être le dit elle-même (« 🔎 Autre piste »).
+
+### 20.1 La règle, dans l'ordre
+
+| Palier | Condition | Ligne affichée | Titre |
+|---|---|---|---|
+| 1 | toujours | tête du classement du mode | « 🥇 Le match idéal » |
+| 2a | une autre coque est dans la zone du mode | meilleur profil, moins chère d'abord | « 🥈 L'alternative » |
+| 2b | zone vide, mais une autre coque à ≤ 5 points et pas plus chère | cette souris | « 🥈 L'alternative » |
+| 2c | **sinon** | meilleure souris restante (autre coque) | **« 🔎 Autre piste »** |
+| 3a | une souris de la fenêtre (±5) coûte moins cher que les deux affichées | la moins chère | « 💸 L'économie » |
+| 3b | sinon, une souris de la fenêtre reste | la moins chère des coques distinctes | « ➕ L'autre option » |
+| 3c | **sinon** | meilleure souris restante | **« 🔎 Autre piste »** — ou « 💸 L'économie » si elle est *strictement moins chère* que les deux autres (fait vérifiable, 574 profils de la grille) |
+
+Le **prix d'abord** pour la troisième ligne : une souris strictement moins chère que tout ce qui est
+affiché est une économie, même si elle vient du dernier palier. Aucun barème, aucun seuil, aucun
+classement n'est modifié : les trois souris sortent du classement déjà calculé (`result_slots()`).
+
+### 20.2 Effet mesuré — banc du parcours (27 170 profils)
+
+| Places remplies | §19 | **Après §20** |
+|---|---:|---:|
+| 3 places | 20 171 (74,24 %) | **23 231 (85,50 %)** |
+| 2 places | 2 880 | 1 196 |
+| 1 place | 1 558 | 182 |
+| 0 place | 2 561 | 2 561 |
+
+**Vérification que les trous restants viennent du budget, pas des règles** (mesure directe, souris par
+souris, sur les deux grilles) :
+
+| Grille | Trous restants | Cause mesurée |
+|---|---:|---|
+| Banc du parcours (27 170) | 1 196 + 182 | **budget épuisé dans 100 % des cas** (aucune souris abordable restante) |
+| Statistiques (18 522) | 1 086 + 1 050 + 252 | **budget épuisé dans 100 % des cas** |
+
+Autrement dit : partout où le budget permet de montrer trois souris, le message en montre trois.
+
+### 20.3 Effet mesuré — grille statistique (18 522 profils)
+
+- Trois places : 13 733 (74,14 %) → **16 134 (87,11 %)**.
+- Titres de la troisième place : « ➕ L'autre option » **10 200**, « 💸 L'économie » **4 608**,
+  « 🔎 Autre piste » **1 326**.
+- Titres de la deuxième place : « 🥈 L'alternative » **15 023**, « 🔎 Autre piste » **2 161**.
+- Écart de score des « Autre piste » : **10 points médians**, 25 au maximum (sur 40) — le pourcentage
+  affiché à côté du nom suffit à voir que la piste est loin.
+- Profils où deux places montrent la même coque (repli documenté, jamais sanctionné) : 1 095 → **1 341**
+  (5,9 % → 7,2 %), conséquence d'une deuxième ligne désormais remplie là où elle était vide.
+
+### 20.4 Ce qui n'est pas fait, et pourquoi
+
+- **Aucune souris hors budget n'est montrée** : le plafond du Budget personnalisé reste la règle. Les
+  252 profils sans aucun résultat (et les 1 196 + 182 à une ou deux lignes) ont un budget plus serré que
+  la souris la moins chère qui convient — c'est une information, pas un bug.
+- **Les pistes ne sont jamais présentées comme des alternatives** : le titre du dernier palier est
+  distinct (« 🔎 Autre piste »), et le banc d'essai **échoue** si une piste est annoncée autrement
+  (`tools/qa_flow_matrix.py`, deux contrôles de titre indépendants du moteur).
+- **Le texte du résultat ne change pas** par ailleurs : ni score /40, ni confiance, ni liste d'écartées.

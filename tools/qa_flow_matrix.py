@@ -21,9 +21,11 @@ Contrôles effectués, profil par profil :
 - chaque place est contrôlée contre SA fenêtre : le match idéal est la tête du classement du mode,
   l'alternative reste dans la zone du mode ou n'en sort que si aucune autre coque ne s'y trouve (et
   jamais plus chère que le match idéal, hors le repli « même coque » documenté), la troisième place
-  reste dans sa fenêtre propre (±5 points), est la moins chère des options restantes de cette fenêtre
-  qui ne reprennent pas une coque déjà affichée (préférence « jamais deux fois la même coque »,
-  appliquée aux trois places le 2026-10-12) et porte le bon libellé : « 💸 L'économie » si elle est moins chère que tout ce qui est affiché,
+  reste dans sa fenêtre propre (±5 points) tant que cette fenêtre offre une option, est la moins chère
+  des options restantes de cette fenêtre qui ne reprennent pas une coque déjà affichée (préférence
+  « jamais deux fois la même coque », appliquée aux trois places le 2026-10-12), et sinon prend la
+  meilleure souris restante sous le titre « 🔎 Autre piste » ; dans tous les cas elle porte le bon
+  libellé : « 💸 L'économie » si elle est moins chère que tout ce qui est affiché,
   « ➕ L'autre option » sinon (décision du propriétaire du 2026-10-12) ;
 - comptage, sans le compter comme une faute, des profils où DEUX places montrent la même coque :
   c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance ne
@@ -91,9 +93,42 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
     # points sous la meilleure note du mode — c'est l'invariant vérifié dans tests/test_selection.py.
     if ideal is not None and selection.ranked and ideal.mouse.id != selection.ranked[0].mouse.id:
         problems.append(f"le match idéal n'est pas la tête du classement : {ideal.mouse.label}")
+    # Dernier palier (décision du propriétaire, 2026-10-12) : quand ni la fenêtre du mode ni « l'autre
+    # option » de cette fenêtre ne donnent quelque chose à montrer, la place est remplie par la meilleure
+    # souris restante sous le titre « 🔎 Autre piste ». Sa zone est alors le classement entier : ce qu'on
+    # vérifie, c'est le TITRE (le message dit-il la vérité ?), plus la fenêtre.
+    def _prix(score) -> float:
+        return score.mouse.price_eur if score is not None and score.mouse.price_eur is not None else float("inf")
+
+    def hors_de_sa_fenetre(score) -> bool:
+        """La troisième place vient-elle du dernier palier (hors de la fenêtre des ±5 points) ?
+
+        Deux cas mènent là : plus rien dans la fenêtre, ou rien d'abordable dans le Budget personnalisé.
+        Le banc ne lui applique alors plus la règle de zone — il vérifie son TITRE (le message dit-il la
+        vérité ?), comme pour la deuxième place.
+        """
+        if score is None or ideal is None:
+            return False
+        return score.total < reference - ECONOMY_SLOT_TOLERANCE_POINTS
+
+    def alternative_est_piste() -> bool:
+        """Miroir de la règle du moteur : hors zone du mode ET hors élargissement, ou plus chère."""
+        if alternative is None or ideal is None:
+            return False
+        if alternative.total >= reference - tolerance:
+            return False
+        return not (alternative.total >= reference - ALTERNATIVE_EXTENSION_POINTS
+                    and alternative.mouse.price_eur is not None
+                    and ideal.mouse.price_eur is not None
+                    and alternative.mouse.price_eur <= ideal.mouse.price_eur)
+
+    hors_fenetre_eco = hors_de_sa_fenetre(economy)
+    piste_alt = alternative_est_piste()
     for role, score, marge in (("le match idéal", ideal, tolerance),
-                               ("l'alternative", alternative, max(tolerance, ALTERNATIVE_EXTENSION_POINTS)),
-                               ("l'économie", economy, ECONOMY_SLOT_TOLERANCE_POINTS)):
+                               ("l'alternative", None if piste_alt else alternative,
+                                max(tolerance, ALTERNATIVE_EXTENSION_POINTS)),
+                               ("l'économie", None if hors_fenetre_eco else economy,
+                                ECONOMY_SLOT_TOLERANCE_POINTS)):
         if score is None:
             continue
         mouse = score.mouse
@@ -122,15 +157,6 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
                 # chère, la place reprend la zone telle quelle. C'est compté ailleurs, pas sanctionné.
                 problems.append(f"alternative élargie mais plus chère : {mouse.label}")
         if role == "l'économie" and score is not None:
-            # Décision du propriétaire du 2026-10-12 : la troisième place est « l'économie » quand elle
-            # est moins chère que tout ce qui est affiché ; sinon c'est « l'autre option » — la moins
-            # chère des options restantes de sa fenêtre — et le libellé doit dire la vérité.
-            plafond = min([s.mouse.price_eur for s in (ideal, alternative)
-                           if s is not None and s.mouse.price_eur is not None] or [float("inf")])
-            est_economie = mouse.price_eur is not None and mouse.price_eur < plafond
-            attendu = "💸 L'économie" if est_economie else "➕ L'autre option"
-            if attendu not in texte:
-                problems.append(f"troisième place mal étiquetée : {mouse.label} (attendu « {attendu} »)")
             plancher = mouse.price_eur if mouse.price_eur is not None else float("inf")
             montrees = {s.mouse.id for s in (ideal, alternative) if s is not None}
             for autre in selection.ranked[1:]:
@@ -150,6 +176,23 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
         if session.budget_mode is BudgetMode.CUSTOM and mouse.price_eur is not None \
                 and session.max_budget_eur is not None and mouse.price_eur > session.max_budget_eur:
             problems.append(f"{mouse.label} ({mouse.price_eur} €) au-dessus du budget {session.max_budget_eur} €")
+
+    # Décision du propriétaire du 2026-10-12 : la troisième place porte le titre de son rôle réel —
+    # « 💸 L'économie » si elle est moins chère que tout ce qui est affiché (fait vérifiable), sinon
+    # « 🔎 Autre piste » si elle vient du dernier palier, sinon « ➕ L'autre option ».
+    if economy is not None and ideal is not None:
+        plafond = min(_prix(ideal), _prix(alternative))
+        if _prix(economy) < plafond:
+            attendu = "💸 L'économie"
+        elif hors_fenetre_eco:
+            attendu = "🔎 Autre piste"
+        else:
+            attendu = "➕ L'autre option"
+        if attendu not in texte:
+            problems.append(f"troisième place mal étiquetée : {economy.mouse.label} "
+                            f"(attendu « {attendu} »)")
+    if piste_alt and alternative is not None and "🔎 Autre piste" not in texte:
+        problems.append(f"deuxième place « autre piste » sans le dire : {alternative.mouse.label}")
 
     attendu_score = f"{ideal.total}/{MAX_SCORE}"
     attendu_pct = f"{compatibility_percent(ideal)} %"

@@ -940,6 +940,39 @@ async def test_result_message_links_cover_exactly_the_displayed_mice():
         assert label == f"Acheter {line.split('**')[1]}"[:80], (line, label)
 
 
+@pytest.mark.asyncio
+async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
+    """Décision du propriétaire (2026-10-12) : « 3 lignes partout où le budget le permet ».
+
+    Profil Budget personnalisé serré (Palm 150 × 65, plafond 25 €) : la zone du mode ne contient rien
+    de comparable à la VXE V3 (13,95 €), qui gagne le classement. Les deux autres lignes sont remplies
+    par le dernier palier — l'U2 (22,95 €, dans le budget) puis la R1 — et chaque ligne qui n'est pas
+    une vraie alternative porte le titre « 🔎 Autre piste ». Mesure de référence : 3 lignes
+    sur 85,50 % de la grille du banc (23 231 des 27 170 profils) ; les trous restants sont
+    exclusivement des budgets épuisés (1 196 profils à 2 lignes, 182 à 1, 2 561 sans aucun résultat).
+    """
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.PALM, length=150.0, width=65.0, thenar=Thenar.PETITE)
+    session.budget_mode = BudgetMode.CUSTOM
+    session.max_budget_eur = 25.0
+    selection = flow.compute_selection(session)
+    ideal, alternative, economy = flow.result_slots(selection)
+    assert (ideal.mouse.id, alternative.mouse.id, economy.mouse.id) == ("vxe_v3", "atk_u2", "vxe_r1")
+    embeds = flow.results_embeds(session, selection)
+    lignes = [field.value for field in embeds[0].fields]
+    montrees = [score for score in (ideal, alternative, economy) if score is not None]
+    assert len(montrees) == 3
+    assert len(lignes) == 3
+    for score in montrees:                      # chaque souris montrée est là, avec son prix
+        assert any(score.mouse.label in ligne for ligne in lignes), score.mouse.label
+        assert f"{score.mouse.price_eur:.2f}".replace(".", ",") + " €" in " ".join(lignes)
+    # Les deux lignes du dernier palier portent le titre qui dit la vérité (la 1re reste le match idéal).
+    noms = [field.name for field in embeds[0].fields]
+    assert noms[0] == "🥇 Le match idéal"
+    assert noms[1] == noms[2] == flow.PISTE_TITLE
+    assert all(score.mouse.price_eur is not None and score.mouse.price_eur <= 25.0 for score in montrees)
+
+
 def _fake_score(mouse_id, total, price, shell_id=None):
     return SimpleNamespace(total=total,
                            mouse=SimpleNamespace(id=mouse_id, label=mouse_id,
@@ -1082,6 +1115,50 @@ def test_economy_slot_stays_price_first_when_no_other_shell_is_cheaper():
     assert third is meme_coque
     assert third.mouse.price_eur < min(ideal.mouse.price_eur, alternative.mouse.price_eur)
     assert flow.third_slot_title(third, ideal, alternative) == "💸 L'économie"
+
+
+def test_third_slot_falls_back_to_the_best_remaining_mouse_when_the_window_is_empty():
+    """Dernier palier (décision du propriétaire, 2026-10-12) : la fenêtre est vide → la place prend la
+    meilleure souris restante et s'intitule « 🔎 Autre piste ». Deux lignes ne suffisent pas : une place
+    vide n'informe pas."""
+    ideal = _fake_score("ideal", 30, 60.0, shell_id="s1")
+    alternative = _fake_score("alternative", 29, 45.0, shell_id="s2")
+    loin = _fake_score("loin", 18, 80.0, shell_id="s3")      # 12 points sous le meilleur score, plus chère
+    selection = _fake_selection([ideal, alternative, loin], reference=30)
+
+    _, _, third = flow.result_slots(selection)
+    assert third is loin
+    assert flow.third_slot_title(third, ideal, alternative, 30) == flow.PISTE_TITLE
+    assert flow.third_slot_title(third, ideal, alternative, 30) == "🔎 Autre piste"
+
+
+def test_second_slot_falls_back_to_the_best_remaining_mouse_and_says_it():
+    """Même palier pour la DEUXIÈME place : pas de trou au milieu du résultat."""
+    ideal = _fake_score("ideal", 30, 60.0, shell_id="s1")
+    loin = _fake_score("loin", 18, 40.0, shell_id="s3")
+    selection = _fake_selection([ideal, loin], reference=30)
+
+    _, alternative, third = flow.result_slots(selection)
+    assert alternative is loin and third is None
+    assert flow.alternative_slot_title(loin, ideal, 30, tolerance=2) == flow.PISTE_TITLE
+    # Une souris comparable (dans la zone du mode) garde son titre de place.
+    zone = _fake_score("zone", 29, 40.0, shell_id="s3")
+    assert flow.alternative_slot_title(zone, ideal, 30, tolerance=2) == "🥈 L'alternative"
+
+
+def test_the_economy_label_wins_over_the_piste_label_when_the_mouse_is_cheaper():
+    """Le prix d'abord : une souris **strictement moins chère** que tout ce qui est affiché reste
+    « l'économie », même si elle vient du dernier palier (574 profils de la grille, 1,8 % des trois
+    places) — c'est un fait vérifiable à l'écran."""
+    ideal = _fake_score("ideal", 30, 60.0, shell_id="s1")
+    alternative = _fake_score("alternative", 25, 81.95, shell_id="s2")
+    passee = _fake_score("passee", 20, 13.95, shell_id="s3")     # 10 points sous le meilleur score
+    sous_plafond = _fake_score("sous_plafond", 12, 74.9, shell_id="s4")
+    selection = _fake_selection([ideal, alternative, passee, sous_plafond], reference=30)
+
+    _, _, third = flow.result_slots(selection)
+    assert third is passee
+    assert flow.third_slot_title(third, ideal, alternative, 30) == "💸 L'économie"
 
 
 def test_match_summary_does_not_lowercase_the_grip_label():

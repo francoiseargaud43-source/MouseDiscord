@@ -512,6 +512,20 @@ def _price_or_inf(score: MouseScore) -> float:
 #     et, si possible, d'une autre coque.
 ALTERNATIVE_EXTENSION_POINTS = 5
 ECONOMY_SLOT_TOLERANCE_POINTS = 5
+# Dernier palier (décision du propriétaire, 2026-10-12) : quand ni « l'économie » ni « l'autre option »
+# de la fenêtre ne donnent quelque chose à montrer — Budget personnalisé serré, ou souris suivante très
+# loin derrière — la place reste remplie par la **meilleure souris restante du classement**, affichée
+# sous son vrai nom : « 🔎 Autre piste ». Son pourcentage reste affiché tel quel, donc le membre voit
+# immédiatement que la piste est loin. Le classement n'est jamais franchi vers une souris hors budget :
+# en Budget personnalisé, le plafond reste la règle. Mesuré sur le banc du parcours : 2 747 profils
+# (10,1 % de la grille, 13,6 % des profils avec un résultat) avaient une place vide avec au moins une
+# souris abordable — comblement possible, budget respecté.
+PISTE_TITLE = "🔎 Autre piste"
+
+
+def mode_tolerance(mode: BudgetMode | None) -> int:
+    """Tolérance du mode (la zone dans laquelle une souris reste « comparable » au match idéal)."""
+    return TOLERANCE_BY_MODE.get(mode, QUALITE_PRIX_TOLERANCE_POINTS)
 
 
 def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | None, MouseScore | None]:
@@ -521,11 +535,15 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
     (2) **L'alternative** : la souris qui correspond le mieux au profil parmi celles qui restent,
         en préférant une souris un peu moins chère ; sinon la meilleure tout court (son pourcentage
         sert alors à accepter un léger surcoût). Elle reste dans la zone du mode ; elle n'en sort que
-        si cette zone ne contient rien d'autre que la coque déjà montrée (élargissement unique).
+        si cette zone ne contient rien d'autre que la coque déjà montrée (élargissement unique). Si
+        même cet élargissement ne donne rien, la place prend la meilleure souris restante et s'intitule
+        « Autre piste » (``alternative_slot_title``) : jamais de ligne vide au milieu du résultat.
     (3) **L'économie** : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``) qui
         est vraiment moins chère que les deux autres. À défaut, depuis la décision du propriétaire du
         2026-10-12, l'option la moins chère restante de cette fenêtre — même un peu plus chère que le
-        match idéal — et la ligne s'intitule alors « L'autre option » (``third_slot_title``).
+        match idéal — et la ligne s'intitule alors « L'autre option ». Si la fenêtre elle-même est
+        vide, la place prend la meilleure souris restante du classement (``PISTE_TITLE``, « Autre
+        piste ») : jamais une ligne blanche quand une souris est montrable dans le budget.
 
     Aucun barème n'est modifié : les trois souris sortent du classement existant, jamais recalculé.
     """
@@ -542,7 +560,7 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         return not _same_shell(ideal, other)
 
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
-    tolerance = TOLERANCE_BY_MODE.get(selection.mode, QUALITE_PRIX_TOLERANCE_POINTS)
+    tolerance = mode_tolerance(selection.mode)
 
     def in_window(score: MouseScore, margin: int) -> bool:
         return score.total >= reference - margin
@@ -569,6 +587,15 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
                      if in_window(score, ALTERNATIVE_EXTENSION_POINTS) and not_same_shell(score)]
         alternative = best_match([score for score in extension if _price_or_inf(score) <= ideal_price]) \
             or best_match(zone)
+
+    if alternative is None:
+        # Dernier palier appliqué à la DEUXIÈME place (même décision du 2026-10-12) : la zone du mode
+        # est vide ou ne contient que des variantes de la coque retenue, et l'élargissement n'a rien
+        # donné de moins cher. La deuxième ligne reste alors remplie par la meilleure souris restante,
+        # montrée sous le titre « 🔎 Autre piste » (``third_slot_title``) — le résultat ne comporte
+        # jamais de trou au milieu, et son pourcentage dit à lui seul que la piste est loin.
+        restants = [score for score in ordered[1:] if not_same_shell(score)]
+        alternative = best_match(restants)
 
     # (3) La troisième place : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``)
     # qui est vraiment moins chère que les deux autres (« l'économie ») ; **à défaut**, depuis la
@@ -614,22 +641,70 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # +10 €) et 837 sans aucune autre coque dans la fenêtre.
         autre_coque = [score for score in candidates if other_shell(score)]
         economy = (autre_coque or candidates)[0]
+    if economy is None:
+        # Dernier palier (décision du propriétaire, 2026-10-12) : ni la fenêtre du mode ni « l'autre
+        # option » de cette fenêtre ne donnent quoi que ce soit — soit le mode est un Budget
+        # personnalisé si serré que le plafond a tout écarté, soit la souris suivante est très loin
+        # derrière (10 à 25 points mesurés sur le banc). La place reste remplie par la meilleure souris
+        # restante : la ligne dit alors « 🔎 Autre piste » avec son pourcentage, donc jamais une
+        # promesse exagérée. Le budget reste la règle : en Budget personnalisé, le classement ne
+        # contient déjà que des souris conformes au plafond (``evaluate_mouse`` les écarte sinon).
+        restants = [score for score in ordered[1:] if score.mouse.id not in shown_ids]
+        autre_coque = [score for score in restants if other_shell(score)]
+        economy = best_match(autre_coque or restants)
     return ideal, alternative, economy
 
 
-def third_slot_title(economy: MouseScore, ideal: MouseScore,
-                     alternative: MouseScore | None = None) -> str:
-    """Titre de la troisième place : « économie » seulement si elle l'est vraiment.
+def alternative_slot_title(alternative: MouseScore, ideal: MouseScore,
+                           reference: int | None = None, tolerance: int | None = None) -> str:
+    """Titre de la deuxième place : « 🥈 L'alternative » ou, si elle vient du dernier palier, « Autre piste ».
 
-    Une souris plus chère que le match idéal — ou que l'alternative déjà affichée — n'est pas une
-    économie : elle est montrée comme une autre option (décision du propriétaire, 2026-10-12). Le
-    reste de la ligne (nom · prix · % du maximum théorique) ne change pas.
+    Le titre ne fait que **redire la règle du moteur** : une alternative comparable est dans la zone du
+    mode (``tolerance``) ou dans l'élargissement unique à ``ALTERNATIVE_EXTENSION_POINTS`` sans coûter
+    plus cher que le match idéal. Tout le reste est une piste — la meilleure souris restante, choisie
+    pour ne pas laisser de ligne vide (décision du propriétaire, 2026-10-12).
+
+    Sans ``reference`` ni ``tolerance`` (appel direct dans un test ou un outil), le titre reste celui de
+    la place : le moteur ne produit une piste que dans les cas décrits ci-dessus.
+    """
+    if reference is None or tolerance is None:
+        return "🥈 L'alternative"
+    if alternative.total >= reference - tolerance:
+        return "🥈 L'alternative"
+    if alternative.total >= reference - ALTERNATIVE_EXTENSION_POINTS \
+            and _price_or_inf(alternative) <= _price_or_inf(ideal):
+        return "🥈 L'alternative"
+    return PISTE_TITLE
+
+
+def third_slot_title(economy: MouseScore, ideal: MouseScore,
+                     alternative: MouseScore | None = None,
+                     reference: int | None = None) -> str:
+    """Titre de la troisième place : le rôle réel, jamais un rôle supposé.
+
+    Trois cas, dans l'ordre (décisions du propriétaire, 2026-10-12) :
+
+    1. ``💸 L'économie`` — elle est *strictement moins chère* que tout ce qui est affiché : c'est un
+       fait sur le prix, vérifiable d'un coup d'œil, et c'est le rôle premier de cette ligne ;
+    2. ``🔎 Autre piste`` — elle n'est pas moins chère **et** se situe hors de la fenêtre de la place
+       (plus de ``ECONOMY_SLOT_TOLERANCE_POINTS`` sous le meilleur score) : c'est le dernier palier,
+       elle n'est comparable ni au match idéal ni à l'alternative, et le titre le dit ;
+    3. ``➕ L'autre option`` — elle est dans la fenêtre mais plus chère (ou au même prix) : le libellé
+       reste honnête.
+
+    ``reference`` est le meilleur score du mode, tel que ``Selection.reference_score`` : sans lui
+    (appel direct dans un test ou un outil), la distinction « piste » n'est pas faite et le titre
+    reste celui du prix. Le reste de la ligne (nom · prix · % du maximum théorique) ne change pas.
     """
     plafond = _price_or_inf(ideal)
     if alternative is not None:
         plafond = min(plafond, _price_or_inf(alternative))
     if _price_or_inf(economy) < plafond:
+        # Le prix d'abord : « l'économie » est un fait vérifiable (574 profils de la grille, soit 1,8 %
+        # des trois places, l'affichent alors même qu'elle est hors de la fenêtre des ±5 points).
         return "💸 L'économie"
+    if reference is not None and economy.total < reference - ECONOMY_SLOT_TOLERANCE_POINTS:
+        return PISTE_TITLE
     return "➕ L'autre option"
 
 
@@ -901,9 +976,11 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
 
     main.add_field(name="🥇 Le match idéal", value=_slot_text(ideal, session.budget_mode), inline=False)
     if alternative is not None:
-        main.add_field(name="🥈 L'alternative", value=_slot_text(alternative, session.budget_mode), inline=False)
+        main.add_field(name=alternative_slot_title(alternative, ideal, selection.reference_score,
+                                                  mode_tolerance(selection.mode)),
+                       value=_slot_text(alternative, session.budget_mode), inline=False)
     if economy is not None:
-        main.add_field(name=third_slot_title(economy, ideal, alternative),
+        main.add_field(name=third_slot_title(economy, ideal, alternative, selection.reference_score),
                        value=_slot_text(economy, session.budget_mode), inline=False)
     image_key = result_image_key(ideal, session.grip)
     if image_key:

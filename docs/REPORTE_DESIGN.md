@@ -206,7 +206,8 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
 
 - **🎯 Votre recommandation** (en haut) : une ligne descriptive du parcours (prise, thénar, mesures, gamme),
   puis **🥇 le match idéal**, **🥈 l'alternative** et la **troisième place** — **💸 l'économie** quand elle en est
-  vraiment une, **➕ l'autre option** sinon, et **toujours remplie** depuis le 2026-10-12 — chacune sur une
+  vraiment une, **➕ l'autre option** sinon, **🔎 autre piste** quand la souris vient du dernier palier, et
+  **remplies dès que le budget le permet** depuis le 2026-10-12 — chacune sur une
   seule ligne « **Nom** · poids · prix · pourcentage du maximum théorique · forme de coque ». Rien d'autre : ni score /40, ni confiance,
   ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons).
   **Exception (mode « Peu importe le prix », 2026-10-11)** : la ligne garde « Nom · pourcentage » et le prix descend en
