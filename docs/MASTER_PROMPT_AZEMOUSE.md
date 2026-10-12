@@ -7,6 +7,17 @@
 **Rôle de l'agent destinataire :** IA codeur Python `discord.py` — tu travailles sur un **logiciel existant, fonctionnel, à améliorer visuellement**, pas à reconstruire.  
 **Contrainte absolue :** Ne pas créer d'application Web indépendante. Le livrable reste un bot Discord natif.
 
+> **Note d'application — 2026-10-12 (chasse aux bugs).** Le modèle de session décrit dans ce document
+> (`session_id` porté par chaque vue, « un ancien menu invalide l'ancien parcours ») a été remplacé à la
+> suite de pannes constatées en production (« le bot dit que ce n'est plus possible, il faut recommencer »).
+> Désormais : les composants portent des **identifiants fixes** et sont **enregistrés au démarrage**
+> (`persistent_views()`), chaque action se rattache au **parcours vivant du membre qui clique**
+> (`SessionStore.current`), les parcours en cours sont **conservés dans `state/sessions.json`**, et une
+> impasse propose **la raison + un bouton de reprise**. Partout où ce document écrit
+> « `lookup(session_id, user_id)` » ou « les anciens menus deviennent inactifs », lire la règle actuelle.
+> Détail, preuves et liste de contrôle serveur : `docs/audit/ROBUSTESSE_2026-10-12.md`.
+> Aucun barème, seuil, prix, donnée de souris ni texte de résultat n'a changé dans cette passe.
+
 ---
 
 ## 1. CONTEXTE ET OBJECTIF PREMIER

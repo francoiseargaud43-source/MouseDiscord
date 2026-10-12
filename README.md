@@ -52,10 +52,17 @@ Les étapes utilisent `interaction.response.edit_message()` : le salon ne se rem
 Les saisies invalides (texte, nombre hors bornes, etc.) déclenchent un message d'erreur explicite
 et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'utilisateur.
 
-Les sessions sont stockées **en mémoire**, identifiées par un `session_id` aléatoire propre à chaque parcours
-(et non par l'identifiant Discord seul), avec une expiration après 30 min d'inactivité (`SESSION_TTL_SECONDS`).
-Relancer un test remplace le précédent : les anciens menus deviennent inactifs. Un redémarrage du bot efface les sessions
-en cours : le message persistant continue de fonctionner, mais un ancien menu éphémère affichera « session expirée ».
+**Un parcours ne reste jamais en impasse** (corrigé le 2026-10-12, voir `docs/audit/ROBUSTESSE_2026-10-12.md`) :
+
+- les composants des étapes ont des identifiants fixes, sans délai, et sont **enregistrés au démarrage** : un clic est
+  reconnu même après un redémarrage du bot ;
+- chaque action se rattache au **parcours vivant du membre qui clique** (aucun identifiant de parcours ne circule dans les
+  messages : rien à falsifier, rien à expirer) ;
+- les parcours **en cours** sont enregistrés dans `state/sessions.json` : une mise à jour du bot ne fait plus perdre un
+  questionnaire commencé (`SESSION_PERSIST=false` pour revenir au tout-mémoire) ;
+- un parcours interrompu affiche la **raison** et un **bouton de reprise** dans le message lui-même : un clic suffit pour
+  repartir, sans retourner au panneau du salon ;
+- toute erreur inattendue est tracée et expliquée en privé au membre — jamais un silence.
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
 théorique** pour le match idéal, l'alternative et, quand elle existe, l'économie. Ni score /40, ni souris
@@ -116,7 +123,8 @@ Pour lancer les tests : `pip install -r requirements-dev.txt`.
 | `FINDER_CHANNEL_ID` | non | salon où la commande est tapée | Salon cible de `!setup_finder` |
 | `COMMAND_PREFIX` | non | `!` | Préfixe des commandes |
 | `LOCK_FINDER_CHANNEL` | non | `true` | Met `@everyone` en lecture seule dans le salon au setup |
-| `SESSION_TTL_SECONDS` | non | `1800` | Durée d'inactivité avant expiration d'une session |
+| `SESSION_TTL_SECONDS` | non | `1800` | Durée d'inactivité avant expiration d'un parcours |
+| `SESSION_PERSIST` | non | `true` | Conserve les parcours en cours dans `state/sessions.json` (`false` = mémoire seulement) |
 
 ---
 
@@ -130,8 +138,8 @@ Pour un fonctionnement permanent sur un hébergement (Alwaysdata, services, mise
 voir **[docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md](docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md)**.
 Contrôle avant mise en ligne : `python tools/check_deployment.py`.
 
-Le bot enregistre la vue persistante au démarrage : le bouton fonctionne donc après chaque redémarrage,
-sans republier le message. Les logs apparaissent dans le terminal.
+Le bot enregistre **tous** les composants du parcours au démarrage (six menus, deux formulaires) : les boutons
+fonctionnent donc après chaque redémarrage, sans republier le message. Les logs apparaissent dans le terminal.
 
 ---
 
@@ -399,7 +407,7 @@ générées par `python tools/compare_profiles.py`.
 
 ```
 MouseDiscord/
-├── bot.py                    # Point d'entrée, vue persistante, chargement du cog
+├── bot.py                    # Point d'entrée : composants durables enregistrés, sessions, purge périodique
 ├── config.py                 # Variables d'environnement et chemins
 ├── cogs/
 │   ├── mouse_finder.py       # !setup_finder (idempotent, verrouillage du salon)
@@ -410,11 +418,11 @@ MouseDiscord/
 │   ├── models.py             # Grip, BudgetMode, Mouse, Source, HandMeasure
 │   ├── catalog.py            # Chargement / validation de mouse_db.json et des liens
 │   ├── assets.py             # Lecture de assets/images.json
-│   ├── session.py            # Sessions de parcours en mémoire (session_id aléatoire, propriétaire vérifié)
+│   ├── session.py            # Parcours : rattachement au membre, TTL, reprise après redémarrage (state/sessions.json)
 │   └── validation.py         # Validation des saisies des modals
 ├── data/
 │   ├── mouse_db.json         # Catalogue v2 (géométrie + sources, compatibilité, prix)
-│   └── commercial_links.json # Liens d'affiliation (vide tant que non fournis)
+│   └── commercial_links.json # Liens d'achat (36/36 fournis et vérifiés ; les clés _ sont de la documentation)
 ├── assets/
 │   ├── images.json           # Clé -> nom de fichier (résolu par IMAGES_BASE_URL) ou URL https complète
 │   └── illustrations/        # Les 15 assets ImageUse (T01–T15), à publier en https (voir REPORTE_DESIGN.md)
@@ -453,8 +461,8 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 - `tests/test_selection.py` : effet réel de chaque mode, tolérances, prix inconnus, candidats à vérifier jamais classés.
 - `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images, résolution `IMAGES_BASE_URL` (nom de fichier), existence réelle des 15 illustrations, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
-- `tests/test_session.py` : isolation des sessions par `session_id`, propriétaire, remplacement d'un parcours, expiration.
-- `tests/test_privacy.py` : scénarios de confidentialité P02–P12 (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md`.
+- `tests/test_session.py` : rattachement au membre, remplacement d'un parcours, expiration, enregistrement/relecture du fichier d'état.
+- `tests/test_privacy.py` : scénarios de confidentialité et de robustesse **P02–P18** (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage, clic rejoué, erreur inattendue, fichier d'état) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md` et `docs/audit/ROBUSTESSE_2026-10-12.md`.
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts.
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
@@ -464,8 +472,9 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main
-(voir `docs/audit/RAPPORT_FINAL.md`, §8 « Vérifications Discord manuelles (non exécutées) » et le protocole `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md`, non exécuté) : isolation des sessions entre deux utilisateurs,
-interactions expirées, vue persistante après redémarrage, absence d'accumulation de messages, permissions limitées au salon.
+(voir `docs/audit/RAPPORT_FINAL.md`, §8 « Vérifications Discord manuelles (non exécutées) », le protocole `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md` et la liste de contrôle `docs/audit/ROBUSTESSE_2026-10-12.md` §4) : isolation des sessions entre deux utilisateurs,
+interactions expirées, **reprise d'un parcours après un redémarrage réel du bot**, double appui sur le dernier menu,
+absence d'accumulation de messages, permissions limitées au salon.
 
 ---
 

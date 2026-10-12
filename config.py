@@ -29,6 +29,9 @@ load_dotenv(ENV_FILE)  # chemin explicite : ne dépend pas du répertoire couran
 IMAGES_BASE_URL = os.getenv("IMAGES_BASE_URL", "").strip()
 # Mémoire locale du message publié par !setup_finder (ignorée par Git).
 FINDER_STATE_PATH = ROOT_DIR / "state" / "finder_message.json"
+# Mémoire locale des parcours EN COURS (ignorée par Git) : elle permet à un questionnaire commencé
+# de survivre à un redémarrage du bot. Les réponses d'un parcours terminé n'y sont jamais écrites.
+SESSION_STATE_PATH = ROOT_DIR / "state" / "sessions.json"
 
 
 class ConfigError(ValueError):
@@ -63,3 +66,6 @@ FINDER_CHANNEL_ID = _env_int("FINDER_CHANNEL_ID", 0)
 LOCK_FINDER_CHANNEL = _env_bool("LOCK_FINDER_CHANNEL", True)
 # Durée de vie d'une session utilisateur en mémoire (secondes).
 SESSION_TTL_SECONDS = _env_int("SESSION_TTL_SECONDS", 1800)
+# Conservation des parcours en cours dans state/sessions.json (true par défaut : un redémarrage du
+# bot ne fait plus perdre un questionnaire commencé). false = tout en mémoire.
+SESSION_PERSIST = _env_bool("SESSION_PERSIST", True)

@@ -50,8 +50,8 @@ def modal_with(modal, length=None, width=None):
     return modal
 
 
-def modal_budget(session_id, value):
-    modal = flow.BudgetModal(session_id)
+def modal_budget(value):
+    modal = flow.BudgetModal()
     modal.price._value = value
     return modal
 
@@ -69,9 +69,11 @@ def main_embed_of(inter):
     return embeds_of(inter)[0]
 
 
-def start_for(store: SessionStore, user_id: int = 99, grip=None, length=None, width=None, thenar=None):
+def start_for(store: SessionStore, user_id: int = 99, grip=None, length=None, width=None,
+              thenar=None, variant=None):
     s = store.start(user_id)
     s.grip, s.hand_length_mm, s.hand_width_mm, s.thenar = grip, length, width, thenar
+    s.claw_variant = variant
     return s
 
 
@@ -88,8 +90,8 @@ async def test_start_button_sends_ephemeral_step1_with_grip_select():
     # Le dénominateur dépend de la prise choisie (3 étapes en Fingertip, 4 sinon) : « Étape 1 » sans total.
     assert kwargs["embed"].title.startswith("Étape 1")
     assert "prise" in kwargs["embed"].title.lower()
-    session = inter.client.sessions.get(kwargs["view"].children[0].session_id, 99)
-    assert session is not None
+    session, status = inter.client.sessions.current(99)
+    assert status == "ok" and session is not None and session.grip is None
 
 
 @pytest.mark.asyncio
@@ -98,7 +100,7 @@ async def test_grip_selection_edits_message_to_thenar_step():
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
     inter = make_interaction(store=store)
-    view = flow.GripView(s.session_id)
+    view = flow.GripView()
     select_values(view.children[0], "palm")
     await view.children[0].callback(inter)
     inter.response.edit_message.assert_awaited_once()
@@ -114,7 +116,7 @@ async def test_claw_selection_asks_the_variant_before_the_thenar_step():
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
     inter = make_interaction(store=store)
-    view = flow.GripView(s.session_id)
+    view = flow.GripView()
     select_values(view.children[0], "claw")
     await view.children[0].callback(inter)
     assert store.get(s.session_id, 99).grip is Grip.CLAW
@@ -146,9 +148,9 @@ async def test_claw_selection_asks_the_variant_before_the_thenar_step():
 async def test_thenar_selection_stores_value_and_moves_to_measures():
     """Parcours 4 étapes : le thénar est stocké puis l'étape mesures s'affiche."""
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.CLAW)
+    s = start_for(store, grip=Grip.CLAW, variant=ClawVariant.RELACHEE)
     inter = make_interaction(store=store)
-    view = flow.ThenarView(s.session_id)
+    view = flow.ThenarView()
     select_values(view.children[0], "moyenne")
     await view.children[0].callback(inter)
     assert store.get(s.session_id, 99).thenar is Thenar.MOYENNE
@@ -165,30 +167,30 @@ async def test_full_claw_walkthrough_follows_the_five_steps():
     s = store.start(99)
 
     prise = make_interaction(store=store)
-    view = flow.GripView(s.session_id)
+    view = flow.GripView()
     select_values(view.children[0], "claw")
     await view.children[0].callback(prise)
     assert "Étape 1" not in prise.response.edit_message.call_args.kwargs["embed"].title  # déjà passé
 
     variante = make_interaction(store=store)
-    variante_view = flow.ClawVariantView(s.session_id)
+    variante_view = flow.ClawVariantView()
     select_values(variante_view.children[0], "pincee")
     await variante_view.children[0].callback(variante)
     assert "Étape 2/5" in flow.claw_variant_step_embed().title
     assert "Étape 3/5" in variante.response.edit_message.call_args.kwargs["embed"].title
 
     thenar = make_interaction(store=store)
-    thenar_view = flow.ThenarView(s.session_id)
+    thenar_view = flow.ThenarView()
     select_values(thenar_view.children[0], "petite")
     await thenar_view.children[0].callback(thenar)
     assert "Étape 4/5" in thenar.response.edit_message.call_args.kwargs["embed"].title
 
     mesures = make_interaction(store=store)
-    await modal_with(flow.MeasureModal(s.session_id), "180", "100").on_submit(mesures)
+    await modal_with(flow.MeasureModal(), "180", "100").on_submit(mesures)
     assert "Étape 5/5" in mesures.response.edit_message.call_args.kwargs["embed"].title
 
     resultat = make_interaction(store=store)
-    budget_view = flow.BudgetView(s.session_id)
+    budget_view = flow.BudgetView()
     select_values(budget_view.children[0], BudgetMode.QUALITE_PRIX.value)
     await budget_view.children[0].callback(resultat)
     embeds = resultat.response.edit_message.call_args.kwargs["embeds"]
@@ -199,11 +201,12 @@ async def test_full_claw_walkthrough_follows_the_five_steps():
     ]
     assert "(pincée)" in embeds[0].description                      # la variante apparaît en haut
     assert "Claw pincée → bosse arrière, flancs peu bombés" in embeds[3].description
-    assert store.lookup(s.session_id, 99)[1] != "ok"                # session consommée
+    # Parcours terminé : conservé quelques minutes pour un clic rejoué, plus jamais sur disque.
+    assert store.get(s.session_id, 99).finished is True
 
 
 def test_thenar_select_only_proposes_the_three_valid_sizes():
-    view = flow.ThenarView("session")
+    view = flow.ThenarView()
     select = view.children[0]
     assert [(o.label, o.value) for o in select.options] == [
         ("Petite", "petite"), ("Moyenne", "moyenne"), ("Grande", "grande"),
@@ -220,7 +223,7 @@ async def test_fingertip_skips_the_thenar_step_and_shortens_the_path():
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
     inter = make_interaction(store=store)
-    view = flow.GripView(s.session_id)
+    view = flow.GripView()
     select_values(view.children[0], "fingertip")
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
@@ -230,7 +233,7 @@ async def test_fingertip_skips_the_thenar_step_and_shortens_the_path():
     assert session.grip is Grip.FINGERTIP and session.thenar is None
 
     measures = make_interaction(store=store)
-    await modal_with(flow.MeasureModal(s.session_id), "190", "95").on_submit(measures)
+    await modal_with(flow.MeasureModal(), "190", "95").on_submit(measures)
     budget_title = measures.response.edit_message.call_args.kwargs["embed"].title
     assert "Étape 3/3" in budget_title
 
@@ -260,9 +263,9 @@ def test_steps_total_follows_the_grip():
 @pytest.mark.asyncio
 async def test_measure_button_opens_modal_without_new_message():
     store = SessionStore(ttl_seconds=600)
-    s = store.start(99)
+    start_for(store, grip=Grip.PALM, thenar=Thenar.MOYENNE)   # le parcours est à l'étape des mesures
     inter = make_interaction(store=store)
-    await flow.MeasureView(s.session_id).open_measures.callback(inter)
+    await flow.MeasureView().open_measures.callback(inter)
     inter.response.send_modal.assert_awaited_once()
     inter.response.send_message.assert_not_awaited()
 
@@ -270,9 +273,9 @@ async def test_measure_button_opens_modal_without_new_message():
 @pytest.mark.asyncio
 async def test_valid_measures_move_to_budget_step():
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM)
+    s = start_for(store, grip=Grip.PALM, thenar=Thenar.MOYENNE)
     inter = make_interaction(store=store)
-    await modal_with(flow.MeasureModal(s.session_id), "180", "90").on_submit(inter)
+    await modal_with(flow.MeasureModal(), "180", "90").on_submit(inter)
     s = store.get(s.session_id, 99)
     assert (s.hand_length_mm, s.hand_width_mm) == (180.0, 90.0)
     kwargs = inter.response.edit_message.call_args.kwargs
@@ -283,9 +286,9 @@ async def test_valid_measures_move_to_budget_step():
 @pytest.mark.asyncio
 async def test_invalid_measures_show_error_and_keep_step():
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM)
+    s = start_for(store, grip=Grip.PALM, thenar=Thenar.MOYENNE)
     inter = make_interaction(store=store)
-    await modal_with(flow.MeasureModal(s.session_id), "abc", "900").on_submit(inter)
+    await modal_with(flow.MeasureModal(), "abc", "900").on_submit(inter)
     inter.response.edit_message.assert_not_awaited()
     inter.response.send_message.assert_awaited_once()
     msg = inter.response.send_message.call_args.args[0]
@@ -300,9 +303,9 @@ async def test_invalid_measures_show_error_and_keep_step():
 @pytest.mark.asyncio
 async def test_standard_budget_shows_results_with_percentage_wording():
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     inter = make_interaction(store=store)
-    view = flow.BudgetView(s.session_id)
+    view = flow.BudgetView()
     select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
@@ -339,7 +342,7 @@ async def test_standard_budget_shows_results_with_percentage_wording():
 async def test_result_never_mentions_the_excluded_mice():
     """Demande du propriétaire (2026-10-11) : l'utilisateur ne voit plus les souris écartées."""
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     s.budget_mode = BudgetMode.HAUT_DE_GAMME
     text = " ".join(str(e.to_dict()) for e in flow.results_embeds(s, flow.compute_selection(s)))
     assert "écart" not in text and "Non classées" not in text
@@ -351,7 +354,7 @@ async def test_result_never_mentions_the_excluded_mice():
 def test_result_sections_follow_the_reference_tool_order():
     """Recommandation, puis repères de taille, bosse et boutons — comme l'outil de référence."""
     store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     assert [e.title for e in embeds] == [
@@ -417,20 +420,21 @@ def test_result_guides_describe_the_grip_and_show_the_matching_illustrations(mon
 @pytest.mark.asyncio
 async def test_results_discard_session_after_display():
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     inter = make_interaction(store=store)
-    view = flow.BudgetView(s.session_id)
+    view = flow.BudgetView()
     select_values(view.children[0], BudgetMode.ECONOMIQUE.value)
     await view.children[0].callback(inter)
-    assert store.lookup(s.session_id, 99)[1] != "ok"  # minimisation : réponses supprimées
+    # Minimisation : parcours terminé → ses réponses quittent le fichier d'état tout de suite.
+    assert store.get(session.session_id, 99).finished is True
 
 
 @pytest.mark.asyncio
 async def test_custom_budget_opens_modal_from_select():
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     inter = make_interaction(store=store)
-    view = flow.BudgetView(s.session_id)
+    view = flow.BudgetView()
     select_values(view.children[0], BudgetMode.CUSTOM.value)
     await view.children[0].callback(inter)
     inter.response.send_modal.assert_awaited_once()
@@ -440,66 +444,77 @@ async def test_custom_budget_opens_modal_from_select():
 @pytest.mark.asyncio
 async def test_custom_budget_invalid_then_valid():
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    s = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
 
     bad = make_interaction(store=store)
-    await modal_budget(s.session_id, "trois").on_submit(bad)
+    await modal_budget("trois").on_submit(bad)
     bad.response.edit_message.assert_not_awaited()
     assert "Saisie invalide" in bad.response.send_message.call_args.args[0]
 
     good = make_interaction(store=store)
-    await modal_budget(s.session_id, "50").on_submit(good)
+    await modal_budget("50").on_submit(good)
     embeds = good.response.edit_message.call_args.kwargs["embeds"]
     # Le mode choisit la tête de son classement ; on vérifie la mise en forme, pas une marque figée.
     assert "**" in fields_of(embeds[0])["🥇 Le match idéal"]
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in embeds)
-    assert store.lookup(s.session_id, 99)[1] != "ok"  # session supprimée après résultat
+    assert store.get(s.session_id, 99).finished is True   # parcours terminé après résultat
 
 
 # ---------------------------------------------------------------------------
 # Confidentialité et isolation des parcours
 # ---------------------------------------------------------------------------
 @pytest.mark.asyncio
-async def test_stale_grip_menu_cannot_write_into_new_session():
-    """Parcours 1 ouvert, puis relancé : l'ancien menu ne doit plus modifier le parcours 2."""
+async def test_old_message_never_breaks_a_running_parcours():
+    """Panne corrigée le 2026-10-12 : un ancien message ne casse plus le parcours en cours.
+
+    Avant, un clic dans le message d'une relance précédente répondait « ce parcours n'est plus
+    actif » et le membre devait tout recommencer à zéro. Maintenant, l'action porte sur le parcours
+    vivant du membre : le questionnaire se réaffiche au bon endroit, sans rien casser.
+    """
     store = SessionStore(ttl_seconds=600)
-    old = store.start(99)
-    new = store.start(99)
+    store.start(99)                    # premier envoi (son message reste affiché chez le membre)
+    running = store.start(99)          # relance : c'est ce parcours qui est vivant
     inter = make_interaction(store=store)
-    stale = flow.GripView(old.session_id)
+    stale = flow.GripView()            # identifiant de composant identique dans les deux messages
     select_values(stale.children[0], "claw")
     await stale.children[0].callback(inter)
-    assert store.get(new.session_id, 99).grip is None
-    inter.response.edit_message.assert_not_awaited()
-    assert "plus actif" in inter.response.send_message.call_args.args[0]
-    assert inter.response.send_message.call_args.kwargs["ephemeral"] is True
+    assert store.get(running.session_id, 99).grip is Grip.CLAW     # le parcours vivant avance
+    assert inter.response.send_message.call_args is None           # aucun message d'échec
+    kwargs = inter.response.edit_message.call_args.kwargs
+    assert isinstance(kwargs["view"], flow.ClawVariantView)        # étape cohérente : la variante
 
 
 @pytest.mark.asyncio
-async def test_other_user_cannot_use_session_id():
-    store = SessionStore(ttl_seconds=600)
-    victim = start_for(store, user_id=1, grip=Grip.PALM, length=180.0, width=90.0)
-    inter = make_interaction(user_id=2, store=store)
-    view = flow.BudgetView(victim.session_id)
-    select_values(view.children[0], BudgetMode.HAUT_DE_GAMME.value)
-    await view.children[0].callback(inter)
-    inter.response.edit_message.assert_not_awaited()
-    msg = inter.response.send_message.call_args.args[0]
-    assert "pas disponible pour votre compte" in msg
-    # le parcours de la victime est intact
-    assert store.get(victim.session_id, 1).budget_mode is None
+async def test_intruder_acts_only_on_his_own_parcours():
+    """Aucun composant ne peut atteindre le parcours d'un autre membre.
 
-
-@pytest.mark.asyncio
-async def test_other_user_cannot_open_measures_or_submit_modal():
+    Le rattachement se fait par l'identifiant Discord de celui qui clique : l'intrus n'a pas de
+    parcours, il reçoit le message de reprise, et le parcours de la victime reste intact.
+    """
     store = SessionStore(ttl_seconds=600)
-    victim = start_for(store, user_id=1, grip=Grip.PALM)
+    victim = start_for(store, user_id=1, grip=Grip.PALM, thenar=Thenar.MOYENNE)
     intruder = make_interaction(user_id=2, store=store)
-    await flow.MeasureView(victim.session_id).open_measures.callback(intruder)
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.HAUT_DE_GAMME.value)
+    await view.children[0].callback(intruder)
+    intruder.response.edit_message.assert_not_awaited()
+    msg = intruder.response.send_message.call_args.args[0]
+    assert "a expiré" in msg
+    assert isinstance(intruder.response.send_message.call_args.kwargs["view"], flow.StartView)
+    assert store.get(victim.session_id, 1).budget_mode is None      # parcours de la victime intact
+    assert store.get(victim.session_id, 1).finished is False
+
+
+@pytest.mark.asyncio
+async def test_intruder_cannot_open_the_measures_of_someone_else():
+    store = SessionStore(ttl_seconds=600)
+    victim = start_for(store, user_id=1, grip=Grip.PALM, thenar=Thenar.MOYENNE)
+    intruder = make_interaction(user_id=2, store=store)
+    await flow.MeasureView().open_measures.callback(intruder)
     intruder.response.send_modal.assert_not_awaited()
 
     intruder2 = make_interaction(user_id=2, store=store)
-    await modal_with(flow.MeasureModal(victim.session_id), "180", "90").on_submit(intruder2)
+    await modal_with(flow.MeasureModal(), "180", "90").on_submit(intruder2)
     intruder2.response.edit_message.assert_not_awaited()
     assert store.get(victim.session_id, 1).hand_length_mm is None
 
@@ -529,7 +544,7 @@ def test_result_view_has_no_interactive_button_only_purchase_links():
 @pytest.mark.asyncio
 async def test_expired_session_informs_user_privately():
     inter = make_interaction(store=SessionStore(ttl_seconds=600))
-    view = flow.GripView("expire-ou-inconnu")
+    view = flow.GripView()
     select_values(view.children[0], "palm")
     await view.children[0].callback(inter)
     inter.response.edit_message.assert_not_awaited()
@@ -541,9 +556,9 @@ async def test_expired_session_informs_user_privately():
 async def test_show_private_falls_back_to_ephemeral_without_message():
     """Modal non lié à un composant (message absent) : repli sur un envoi éphémère, jamais public."""
     store = SessionStore(ttl_seconds=600)
-    s = start_for(store, grip=Grip.PALM)
+    start_for(store, grip=Grip.PALM, thenar=Thenar.MOYENNE)
     inter = make_interaction(store=store, has_message=False)
-    await modal_with(flow.MeasureModal(s.session_id), "180", "90").on_submit(inter)
+    await modal_with(flow.MeasureModal(), "180", "90").on_submit(inter)
     inter.response.edit_message.assert_not_awaited()
     kwargs = inter.response.send_message.call_args.kwargs
     assert kwargs["ephemeral"] is True
@@ -562,16 +577,35 @@ async def test_error_message_is_ephemeral_when_response_already_done():
 # Contrôle statique de confidentialité : voir tests/test_privacy_scan.py (remplace l'ancien test textuel).
 
 
-def test_every_view_and_modal_carries_session_id():
-    """Chaque vue / modal de parcours doit recevoir le session_id (pas de clé implicite user_id)."""
+def test_every_step_component_is_persistent_and_unique():
+    """Les composants des étapes doivent survivre à un redémarrage du bot (panne du 2026-10-12).
+
+    Un composant durable n'a aucun délai et porte un identifiant FIXE, enregistré au démarrage par
+    ``bot.add_view`` : c'est ce qui permet à un clic de fonctionner après un redémarrage. Deux
+    composants ne peuvent pas partager le même couple (type, identifiant), sinon Discord enverrait
+    le clic au mauvais menu.
+    """
     import inspect
 
-    # ResultsView est volontairement exclue : le résultat n'a plus besoin de session_id (parcours
-    # terminé, aucun bouton interactif) — elle ne porte que des liens d'achat.
-    for cls in (flow.GripView, flow.ThenarView, flow.ThenarSelect, flow.MeasureView, flow.MeasureModal,
-                flow.BudgetView, flow.BudgetModal):
-        params = inspect.signature(cls.__init__).parameters
-        assert "session_id" in params, cls.__name__
+    views = flow.persistent_views()
+    assert len(views) == 8
+    assert isinstance(views[0], flow.StartView)
+    seen = set()
+    for view in views:
+        assert view.timeout is None, type(view).__name__
+        assert view.is_persistent(), type(view).__name__
+        for item in view.walk_children():
+            if not item.is_dispatchable():
+                continue
+            assert item.custom_id, type(item).__name__
+            key = (type(item).__name__, item.custom_id)
+            assert key not in seen, key
+            seen.add(key)
+    # Aucune vue d'étape ne dépend d'une donnée inscrite dans le message : elle se rattache au
+    # membre qui clique (c'est ce qui rend la relance du bot transparente).
+    for cls in (flow.GripView, flow.ClawVariantView, flow.ThenarView, flow.MeasureView,
+                flow.BudgetView, flow.MeasureModal, flow.BudgetModal):
+        assert list(inspect.signature(cls.__init__).parameters) == ["self"], cls.__name__
 
 
 def test_missing_commercial_link_shows_disabled_placeholder_button():
@@ -637,7 +671,7 @@ def test_shape_is_not_invented_when_the_mouse_has_no_verified_shape():
 
 
 def test_budget_step_proposes_five_modes_including_no_price():
-    view = flow.BudgetView("sid")
+    view = flow.BudgetView()
     options = view.children[0].options
     assert [o.value for o in options] == [
         "economique", "qualite_prix", "haut_de_gamme", "peu_importe_prix", "custom",
@@ -663,7 +697,7 @@ def test_no_price_mode_shows_the_price_in_small_text_with_the_components():
 
 def test_price_is_still_on_the_main_line_in_the_other_modes():
     store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     ideal = fields_of(embeds[0])["🥇 Le match idéal"]
@@ -693,7 +727,7 @@ def test_embeds_respect_discord_limits_and_stay_short():
 def test_result_never_exposes_internal_scoring_details():
     """P1 : aucune ligne « … : 10 pts », aucun score partiel, aucun « 100 % » nu."""
     store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.HAUT_DE_GAMME
     text = " ".join(str(embed.to_dict()) for embed in flow.results_embeds(session, flow.compute_selection(session)))
     # Aucune ligne de barème « … : N pts » ; la tolérance du mode reste dite en toutes lettres.
@@ -769,7 +803,7 @@ def test_without_image_base_url_no_image_is_attached_and_nothing_breaks(monkeypa
 def test_result_hump_illustration_follows_the_winner(monkeypatch):
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     main = flow.results_embeds(session, flow.compute_selection(session))[0]
     # Illustration liée à la bosse de la souris RÉELLEMENT retenue : ATK GHOST (bosse arrière) → T07.
@@ -784,9 +818,34 @@ async def test_two_slots_never_show_the_same_shell():
     descend donc la liste jusqu'à une coque différente.
     """
     store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     ideal, alternative, _ = flow.result_slots(flow.compute_selection(session))
     assert ideal is not None and alternative is not None
     assert not selection._same_shell(ideal, alternative)
     assert (ideal.mouse.label, alternative.mouse.label) == ("ATK GHOST Ultimate", "Scyrox V6")
+
+
+@pytest.mark.asyncio
+async def test_double_tap_on_the_measure_button_does_not_show_an_error():
+    """Double appui (fréquent sur mobile) : le second clic ne produit ni erreur ni second formulaire."""
+    store = SessionStore(ttl_seconds=600)
+    start_for(store, grip=Grip.PALM, thenar=Thenar.MOYENNE)
+    inter = make_interaction(store=store)
+    inter.response.send_modal = AsyncMock(side_effect=discord.InteractionResponded(inter))
+    await flow.MeasureView().open_measures.callback(inter)
+    inter.response.send_message.assert_not_awaited()
+    inter.followup.send.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_double_tap_on_the_custom_budget_menu_does_not_show_an_error():
+    store = SessionStore(ttl_seconds=600)
+    start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
+    inter = make_interaction(store=store)
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.CUSTOM.value)
+    inter.response.send_modal = AsyncMock(side_effect=discord.InteractionResponded(inter))
+    await view.children[0].callback(inter)
+    inter.response.send_message.assert_not_awaited()
+    inter.followup.send.assert_not_awaited()

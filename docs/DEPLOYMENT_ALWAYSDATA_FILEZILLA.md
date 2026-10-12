@@ -1146,6 +1146,75 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > coque renseignée s'appuie sur une source. Sans lui, `data/mouse_db.json` se charge encore (la forme est ignorée) :
 > le bot démarre, mais le bloc « ⛰️ La bosse et la forme » annonce « non vérifiée » pour toutes les souris.
 
+### 12.10 Mise à jour du 2026-10-12 : plus d'impasse dans le parcours (raccourci)
+
+**Ce que corrige cette mise à jour.** Des pannes constatées en usage réel : après un redémarrage du bot (ou après
+un certain temps), un menu du parcours ne répondait plus, ou répondait « ce parcours n'est plus actif », et il fallait
+tout recommencer depuis le panneau. Causes trouvées et corrigées : composants des étapes non enregistrés au démarrage
+et identifiants aléatoires, parcours gardés en mémoire seulement, seul le bouton du panneau avait un gestionnaire
+d'erreur — donc toute erreur ailleurs restait silencieuse. Analyse complète, preuves et liste de contrôle :
+`docs/audit/ROBUSTESSE_2026-10-12.md`. **Aucun barème, prix, donnée de souris ni texte de résultat n'a changé.**
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+bot.py
+config.py
+cogs/finder_flow.py
+utils/session.py
+.env.example
+docs/audit/ROBUSTESSE_2026-10-12.md        (facultatif : documentation)
+docs/audit/AUDIT_CONFIDENTIALITE.md        (facultatif : documentation)
+README.md                                  (facultatif : documentation)
+tools/qa_flow_matrix.py                    (facultatif : banc d'essai du moteur, 0 problème constaté)
+```
+
+`data/mouse_db.json`, `data/commercial_links.json` et `assets/images.json` **ne changent pas** dans cette mise à jour.
+
+**2. Rien à ajouter au `.env`** (la valeur par défaut suffit) — mais voici la nouvelle variable si vous voulez la fixer :
+
+```bash
+SESSION_PERSIST=true        # true (défaut) = un parcours commencé survit à un redémarrage du bot
+                            # false          = tout en mémoire, comme avant
+```
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 36 souris · liens d'achat valides : 36 · 0 erreur(s) bloquante(s)
+
+# le fichier d'état doit pouvoir s'écrire (dossier state/ ignoré par Git, créé au besoin)
+grep -q SESSION_PERSIST config.py && echo "OK   config.py (persistance des parcours)" || echo "ANCIEN config.py"
+grep -q "state/sessions" config.py >/dev/null && echo "OK   chemin state/sessions.json" || echo "ANCIEN config.py"
+grep -q "persistent_views" bot.py && echo "OK   bot.py (composants durables)" || echo "ANCIEN bot.py"
+grep -q "storage_path" utils/session.py && echo "OK   utils/session.py (nouveau magasin)" || echo "ANCIEN utils/session.py"
+```
+
+**4. Redémarrage** (nécessaire : plusieurs fichiers Python ont changé)
+
+```bash
+pkill -f "bot.py"                 # la tâche planifiée relance le bot au prochain créneau (≤ 1 min)
+ls -lt ~/admin/logs/jobs/ | head  # le journal doit afficher « Composants durables enregistrés : 8 »
+```
+
+**5. Vérification en 60 secondes dans Discord** (les quatre cas qui échouaient)
+
+1. Lancer un parcours avec le bouton du panneau → **le premier menu doit s'afficher**.
+2. Choisir une prise, puis, **sans terminer**, redémarrer le bot (`pkill -f "bot.py"`, attendre la relance) et
+   cliquer dans le menu affiché → **la question suivante doit s'afficher** (avant : « plus actif » ou silence).
+3. Terminer le parcours, puis **cliquer deux fois** sur le dernier menu → **le même résultat deux fois**, sans
+   message d'expiration.
+4. Laisser un parcours de côté plus de 30 minutes, puis cliquer dans son menu → message **« Ce parcours a expiré »**
+   avec le **bouton de reprise** juste en dessous : un clic et le parcours repart, sans revenir au panneau.
+
+> Sur le cas 4, la reprise se fait dans le message lui-même : aucun retour au panneau du salon n'est nécessaire.
+> Si un cas échoue, le journal (`~/admin/logs/jobs/` ou `~/admin/logs/services/`) contient la raison exacte
+> (chaque incident est tracé avec le parcours, l'étape et l'action).
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.
@@ -1166,5 +1235,6 @@ Cette méthode n'a **pas été vérifiée** sur votre hébergement : utilisez la
 | Liens d'achat | `/home/[compte]/MouseDiscord/data/commercial_links.json` |
 | Images | `/home/[compte]/MouseDiscord/assets/images.json` |
 | Mémoire du message d'accueil | `/home/[compte]/MouseDiscord/state/finder_message.json` |
+| Parcours en cours (sans les réponses des parcours terminés) | `/home/[compte]/MouseDiscord/state/sessions.json` |
 | Journaux du service | `/home/[compte]/admin/logs/services/` |
 | Sauvegardes (recommandé) | `/home/[compte]/backup-mousediscord/` |
