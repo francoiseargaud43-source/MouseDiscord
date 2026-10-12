@@ -318,23 +318,23 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
     alt = next(v for k, v in fields.items() if "alternative" in k)
-    # Depuis le 2026-10-12, deux données de plus sont en base (bosse des Pulsar Xlite, prix EUR de
-    # l'ATK A9 Mini) : sur ce profil Palm 180 × 90 en Qualité/Prix, cinq souris sont à 30/40 et le
-    # mode « rapport points/€ » retient la moins chère, l'ATK A9 Mini (30/40, 59,95 €, prise Palm
-    # publiée par ATK) ; l'alternative est une AUTRE coque, l'ATK GHOST Ultimate (30/40, 68,95 €).
-    assert "ATK A9 Mini" in ideal
-    assert "59,95 €" in ideal and "**75 %**" in ideal   # nom · poids · prix · pourcentage · forme
+    # 18e passe (2026-10-12) : la prise publiée par ATK pour le Phantom Ultimate a été relevée sur la
+    # fiche officielle, il n'est donc plus « en attente » et passe en tête du profil Palm 180 × 90 en
+    # Qualité/Prix (35/40, 88 %, 91,95 €) ; l'alternative est une AUTRE coque trouvée dans
+    # l'élargissement de la fenêtre, l'ATK Z1 V2 Ultra (30/40, 75 %, 59,95 €, moins chère que l'idéal).
+    assert "ATK Phantom Ultimate" in ideal
+    assert "91,95 €" in ideal and "**88 %**" in ideal   # nom · poids · prix · pourcentage · forme
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
-    assert "ATK GHOST Ultimate" in alt
+    assert "ATK Z1 V2 Ultra" in alt
     assert guide.title == "📐 Vos repères de taille"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
-    assert "30/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
+    assert "35/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
     # La donnée manquante est annoncée en clair, dans le bloc bas (jamais en haut du message).
     assert "Hauteur des boutons non documentée" in guide_text
     assert "Pourquoi ce choix" in " ".join(f.name for f in guide.fields)
     # La souris choisie est reliée aux repères de taille, juste au-dessus.
-    assert any(f.name.startswith("🔎 ATK A9 Mini") and "en clair" in f.name for f in guide.fields)
+    assert any(f.name.startswith("🔎 ATK Phantom Ultimate") and "en clair" in f.name for f in guide.fields)
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in kwargs["embeds"])
     assert "ni une probabilité" in kwargs["embeds"][-1].footer.text
 
@@ -349,7 +349,9 @@ async def test_result_never_mentions_the_excluded_mice():
     assert "écart" not in text and "Non classées" not in text
     assert "matrice_profils" not in text and "docs/" not in text
     assert "Confiance" not in text and "confiance" not in text
-    assert "Phantom" not in text
+    # Les écartées du profil sont testées nommément (le Phantom, écarté jusqu'au 2026-10-12 faute de
+    # prise publiée, est désormais le gagnant : il ne peut plus servir de sentinelle).
+    assert "Scyrox V8" not in text and "F1 V3 Ultimate" not in text and "Xlite v4 Large" not in text
 
 
 def test_result_sections_follow_the_reference_tool_order():
@@ -735,7 +737,7 @@ def test_result_never_exposes_internal_scoring_details():
     assert re.search(r"\d+ pts(?! ou moins)", text) is None
     assert "adaptée : " not in text and "adaptés : " not in text and "vs cible" not in text
     assert "/25" not in text and "partiel" not in text
-    assert "30/40" in text and "maximum théorique" in text
+    assert "35/40" in text and "maximum théorique" in text
 
 
 def test_result_image_key_prioritises_the_hump_then_the_buttons():
@@ -777,11 +779,12 @@ def test_thenar_never_changes_the_recommendation():
                 assert selection.ranked, "au moins un résultat attendu sur ces profils"
                 assert all(s.breakdown.thenar_pts == 0 for s in (*selection.ranked, *selection.pending))
 
-    # Non-régression du barème Palm 180 × 90 (cahier des charges) : 30/40 pour le gagnant.
+    # Non-régression du barème Palm 180 × 90 : 30/40 pour les souris du propriétaire (vérifié dans
+    # test_matcher), 35/40 pour l'ATK Phantom Ultimate depuis que sa prise est publiée (18e passe).
     store = SessionStore(ttl_seconds=600)
     palm = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.GRANDE)
     palm.budget_mode = BudgetMode.QUALITE_PRIX
-    assert flow.compute_selection(palm).ranked[0].total == 30
+    assert flow.compute_selection(palm).ranked[0].total == 35
 
 
 def test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration(monkeypatch):
@@ -836,8 +839,8 @@ def test_result_hump_illustration_follows_the_winner(monkeypatch):
 async def test_two_slots_never_show_the_same_shell():
     """2026-10-12 : le match idéal et l'alternative ne sont jamais deux variantes de la même coque.
 
-    « ATK A9 Mini » puis un autre ATK A9 serait la même souris deux fois : le résultat descend donc la
-    liste jusqu'à une coque différente (ici l'ATK GHOST Ultimate, autre coque, même score de 30/40).
+    Avec l'ATK Phantom Ultimate en tête (35/40, 18ᵉ passe), l'alternative vient de l'élargissement de
+    la fenêtre : l'ATK Z1 V2 Ultra (30/40, 59,95 €), autre coque et strictement moins chère que l'idéal.
     """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
@@ -845,7 +848,7 @@ async def test_two_slots_never_show_the_same_shell():
     ideal, alternative, _ = flow.result_slots(flow.compute_selection(session))
     assert ideal is not None and alternative is not None
     assert not selection._same_shell(ideal, alternative)
-    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK A9 Mini", "ATK GHOST Ultimate")
+    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK Phantom Ultimate", "ATK Z1 V2 Ultra")
 
 
 @pytest.mark.asyncio

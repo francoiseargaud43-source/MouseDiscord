@@ -368,9 +368,9 @@
     "fingertip_grip_fit": "Faible",
     "fit_status": "owner_spec",
     "dimension_status": "verified",
-    "price_eur": 75.0,
-    "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
+    "price_eur": 59.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (ATK, modèle « Z1 V2 Ultimate », affiché en euros pays France).",
     "fit_rationale": "Coque ergonomique asymétrique. Boutons hauts. Le choix absolu pour le Palm Grip.",
     "weight_g": 54.0,
     "polling_hz": 8000,
@@ -436,6 +436,14 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Ergonomic",
@@ -543,15 +551,15 @@
     "height_mm": 37.3,
     "hump_position": "Mid",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
     "price_eur": 91.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 91.95 € (ATK Blazing Sky Phantom, prix du produit, prix normal 109.95 €).",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » ; mains petites-moyennes.",
     "weight_g": 44.0,
     "sensor": "PAW3955 Master",
     "polling_hz": 8000,
@@ -588,6 +596,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -693,9 +711,9 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
-    "price_eur": 68.95,
+    "price_eur": 86.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », même coque, prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 86.95 € (ATK, modèle « GHOST Extreme », affiché en euros pays France).",
     "fit_rationale": "Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
@@ -751,6 +769,14 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -770,14 +796,14 @@
     "hump_position": "Mid",
     "button_height": "Inconnu",
     "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
     "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
-    "price_eur": 41.95,
+    "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Dragonfly Y9 « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
-    "fit_rationale": "Fabricant : « right-handed ergonomic mouse with a contoured back and asymmetrical rear for stable palm and thumb support » — prise palm retenue ; claw et fingertip ne sont pas mentionnés.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (ATK, modèle « Y9 Ultimate », affiché en euros pays France).",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm », « best for hand size: Medium-to-Large », « contoured back and asymmetrical rear for stable palm and thumb support ».",
     "weight_g": 55.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
@@ -885,6 +911,22 @@
           "palm_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse",
+        "fields": [
+          "claw_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Ergonomic",
@@ -904,14 +946,14 @@
     "hump_position": "Rear",
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
     "price_eur": 69.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 69.95 € (ATK FIERCE X, prix du produit, prix normal 81.95 €).",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » seulement (« competitive claw-grip mouse ») ; mains petites-moyennes.",
     "weight_g": 42.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
@@ -979,6 +1021,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-fierce-x-lightweight-wireless-gaming-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -998,14 +1050,14 @@
     "hump_position": "Rear",
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 59.95 € (ATK Blazing Sky U2 V2, prix du produit, prix normal 72.95 €).",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Ultimate) ; mains moyennes-grandes.",
     "weight_g": 45.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
@@ -1064,6 +1116,16 @@
           "weight_g"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1083,14 +1145,14 @@
     "hump_position": "Rear",
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59,95 € (ATK Blazing Sky U2 V2, variante « U2 V2 Mini / White », prix normal 72,95 €, affiché en euros pays France). L'ancienne valeur (77,95 €) venait du produit « U2 Mini », qui n'est pas la V2 : correction demandée par docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md §6.6.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Mini) ; mains petites-moyennes.",
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
@@ -1162,6 +1224,16 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1181,15 +1253,15 @@
     "height_mm": 38.1,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
     "price_eur": 63.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 63.95 € (ATK Blazing Sky ZERO « à partir de », prix normal 81.95 €). Prix « à partir de » : variante la moins chère en stock.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip », « Universal Fit »",
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
@@ -1233,6 +1305,16 @@
           "sensor"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1251,15 +1333,15 @@
     "height_mm": 37.4,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "conflicting",
     "price_eur": 81.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 81.95 € (ATK Blazing Sky Duckbill, prix du produit, prix normal 118.95 €).",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » ; mains petites-moyennes.",
     "weight_g": 46.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
@@ -1286,7 +1368,7 @@
         ]
       }
     },
-    "notes": "Longueur en conflit (118.0 vs 117 mm) : donnée essentielle non retenue, souris en attente. Aucune source trouvée annonçant 55 mm de largeur. Largeur 62.5 mm seulement chez EloShapes. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom (FE) et MCU Nordic 54H20 (fiche ATK Store Duckbill).",
+    "notes": "Longueur en conflit (118.0 vs 117 mm) : donnée essentielle non retenue, souris en attente. Aucune source trouvée annonçant 55 mm de largeur. Largeur 62.5 mm seulement chez EloShapes. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom (FE) et MCU Nordic 54H20 (fiche ATK Store Duckbill). Fiche ATK (2026-10-12) : 118 × 55 × 37,4 mm, « Best for Hand Size: Small-to-Medium » — longueur officielle 118 mm (ATK Blog : 117 mm) et largeur 55 mm contre 62,5 mm (EloShapes) : écart de largeur non tranché, aucune valeur du catalogue remplacée.",
     "sources": [
       {
         "label": "EloShapes — ATK Duckbill",
@@ -1328,6 +1410,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-duckbill-wireless-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1627,7 +1719,7 @@
     "height_mm": 38.2,
     "grip_width_mm": null,
     "shell_id": null,
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
     "notes": "Première souris « Small » du catalogue (116,6 mm, EloShapes) : comble le manque de formes compactes. EloShapes : hump « Back - moderate » → Rear (règle de correspondance du projet) ; front flare « Inward - moderate » ; courbure des flancs « Inward ». Éditeur : « Claw / Palm / Fingertip », « small to medium hands ». Compatibilités de prise à valider par le propriétaire (marketing non assimilé à une compatibilité). Switchs Huano Blue Glow Pink Dot V2 mécaniques ; MCU Nordic 52840 annoncé sur la V3 (la V3 Pro embarque la puce ATK ONE selon Maxesport) : valeur de la V3 retenue.",
@@ -1639,10 +1731,10 @@
     "width_max_mm": 62.2,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Forme compacte symétrique à bosse arrière (EloShapes) ; l'éditeur annonce Claw/Palm/Fingertip mais aucune compatibilité par prise n'est documentée.",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » (modèle V3), « Universal Fit »",
     "dimension_status": "verified",
     "weight_g": 49.0,
     "sensor": "Xhero AI / PAW3395 SE",
@@ -1702,6 +1794,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1714,7 +1816,7 @@
     "height_mm": 37.8,
     "grip_width_mm": null,
     "shell_id": null,
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
     "notes": "EloShapes : « Front flare · Flat » et flancs plats (profil sans évasement arrière marqué — critère « rear design » de la vidéo Oblivity). Modèle très distribué et peu cher ; homologation de prise à faire par le propriétaire. R1 / R1 SE : switchs Huano 20 M clics et puce Nordic 52840 (ou Shanghai Botong) ; R1 Pro : Huano Ice Berry ; R1 Pro Max : Kailh White Blade (toutes mécaniques).",
@@ -1726,10 +1828,10 @@
     "width_max_mm": 64.0,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Symétrique « safe » à bosse arrière modérée et flancs plats (EloShapes) ; compatibilités par prise non documentées.",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » (modèle R1 S), « Universal Fit »",
     "dimension_status": "verified",
     "weight_g": 51.0,
     "sensor": "PAW3395",
@@ -1795,6 +1897,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/vxe-dragonfly-r1-series-wireless-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1913,7 +2025,7 @@
     "height_mm": 40.0,
     "grip_width_mm": null,
     "shell_id": "atk_x1",
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
     "notes": "Dimensions identiques à l'ATK Blazing Sky X1 / X1 V2 déjà au catalogue (127 × 64 × 40) : coque de la famille X1. Pas encore de fiche EloShapes -> position de la bosse inconnue : souris en « à vérifier » jusqu'à vérification. Éditeur : « Claw / Palm / Fingertip », « medium to large hands ». Série X3 : switchs Omron mécaniques et MCU Broadcom CX52850SE (fiche ATK Store X3 Series) — donc pas de puce Nordic sur cette gamme. Coque partagée enregistrée le 2026-10-12 (shell_id = atk_x1, comme ATK X1 V2 Ultra Max) : deux entrées de la même coque ne sont plus proposées ensemble dans un résultat.",
@@ -1925,10 +2037,10 @@
     "width_max_mm": 64.0,
     "hump_position": "Inconnu",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Grande souris symétrique (127 mm) de la famille X1, sortie en octobre 2026 ; bosse et compatibilités non documentées.",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » (modèle X3) ; mains moyennes-grandes.",
     "dimension_status": "single_source",
     "weight_g": 51.0,
     "sensor": "PAW3315",
@@ -1968,6 +2080,16 @@
           "price_eur"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/vxe-dragonfly-x3-series-lightweight-wireless-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",

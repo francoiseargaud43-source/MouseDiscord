@@ -160,7 +160,7 @@ directement sur le serveur.
 
 Le fichier `data/commercial_links.json` **du dépôt est prêt à l'emploi** : au 2026-10-12, il contient les
 **liens d'achat officiels des 36 souris du catalogue (36 sur 36)**, tous liens affiliés et vérifiés un par un
-(clé = `id` de la souris dans `data/mouse_db.json` ; 26 liens validés le 2026-10-11 dans
+(clé = `id` de la souris dans `data/mouse_db.json` ; liens relevés un par un le 2026-10-11,
 `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`, les dix Pulsar complétés le 2026-10-12 ;
 contrôle automatique : `python tools/check_deployment.py`).
 

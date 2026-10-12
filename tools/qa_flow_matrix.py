@@ -18,8 +18,10 @@ Contrôles effectués, profil par profil :
 - aucun bouton d'achat pour une souris absente, et un bouton pour chaque souris affichée qui a un lien ;
 - en budget personnalisé, aucune souris affichée au-dessus du budget ;
 - aucune souris « en attente » (donnée manquante) ni « écartée » (prise faible) n'est affichée ;
-- les trois places restent dans la zone de compatibilité du mode, et l'alternative n'est jamais la
-  même coque que le match idéal quand une autre coque est disponible ;
+- chaque place est contrôlée contre SA fenêtre : le match idéal est la tête du classement du mode,
+  l'alternative reste dans la zone du mode ou n'en sort que si aucune autre coque ne s'y trouve (et
+  jamais plus chère que le match idéal), l'économie reste dans sa fenêtre propre (±5 points) et coûte
+  strictement moins cher que les deux autres ;
 - comptage, sans le compter comme une faute, des profils où DEUX places montrent la même coque :
   c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance ne
   contient que des variantes de la coque retenue — il est mesuré, pas supposé.

@@ -71,12 +71,22 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
 3. **Z1 V2** : la gamme Z1 V2 ne propose que **Ultimate / Ultimate+**. « Ultra » est un modèle de la
    **Z1 (V1)**. Ton id porte les cotes de la Z1 V2 (122,5 × 66,8 × 42,4 mm) → lien calé sur la Z1 V2.
    Base 75,00 € vs 59,95 € au store → prix à trancher.
+   **Tranché le 2026-10-12 (18ᵉ passe)** : règle du propriétaire (boutique officielle) appliquée — la
+   variante « Z1 V2 **Ultimate** » est à **59,95 €** sur la boutique ATK (`?country=FR`, relevé daté) ;
+   la base porte ce prix, la source officielle est inscrite dans la fiche.
 4. **Y9 Ultimate** : la variante Ultimate est à 64,98 $ (~59,95 €), le 41,95 € du store correspond au
    Y9 d'entrée de gamme → le prix de l'id est probablement celui du mauvais modèle.
+   **Tranché le 2026-10-12 (18ᵉ passe)** : la variante « Y9 **Ultimate** » est à **59,95 €** (boutique
+   ATK, `?country=FR`, relevé daté) ; c'est désormais le prix de l'id, l'ancien 41,95 € venait bien du
+   modèle d'entrée de gamme.
 5. **GHOST** : ton lien `?variant=47320425627866` pointe en réalité sur **Extreme / Black** (94,98 $),
    pas sur l'Ultimate+. Il est donc attribué à `atk_ghost_extreme` (et le lien Ultimate a reçu sa
    propre variante vérifiée). Or la base met **68,95 € aux deux** (prix du modèle Ultimate) → le prix
    de l'Extreme reste à trancher.
+   **Tranché le 2026-10-12 (18ᵉ passe)** : la variante **Extreme** est à **86,95 €** (boutique ATK,
+   `?country=FR`, variante `47320425627866`, relevé daté) et devient le prix de `atk_ghost_extreme` ;
+   `atk_ghost_ultimate` conserve son prix du 2026-10-11 tant que la variante Ultimate n'a pas été
+   relevée à son tour (dette ouverte).
 6. **U2 V2 Mini** : la variante Mini s'affiche à **59,95 €** sur la page FR, alors que la base porte
    77,95 € (source = l'ancienne « U2 Mini ») → prix à corriger.
    **Réglé le 2026-10-12** : corrigé à 59,95 € au catalogue, source ATK datée à l'appui.

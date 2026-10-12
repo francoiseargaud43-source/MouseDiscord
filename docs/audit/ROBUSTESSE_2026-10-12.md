@@ -570,3 +570,85 @@ passe, il vérifie profil par profil :
 5. **Deux coques jumelles non tranchées** : `pulsar_x2a_v3_medium` et `pulsar_x2_crazylight_medium`
    (dimensions publiées identiques, aucune source fabricant ne confirme qu'il s'agit de la même
    coque).
+
+## 11. Dix-huitième passe (2026-10-12) : les prises publiées par les fabricants entrent au catalogue
+
+Le propriétaire a demandé de documenter les souris restées « sans prise publiée » et de vérifier les
+prix à la boutique officielle. Cette passe ne touche **aucun barème** : uniquement des données
+sourcées, chacune datée — et les canaris qui en dépendent.
+
+### 11.1 Neuf souris sur dix reçoivent leur prise, du fabricant lui-même
+
+Fiches officielles ATK (`atk.store`, pays France, relevé du 2026-10-12), champ « **Grip Style** » :
+mention explicite → « Élevé », prise non mentionnée → « Inconnu » (jamais de déduction).
+
+| Souris | Prise publiée par le fabricant | Suite |
+|---|---|---|
+| ATK Duckbill | Claw / Palm / Fingertip | prise documentée (souris toujours inutilisable, §11.6) |
+| ATK Fierce X | **Claw uniquement** | Palm et Fingertip restent « Inconnu » |
+| ATK Phantom Ultimate | Claw / Palm / Fingertip | devient la tête du profil Palm de référence (§11.5) |
+| ATK U2 V2 Mini et Ultimate | **Claw** | Palm et Fingertip restent « Inconnu » |
+| ATK ZERO | Claw / Palm / Fingertip | — |
+| VXE Dragonfly R1 / V3 / X3 | Claw / Palm / Fingertip | — |
+| ATK Y9 Ultimate | Claw **et** Palm (palm déjà publié) | claw complété |
+
+- **ATK Blazing Sky F1 V2 : aucune prise.** Le bloc « Specifications » de sa fiche n'est pas lisible
+  par le robot et `mouseshape.com/mice/atk-f1-v2` répond 404 : la souris reste « à vérifier », aucune
+  valeur n'est devinée. C'est la seule des dix.
+- Provenance : `fit_status = manufacturer_guide`, citation et source datée dans la fiche, partout.
+  Aucune source tierce n'a été nécessaire pour ces neuf souris.
+
+### 11.2 Trois prix officiels corrigés (règle « boutique officielle »)
+
+| Souris | Avant | Après | Source datée |
+|---|---:|---:|---|
+| `atk_z1_ultra` (Z1 V2 **Ultimate**) | 75,00 € (cahier des charges) | **59,95 €** | fiche ATK, `?country=FR`, 2026-10-12 |
+| `atk_y9_ultimate` (Y9 **Ultimate**) | 41,95 € (modèle d'entrée) | **59,95 €** | fiche ATK, `?country=FR`, 2026-10-12 |
+| `atk_ghost_extreme` (GHOST **Extreme**) | 68,95 € (prix de l'Ultimate) | **86,95 €** | fiche ATK, variante `47320425627866`, 2026-10-12 |
+
+Deux prix restent à revérifier à la boutique officielle, règle désormais connue : **F1 V3 Ultimate+**
+(70,00 € en base contre 59,95 € relevés le 2026-10-11) et **X1 V2 Ultra Max 2.0** (75,00 € contre
+41,95 €). Ils ne sont **pas** modifiés ici : chaque correction suffit à déplacer des têtes, elle se
+fait donc avec son propre relevé daté.
+
+### 11.3 Un écart de largeur relevé, rien d'écrasé
+
+La fiche officielle de la **Duckbill** donne **118 × 55 × 37,4 mm** (« Best for Hand Size:
+Small-to-Medium ») là où EloShapes donne 62,5 mm de largeur : l'écart est écrit dans la note de la
+fiche, **aucune valeur du catalogue n'est remplacée** tant qu'il n'est pas tranché.
+
+### 11.4 Effet mesuré
+
+| Mesure | Avant les compléments (17e passe) | Après (18e passe) |
+|---|---:|---:|
+| Grille complète : profils sans résultat | 3 601 | **2 561** |
+| Grille complète : deux places sur la même coque | 2 052 | **1 241** |
+| Grille complète : profils à trois places | 6 148 (22,6 %) | **7 024 (25,9 %)** |
+| Grille complète : problèmes détectés | 0 | **0** |
+| Stats 18 522 : profils sans résultat | 1 044 | **540** |
+| Stats 18 522 : souris jamais recommandées | 17 sur 36 | **10 sur 36** |
+
+Sept souris entrent au tableau : Fierce X, Phantom Ultimate, U2 V2 Mini, U2 V2 Ultimate, ZERO,
+VXE R1 et VXE V3. Effet du **code** seul (mêmes données, `cd977a6` → arbre, 24 609 profils comparés) :
+match idéal **inchangé** ; trois places 158 → **7 024** ; deux places sur la même coque 4 060 →
+**1 289** ; économie **gagnée 6 994 / perdue 0** ; pire baisse de l'alternative **5 points**.
+
+### 11.5 Conséquence assumée : l'ATK Phantom Ultimate passe devant les souris du propriétaire
+
+Sur le profil Palm 180 × 90, tous modes, l'ATK Phantom Ultimate atteint **35/40** : sa prise est
+désormais publiée par son fabricant, il n'est donc plus « en attente ». Les quatre souris du
+propriétaire gardent exactement leurs points (V6 30, Z1 30, A9 Plus 25, X1 20) et restent juste
+derrière. La règle du 2026-10-12 reste vraie — une souris **incomplète** ne dépasse jamais le
+propriétaire — mais le Phantom n'est plus incomplète. Cinq tests de flux et un test de barème
+figeaient l'ancien gagnant : réécrits avec la date et la raison (jamais « ajustés »), et la sentinelle
+« le Phantom ne doit pas apparaître » remplacée par les écartées du jour.
+
+### 11.6 Ce qui reste ouvert après cette passe
+
+1. **Une souris sans prise publiée** : `atk_f1_v2` (fiche illisible, aucun équivalent chez les tiers).
+2. **Deux prix à revérifier** : F1 V3 Ultimate+, X1 V2 Ultra Max 2.0 (§11.2).
+3. **La Duckbill reste inutilisable** : sa longueur est en conflit (118 vs 117 mm) et sa largeur est
+   contestée (55 mm officiel contre 62,5 mm EloShapes). Trancher avec une seule source à la fois.
+4. **Hauteur des boutons : 25 souris sur 36** (aucun fabricant ne la publie).
+5. **Bosse de la VXE X3** (`vxe_x3`) : coque partagée avec l'ATK X1, position non publiée.
+6. **Deux coques jumelles non tranchées** : `pulsar_x2a_v3_medium` / `pulsar_x2_crazylight_medium`.

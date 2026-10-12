@@ -174,18 +174,18 @@ def test_palm_180x90_excluded_mice(catalog):
 
 
 def test_palm_180x90_ranking_keeps_the_owner_mice_on_top(catalog):
-    """Non-régression du barème : les quatre souris du propriétaire gardent leurs points.
+    """Non-régression du barème : les quatre souris du propriétaire gardent leurs points (30/30/25/20).
 
-    Depuis l'ouverture du critère « hauteur des boutons » (2026-10-12), des souris notées sur des
-    données incomplètes peuvent les égaler — jamais les dépasser : leur total reste sur 40.
+    Règle du 2026-10-12 : une souris notée sur des données INCOMPLÈTES peut égaler le propriétaire,
+    jamais le dépasser. Depuis la 18ᵉ passe (même date), l'ATK Phantom Ultimate n'est plus incomplète
+    — le fabricant publie sa compatibilité de prise — et passe donc devant, à 35/40.
     """
     scores = [evaluate_mouse(m, HAND, Grip.PALM) for m in catalog.values()]
     totals = {s.mouse.id: s.total for s in scores if s.is_scored}
     assert (totals["scyrox_v6"], totals["atk_z1_ultra"], totals["atk_a9_plus"], totals["atk_x1_ultra_max"]) == (30, 30, 25, 20)
     ranked = rank_by_compatibility(scores)
-    top = [s.total for s in ranked[:4]]
-    assert top == [30, 30, 30, 30], "les meilleurs totaux du profil Palm restent 30/40, jamais plus"
-    assert {s.mouse.id for s in ranked[:2]} == {"scyrox_v6", "atk_z1_ultra"}, "les souris du propriétaire restent en tête"
+    assert (ranked[0].mouse.id, ranked[0].total) == ("atk_phantom_ultimate", 35)
+    assert {s.mouse.id for s in ranked[1:3]} == {"scyrox_v6", "atk_z1_ultra"}, "les souris du propriétaire restent juste derrière"
     assert all(0 <= s.total <= MAX_SCORE for s in ranked)
 
 
