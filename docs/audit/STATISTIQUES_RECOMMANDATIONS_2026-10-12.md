@@ -7,7 +7,7 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 ## Résultats vides et repli de coque (2026-10-12)
 
 - **Profils sans aucun résultat : 1422** sur 18522 (7.7 %).
-  - aucune souris classable avec ces critères : 1422
+  - budget inférieur à la souris qui convient la moins chère : 1422
   - dont profils où au moins une souris est « à vérifier » faute d'une donnée publiée (compatibilité de prise) : **1170**
 - **Profils où DEUX places montrent la même coque : 3109** (16.8 %).
   C'est le repli documenté de `result_slots()` : quand la zone de tolérance du mode ne contient que des variantes de la coque retenue, la deuxième place reprend la même coque plutôt que de disparaître. Les paires concernées, par fréquence :
@@ -272,3 +272,29 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 | VXE Dragonfly V3 / V3 Pro | — | — | — | 0 |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo | — | — | — | 0 |
 | VXE MAD R / MAD R Major | — | — | — | 0 |
+
+## Ce qui manque, souris par souris (à trouver, jamais à inventer)
+
+- **Sans aucune compatibilité de prise publiée (11 souris)** : jamais classables, donc jamais proposées, quel que soit le profil. Seule une publication du fabricant (ou une source tierce explicitement autorisée) peut les faire entrer.
+  - ATK Blazing Sky F1 V2 (`atk_f1_v2`) — 41,95 €
+  - ATK Duckbill (`atk_duckbill`) — 81,95 €
+  - ATK Fierce X (`atk_fierce_x`) — 69,95 €
+  - ATK Phantom Ultimate (`atk_phantom_ultimate`) — 91,95 €
+  - ATK U2 V2 Mini (`atk_u2_v2_mini`) — 77,95 €
+  - ATK U2 V2 Ultimate (`atk_u2_v2_ultimate`) — 59,95 €
+  - ATK ZERO (`atk_zero`) — 63,95 €
+  - VXE Dragonfly R1 / R1 Pro (`vxe_r1`) — 13,95 €
+  - VXE Dragonfly V3 / V3 Pro (`vxe_v3`) — 13,95 €
+  - VXE Dragonfly X3 / X3 Pro / X3 Turbo (`vxe_x3`) — 27,95 €
+  - VXE MAD R / MAD R Major (`vxe_mad_r`) — prix inconnu
+- **Sans position de bosse publiée (6 souris)** : « à vérifier » dès que la prise utilise la bosse (Palm et Claw) ; sortent seulement en Fingertip.
+  - ATK A9 Mini (`atk_a9_mini`)
+  - Pulsar Xlite CrazyLight Medium (`pulsar_xlite_crazylight_medium`)
+  - Pulsar Xlite v4 Large (`pulsar_xlite_v4_large`)
+  - Pulsar Xlite v4 Medium (`pulsar_xlite_v4_medium`)
+  - Pulsar Xlite v4 Mini (`pulsar_xlite_v4_mini`)
+  - VXE Dragonfly X3 / X3 Pro / X3 Turbo (`vxe_x3`)
+- **Sans hauteur de boutons documentée (25 souris)** : classées partiellement, donc désavantagées au classement (le critère manquant ne peut pas leur rapporter les points que les autres gagnent).
+
+Compléter ces trois familles est la seule façon de faire sortir les souris listées plus haut ; aucune valeur ne peut être devinée (règle du propriétaire : jamais d'invention).
+

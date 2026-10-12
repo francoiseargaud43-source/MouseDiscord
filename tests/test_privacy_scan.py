@@ -68,6 +68,22 @@ def test_public_send_allowed_in_admin_command_only():
     assert rules(source, FLOW) == ["R3"]
 
 
+def test_editing_a_published_message_is_allowed_only_for_the_public_panel():
+    """R4 élargi à ``edit()`` (2026-10-12) : réécrire un message DÉJÀ PUBLIÉ peut publier des données.
+
+    Seul le panneau d'accueil public (contenu statique, ``_edit_existing``) y est autorisé : partout
+    ailleurs, la réécriture d'un message est signalée comme un envoi.
+    """
+    source = "async def _edit_existing(self, target):\n    await target.edit(embed=banner)\n"
+    assert rules(source, "cogs/mouse_finder.py") == []
+    assert rules(source, FLOW) == ["R4"]
+
+
+def test_editing_a_published_message_outside_the_panel_is_reported():
+    source = "async def leak(i, embed):\n    await i.message.edit(embed=embed)\n"
+    assert "R4" in rules(source, FLOW)
+
+
 # ---------------------------------------------------------------------------
 # 3. Violations : chaque variante doit être détectée
 # ---------------------------------------------------------------------------

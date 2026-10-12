@@ -16,7 +16,10 @@ Règles (AST, pas de simple recherche de texte) :
 - R2  ``followup.send`` : ``ephemeral=True`` littéral obligatoire.
 - R3  ``send`` / ``reply`` / ``respond`` sur tout autre objet (salon, message, contexte) : interdit, sauf
       dans les fonctions de ``PUBLIC_ALLOWLIST`` (commande d'administration ``!setup_finder``, publication du panneau).
-- R4  ``edit_message`` / ``edit_original_response`` : interdit hors ``EDIT_ALLOWED_FUNCTIONS``.
+- R4  ``edit_message`` / ``edit_original_response`` / ``edit`` : interdit hors ``EDIT_ALLOWED_FUNCTIONS``.
+      ``edit`` est la méthode qui réécrit un message DÉJÀ PUBLIÉ : elle peut donc publier des données
+      individuelles dans un salon, comme un envoi. Seule exception : le panneau d'accueil public,
+      réécrit avec un contenu statique (``_edit_existing``).
 - R5  Référence non appelée à une méthode sensible (alias : ``f = interaction.response.send_message``) : interdite.
 - R6  ``getattr`` / ``setattr`` / ``partial`` visant une méthode sensible, par nom littéral ou sur un objet
       d'interaction : interdits (contournement dynamique).
@@ -41,7 +44,7 @@ SCANNED_FILES = ("bot.py", "config.py", "cogs/finder_flow.py", "cogs/mouse_finde
                  "utils/matcher.py", "utils/selection.py", "utils/models.py")
 
 SEND_METHODS_REQUIRING_EPHEMERAL = frozenset({"send_message", "defer"})   # R1
-EDIT_METHODS = frozenset({"edit_message", "edit_original_response"})        # R4
+EDIT_METHODS = frozenset({"edit_message", "edit_original_response", "edit"})  # R4
 PUBLIC_SEND_METHODS = frozenset({"send", "reply", "respond"})               # R3
 SENSITIVE_NAMES = frozenset(SEND_METHODS_REQUIRING_EPHEMERAL | EDIT_METHODS | PUBLIC_SEND_METHODS | {"followup"})
 DYNAMIC_ACCESSORS = frozenset({"getattr", "setattr", "partial"})            # R6
@@ -51,6 +54,9 @@ INTERACTION_HINTS = ("interaction", "response", "followup", "channel", "message"
 # (les boutons interactifs du résultat ont été retirés le 2026-10-11 : il ne reste que des liens).
 EDIT_ALLOWED_FUNCTIONS = {
     "cogs/finder_flow.py": {"_show_private"},
+    # ``_edit_existing`` réécrit le panneau d'ACCUEIL (public par nature) avec un contenu statique :
+    # aucune donnée de membre n'y passe. Toute autre fonction qui édite un message est signalée.
+    "cogs/mouse_finder.py": {"_edit_existing"},
 }
 # Fonctions autorisées à publier : commande d'administration et panneau public, jamais de données individuelles.
 PUBLIC_ALLOWLIST = {

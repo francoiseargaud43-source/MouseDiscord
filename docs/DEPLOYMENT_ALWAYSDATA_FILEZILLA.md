@@ -158,9 +158,11 @@ directement sur le serveur.
 
 ### 2.5 Les liens d'achat : point d'attention avant mise en ligne publique
 
-Le fichier `data/commercial_links.json` **du dépôt est prêt à l'emploi** : depuis le 2026-10-11, il contient les
-**liens d'achat officiels de 26 souris sur 26**, vérifiés un par un (clé = `id` de la souris dans `data/mouse_db.json`,
-détail dans `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`).
+Le fichier `data/commercial_links.json` **du dépôt est prêt à l'emploi** : au 2026-10-12, il contient les
+**liens d'achat officiels des 36 souris du catalogue (36 sur 36)**, tous liens affiliés et vérifiés un par un
+(clé = `id` de la souris dans `data/mouse_db.json` ; 26 liens validés le 2026-10-11 dans
+`docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`, les dix Pulsar complétés le 2026-10-12 ;
+contrôle automatique : `python tools/check_deployment.py`).
 
 ```json
 {
@@ -1062,7 +1064,7 @@ Cas concerné : `~/MouseDiscord` tourne déjà la refonte visuelle, et vous voul
 | `utils/models.py`, `utils/session.py` | Code : forme de coque (`shape`), variante de Claw (collectée, jamais notée) | **Oui** |
 | `utils/catalog.py` | Code : une forme de coque renseignée doit citer la source qui l'atteste | **Oui** |
 | `utils/selection.py` | Code : **cinquième mode « Peu importe le prix »** (la forme d'abord, puis les composants documentés ; le prix n'est jamais exigé) | **Oui** |
-| `utils/matcher.py` | Code : barème des boutons aligné sur Oblivity, ajustement thénar borné (±2, bosse arrière) | **Oui** |
+| `utils/matcher.py` | Code : barème des boutons aligné sur Oblivity ; ajustement thénar **en pause (0 / 0 / 0, bosse arrière) depuis le 2026-10-12** — voir §12.11 | **Oui** |
 | `data/mouse_db.json` | Données : 36 souris vendues (26 ATK/VXE/Scyrox + 10 Pulsar), prix en euros, forme de coque sourcée, sources datées | Non (relu à chaque recherche) |
 | `data/commercial_links.json` | Données : 36 liens officiels (les URL `https://url.com/…` ont disparu) | Non (relu à chaque résultat) |
 | `tools/check_deployment.py` | Outil de contrôle | Non |

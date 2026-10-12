@@ -1,5 +1,11 @@
 # Vérification des liens sponsorisés — 2026-10-11
 
+> **Instantané daté.** Ce rapport décrit l'état des liens **au 2026-10-11** (26 souris, 26 liens).
+> Depuis le 2026-10-12, les dix souris Pulsar sont entrées au catalogue et leurs liens affiliés
+> (`?ref=AZE`) ont été ajoutés : le fichier compte aujourd'hui **36 liens pour 36 souris**. Le contrôle
+> automatique à jour est `python tools/check_deployment.py` ; l'état courant est décrit dans
+> `docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md` §2.5 et `docs/audit/PULSAR_CATALOGUE_2026-10-12.md`.
+
 Tes 37 URL ont été vérifiées **une par une** sur les boutiques officielles (le jour même), puis
 rangées dans `data/commercial_links.json` (clés = identifiants de `data/mouse_db.json`).
 Les deux liens d'exemple `https://url.com/...` ont été supprimés, et le **lien A9 NB fourni en dernier**

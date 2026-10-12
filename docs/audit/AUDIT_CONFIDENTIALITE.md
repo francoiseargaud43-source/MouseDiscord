@@ -36,7 +36,7 @@ Seul le **message d'accueil** est public (panneau publié par `!setup_finder`). 
 | R1 | `send_message` ou `defer` sans `ephemeral=True` littéral (un `**kwargs` n'est **pas** une preuve) | — |
 | R2 | `followup.send` sans `ephemeral=True` littéral | — |
 | R3 | `send` / `reply` / `respond` sur un autre objet (salon, message, contexte) | `PUBLIC_ALLOWLIST` : `setup_finder`, `setup_finder_error`, `_edit_existing` dans `cogs/mouse_finder.py` (administration et panneau public, sans donnée individuelle) |
-| R4 | `edit_message` / `edit_original_response` | `EDIT_ALLOWED_FUNCTIONS` : `_show_private`, `_close`, `_restart` dans `cogs/finder_flow.py` |
+| R4 | `edit_message` / `edit_original_response` / `edit` | `EDIT_ALLOWED_FUNCTIONS` : `_show_private` (`cogs/finder_flow.py`, message éphémère du parcours) et `_edit_existing` (`cogs/mouse_finder.py`, panneau d'accueil public réécrit avec un contenu statique). `_close` et `_restart` n'existent plus (boutons retirés le 2026-10-11). |
 | R5 | Référence non appelée à une méthode sensible (alias : `f = interaction.response.send_message`) | — |
 | R6 | `getattr` / `setattr` / `partial` visant une méthode sensible ou un objet d'interaction | — |
 
