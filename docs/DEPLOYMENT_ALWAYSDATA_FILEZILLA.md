@@ -332,7 +332,7 @@ Source : https://help.alwaysdata.com/en/docs/web-hosting/remote-access/sftp/ (h�
 2. Ouvrez `cogs/` : il doit contenir `finder_flow.py` et `mouse_finder.py` (et non un sous-dossier supplémentaire).
 3. Consultez l'onglet **File d'attente** (en bas) : aucun transfert ne doit être en erreur (« Échec » ou « Erreur »).
    Relancez les éléments en échec.
-4. Taille de contrôle : `data/mouse_db.json` fait environ 28 Ko.
+4. Taille de contrôle : `data/mouse_db.json` fait environ 122 Ko (36 souris, sources datées incluses).
 
 ---
 
@@ -1283,6 +1283,80 @@ pkill -f "bot.py"                 # la tâche planifiée relance le bot au proch
    ±2 points »).
 3. Sur une main 190 × 105 en **Palm**, puis en recliquant sur le même profil → **jamais deux fois la même
    souris** dans les deux ou trois places (le cas « A9 Plus 2.0 » + « A9 NB Ultra » ne doit plus apparaître).
+
+---
+
+### 12.12 Mise à jour du 2026-10-12 (3e) : les trois places ont chacune leur fenêtre, prix de la boutique officielle
+
+**Ce que change cette mise à jour** (détail, mesures et décisions : `docs/audit/ROBUSTESSE_2026-10-12.md` §10) :
+
+1. **Troisième place (économie) enfin utile** : elle avait la même fenêtre que le reste (±2 points sur 40) et
+   n'apparaissait donc que dans **0,3 %** des profils (80 sur 23 569). Elle a désormais **sa propre fenêtre
+   de ±5 points**, et doit rester **strictement moins chère** que les deux souris affichées : elle apparaît
+   dans **22,63 %** des profils (6 148 sur 23 569) — mesure par `tools/flow_effect.py`, avant/après.
+2. **Moins de « deux fois la même souris »** : quand la zone du mode ne contient que des variantes de la
+   même coque, l'alternative cherche une **autre forme** jusqu'à 5 points plus bas, **jamais plus chère**
+   que le match idéal. Les profils à deux places de même coque passent de **4 040 à 2 097**.
+3. **Le match idéal ne change jamais** : 0 profil sur 23 569. Le classement, le barème et les textes sont
+   intacts.
+4. **Prix : la boutique officielle** (règle donnée le 2026-10-12). L'**A9 Air** passe de 89,90 €
+   (revendeur Maxesport) à **59,95 €** (boutique ATK) ; la **VXE MAD R** entre au catalogue à
+   **40,95 €** avec la prise publiée par son fabricant (« Perfect Fit for Claw and Palm Grips »), donc
+   classable en Palm et en Claw.
+
+> **Les résultats changent** : c'est l'objet de la mise à jour. La troisième ligne peut apparaître là où
+> elle était absente, la deuxième peut proposer une autre forme, et deux souris changent de prix.
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+cogs/finder_flow.py                  (décisif : fenêtres de l'alternative et de l'économie)
+data/mouse_db.json                   (décisif : prix A9 Air 59,95 €, VXE MAD R 40,95 € + prise fabricant)
+tools/qa_flow_matrix.py              (facultatif : banc d'essai durci, chaque place contrôlée dans SA fenêtre)
+tools/flow_effect.py                 (facultatif : mesure avant/après des trois places)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : documentation, §8.8, §9.5 et §10)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md  (facultatif : tableau statistique régénéré)
+docs/RECHERCHE_PRIX_EUR_2026-10-11.md (facultatif : addendum « prix de la boutique officielle »)
+README.md                            (facultatif : liste des outils complétée)
+```
+
+`utils/matcher.py`, `utils/selection.py`, `utils/catalog.py`, `cogs/mouse_finder.py` et
+`data/commercial_links.json` **ne changent pas** dans cette mise à jour (le thénar est déjà à 0 / 0 / 0).
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 36 souris · liens d'achat valides : 36 · 1 erreur attendue (.env sur le serveur)
+
+# les deux fenêtres doivent être en place
+grep -q "ALTERNATIVE_EXTENSION_POINTS = 5" cogs/finder_flow.py \
+  && echo "OK   cogs/finder_flow.py (élargissement de l'alternative)" || echo "ANCIEN cogs/finder_flow.py"
+grep -q "ECONOMY_SLOT_TOLERANCE_POINTS = 5" cogs/finder_flow.py \
+  && echo "OK   cogs/finder_flow.py (fenêtre de l'économie)" || echo "ANCIEN cogs/finder_flow.py"
+
+# le nouveau prix officiel de l'A9 Air doit être en base
+.venv/bin/python -c "import json; d={m['id']: m for m in json.load(open('data/mouse_db.json'))}; \
+  print(d['atk_a9_air']['price_eur'], '€ A9 Air ·', d['vxe_mad_r']['price_eur'], '€ MAD R')"
+# attendu : 59.95 € A9 Air · 40.95 € MAD R
+```
+
+**4. Redémarrage**
+
+```bash
+pkill -f "bot.py"                 # la tâche planifiée relance le bot au prochain créneau (≤ 1 min)
+```
+
+**5. Vérification en 60 secondes dans Discord**
+
+1. Faire un parcours en **Palm** avec des mesures courantes (ex. 185 × 85) : la troisième ligne « 💰
+   Économie » doit apparaître beaucoup plus souvent qu'avant (une souris d'une autre forme, strictement
+   moins chère), et jamais deux fois la même souris dans les deux premières lignes.
+2. Dans « Peu importe le prix », l'alternative ne doit **jamais** coûter plus cher que le match idéal.
+3. Vérifier que l'A9 Air s'affiche à **59,95 €** et la VXE MAD R à **40,95 €** quand elles sortent.
 
 ---
 

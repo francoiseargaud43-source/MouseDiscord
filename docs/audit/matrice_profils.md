@@ -29,11 +29,11 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | ATK ZERO | ⏳ à vérifier (15/25 pts partiels) | 120.1 mm (dans la plage) | 60.2 mm (estimée, écart 0.6) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK Duckbill | ❌ exclue — Prix 81.95 € au-dessus du budget maximal 75.00 € | non vérifiée (conflit) | 59.5 mm (estimée, écart 0.0) | Inconnu | Rear | Inconnu | — | Prix 81.95 € au-dessus du budget maximal 75.00 € |
 | ATK A9 Ultimate | ✅ 25/40 (boutons non documentés) | 125.0 mm (écart 1.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
-| ATK A9 Air | ❌ exclue — Prix 89.90 € au-dessus du budget maximal 75.00 € | 125.0 mm (écart 1.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Inconnu | — | Prix 89.90 € au-dessus du budget maximal 75.00 € |
+| ATK A9 Air | ✅ 25/40 (boutons non documentés) | 125.0 mm (écart 1.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK A9 Mini | ✅ 30/40 (boutons non documentés) | 118.4 mm (écart 0.4 mm) | 58.2 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
 | VXE Dragonfly V3 / V3 Pro | ⏳ à vérifier (15/25 pts partiels) | 116.6 mm (écart 2.2 mm) | 59.2 mm (estimée, écart 0.0) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 | VXE Dragonfly R1 / R1 Pro | ⏳ à vérifier (15/25 pts partiels) | 120.6 mm (dans la plage) | 61.0 mm (estimée, écart 1.4) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
-| VXE MAD R / MAD R Major | ⏳ à vérifier (15/25 pts partiels) | 120.1 mm (dans la plage) | 60.1 mm (estimée, écart 0.5) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE MAD R / MAD R Major | ✅ 25/40 (boutons non documentés) | 120.1 mm (dans la plage) | 60.1 mm (estimée, écart 0.5) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo | ⏳ à vérifier (5/20 pts partiels) | 127.0 mm (écart 3.2 mm) | 61.0 mm (estimée, écart 1.4) | Inconnu | Inconnu | Inconnu | faible | compatibilité Palm Grip non vérifiée, position de la bosse non vérifiée, hauteur des boutons non vérifiée |
 | ATK Blazing Sky U2 Mini | ❌ exclue — Prix 77.95 € au-dessus du budget maximal 75.00 € | 119.5 mm (dans la plage) | 60.0 mm (estimée, écart 0.4) | Inconnu | Rear | Inconnu | — | Prix 77.95 € au-dessus du budget maximal 75.00 € |
 | ATK Dragonfly A9 NB Ultra | ✅ 25/40 (boutons non documentés) | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
@@ -54,7 +54,7 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | ATK A9 Ultimate (25/40) | ATK A9 Plus 2.0 (25/40) | 8 candidat(s) | Économique : ATK A9 Ultimate est la moins chère parmi les 8 souris à 5 pts ou moins du meilleur score (30/40). |
+| Économique | VXE MAD R / MAD R Major (25/40) | ATK A9 Ultimate (25/40) | 10 candidat(s) | Économique : VXE MAD R / MAD R Major est la moins chère parmi les 10 souris à 5 pts ou moins du meilleur score (30/40). |
 | Qualité/Prix | ATK A9 Mini (30/40) | ATK GHOST Ultimate (30/40) | 5 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 5 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
 | Haut de gamme | Scyrox V6 (30/40) | ATK Z1 V2 Ultra (30/40) | 5 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 5 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
 | Peu importe le prix | ATK A9 Mini (30/40) | ATK GHOST Extreme (30/40) | 5 candidat(s) | Forme d'abord : ATK A9 Mini est la souris dont la forme colle le mieux à votre main parmi les 5 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
@@ -83,11 +83,11 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | ATK ZERO | ⏳ à vérifier (10/25 pts partiels) | 120.1 mm (écart 4.2 mm) | 60.2 mm (estimée, écart 1.8) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK Duckbill | ❌ exclue — Prix 81.95 € au-dessus du budget maximal 75.00 € | non vérifiée (conflit) | 59.5 mm (estimée, écart 1.1) | Inconnu | Rear | Inconnu | — | Prix 81.95 € au-dessus du budget maximal 75.00 € |
 | ATK A9 Ultimate | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
-| ATK A9 Air | ❌ exclue — Prix 89.90 € au-dessus du budget maximal 75.00 € | 125.0 mm (écart 9.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Inconnu | — | Prix 89.90 € au-dessus du budget maximal 75.00 € |
+| ATK A9 Air | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK A9 Mini | ✅ 30/40 (boutons non documentés) | 118.4 mm (écart 2.5 mm) | 58.2 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
 | VXE Dragonfly V3 / V3 Pro | ⏳ à vérifier (15/25 pts partiels) | 116.6 mm (écart 0.7 mm) | 59.2 mm (estimée, écart 0.8) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
 | VXE Dragonfly R1 / R1 Pro | ⏳ à vérifier (5/25 pts partiels) | 120.6 mm (écart 4.7 mm) | 61.0 mm (estimée, écart 2.6) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
-| VXE MAD R / MAD R Major | ⏳ à vérifier (10/25 pts partiels) | 120.1 mm (écart 4.2 mm) | 60.1 mm (estimée, écart 1.7) | Inconnu | Rear | Inconnu | faible | compatibilité Claw Grip non vérifiée, hauteur des boutons non vérifiée |
+| VXE MAD R / MAD R Major | ✅ 20/40 (boutons non documentés) | 120.1 mm (écart 4.2 mm) | 60.1 mm (estimée, écart 1.7) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo | ❌ exclue — Longueur hors plage de 11.1 mm (> 8 mm) | 127.0 mm (écart 11.1 mm) | 61.0 mm (estimée, écart 2.6) | Inconnu | Inconnu | Inconnu | — | Longueur hors plage de 11.1 mm (> 8 mm) |
 | ATK Blazing Sky U2 Mini | ❌ exclue — Prix 77.95 € au-dessus du budget maximal 75.00 € | 119.5 mm (écart 3.6 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Rear | Inconnu | — | Prix 77.95 € au-dessus du budget maximal 75.00 € |
 | ATK Dragonfly A9 NB Ultra | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Élevé | Mid | Inconnu | — | Longueur hors plage de 9.1 mm (> 8 mm) |
@@ -137,7 +137,7 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | ATK ZERO | ⏳ à vérifier (15/20 pts partiels) | 120.1 mm (dans la plage) | 60.2 mm (estimée, écart 1.0) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK Duckbill | ❌ exclue — Prix 81.95 € au-dessus du budget maximal 75.00 € | non vérifiée (conflit) | 59.5 mm (estimée, écart 0.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 81.95 € au-dessus du budget maximal 75.00 € |
 | ATK A9 Ultimate | ✅ 25/40 (boutons non documentés) | 125.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
-| ATK A9 Air | ❌ exclue — Prix 89.90 € au-dessus du budget maximal 75.00 € | 125.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 89.90 € au-dessus du budget maximal 75.00 € |
+| ATK A9 Air | ✅ 25/40 (boutons non documentés) | 125.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK A9 Mini | ✅ 30/40 (boutons non documentés) | 118.4 mm (dans la plage) | 58.2 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
 | VXE Dragonfly V3 / V3 Pro | ⏳ à vérifier (20/20 pts partiels) | 116.6 mm (dans la plage) | 59.2 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |
 | VXE Dragonfly R1 / R1 Pro | ⏳ à vérifier (15/20 pts partiels) | 120.6 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | faible | compatibilité Fingertip Grip non vérifiée, hauteur des boutons non vérifiée |

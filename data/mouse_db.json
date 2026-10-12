@@ -1456,9 +1456,9 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
-    "price_eur": 89.9,
+    "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR (public France) constaté le 2026-10-11 : 89,90 € (ATK Dragonfly A9 Air 8K, Shadow White, en stock) chez Maxesport.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59,95 € (ATK Dragonfly A9 Air, variante « Air / Shadow White », prix normal 72,95 €, boutique ATK pays France). Règle du propriétaire du 2026-10-12 : le prix retenu est celui de la boutique officielle ; l'ancienne valeur (89,90 €) était un relevé du revendeur français Maxesport, conservé ici comme observation.",
     "fit_rationale": "Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque).",
     "weight_g": 47.0,
     "sensor": "PAW3950 Ultra",
@@ -1505,6 +1505,14 @@
           "claw_grip_fit",
           "fingertip_grip_fit",
           "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Dragonfly A9 Air (variante « Air / Shadow White », prix EUR en France)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse",
+        "fields": [
+          "price_eur"
         ],
         "date_checked": "2026-10-12"
       }
@@ -1799,10 +1807,10 @@
     "height_mm": 38.1,
     "grip_width_mm": null,
     "shell_id": null,
-    "fit_status": "unverified",
-    "price_status": "unknown",
+    "fit_status": "manufacturer_guide",
+    "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Blazing Sky ZERO déjà au catalogue (120,1 × 63,2 × 38,1) : coque équivalente, modèle VXE moins cher. EloShapes : front flare « Outward - slight », flancs plats. Switchs Omron optiques et MCU Nordic 52840 (fiche Maxesport MAD R 8K).",
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky ZERO déjà au catalogue (120,1 × 63,2 × 38,1) : coque équivalente, modèle VXE moins cher. EloShapes : front flare « Outward - slight », flancs plats. MCU Nordic 52840. Switchs : le FABRICANT annonce « ATK Custom Tuned Optical » (fiche officielle, relevé du 2026-10-12) là où le revendeur Maxesport annonçait « Omron » — la valeur fabricant est retenue, la divergence est signalée ici.",
     "id": "vxe_mad_r",
     "brand": "VXE",
     "model": "MAD R / MAD R Major",
@@ -1811,16 +1819,16 @@
     "width_max_mm": 63.1,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Symétrique ultraléger (36 g) à bosse arrière modérée (EloShapes) ; compatibilités par prise non documentées.",
+    "fit_rationale": "Fabricant (fiche officielle du produit sur la boutique ATK) : « 120mm CLASSIC ERGONOMIC DESIGN Perfect Fit for Claw and Palm Grips ».",
     "dimension_status": "verified",
     "weight_g": 36.0,
     "sensor": "PAW3395",
     "polling_hz": 8000,
-    "price_eur": null,
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : série MAD R « à partir de » 41,95 €, en stock (store ATK, pays France). Au 2026-10-12, la même fiche affiche « à partir de » 40,95 € mais le produit est en rupture de stock : aucun prix EUR n'est retenu au catalogue tant qu'aucune variante n'est disponible (et jamais de conversion d'un prix en dollars).",
+    "price_eur": 40.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 40,95 € (série MAD R « à partir de », boutique ATK pays France). Produit affiché en rupture de stock à cette date : le prix retenu est celui de la boutique officielle, le réapprovisionnement est annoncé sur la fiche. Aucune conversion d'un prix en dollars.",
     "sources": [
       {
         "label": "EloShapes — VXE MAD R",
@@ -1865,10 +1873,38 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — VXE MAD R Series (prise publiée par le fabricant + prix EUR en France)",
+        "url": "https://www.atk.store/products/vxe-mad-r-series-wireless-mouse",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Boutique ATK — VXE MAD R Series (fiche officielle : specs du fabricant, prise publiée et prix EUR en France)",
+        "url": "https://www.atk.store/products/vxe-mad-r-series-wireless-mouse?country=FR",
+        "fields": [
+          "switches",
+          "sensor",
+          "mcu",
+          "polling_hz",
+          "weight_g",
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
-    "switches": "Optiques Omron",
+    "switches": "Optiques ATK Custom Tuned",
     "mcu": "Nordic nRF52840"
   },
   {

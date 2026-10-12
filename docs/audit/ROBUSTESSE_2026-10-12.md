@@ -366,6 +366,11 @@ Trois sorties possibles, **chacune mesurable** (à trancher par le propriétaire
 
 ### 8.8 Décision demandée au propriétaire (trois choix)
 
+> **Répondu le 2026-10-12** : les deux points ci-dessous ont reçu une réponse (voir le détail
+> en §10) — l'élargissement de la seule ligne économie est retenu à ±5 points (6 148 profils
+> sur 27 170, 22,63 %), et les sources tierces sont autorisées pour les souris dont le
+> fabricant ne publie aucune compatibilité de prise.
+
 1. **Troisième place** — la place n'apparaît que si une souris d'une autre coque est à la fois dans la
    zone du mode **et** strictement moins chère que les deux affichées. Taux mesurés si l'on élargit la
    zone **de la seule ligne économie** : ±2 pts (aujourd'hui) **0,4 %**, ±5 pts **6,3 %**,
@@ -450,11 +455,118 @@ seul.
    Deux pistes vérifiées le 2026-10-12 : la fiche officielle de la **VXE MAD R** porte la phrase
    « Perfect Fit for **Claw and Palm** Grips » (même nature de source que celle utilisée pour l'U2), et
    la fiche **U2 V2** ne publie rien de plus que « two sizes to fit different hand types ».
+   **Avancée le 2026-10-12 (§10.4)** : la MAD R est entrée au catalogue avec la prise publiée par son
+   fabricant ; **dix souris** restent sans prise publiée (`atk_f1_v2`, `atk_duckbill`, `atk_fierce_x`,
+   `atk_phantom_ultimate`, `atk_u2_v2_mini`, `atk_u2_v2_ultimate`, `atk_zero`, `vxe_r1`, `vxe_v3`,
+   `vxe_x3`) — les sources tierces sont désormais autorisées, chaque valeur devra porter sa provenance.
 2. **Hauteur des boutons manquante sur 25 souris sur 36** : c'est le critère qui pèse le plus — sur le
    banc rapide, 345 profils sur 720 ont un match idéal « partiel » (boutons non documentés).
 3. **Trois souris complètes ne sortent jamais parce qu'elles perdent** : A9 Air, U2 Mini, X2H
    CrazyLight Mini (formes et prix toujours battus par une voisine moins chère).
-4. **Prix en attente d'arbitrage** : l'**A9 Air** vaut 89,90 € chez Maxesport (relevé du 2026-10-11)
-   mais la boutique ATK affiche la variante « Air / Shadow White » à **59,95 €** (relevé du 2026-10-12,
-   `?country=FR`). Deux marchés : la base garde la valeur d'origine jusqu'à la décision du propriétaire.
-   La **VXE MAD R** est affichée « à partir de 40,95 € » mais en rupture de stock : aucun prix retenu.
+4. ~~**Prix en attente d'arbitrage**~~ **Tranché le 2026-10-12 (§10.3)** : règle du propriétaire —
+   le prix retenu est celui de la **boutique officielle**. L'**A9 Air** est donc passé de 89,90 €
+   (revendeur Maxesport) à **59,95 €** (boutique ATK, `?country=FR`, relevé du 2026-10-12 ; l'ancienne
+   valeur reste en observation dans la note). La **VXE MAD R** porte **40,95 €** (boutique ATK, série
+   « à partir de ») avec la rupture de la variante noire écrite noir sur blanc dans sa note.
+   Restent ouverts, règle désormais connue, trois prix à revérifier à la boutique officielle :
+   Z1 (base 75,00 € contre 59,95 € au store), Y9 Ultimate (41,95 € en base, variante Ultimate à
+   64,98 $), GHOST Extreme (68,95 € en base, même prix que l'Ultimate).
+
+## 10. Dix-septième passe (2026-10-12) : les cinq décisions du propriétaire, appliquées et mesurées
+
+Le 2026-10-12, le propriétaire a répondu aux cinq questions ouvertes des passes précédentes. Ce qui
+suit est ce qui a été appliqué — et la commande qui le prouve. Aucun barème n'a bougé : ces décisions
+ne changent que l'aiguillage des places affichées, le prix retenu et la provenance des données.
+
+### 10.1 Les cinq réponses
+
+| Question ouverte | Réponse du propriétaire | Application |
+|---|---|---|
+| Sources pour les prises non publiées | « Je t'autorise à aller chercher d'autres sources tierces » | §10.4 (la MAD R entre au catalogue sur la fiche de son fabricant) ; les dix souris restantes restent à documenter, chacune avec sa provenance |
+| Hauteurs de bouton | « normalement c'est à toi de le faire via les images que tu peux récupérer » | aucun chiffre n'existe chez les fabricants : l'outil `tools/measure_button_height.py` reste la seule voie — **aucune valeur n'est encore inscrite** (25 souris sur 36) |
+| Marge de la troisième place | « fais ce que tu penses le mieux » | §10.2 : fenêtre propre de ±5 points pour la seule ligne économie |
+| Prix | « toujours prendre le prix côté boutique officielle » | §10.3 : A9 Air 59,95 € et MAD R 40,95 € (relevés du 2026-10-12, `?country=FR`) |
+| Repli de coque | « fais ta réflexion » | §10.2 : le repli est conservé (jamais moins de résultats), mais il passe de 4 040 à 2 097 profils |
+
+### 10.2 Trois places : deux fenêtres au lieu d'une (mesuré sur les 27 170 profils)
+
+Règle appliquée dans `cogs/finder_flow.py` :
+
+- **le match idéal** ne bouge pas : c'est la tête du classement du mode, comme avant ;
+- **l'alternative** reste dans la zone du mode (±2 points, ±5 en Économique) et préfère la moins
+  chère ; **uniquement si cette zone ne contient que des variantes de la coque déjà montrée**, elle
+  cherche une autre forme jusqu'à `ALTERNATIVE_EXTENSION_POINTS` (5 points) plus bas, et **jamais plus
+  chère** que le match idéal ;
+- **l'économie** a sa **propre fenêtre** (`ECONOMY_SLOT_TOLERANCE_POINTS`, 5 points), doit être
+  **strictement moins chère** que les deux souris affichées, et une autre coque est préférée.
+
+Mesure (`.venv/bin/python tools/qa_flow_matrix.py` puis `tools/flow_effect.py`, 2026-10-12) :
+
+| Mesure (grille complète) | Avant | Après |
+|---|---:|---:|
+| Profils comparés (au moins une place remplie) | 23 569 | 23 569 |
+| Match idéal changé | — | **0** |
+| Alternative changée | — | 6 939 |
+| Résultats à 1 place | 7 187 | 3 236 |
+| Résultats à 2 places | 16 302 | 14 185 |
+| Résultats à **3 places** | 80 (0,3 %) | **6 148 (22,63 %)** |
+| Deux places sur la même coque | 4 040 | **2 097** |
+| Économies perdues | — | **0** |
+| Pire baisse de score de l'alternative | — | **5 points** (cas de l'élargissement) |
+
+Le banc d'essai de bout en bout se termine avec **0 problème** ; il compte de son côté 2 052 profils à
+deux places de même coque (sa définition ne retient que la paire « match idéal + une autre place »,
+là où `flow_effect.py` compte toutes les paires).
+
+Exemple de changement d'alternative par élargissement : `palm/185x60`, thénar petit, budget 45 € —
+ATK A9 Plus 2.0 (25/40) → ATK Blazing Sky U2 (20/40), une autre forme, moins chère, dans la fenêtre de
+5 points.
+
+### 10.3 Prix : la boutique officielle, jamais un revendeur
+
+- **ATK A9 Air** : 89,90 € (Maxesport, relevé du 2026-10-11) → **59,95 €** (boutique ATK, variante
+  « Air / Shadow White », prix normal 72,95 €, relevé du 2026-10-12). L'ancienne valeur reste en
+  observation dans la note de la fiche ; la source officielle est datée.
+- **VXE MAD R** : aucun prix → **40,95 €** (boutique ATK, série « à partir de »). La variante noire à
+  dongle 1K était **en rupture** au moment du relevé : la note le dit explicitement, le prix n'est pas
+  masqué pour autant.
+- Le **fabricant** annonce des switchs « ATK Custom Tuned Optical » là où le revendeur annonçait
+  « Omron » : la valeur fabricant est retenue et la divergence est écrite dans la fiche.
+- Trois prix restent à revérifier à la boutique officielle (règle connue, donc simples à trancher) :
+  Z1, Y9 Ultimate, GHOST Extreme — listés en §9.5.
+
+### 10.4 VXE MAD R : la prise est publiée par le fabricant, aucune tierce source n'est employée
+
+La fiche officielle du produit porte « 120mm CLASSIC ERGONOMIC DESIGN **Perfect Fit for Claw and Palm
+Grips** » : `palm_grip_fit` et `claw_grip_fit` passent à « Élevé », `fit_status` à
+`manufacturer_guide`, avec la citation et la source datée. La compatibilité **Fingertip reste
+« Inconnu »** : le fabricant ne la publie pas et rien n'est deviné — la souris reste donc « à
+vérifier » sur les profils Fingertip. Effet : la MAD R devient classable en Palm et en Claw, alors
+qu'elle ne l'était pour aucune prise.
+
+### 10.5 Banc d'essai durci : chaque place est contrôlée contre SA fenêtre
+
+`tools/qa_flow_matrix.py` ne contrôlait qu'une seule tolérance pour les trois places. Depuis cette
+passe, il vérifie profil par profil :
+
+1. le match idéal est bien la tête du classement du mode (et non un candidat quelconque) ;
+2. l'alternative reste dans la zone du mode, **ou** n'en sort que si aucune autre coque ne s'y trouve
+   et sans jamais coûter plus cher que le match idéal ;
+3. l'économie reste dans sa fenêtre de ±5 points et coûte strictement moins cher que les deux autres ;
+4. les contrôles de contenu (nom, prix, score, bouton d'achat) portent désormais sur la place
+   concernée, plus sur une zone unique.
+
+### 10.6 Ce qui reste ouvert après cette passe
+
+1. **Dix souris sans prise publiée** : `atk_f1_v2`, `atk_duckbill`, `atk_fierce_x`,
+   `atk_phantom_ultimate`, `atk_u2_v2_mini`, `atk_u2_v2_ultimate`, `atk_zero`, `vxe_r1`, `vxe_v3`,
+   `vxe_x3`. Les sources tierces sont autorisées (§10.1) : chacune devra porter sa provenance
+   (`fit_status`) et une divergence avec le fabricant ne devra jamais écraser ce dernier.
+2. **Hauteur des boutons : 25 souris sur 36.** Aucun fabricant ne la publie (vérifié) ; la mesure se
+   fait sur les visuels récupérables (`tools/measure_button_height.py`), vue de côté uniquement.
+   C'est le critère qui pèse le plus : 11 273 profils sur 27 170 ont un match idéal partiel.
+3. **Position de la bosse : une seule souris** (`vxe_x3`, coque partagée avec l'ATK X1).
+4. **Trois prix à revérifier à la boutique officielle** : Z1, Y9 Ultimate, GHOST Extreme (§9.5.4).
+5. **Deux coques jumelles non tranchées** : `pulsar_x2a_v3_medium` et `pulsar_x2_crazylight_medium`
+   (dimensions publiées identiques, aucune source fabricant ne confirme qu'il s'agit de la même
+   coque).

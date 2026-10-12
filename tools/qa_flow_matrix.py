@@ -34,7 +34,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from cogs.finder_flow import ResultsView, compute_selection, result_slots, results_embeds  # noqa: E402
+from cogs.finder_flow import (ALTERNATIVE_EXTENSION_POINTS, ECONOMY_SLOT_TOLERANCE_POINTS,  # noqa: E402
+                              ResultsView, compute_selection, result_slots, results_embeds)
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.matcher import MAX_SCORE, compatibility_percent  # noqa: E402
@@ -71,7 +72,18 @@ def check_result_message(session, selection, embeds, displayed, repli_coque=None
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
     tolerance = TOLERANCE_BY_MODE.get(selection.mode, 2)
 
-    for score in (ideal, alternative, economy):
+    # Zone de chaque place (décision du 2026-10-12) : le match idéal est la tête du classement ;
+    # l'alternative reste dans la zone du mode, sauf si cette zone ne contient que des variantes de la
+    # coque retenue — elle peut alors venir de la fenêtre d'élargissement, et seulement si elle est
+    # moins chère que le match idéal ; l'économie a sa propre fenêtre et un plafond de prix.
+    # Le match idéal est la tête du classement DU MODE : en Économique (et en Qualité/Prix), la tête
+    # est la souris la moins chère de la zone de tolérance, donc légitimement jusqu'à `tolerance`
+    # points sous la meilleure note du mode — c'est l'invariant vérifié dans tests/test_selection.py.
+    if ideal is not None and selection.ranked and ideal.mouse.id != selection.ranked[0].mouse.id:
+        problems.append(f"le match idéal n'est pas la tête du classement : {ideal.mouse.label}")
+    for role, score, marge in (("le match idéal", ideal, tolerance),
+                               ("l'alternative", alternative, max(tolerance, ALTERNATIVE_EXTENSION_POINTS)),
+                               ("l'économie", economy, ECONOMY_SLOT_TOLERANCE_POINTS)):
         if score is None:
             continue
         mouse = score.mouse
@@ -84,8 +96,23 @@ def check_result_message(session, selection, embeds, displayed, repli_coque=None
             problems.append(f"souris à prise FAIBLE affichée : {mouse.label}")
         if not 0 <= score.total <= MAX_SCORE:
             problems.append(f"score hors barème pour {mouse.label} : {score.total}")
-        if score.total < reference - tolerance:
-            problems.append(f"{mouse.label} hors de la zone de tolérance du mode ({score.total} < {reference - tolerance})")
+        if score.total < reference - marge:
+            problems.append(f"{role} hors de sa zone ({mouse.label} : {score.total} < {reference - marge})")
+        if role == "l'alternative" and score.total < reference - tolerance:
+            # Élargissement : interdit si une autre coque était disponible dans la zone du mode, et
+            # interdit si la souris proposée est plus chère que le match idéal.
+            autres = [s for s in selection.ranked[1:]
+                      if s.total >= reference - tolerance and not _same_shell(ideal, s)]
+            if autres:
+                problems.append(f"alternative hors zone alors qu'une autre coque y est : {mouse.label}")
+            if mouse.price_eur is not None and ideal.mouse.price_eur is not None \
+                    and mouse.price_eur > ideal.mouse.price_eur:
+                problems.append(f"alternative élargie mais plus chère : {mouse.label}")
+        if role == "l'économie" and score is not None:
+            plafond = min([s.mouse.price_eur for s in (ideal, alternative)
+                           if s is not None and s.mouse.price_eur is not None] or [float("inf")])
+            if mouse.price_eur is not None and mouse.price_eur >= plafond:
+                problems.append(f"économie pas strictement moins chère que les deux autres : {mouse.label}")
         if mouse.price_eur is not None and prix_fr(mouse.price_eur) not in texte:
             problems.append(f"prix absent ou faux pour {mouse.label} : attendu {prix_fr(mouse.price_eur)}")
         if session.budget_mode is BudgetMode.CUSTOM and mouse.price_eur is not None \

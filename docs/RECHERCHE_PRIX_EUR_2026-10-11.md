@@ -41,7 +41,7 @@ en stock ; le prix normal barré est conservé dans la note.
 | ATK Blazing Sky U2 | dès 22,95 € | prix normal 28,95 € |
 | ATK Dragonfly A9 NB | 72,95 € | prix normal 122,95 € |
 | ATK FIERCE X | 69,95 € | prix normal 81,95 € |
-| ATK A9 Air | 89,90 € | Maxesport (pas de prix officiel distinct pour cette variante) |
+| ATK A9 Air | 89,90 € | Maxesport (pas de prix officiel distinct pour cette variante) — **changé le 2026-10-12** : 59,95 € à la boutique officielle, voir l'addendum en fin de document |
 | Scyrox V8 / V8S | 74,90 € | Maxesport — confirmé en euros, non vendu sur le store ATK |
 
 Les 6 souris de ton cahier des charges **gardent leur prix** : j'ai seulement consigné l'observation
@@ -73,7 +73,8 @@ Budget personnalisé**, qui exigent un prix. Le barème géométrique n'est pas 
 
 ## 4. Couverture du catalogue vs produits encore vendus
 
-Les 23 produits listés par la boutique sont tous représentés par une de nos 26 fiches, sauf trois
+Les 23 produits listés par la boutique sont tous représentés par une de nos 26 fiches (36 depuis le
+2026-10-12), sauf trois
 **familles historiques encore vendues** (F1 « Series » dès 36,95 €, X1 « Series » dès 18,95 €,
 Z1 « Series » dès 50,95 €) : elles partagent les coques de modèles déjà présents (F1 V2/V3, X1 V2,
 Z1 V2) mais ont leurs propres variantes économiques. À ajouter si tu veux une couverture exhaustive.
@@ -91,6 +92,24 @@ La liste ci-dessus est volontairement courte : le catalogue couvre déjà 26 ré
 la gamme ATK/VXE vendue aujourd'hui. Ce qui manque le plus, ce ne sont pas des souris, ce sont des **données
 de forme** : position de bosse, hauteur de boutons (14 souris en `Inconnu`) et **largeur de prise mesurée**
 (0 souris renseignée). C'est là qu'EloShapes et les images serviront en priorité.
+
+## 5 bis. Addendum du 2026-10-12 : le prix retenu est celui de la boutique officielle
+
+Règle donnée par le propriétaire le 2026-10-12 : « toujours prendre le prix côté boutique
+officielle ». Elle a été appliquée le jour même, relevés faits en euros sur le marché France
+(`?country=FR`), sans aucune conversion de devise :
+
+| Souris | Avant (relevé du 2026-10-11) | Après (boutique officielle, 2026-10-12) |
+|---|---|---|
+| ATK A9 Air | 89,90 € (revendeur Maxesport) | **59,95 €** (boutique ATK, variante « Air / Shadow White », prix normal 72,95 €) |
+| VXE MAD R | aucun prix (rupture) | **40,95 €** (boutique ATK, série « à partir de » ; la rupture de la variante noire 1K est écrite dans la note) |
+| ATK A9 Mini | aucun prix distinct | **59,95 €** (boutique ATK, variante « Mini », prix normal 72,95 €) — inscrit le 2026-10-12 |
+| ATK U2 V2 Mini | 77,95 € (ancienne « U2 Mini ») | **59,95 €** (variante Mini de la fiche officielle) — inscrit le 2026-10-12 |
+
+Les relevés de revendeurs (Maxesport) restent **en observation** dans les notes des fiches : ils ne sont
+plus la valeur retenue quand la boutique officielle publie un prix. Restent à revérifier à la boutique
+officielle, la règle étant maintenant connue : **Z1**, **Y9 Ultimate** et **GHOST Extreme**
+(voir `docs/audit/ROBUSTESSE_2026-10-12.md` §9.5.4 et §10.3).
 
 ## 6. Sources consultées (2026-10-11)
 

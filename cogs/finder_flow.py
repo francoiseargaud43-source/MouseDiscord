@@ -497,16 +497,33 @@ def _price_or_inf(score: MouseScore) -> float:
     return score.mouse.price_eur if score.mouse.price_eur is not None else float("inf")
 
 
+# ---------------------------------------------------------------------------
+# Fenêtres des trois places (décision du propriétaire, 2026-10-12 : l'expérience utilisateur prime)
+# ---------------------------------------------------------------------------
+# Mesures d'origine (grille de 27 170 profils) : avec une zone unique de ±2 points, 4 472 profils
+# (16,5 %) affichaient deux fois la même coque et la troisième place « Économie » ne sortait que dans
+# 0,3 % des cas — deux effets de seuil, pas des bugs.
+# Décision retenue :
+#   • l'ALTERNATIVE garde la zone étroite du mode (±2) ; si cette zone ne contient que des variantes de
+#     la coque déjà montrée, la recherche s'élargit UNE fois à ±5 points pour proposer une vraie autre
+#     forme ; si rien n'existe, la variante est conservée (jamais moins de résultats qu'avant) ;
+#   • l'ÉCONOMIE dispose de sa propre fenêtre (±5 points) : une option moins chère mérite d'être montrée
+#     même si elle perd quelques points, à condition d'être strictement moins chère que les deux autres
+#     et, si possible, d'une autre coque.
+ALTERNATIVE_EXTENSION_POINTS = 5
+ECONOMY_SLOT_TOLERANCE_POINTS = 5
+
+
 def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | None, MouseScore | None]:
     """Trois rôles, dans l'ordre du classement déjà calculé : idéal, alternative, économie.
 
     (1) **Le match idéal** : la tête du classement du mode (le prix suit, sauf budget contraint).
     (2) **L'alternative** : la souris qui correspond le mieux au profil parmi celles qui restent,
         en préférant une souris un peu moins chère ; sinon la meilleure tout court (son pourcentage
-        sert alors à accepter un léger surcoût).
-    (3) **L'économie** : la moins chère qui reste dans la zone de compatibilité du mode (tolérance
-        ``TOLERANCE_BY_MODE``) et qui est vraiment moins chère que les deux autres ; sinon la ligne
-        n'est pas affichée.
+        sert alors à accepter un léger surcoût). Elle reste dans la zone du mode ; elle n'en sort que
+        si cette zone ne contient rien d'autre que la coque déjà montrée (élargissement unique).
+    (3) **L'économie** : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``) qui
+        est vraiment moins chère que les deux autres ; sinon la ligne n'est pas affichée.
 
     Aucun barème n'est modifié : les trois souris sortent du classement existant, jamais recalculé.
     """
@@ -524,27 +541,44 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
 
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
     tolerance = TOLERANCE_BY_MODE.get(selection.mode, QUALITE_PRIX_TOLERANCE_POINTS)
-    zone = [score for score in ordered[1:] if score.total >= reference - tolerance]
+
+    def in_window(score: MouseScore, margin: int) -> bool:
+        return score.total >= reference - margin
+
+    zone = [score for score in ordered[1:] if in_window(score, tolerance)]
+    distinct_zone = [score for score in zone if not_same_shell(score)]
 
     def best_match(candidates: list[MouseScore]) -> MouseScore | None:
         # Le meilleur profil ; à égalité, la moins chère.
         return max(candidates, key=lambda score: (score.total, -_price_or_inf(score))) if candidates else None
 
     ideal_price = _price_or_inf(ideal)
-    distinct_zone = [score for score in zone if not_same_shell(score)] or zone
-    cheaper = [score for score in distinct_zone if _price_or_inf(score) < ideal_price]
-    alternative = best_match(cheaper) or best_match(distinct_zone)
+    if distinct_zone:
+        # Cas normal : une autre coque est déjà dans la zone du mode. On préfère la moins chère
+        # (c'est le rôle de cette place) ; à défaut, la mieux notée de la zone.
+        cheaper = [score for score in distinct_zone if _price_or_inf(score) < ideal_price]
+        alternative = best_match(cheaper) or best_match(distinct_zone)
+    else:
+        # Zone composée uniquement de variantes de la coque déjà montrée : élargissement UNIQUE
+        # (2026-10-12) à ``ALTERNATIVE_EXTENSION_POINTS``, et seulement vers une souris qui ne coûte
+        # pas plus cher que le match idéal — jamais une souris à la fois moins bien notée et plus
+        # chère. Sans candidat, on reprend la zone telle quelle : jamais moins de résultats qu'avant.
+        extension = [score for score in ordered[1:]
+                     if in_window(score, ALTERNATIVE_EXTENSION_POINTS) and not_same_shell(score)]
+        alternative = best_match([score for score in extension if _price_or_inf(score) <= ideal_price]) \
+            or best_match(zone)
 
     # (3) L'économie : la moins chère de la zone de compatibilité, d'une AUTRE coque si possible, et
     # strictement moins chère que les deux souris déjà montrées. Mesure du 2026-10-12 : cette place
-    # n'est remplie que dans 0,1 % des profils, parce que la zone de tolérance du mode (±2 points sur
-    # 40) est étroite et que l'alternative, elle, prend déjà la meilleure des souris moins chères.
-    # Ce n'est donc pas un bug de calcul mais un effet de seuil : élargir la zone est une décision du
-    # propriétaire (voir docs/audit/ROBUSTESSE_2026-10-12.md §5).
+    # n'était remplie que dans 0,3 % des profils tant qu'elle partageait la zone étroite du mode
+    # (±2 points sur 40). Depuis la décision du 2026-10-12, elle a sa propre fenêtre de ±5 points
+    # (``ECONOMY_SLOT_TOLERANCE_POINTS``) : l'option moins chère est montrée plus souvent, avec son
+    # pourcentage affiché à côté (voir docs/audit/ROBUSTESSE_2026-10-12.md §10).
     shown_ids = {ideal.mouse.id}
     if alternative is not None:
         shown_ids.add(alternative.mouse.id)
-    candidates = [score for score in sorted(zone, key=lambda s: (_price_or_inf(s), -s.total))
+    economy_window = [score for score in ordered[1:] if in_window(score, ECONOMY_SLOT_TOLERANCE_POINTS)]
+    candidates = [score for score in sorted(economy_window, key=lambda s: (_price_or_inf(s), -s.total))
                   if score.mouse.id not in shown_ids]
 
     # Elle doit être moins chère que TOUT ce qui est déjà à l'écran : une souris plus chère que le
