@@ -6,51 +6,51 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 
 ## Résultats vides et repli de coque (2026-10-12)
 
-- **Profils sans aucun résultat : 540** sur 18522 (2.9 %).
-  - budget inférieur à la souris qui convient la moins chère : 540
-  - dont profils où au moins une souris est « à vérifier » faute d'une donnée publiée (compatibilité de prise) : **288**
-- **Profils où DEUX places montrent la même coque : 983** (5.3 %).
+- **Profils sans aucun résultat : 252** sur 18522 (1.4 %).
+  - budget inférieur à la souris qui convient la moins chère : 252
+  - dont profils où au moins une souris est « à vérifier » faute d'une donnée publiée (compatibilité de prise) : **0**
+- **Profils où DEUX places montrent la même coque : 299** (1.6 %).
   C'est le repli documenté de `result_slots()` : quand la zone de tolérance du mode ne contient que des variantes de la coque retenue, la deuxième place reprend la même coque plutôt que de disparaître. Les paires concernées, par fréquence :
-  - `atk_a9_plus` + `atk_a9_ultimate` : 552 profils
   - `pulsar_x2_crazylight_mini` + `pulsar_x2_v3_mini` : 215 profils
-  - `atk_a9_nb` + `atk_a9_plus` : 174 profils
-  - `atk_a9_nb` + `atk_a9_ultimate` : 42 profils
+  - `atk_a9_plus` + `atk_a9_ultimate` : 54 profils
+  - `atk_a9_nb` + `atk_a9_plus` : 18 profils
+  - `atk_a9_nb` + `atk_a9_ultimate` : 12 profils
   Élargir la recherche à une autre coque (au-delà de la zone du mode) est une décision du propriétaire : elle changerait la deuxième place de ces profils.
 
 ## Nombre de fois où chaque souris est recommandée
 
 | Souris | Idéal | Alternative | Économie | Total | % des profils |
 |---|---:|---:|---:|---:|---:|
-| VXE Dragonfly V3 / V3 Pro | 3130 | 1471 | 1480 | 6081 | 32.8 % |
-| ATK A9 Ultimate | 2769 | 1653 | 489 | 4911 | 26.5 % |
-| ATK X1 V2 Ultra Max | 2136 | 1716 | 0 | 3852 | 20.8 % |
-| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 1233 | 1353 | 846 | 3432 | 18.5 % |
-| VXE Dragonfly R1 / R1 Pro | 708 | 1682 | 885 | 3275 | 17.7 % |
-| ATK A9 Mini | 1844 | 1197 | 49 | 3090 | 16.7 % |
-| ATK F1 V3 Ultimate | 1467 | 1051 | 448 | 2966 | 16.0 % |
+| ATK X1 V2 Ultra Max | 4992 | 1482 | 60 | 6534 | 35.3 % |
+| VXE Dragonfly V3 / V3 Pro | 2810 | 1478 | 1528 | 5816 | 31.4 % |
+| ATK F1 V3 Ultimate | 2248 | 1350 | 475 | 4073 | 22.0 % |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 1074 | 1119 | 1008 | 3201 | 17.3 % |
+| VXE Dragonfly R1 / R1 Pro | 621 | 1606 | 774 | 3001 | 16.2 % |
+| ATK A9 Ultimate | 915 | 1752 | 99 | 2766 | 14.9 % |
+| ATK A9 Mini | 1542 | 980 | 12 | 2534 | 13.7 % |
 | Pulsar X2 v3 Mini | 1069 | 709 | 0 | 1778 | 9.6 % |
-| ATK A9 Plus 2.0 | 765 | 684 | 192 | 1641 | 8.9 % |
-| Scyrox V6 | 751 | 475 | 0 | 1226 | 6.6 % |
-| Scyrox V8 / V8S | 229 | 841 | 0 | 1070 | 5.8 % |
-| VXE MAD R / MAD R Major | 192 | 318 | 219 | 729 | 3.9 % |
-| ATK GHOST Ultimate | 294 | 393 | 15 | 702 | 3.8 % |
+| Scyrox V6 | 751 | 463 | 0 | 1214 | 6.6 % |
+| ATK A9 Plus 2.0 | 471 | 517 | 192 | 1180 | 6.4 % |
+| Scyrox V8 / V8S | 229 | 820 | 0 | 1049 | 5.7 % |
 | Pulsar Xlite v4 Mini | 303 | 333 | 0 | 636 | 3.4 % |
 | ATK Phantom Ultimate | 252 | 327 | 0 | 579 | 3.1 % |
-| ATK Z1 V2 Ultra | 129 | 411 | 18 | 558 | 3.0 % |
+| VXE MAD R / MAD R Major | 120 | 246 | 153 | 519 | 2.8 % |
 | Pulsar X2A v3 | 270 | 225 | 0 | 495 | 2.7 % |
-| ATK Dragonfly A9 NB Ultra | 156 | 126 | 0 | 282 | 1.5 % |
-| ATK Fierce X | 72 | 180 | 0 | 252 | 1.4 % |
+| ATK GHOST Ultimate | 165 | 282 | 0 | 447 | 2.4 % |
+| ATK Z1 V2 Ultra | 129 | 291 | 0 | 420 | 2.3 % |
 | Pulsar X2 CrazyLight Mini | 0 | 215 | 0 | 215 | 1.2 % |
-| ATK Y9 Ultimate | 72 | 123 | 0 | 195 | 1.1 % |
-| ATK U2 V2 Mini | 15 | 63 | 15 | 93 | 0.5 % |
+| ATK Dragonfly A9 NB Ultra | 156 | 18 | 0 | 174 | 0.9 % |
+| ATK Fierce X | 27 | 114 | 0 | 141 | 0.8 % |
 | Pulsar X2H v3 Mini | 0 | 90 | 0 | 90 | 0.5 % |
 | ATK GHOST Extreme | 81 | 0 | 0 | 81 | 0.4 % |
 | ATK U2 V2 Ultimate | 45 | 0 | 0 | 45 | 0.2 % |
-| ATK ZERO | 0 | 3 | 0 | 3 | 0.0 % |
+| ATK Y9 Ultimate | 0 | 24 | 0 | 24 | 0.1 % |
+| ATK U2 V2 Mini | 0 | 9 | 0 | 9 | 0.0 % |
 | ATK A9 Air | 0 | 0 | 0 | 0 | 0.0 % |
 | ATK Blazing Sky F1 V2 | 0 | 0 | 0 | 0 | 0.0 % |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 | 0 | 0.0 % |
 | ATK Duckbill | 0 | 0 | 0 | 0 | 0.0 % |
+| ATK ZERO | 0 | 0 | 0 | 0 | 0.0 % |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 | 0 | 0.0 % |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 | 0 | 0.0 % |
 | Pulsar Xlite CrazyLight Medium | 0 | 0 | 0 | 0 | 0.0 % |
@@ -60,12 +60,13 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 
 ## Souris jamais recommandées
 
-**10 souris sur 36** ne sortent jamais sur cette grille :
+**11 souris sur 36** ne sortent jamais sur cette grille :
 
 - **ATK A9 Air** (`atk_a9_air`)
 - **ATK Blazing Sky F1 V2** (`atk_f1_v2`)
 - **ATK Blazing Sky U2 Mini** (`atk_u2_mini`)
 - **ATK Duckbill** (`atk_duckbill`)
+- **ATK ZERO** (`atk_zero`)
 - **Pulsar X2 CrazyLight Medium** (`pulsar_x2_crazylight_medium`)
 - **Pulsar X2H CrazyLight Mini** (`pulsar_x2h_crazylight_mini`)
 - **Pulsar Xlite CrazyLight Medium** (`pulsar_xlite_crazylight_medium`)
@@ -81,6 +82,7 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | ATK Blazing Sky F1 V2 | 0 | 11760 | 6762 | donnée absente : compatibilité de prise (statut non vérifié) |
 | ATK Blazing Sky U2 Mini | 3780 | 5544 | 9198 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
 | ATK Duckbill | 0 | 12348 | 6174 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
+| ATK ZERO | 9828 | 0 | 8694 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
 | Pulsar X2 CrazyLight Medium | 4830 | 3360 | 10332 | donnée absente : compatibilité de prise (statut non vérifié) |
 | Pulsar X2H CrazyLight Mini | 2520 | 3990 | 12012 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
 | Pulsar Xlite CrazyLight Medium | 2880 | 3780 | 11862 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
@@ -92,36 +94,36 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 
 | Souris | Économique | Qualité/Prix | Haut de gamme | Peu importe le prix | Budget personnalisé |
 |---|---|---|---|---|---|
-| VXE Dragonfly V3 / V3 Pro | 435 | 435 | 435 | 435 | 4341 |
-| ATK A9 Ultimate | 573 | 603 | 537 | 582 | 2616 |
-| ATK X1 V2 Ultra Max | 564 | 657 | 657 | 657 | 1317 |
-| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 300 | 300 | 300 | 300 | 2232 |
-| VXE Dragonfly R1 / R1 Pro | 174 | 174 | 174 | 174 | 2579 |
-| ATK A9 Mini | 363 | 387 | 336 | 408 | 1596 |
-| ATK F1 V3 Ultimate | 452 | 479 | 464 | 506 | 1065 |
+| ATK X1 V2 Ultra Max | 810 | 825 | 783 | 783 | 3333 |
+| VXE Dragonfly V3 / V3 Pro | 435 | 435 | 435 | 435 | 4076 |
+| ATK F1 V3 Ultimate | 521 | 539 | 527 | 572 | 1914 |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 300 | 300 | 300 | 300 | 2001 |
+| VXE Dragonfly R1 / R1 Pro | 174 | 174 | 174 | 174 | 2305 |
+| ATK A9 Ultimate | 381 | 342 | 300 | 342 | 1401 |
+| ATK A9 Mini | 306 | 345 | 282 | 369 | 1232 |
 | Pulsar X2 v3 Mini | 254 | 381 | 381 | 381 | 381 |
-| ATK A9 Plus 2.0 | 84 | 153 | 99 | 99 | 1206 |
-| Scyrox V6 | 180 | 192 | 273 | 189 | 392 |
-| Scyrox V8 / V8S | 49 | 181 | 229 | 181 | 430 |
-| VXE MAD R / MAD R Major | 66 | 66 | 66 | 66 | 465 |
-| ATK GHOST Ultimate | 108 | 138 | 102 | 60 | 294 |
+| Scyrox V6 | 180 | 189 | 273 | 186 | 386 |
+| ATK A9 Plus 2.0 | 120 | 150 | 54 | 54 | 802 |
+| Scyrox V8 / V8S | 52 | 175 | 229 | 175 | 418 |
 | Pulsar Xlite v4 Mini | 96 | 135 | 135 | 135 | 135 |
 | ATK Phantom Ultimate | 42 | 126 | 147 | 138 | 126 |
-| ATK Z1 V2 Ultra | 51 | 69 | 90 | 60 | 288 |
+| VXE MAD R / MAD R Major | 45 | 45 | 45 | 45 | 339 |
 | Pulsar X2A v3 | 63 | 108 | 108 | 108 | 108 |
-| ATK Dragonfly A9 NB Ultra | 0 | 42 | 78 | 78 | 84 |
-| ATK Fierce X | 21 | 51 | 21 | 39 | 120 |
+| ATK GHOST Ultimate | 63 | 90 | 78 | 24 | 192 |
+| ATK Z1 V2 Ultra | 30 | 60 | 75 | 45 | 210 |
 | Pulsar X2 CrazyLight Mini | 43 | 43 | 43 | 43 | 43 |
-| ATK Y9 Ultimate | 24 | 24 | 24 | 24 | 99 |
-| ATK U2 V2 Mini | 6 | 6 | 6 | 6 | 69 |
+| ATK Dragonfly A9 NB Ultra | 0 | 6 | 78 | 78 | 12 |
+| ATK Fierce X | 9 | 30 | 6 | 30 | 66 |
 | Pulsar X2H v3 Mini | 18 | 18 | 18 | 18 | 18 |
 | ATK GHOST Extreme | 0 | 0 | 0 | 81 | 0 |
 | ATK U2 V2 Ultimate | 0 | 0 | 45 | 0 | 0 |
-| ATK ZERO | 0 | 0 | 0 | 0 | 3 |
+| ATK Y9 Ultimate | 24 | 0 | 0 | 0 | 0 |
+| ATK U2 V2 Mini | 0 | 0 | 0 | 0 | 9 |
 | ATK A9 Air | 0 | 0 | 0 | 0 | 0 |
 | ATK Blazing Sky F1 V2 | 0 | 0 | 0 | 0 | 0 |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 | 0 | 0 |
 | ATK Duckbill | 0 | 0 | 0 | 0 | 0 |
+| ATK ZERO | 0 | 0 | 0 | 0 | 0 |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 | 0 | 0 |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 | 0 | 0 |
 | Pulsar Xlite CrazyLight Medium | 0 | 0 | 0 | 0 | 0 |
@@ -133,36 +135,36 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 
 | Souris | Palm | Claw | Fingertip |
 |---|---:|---:|---:|
-| VXE Dragonfly V3 / V3 Pro | 2433 | 2748 | 900 |
-| ATK A9 Ultimate | 3258 | 1653 | 0 |
-| ATK X1 V2 Ultra Max | 2244 | 1608 | 0 |
-| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 1176 | 2256 | 0 |
-| VXE Dragonfly R1 / R1 Pro | 1167 | 1782 | 326 |
-| ATK A9 Mini | 2301 | 621 | 168 |
-| ATK F1 V3 Ultimate | 0 | 1344 | 1622 |
+| ATK X1 V2 Ultra Max | 3432 | 3102 | 0 |
+| VXE Dragonfly V3 / V3 Pro | 2433 | 2730 | 653 |
+| ATK F1 V3 Ultimate | 0 | 2157 | 1916 |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 1017 | 2184 | 0 |
+| VXE Dragonfly R1 / R1 Pro | 1095 | 1590 | 316 |
+| ATK A9 Ultimate | 1896 | 870 | 0 |
+| ATK A9 Mini | 2262 | 225 | 47 |
 | Pulsar X2 v3 Mini | 0 | 1005 | 773 |
-| ATK A9 Plus 2.0 | 636 | 459 | 546 |
-| Scyrox V6 | 126 | 102 | 998 |
-| Scyrox V8 / V8S | 0 | 564 | 506 |
-| VXE MAD R / MAD R Major | 300 | 429 | 0 |
-| ATK GHOST Ultimate | 87 | 615 | 0 |
+| Scyrox V6 | 126 | 90 | 998 |
+| ATK A9 Plus 2.0 | 378 | 330 | 472 |
+| Scyrox V8 / V8S | 0 | 543 | 506 |
 | Pulsar Xlite v4 Mini | 636 | 0 | 0 |
 | ATK Phantom Ultimate | 579 | 0 | 0 |
-| ATK Z1 V2 Ultra | 558 | 0 | 0 |
+| VXE MAD R / MAD R Major | 234 | 285 | 0 |
 | Pulsar X2A v3 | 0 | 495 | 0 |
-| ATK Dragonfly A9 NB Ultra | 180 | 102 | 0 |
-| ATK Fierce X | 0 | 252 | 0 |
+| ATK GHOST Ultimate | 87 | 360 | 0 |
+| ATK Z1 V2 Ultra | 420 | 0 | 0 |
 | Pulsar X2 CrazyLight Mini | 0 | 180 | 35 |
-| ATK Y9 Ultimate | 96 | 99 | 0 |
-| ATK U2 V2 Mini | 0 | 93 | 0 |
+| ATK Dragonfly A9 NB Ultra | 108 | 66 | 0 |
+| ATK Fierce X | 0 | 141 | 0 |
 | Pulsar X2H v3 Mini | 0 | 90 | 0 |
 | ATK GHOST Extreme | 6 | 75 | 0 |
 | ATK U2 V2 Ultimate | 0 | 45 | 0 |
-| ATK ZERO | 0 | 3 | 0 |
+| ATK Y9 Ultimate | 12 | 12 | 0 |
+| ATK U2 V2 Mini | 0 | 9 | 0 |
 | ATK A9 Air | 0 | 0 | 0 |
 | ATK Blazing Sky F1 V2 | 0 | 0 | 0 |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 |
 | ATK Duckbill | 0 | 0 | 0 |
+| ATK ZERO | 0 | 0 | 0 |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 |
 | Pulsar Xlite CrazyLight Medium | 0 | 0 | 0 |
@@ -176,36 +178,36 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 
 | Souris | Petite | Moyenne | Grande | — (Fingertip) |
 |---|---|---|---|---|
-| VXE Dragonfly V3 / V3 Pro | 1727 | 1727 | 1727 | 900 |
-| ATK A9 Ultimate | 1637 | 1637 | 1637 | 0 |
-| ATK X1 V2 Ultra Max | 1284 | 1284 | 1284 | 0 |
-| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 1144 | 1144 | 1144 | 0 |
-| VXE Dragonfly R1 / R1 Pro | 983 | 983 | 983 | 326 |
-| ATK A9 Mini | 974 | 974 | 974 | 168 |
-| ATK F1 V3 Ultimate | 448 | 448 | 448 | 1622 |
+| ATK X1 V2 Ultra Max | 2178 | 2178 | 2178 | 0 |
+| VXE Dragonfly V3 / V3 Pro | 1721 | 1721 | 1721 | 653 |
+| ATK F1 V3 Ultimate | 719 | 719 | 719 | 1916 |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 1067 | 1067 | 1067 | 0 |
+| VXE Dragonfly R1 / R1 Pro | 895 | 895 | 895 | 316 |
+| ATK A9 Ultimate | 922 | 922 | 922 | 0 |
+| ATK A9 Mini | 829 | 829 | 829 | 47 |
 | Pulsar X2 v3 Mini | 335 | 335 | 335 | 773 |
-| ATK A9 Plus 2.0 | 365 | 365 | 365 | 546 |
-| Scyrox V6 | 76 | 76 | 76 | 998 |
-| Scyrox V8 / V8S | 188 | 188 | 188 | 506 |
-| VXE MAD R / MAD R Major | 243 | 243 | 243 | 0 |
-| ATK GHOST Ultimate | 234 | 234 | 234 | 0 |
+| Scyrox V6 | 72 | 72 | 72 | 998 |
+| ATK A9 Plus 2.0 | 236 | 236 | 236 | 472 |
+| Scyrox V8 / V8S | 181 | 181 | 181 | 506 |
 | Pulsar Xlite v4 Mini | 212 | 212 | 212 | 0 |
 | ATK Phantom Ultimate | 193 | 193 | 193 | 0 |
-| ATK Z1 V2 Ultra | 186 | 186 | 186 | 0 |
+| VXE MAD R / MAD R Major | 173 | 173 | 173 | 0 |
 | Pulsar X2A v3 | 165 | 165 | 165 | 0 |
-| ATK Dragonfly A9 NB Ultra | 94 | 94 | 94 | 0 |
-| ATK Fierce X | 84 | 84 | 84 | 0 |
+| ATK GHOST Ultimate | 149 | 149 | 149 | 0 |
+| ATK Z1 V2 Ultra | 140 | 140 | 140 | 0 |
 | Pulsar X2 CrazyLight Mini | 60 | 60 | 60 | 35 |
-| ATK Y9 Ultimate | 65 | 65 | 65 | 0 |
-| ATK U2 V2 Mini | 31 | 31 | 31 | 0 |
+| ATK Dragonfly A9 NB Ultra | 58 | 58 | 58 | 0 |
+| ATK Fierce X | 47 | 47 | 47 | 0 |
 | Pulsar X2H v3 Mini | 30 | 30 | 30 | 0 |
 | ATK GHOST Extreme | 27 | 27 | 27 | 0 |
 | ATK U2 V2 Ultimate | 15 | 15 | 15 | 0 |
-| ATK ZERO | 1 | 1 | 1 | 0 |
+| ATK Y9 Ultimate | 8 | 8 | 8 | 0 |
+| ATK U2 V2 Mini | 3 | 3 | 3 | 0 |
 | ATK A9 Air | 0 | 0 | 0 | 0 |
 | ATK Blazing Sky F1 V2 | 0 | 0 | 0 | 0 |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 | 0 |
 | ATK Duckbill | 0 | 0 | 0 | 0 |
+| ATK ZERO | 0 | 0 | 0 | 0 |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 | 0 |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 | 0 |
 | Pulsar Xlite CrazyLight Medium | 0 | 0 | 0 | 0 |
@@ -217,36 +219,36 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 
 | Souris | Score moyen | Meilleur | Pire | Fois classée dans la zone |
 |---|---:|---:|---:|---:|
+| ATK X1 V2 Ultra Max | 23.4/40 | 35/40 | 15/40 | 10752 |
 | VXE Dragonfly V3 / V3 Pro | 24.9/40 | 35/40 | 10/40 | 12474 |
-| ATK A9 Ultimate | 22.8/40 | 35/40 | 10/40 | 12768 |
-| ATK X1 V2 Ultra Max | 23.4/40 | 35/40 | 15/40 | 8064 |
+| ATK F1 V3 Ultimate | 32.5/40 | 40/40 | 20/40 | 6174 |
 | ATK Blazing Sky U2 / U2 Plus / U2 Ultimate | 20.1/40 | 35/40 | 10/40 | 12096 |
 | VXE Dragonfly R1 / R1 Pro | 20.8/40 | 35/40 | 10/40 | 14742 |
+| ATK A9 Ultimate | 22.8/40 | 35/40 | 10/40 | 12768 |
 | ATK A9 Mini | 27.5/40 | 35/40 | 10/40 | 10290 |
-| ATK F1 V3 Ultimate | 32.5/40 | 40/40 | 20/40 | 5292 |
 | Pulsar X2 v3 Mini | 35.2/40 | 40/40 | 25/40 | 3990 |
-| ATK A9 Plus 2.0 | 24.3/40 | 35/40 | 15/40 | 12768 |
 | Scyrox V6 | 27.4/40 | 40/40 | 15/40 | 9324 |
+| ATK A9 Plus 2.0 | 24.3/40 | 35/40 | 15/40 | 12768 |
 | Scyrox V8 / V8S | 31.4/40 | 40/40 | 20/40 | 5292 |
-| VXE MAD R / MAD R Major | 22.3/40 | 35/40 | 10/40 | 10752 |
-| ATK GHOST Ultimate | 24.9/40 | 35/40 | 10/40 | 9828 |
 | Pulsar Xlite v4 Mini | 25.7/40 | 35/40 | 15/40 | 2520 |
 | ATK Phantom Ultimate | 25.9/40 | 35/40 | 10/40 | 7770 |
-| ATK Z1 V2 Ultra | 19.8/40 | 35/40 | 10/40 | 6720 |
+| VXE MAD R / MAD R Major | 22.3/40 | 35/40 | 10/40 | 10752 |
 | Pulsar X2A v3 | 30.7/40 | 40/40 | 20/40 | 4830 |
+| ATK GHOST Ultimate | 24.9/40 | 35/40 | 10/40 | 9828 |
+| ATK Z1 V2 Ultra | 19.8/40 | 35/40 | 10/40 | 6720 |
+| Pulsar X2 CrazyLight Mini | 35.2/40 | 40/40 | 25/40 | 3990 |
 | ATK Dragonfly A9 NB Ultra | 23.5/40 | 35/40 | 10/40 | 9576 |
 | ATK Fierce X | 27.6/40 | 35/40 | 20/40 | 3780 |
-| Pulsar X2 CrazyLight Mini | 35.2/40 | 40/40 | 25/40 | 3990 |
-| ATK Y9 Ultimate | 18.8/40 | 25/40 | 15/40 | 5376 |
-| ATK U2 V2 Mini | 25.4/40 | 35/40 | 15/40 | 4410 |
 | Pulsar X2H v3 Mini | 28.2/40 | 35/40 | 20/40 | 2520 |
 | ATK GHOST Extreme | 24.9/40 | 35/40 | 10/40 | 9828 |
 | ATK U2 V2 Ultimate | 22.6/40 | 35/40 | 15/40 | 4704 |
-| ATK ZERO | 22.2/40 | 35/40 | 10/40 | 9828 |
+| ATK Y9 Ultimate | 18.8/40 | 25/40 | 15/40 | 5376 |
+| ATK U2 V2 Mini | 25.4/40 | 35/40 | 15/40 | 4410 |
 | ATK A9 Air | 22.8/40 | 35/40 | 10/40 | 11172 |
 | ATK Blazing Sky F1 V2 | — | — | — | 0 |
 | ATK Blazing Sky U2 Mini | 25.4/40 | 35/40 | 15/40 | 3780 |
 | ATK Duckbill | — | — | — | 0 |
+| ATK ZERO | 22.2/40 | 35/40 | 10/40 | 9828 |
 | Pulsar X2 CrazyLight Medium | 30.7/40 | 40/40 | 20/40 | 4830 |
 | Pulsar X2H CrazyLight Mini | 28.2/40 | 35/40 | 20/40 | 2520 |
 | Pulsar Xlite CrazyLight Medium | 20.4/40 | 30/40 | 15/40 | 2880 |

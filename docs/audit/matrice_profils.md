@@ -108,11 +108,11 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | VXE Dragonfly V3 / V3 Pro (25/40) | ATK A9 Mini (30/40) | 7 candidat(s) | Économique : VXE Dragonfly V3 / V3 Pro est la moins chère parmi les 7 souris à 5 pts ou moins du meilleur score (30/40). |
-| Qualité/Prix | ATK A9 Mini (30/40) | ATK F1 V3 Ultimate (30/40) | 3 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
+| Économique | VXE Dragonfly V3 / V3 Pro (25/40) | ATK F1 V3 Ultimate (30/40) | 7 candidat(s) | Économique : VXE Dragonfly V3 / V3 Pro est la moins chère parmi les 7 souris à 5 pts ou moins du meilleur score (30/40). |
+| Qualité/Prix | ATK F1 V3 Ultimate (30/40) | ATK A9 Mini (30/40) | 3 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). Indicateur provisoire, pas un score qualité-prix validé. |
 | Haut de gamme | Scyrox V8 / V8S (30/40) | ATK F1 V3 Ultimate (30/40) | 3 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | ATK A9 Mini (30/40) | ATK F1 V3 Ultimate (30/40) | 3 candidat(s) | Forme d'abord : ATK A9 Mini est la souris dont la forme colle le mieux à votre main parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
-| Budget ≤ 75 € | ATK A9 Mini (30/40) | ATK F1 V3 Ultimate (30/40) | 3 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 3 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
+| Peu importe le prix | ATK F1 V3 Ultimate (30/40) | ATK A9 Mini (30/40) | 3 candidat(s) | Forme d'abord : ATK F1 V3 Ultimate est la souris dont la forme colle le mieux à votre main parmi les 3 souris à 2 pts ou moins du meilleur score (30/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Budget ≤ 75 € | ATK F1 V3 Ultimate (30/40) | ATK A9 Mini (30/40) | 3 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 3 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
 ## Profil F — Fingertip 200 × 100 mm

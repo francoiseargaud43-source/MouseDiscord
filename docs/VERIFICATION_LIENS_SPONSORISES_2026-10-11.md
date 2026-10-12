@@ -66,8 +66,15 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
 1. **F1 V3** : la gamme ne comporte pas de modèle « Ultimate » (uniquement **Ultimate+** / **Extreme+**
    et l'édition Leviatan). Ton id `atk_f1_ultimate` correspond donc à l'**Ultimate+** ; la base le
    porte à 70,00 € alors que le store FR l'affiche à 59,95 € → prix à trancher.
+   **Tranché le 2026-10-12 (18ᵉ passe)** : la fiche officielle, modèle « **Ultimate+** » sélectionné,
+   affiche **59,95 €** en euros (`?country=FR`) ; la base porte ce prix, la source est datée. À noter :
+   la variante était **en précommande** au moment du relevé (rupture temporaire), c'est écrit dans la
+   note de la fiche.
 2. **X1 V2** : le modèle s'appelle **« Ultra Max 2.0 »** sur le store. Variante figée dessus ✓.
    Base 75,00 € vs 41,95 € au store → prix à trancher.
+   **Tranché le 2026-10-12 (18ᵉ passe)** : les données de variante de la boutique officielle donnent
+   **40,95 €** (prix normal 63,95 €) pour « Ultra Max 2.0 / Black », la variante figée du lien — c'est
+   le prix de la base désormais, source datée à l'appui.
 3. **Z1 V2** : la gamme Z1 V2 ne propose que **Ultimate / Ultimate+**. « Ultra » est un modèle de la
    **Z1 (V1)**. Ton id porte les cotes de la Z1 V2 (122,5 × 66,8 × 42,4 mm) → lien calé sur la Z1 V2.
    Base 75,00 € vs 59,95 € au store → prix à trancher.

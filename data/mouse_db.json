@@ -177,11 +177,11 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "owner_spec",
     "dimension_status": "verified",
-    "price_eur": 70.0,
-    "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
+    "price_eur": 59.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (boutique ATK, pays France, modèle « Ultimate+ » (prix normal 81,95 € ; variante en précommande au moment du relevé)). L'ancienne valeur (70.00 €) venait du cahier des charges, sans relevé : elle est remplacée par le prix officiel daté.",
     "fit_rationale": "Arrière étroit empêchant les crampes de l'éminence thénar en Fingertip.",
-    "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée. Prix officiel EUR constaté le 2026-10-11 : série F1 V3 « à partir de » 59,95 € (Ultimate+ ; Extreme+ 91,95 €). Version retenue : Ultimate+ (37 ±3 g, PAW3955 Master, Nordic 54LM20, optiques ATK Custom, 8 000 Hz) ; l'Extreme+ est annoncée à 36 g avec switchs Omron optiques et Nordic 54H20.",
+    "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée. Prix officiel EUR constaté le 2026-10-11 : série F1 V3 « à partir de » 59,95 € (Ultimate+ ; Extreme+ 91,95 €). Version retenue : Ultimate+ (37 ±3 g, PAW3955 Master, Nordic 54LM20, optiques ATK Custom, 8 000 Hz) ; l'Extreme+ est annoncée à 36 g avec switchs Omron optiques et Nordic 54H20. Fiche ATK (2026-10-12) : « Grip Style: Claw / Palm » et 37 ± 3 g, 118,2 × 62,4 × 38,8 mm — informations fabricant notées, les compatibilités de prise validées par le propriétaire (palm « Faible ») sont conservées telles quelles.",
     "sources": [
       {
         "label": "ATK Blog — Which mouse is right for you (F1)",
@@ -246,6 +246,14 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -273,9 +281,9 @@
     "fingertip_grip_fit": "Faible",
     "fit_status": "owner_spec",
     "dimension_status": "verified",
-    "price_eur": 75.0,
-    "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
+    "price_eur": 40.95,
+    "price_status": "verified",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 40.95 € (boutique ATK, pays France, variante « Ultra Max 2.0 / Black », price data 4095 (prix normal 63,95 €)). L'ancienne valeur (75.00 €) venait du cahier des charges, sans relevé : elle est remplacée par le prix officiel daté.",
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
@@ -343,6 +351,14 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
