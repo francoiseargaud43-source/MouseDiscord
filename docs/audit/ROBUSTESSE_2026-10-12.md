@@ -669,7 +669,7 @@ figeaient l'ancien gagnant : réécrits avec la date et la raison (jamais « aju
    contestée (55 mm officiel contre 62,5 mm EloShapes). Trancher avec une seule source à la fois.
 3. **Hauteur des boutons : 25 souris sur 36** (aucun fabricant ne la publie).
 4. **Bosse de la VXE X3** (`vxe_x3`) : coque partagée avec l'ATK X1, position non publiée.
-5. **Deux coques jumelles non tranchées** : `pulsar_x2a_v3_medium` / `pulsar_x2_crazylight_medium`.
+5. ~~Deux coques jumelles non tranchées~~ → **tranché depuis la 14e passe** : `pulsar_x2a_v3_medium` et `pulsar_x2_crazylight_medium` portent le même `shell_id` (`pulsar_x2_medium`) ; le verrou est en test (`tests/test_data.py::test_shells_documented_in_the_catalogue_notes_are_registered_in_shell_id`).
 
 ---
 
