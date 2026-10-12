@@ -648,7 +648,7 @@
     "dimension_status": "single_source",
     "price_eur": 68.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 68,95 € (fiche ATK pays France, variante « Ultimate », prix normal 100,95 € ; noir en rupture de stock au relevé, Argent et Rouge en stock). Le relevé du 2026-10-11 donnait le même montant (« à partir de »).",
     "fit_rationale": "Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
@@ -703,6 +703,15 @@
           "switches"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Boutique ATK pays France — fiche officielle du GHOST (variantes et prix EUR)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -729,7 +738,7 @@
     "dimension_status": "single_source",
     "price_eur": 86.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 86.95 € (ATK, modèle « GHOST Extreme », affiché en euros pays France).",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 86,95 € (fiche ATK pays France, variante « Extreme » de la famille GHOST, prix normal 118,95 € ; les quatre variantes de la famille sont Ultimate 68,95 €, Ultimate+ 77,95 €, Extreme 86,95 €, Extreme+ 95,95 €).",
     "fit_rationale": "Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
@@ -788,9 +797,11 @@
       },
       {
         "label": "ATK Store — fiche officielle (2026-10-12)",
-        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR",
         "fields": [
-          "price_eur"
+          "price_eur",
+          "price_note",
+          "polling_hz"
         ],
         "date_checked": "2026-10-12"
       }
@@ -1344,8 +1355,8 @@
     "category": "ATK",
     "family": "Duckbill",
     "budget_tier": "Haut de Gamme",
-    "length_mm": null,
-    "width_max_mm": 62.5,
+    "length_mm": 118.0,
+    "width_max_mm": 55.0,
     "height_mm": 37.4,
     "hump_position": "Rear",
     "button_height": "Inconnu",
@@ -1353,10 +1364,10 @@
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
-    "dimension_status": "conflicting",
+    "dimension_status": "single_source",
     "price_eur": 81.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 81.95 € (ATK Blazing Sky Duckbill, prix du produit, prix normal 118.95 €).",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 81,95 € (fiche ATK pays France, modèle « Ultra », prix normal 118,95 €). Le relevé du 2026-10-11 donnait le même montant (« prix du produit »).",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » ; mains petites-moyennes.",
     "weight_g": 46.0,
     "sensor": "PAW3950 Ultra",
@@ -1368,10 +1379,10 @@
           117.0
         ],
         "sources": [
-          "EloShapes (118.0)",
-          "ATK Blog (117 mm)"
+          "ATK Store — fiche officielle (2026-10-12) (118 mm)",
+          "ATK Blog ATK Duck Bill (117 mm)"
         ],
-        "note": "Écart de 1.0 mm sur la longueur : valeur non retenue tant que non confirmée."
+        "note": "Écart de 1 mm entre deux publications du fabricant : la fiche produit, datée et variante-exacte, est retenue ; l'écart reste consigné."
       },
       "weight_g": {
         "values": [
@@ -1382,9 +1393,20 @@
           "EloShapes (46 g)",
           "ATK Blog (≈49 g)"
         ]
+      },
+      "width_max_mm": {
+        "values": [
+          55.0,
+          62.5
+        ],
+        "sources": [
+          "ATK Store — fiche officielle (2026-10-12) (55 mm)",
+          "EloShapes (62,5 mm)"
+        ],
+        "note": "Écart de 7,5 mm avec la source tierce. Règle du 2026-10-12 : le fabricant prime sur une tierce — la valeur du catalogue passe donc de 62,5 (EloShapes) à 55 (fiche officielle)."
       }
     },
-    "notes": "Longueur en conflit (118.0 vs 117 mm) : donnée essentielle non retenue, souris en attente. Aucune source trouvée annonçant 55 mm de largeur. Largeur 62.5 mm seulement chez EloShapes. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom (FE) et MCU Nordic 54H20 (fiche ATK Store Duckbill). Fiche ATK (2026-10-12) : 118 × 55 × 37,4 mm, « Best for Hand Size: Small-to-Medium » — longueur officielle 118 mm (ATK Blog : 117 mm) et largeur 55 mm contre 62,5 mm (EloShapes) : écart de largeur non tranché, aucune valeur du catalogue remplacée.",
+    "notes": "Dimensions retenues le 2026-10-12 depuis la fiche officielle : 118 × 55 × 37,4 mm (modèle « Ultra », « Best for Hand Size: Small-to-Medium »). Deux écarts consignés dans « conflicts » : longueur 118 (fiche) contre 117 mm (article du blog ATK, même fabricant), largeur 55 (fiche) contre 62,5 mm (EloShapes, tierce) — le fabricant prime, la tierce n'écrase pas. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom (FE) et MCU Nordic 54H20.",
     "sources": [
       {
         "label": "EloShapes — ATK Duckbill",
@@ -1429,8 +1451,19 @@
       },
       {
         "label": "ATK Store — fiche officielle (2026-10-12)",
-        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-duckbill-wireless-mouse",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-duckbill-wireless-mouse?country=FR",
         "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "weight_g",
+          "price_eur",
+          "price_note",
+          "shape",
+          "sensor",
+          "polling_hz",
+          "switches",
+          "mcu",
           "palm_grip_fit",
           "claw_grip_fit",
           "fingertip_grip_fit"

@@ -44,7 +44,7 @@ Gravité : **H** élevée (résultat ou sécurité des données faux/trompeur), 
 | C10 | Catalogue — A9 Plus | Largeur 63.5 mm (cahier des charges) contre 64.0 mm (EloShapes). | M | **Conservé et documenté** : écart 0.5 mm, dans la tolérance de concordance (0.5 mm). Pas d'effet sur le score à 180×90 (5 pts dans les deux cas). À confirmer. |
 | C11 | Catalogue — formes | EloShapes classe F1 V2 et X1 V2 en « Back - minimal » alors que le cahier des charges indique « Mid ». | M | **Signalé, non modifié** (valeur propriétaire conservée). À arbitrer. |
 | C12 | Catalogue — Z1 | Les dimensions de la **Z1 originale** (ATK : 119.57 × 60.99 × 36.26) sont identiques à celles de la Fierce X. | H | **Non ajoutée** (donnée suspecte). La Z1 V2 (122.5 × 66.8 × 42.4) est concordante sur trois sources. |
-| C13 | Catalogue — Duckbill | Longueur 118.0 mm (EloShapes) contre 117 mm (blog ATK). Aucune source trouvée à 55 mm. | H | **Corrigé** : `length_mm = null` + `conflicts` ; souris en « à vérifier ». |
+| C13 | Catalogue — Duckbill | Longueur 118.0 mm (EloShapes) contre 117 mm (blog ATK). Aucune source trouvée à 55 mm. | H | **Corrigé** : `length_mm = null` + `conflicts` ; souris en « à vérifier ». **Tranché le 2026-10-12 (22e passe)** : la fiche officielle ATK publie **118 × 55 × 37,4 mm** — le fabricant est retenu, les deux valeurs (tierce et article de blog) restent consignées dans `conflicts`, et la souris devient classable (score partiel : hauteur des boutons non documentée). |
 | C14 | Catalogue — Y9 Ultimate | Polling 8000 Hz (EloShapes, MaxGaming) contre 1000 Hz (FPSTools) ; poids 55 g contre 58 g. | M | **Corrigé** : polling non renseigné, conflits listés. Aucun score n'en dépend. |
 | C15 | Prix | Aucun prix EUR vérifié pour les nouvelles variantes ; ATK affiche en USD. Les six prix d'origine viennent du cahier des charges, sans date. | H | **Signalé** : prix nouveaux à `null` ; `price_status` indique l'origine. Les modes à prix ne classent pas les souris sans prix. |
 | C16 | Catalogue — Scyrox | Dimensions et compatibilités issues du cahier des charges, non revérifiées. | M | **Signalé** : `dimension_status = owner_spec_unverified` → confiance « faible ». |
@@ -109,7 +109,9 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
 2. **Compatibilités des nouvelles variantes** (grip Palm / Claw / Fingertip, hauteur des boutons) : à renseigner pour les classer.
 3. **Prix EUR** et date de vérification pour les six modèles d'origine et les nouvelles variantes.
 4. **A9 Plus** : largeur 63.5 ou 64.0 mm ? Confirmer la source.
-5. **Duckbill** : longueur 118.0 ou 117 mm ? La valeur « 55 mm » évoquée dans la mission n'a été trouvée dans aucune source.
+5. ~~**Duckbill** : longueur 118.0 ou 117 mm ?~~ **Tranché le 2026-10-12** : la fiche officielle ATK (pays
+   France) publie **118 × 55 × 37,4 mm**. La valeur « 55 mm » de la mission existe donc bien, et c'est le
+   fabricant qui tranche l'écart de longueur (l'article du blog, plus ancien, reste consigné).
 6. **Z1 originale** : confirmer ses dimensions (ou confirmer qu'elle n'est pas à ajouter).
 7. **Y9 Ultimate** : polling (8000 ou 1000 Hz) et poids.
 8. **Rôle du thénar** : **tranché le 2026-10-11** — réintroduit comme étape 2/4 **informative** (stockée et affichée,

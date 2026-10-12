@@ -153,7 +153,7 @@ lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026
 | ATK U2 V2 Ultimate (`atk_u2_v2_ultimate`) | hauteur des boutons · prise palm · prise fingertip |
 | ATK U2 V2 Mini (`atk_u2_v2_mini`) | hauteur des boutons · prise palm · prise fingertip |
 | ATK ZERO (`atk_zero`) | hauteur des boutons |
-| ATK Duckbill (`atk_duckbill`) | hauteur des boutons · longueur |
+| ATK Duckbill (`atk_duckbill`) | hauteur des boutons (longueur tranchée le 2026-10-12 : 118 mm, fiche officielle) |
 | ATK A9 Ultimate (`atk_a9_ultimate`) | hauteur des boutons |
 | ATK A9 Air (`atk_a9_air`) | hauteur des boutons |
 | ATK A9 Mini (`atk_a9_mini`) | hauteur des boutons |

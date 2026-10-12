@@ -124,7 +124,8 @@ Le passage à 35 nécessite une décision propriétaire (§7, point 1).
 2. **Compatibilités grip et hauteurs de boutons** des 12 nouvelles variantes (sans cela, elles restent « à vérifier »).
 3. **Prix EUR** et dates de vérification (les six prix d'origine sont sans date ; ATK affiche en USD).
 4. **A9 Plus** : 63.5 ou 64.0 mm (conservé 63.5, écart 0.5 mm).
-5. **Duckbill** : 118.0 ou 117 mm (non tranché, souris à vérifier).
+5. ~~**Duckbill** : 118.0 ou 117 mm~~ **Tranché le 2026-10-12** : fiche officielle **118 × 55 × 37,4 mm** (le
+   fabricant prime), écarts consignés dans `conflicts`, souris classable en score partiel.
 6. **Z1 originale** : confirmer ses dimensions ou son absence du catalogue.
 7. **Y9 Ultimate** : polling (8000 ou 1000 Hz) et poids (55 ou 58 g).
 8. **Formes** : F1 V3 et X1 V2 — bosse « Mid » (cahier) ou « Back - minimal » (EloShapes) ?

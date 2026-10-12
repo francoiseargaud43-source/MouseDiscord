@@ -172,10 +172,55 @@ def test_bosse_des_xlite_et_prix_de_l_a9_mini_sont_sources(mice):
     assert score.is_scored and score.is_partial      # un seul manque : hauteur des boutons
 
 
-def test_duckbill_length_is_not_filled_while_sources_conflict(mice):
+def test_duckbill_dimensions_resolved_from_the_manufacturer(mice):
+    """2026-10-12 : la fiche officielle ATK publie 118 × 55 × 37,4 mm.
+
+    Règle « le fabricant prime sur une tierce » : la largeur cesse d'être la valeur d'EloShapes (62,5)
+    et la longueur n'est plus bloquée par l'article du blog ATK (117 mm). Les deux écarts restent
+    consignés dans « conflicts », et la souris devient classable (score partiel : boutons non
+    documentés) au lieu d'être « à vérifier » sur toute la grille.
+    """
     duck = mice["atk_duckbill"]
-    assert duck.length_mm is None
+    assert (duck.length_mm, duck.width_max_mm, duck.height_mm) == (118.0, 55.0, 37.4)
+    assert duck.dimension_status == "single_source"
     assert duck.conflicts["length_mm"]["values"] == [118.0, 117.0]
+    assert duck.conflicts["width_max_mm"]["values"] == [55.0, 62.5]
+    assert any(s.url.startswith("https://www.atk.store/") and "width_max_mm" in s.fields
+               for s in duck.sources)
+    score = evaluate_mouse(duck, HandMeasure(170, 85), Grip.CLAW)
+    assert score.is_scored and not score.is_pending
+
+
+def test_duckbill_price_matches_the_only_variant_on_sale(mice):
+    """La Duckbill n'existe qu'en un modèle (« Ultra », trois coloris) : le prix retenu est le sien.
+
+    Vérifié le 2026-10-12 sur la boutique ATK pays France : 81,95 € pour les trois coloris
+    (prix normal 118,95 €). Aucune variante moins chère n'existe, donc le prix ne bouge pas.
+    """
+    duck = mice["atk_duckbill"]
+    assert (duck.price_eur, duck.price_status) == (81.95, "verified")
+    assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields
+               for s in duck.sources)
+    assert "« Ultra »" in duck.price_note      # modèle unique : le prix est celui de ce modèle
+
+
+def test_ghost_prices_are_read_variant_by_variant(mice):
+    """Le GHOST existe en quatre variantes ; chaque fiche du catalogue reçoit SON prix.
+
+    Relevé du 2026-10-12 sur la fiche ATK pays France (`?country=FR`, prix en euros, jamais
+    convertis) : Ultimate 68,95 €, Ultimate+ 77,95 €, Extreme 86,95 €, Extreme+ 95,95 €. La fiche
+    GHOST Extreme annonçait 86,95 € depuis la 19e passe : la relecture la confirme au lieu de la
+    remplacer par le minimum de la famille (68,95 €) ou par son maximum (95,95 €).
+    """
+    ultimate, extreme = mice["atk_ghost_ultimate"], mice["atk_ghost_extreme"]
+    assert (ultimate.price_eur, extreme.price_eur) == (68.95, 86.95)
+    assert extreme.price_eur > ultimate.price_eur
+    for mouse, variante in ((ultimate, "Ultimate"), (extreme, "Extreme")):
+        assert mouse.price_status == "verified", mouse.id
+        assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields
+                   for s in mouse.sources), mouse.id
+        assert f"« {variante} »" in mouse.price_note, mouse.id
+    assert "95,95" in extreme.price_note     # la variante la plus chère ne doit pas être masquée
 
 
 def test_commercial_links_are_official_and_verified():

@@ -34,7 +34,7 @@ Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma
 | ATK U2 | U2 V2 Ultimate | Moyenne, symétrique, bosse arrière | 123.7 × 64.6 × 39.1 | 45 g | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; notice ATK ; ATK collection U2 | verified | à vérifier |
 | ATK U2 | U2 V2 Mini | Petite à moyenne | 119.5 × 63.0 × 38.5 | 39 g | 8000 Hz ; capteur non vérifié | — | non vérifiée | EloShapes ; notice ATK ; ATK collection U2 | verified | à vérifier |
 | ATK | ZERO | Moyenne, symétrique | 120.1 × 63.2 × 38.1 | 39 g | 8000 Hz | — | non vérifiée | EloShapes | single_source | à vérifier |
-| ATK | Duckbill | Forme canard, bosse arrière | **longueur en conflit** (118.0 vs 117) × 62.5 × 37.4 | 46 g (≈49 g blog) | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; blog ATK Duck Bill | conflicting | à vérifier (longueur non retenue) |
+| ATK | Duckbill | Forme canard, bosse arrière | **118.0 × 55.0 × 37.4** (fiche officielle, 2026-10-12 ; les deux écarts sont consignés dans `conflicts`) | 46 ± 2 g (blog : ≈49 g) | PAW3950 Ultra, 8000 Hz, Nordic 54H20 | **81,95 €** (prix normal 118,95 €) | en vente (modèle « Ultra », 3 coloris) | ATK Store — fiche officielle (2026-10-12) ; EloShapes ; blog ATK Duck Bill | single_source | **classable depuis le 2026-10-12** — hauteur des boutons non documentée |
 | ATK A9 | A9 Ultimate | Grande, symétrique | 125.0 × 64.0 (EloShapes) / 63.5 (ATK) × 40.0 | 53 g (ATK : 55 ± 3 g) | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; ATK Store (Dragonfly A9 Ultimate) | verified (écart 0.5 mm) | à vérifier |
 | ATK A9 | A9 Air | Même taille que A9 Ultimate (EloShapes) | 125.0 × 64.0 × 40.0 | 47 g | 8000 Hz | — | non vérifiée | EloShapes (comparaison) | single_source | à vérifier |
 | ATK A9 | A9 Mini | Petite | 118.4 × 61.2 × 38.6 | 39 ± 3 g | PAW3955, 8 000 Hz | **59,95 €** | **vérifiée** (ATK + EloShapes) | ATK Store ; EloShapes | verified | **classable** depuis le 2026-10-12 (bosse « Center » → Mid) — hauteur des boutons non documentée |
@@ -47,10 +47,10 @@ Dans le tableau, « à vérifier » signifie que la souris est en attente (`pend
 |---|---|
 | ATK Z1 original (« Blazing Sky Z1 ») | Dimensions ATK (119.57 × 60.99 × 36.26 mm) **identiques** à la Fierce X : donnée suspecte, non ajoutée. Les dimensions 122.5 × 66.8 × 42.4 mm sont celles de la Z1 V2. |
 | ATK X1 original | Même coque que X1 V2 Ultra Max selon EloShapes (127 × 64 × 40 mm) : partage la géométrie ; capteur et poids non vérifiés. |
-| ATK F1 V2 Ultimate / F1 Pro Max | Même géométrie que la F1 V3 selon EloShapes (118.2 × 62.4 × 38.8 mm) : géométrie partagée ; compatibilités non vérifiées. |
+| ATK F1 V2 Ultimate / F1 Pro Max | Même géométrie que la F1 V3 selon EloShapes (118.2 × 62.4 × 38.8 mm) : géométrie partagée. **Mise à jour du 2026-10-12** : la souris « F1 V2 » est entrée au catalogue (21e passe, prise héritée de la coque jumelle) ; les autres déclinaisons de la série (Ultimate, Pro Max) n'y sont pas, faute de données distinctes. |
 | ATK A9 SE / A9 Pro / A9 Ultra / A9 Plus (autres variantes) | Dimensions 125 × 64 × 40 mm selon EloShapes (une seule comparaison) ; poids et capteurs partiels. Non ajoutées individuellement. |
 | ATK Dragonfly, Blazing Sky Phantom (store) | Non consultés en détail. Le modèle Phantom Ultimate est présent (une source). |
-| Duckbill « 55 mm » | Aucune source trouvée annonçant 55 mm de largeur. |
+| Duckbill « 55 mm » | ~~Aucune source trouvée annonçant 55 mm de largeur.~~ **Trouvée le 2026-10-12** : la fiche officielle publie **118 × 55 × 37,4 mm**. La valeur du fabricant est retenue ; l'écart avec EloShapes (62,5 mm) reste consigné dans `conflicts`. |
 
 ## 4. Sources consultées
 
@@ -87,12 +87,14 @@ sont toujours **pas** converties en compatibilité (règle du §1). La hauteur d
 25 souris sur 36 : elles restent classables avec un score partiel, mais ne peuvent pas dépasser une souris
 complète.
 
-**Couverture après ajouts** : 26 souris, longueurs 116,6 → 127,0 mm. La `vxe_v3` (116,6 mm) est la première souris
-« Small » du catalogue : elle comble le manque de formes compactes pour les mains de moins de ~175 mm.
+**Couverture après ajouts** (mise à jour du 2026-10-12) : **36 souris**, longueurs 115,6 → 127,0 mm. La plus
+courte est la Pulsar X2 CrazyLight Mini (115,6 mm) ; la `vxe_v3` (116,6 mm) reste la première souris « Small » du
+catalogue : elle comble le manque de formes compactes pour les mains de moins de ~175 mm.
 
 ## 5. Ce qu'il reste à faire pour élargir le catalogue
 
-1. Extraire les fiches produits complètes (statut de disponibilité, prix **EUR**) sur les 26 produits du catalogue
+1. Extraire les fiches produits complètes (statut de disponibilité, prix **EUR**) sur les 36 souris du catalogue
    (les prix du store sont en USD : à documenter auprès d'un revendeur européen, jamais par conversion).
 2. Vérifier les compatibilités grip et hauteurs de boutons sur des mesures ou des tests documentés (aucune source actuelle ne le fait).
-3. Trancher les conflits du §2 (A9 Plus, Duckbill, Y9, X1 capteur).
+3. Trancher les conflits du §2 (A9 Plus, Y9, X1 capteur) — **Duckbill tranché le 2026-10-12** : la fiche
+   officielle publie 118 × 55 × 37,4 mm, le fabricant prime et les deux écarts restent consignés dans `conflicts`.

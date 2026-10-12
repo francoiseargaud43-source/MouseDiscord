@@ -34,7 +34,7 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | Scyrox V8 / V8S | 229 | 862 | 0 | 1091 | 5.9 % |
 | ATK A9 Plus 2.0 | 330 | 315 | 36 | 681 | 3.7 % |
 | ATK F1 V3 Ultimate | 388 | 281 | 0 | 669 | 3.6 % |
-| Pulsar Xlite v4 Mini | 303 | 333 | 0 | 636 | 3.4 % |
+| Pulsar Xlite v4 Mini | 303 | 330 | 0 | 633 | 3.4 % |
 | ATK Phantom Ultimate | 252 | 327 | 0 | 579 | 3.1 % |
 | Pulsar X2A v3 | 270 | 225 | 0 | 495 | 2.7 % |
 | ATK GHOST Ultimate | 165 | 282 | 0 | 447 | 2.4 % |
@@ -48,9 +48,9 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | ATK U2 V2 Ultimate | 45 | 0 | 0 | 45 | 0.2 % |
 | ATK Y9 Ultimate | 0 | 24 | 0 | 24 | 0.1 % |
 | ATK U2 V2 Mini | 0 | 6 | 0 | 6 | 0.0 % |
+| ATK Duckbill | 0 | 3 | 0 | 3 | 0.0 % |
 | ATK A9 Air | 0 | 0 | 0 | 0 | 0.0 % |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 | 0 | 0.0 % |
-| ATK Duckbill | 0 | 0 | 0 | 0 | 0.0 % |
 | ATK ZERO | 0 | 0 | 0 | 0 | 0.0 % |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 | 0 | 0.0 % |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 | 0 | 0.0 % |
@@ -61,11 +61,10 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 
 ## Souris jamais recommandées
 
-**10 souris sur 36** ne sortent jamais sur cette grille :
+**9 souris sur 36** ne sortent jamais sur cette grille :
 
 - **ATK A9 Air** (`atk_a9_air`)
 - **ATK Blazing Sky U2 Mini** (`atk_u2_mini`)
-- **ATK Duckbill** (`atk_duckbill`)
 - **ATK ZERO** (`atk_zero`)
 - **Pulsar X2 CrazyLight Medium** (`pulsar_x2_crazylight_medium`)
 - **Pulsar X2H CrazyLight Mini** (`pulsar_x2h_crazylight_mini`)
@@ -80,7 +79,6 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 |---|---:|---:|---:|---|
 | ATK A9 Air | 11172 | 0 | 7350 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
 | ATK Blazing Sky U2 Mini | 3780 | 5544 | 9198 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| ATK Duckbill | 0 | 12348 | 6174 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
 | ATK ZERO | 9828 | 0 | 8694 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
 | Pulsar X2 CrazyLight Medium | 4830 | 3360 | 10332 | donnée absente : compatibilité de prise (statut non vérifié) |
 | Pulsar X2H CrazyLight Mini | 2520 | 3990 | 12012 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
@@ -105,7 +103,7 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | Scyrox V8 / V8S | 94 | 175 | 229 | 175 | 418 |
 | ATK A9 Plus 2.0 | 78 | 102 | 12 | 48 | 441 |
 | ATK F1 V3 Ultimate | 0 | 6 | 50 | 338 | 275 |
-| Pulsar Xlite v4 Mini | 96 | 135 | 135 | 135 | 135 |
+| Pulsar Xlite v4 Mini | 93 | 135 | 135 | 135 | 135 |
 | ATK Phantom Ultimate | 42 | 126 | 147 | 138 | 126 |
 | Pulsar X2A v3 | 63 | 108 | 108 | 108 | 108 |
 | ATK GHOST Ultimate | 63 | 90 | 78 | 24 | 192 |
@@ -119,9 +117,9 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | ATK U2 V2 Ultimate | 0 | 0 | 45 | 0 | 0 |
 | ATK Y9 Ultimate | 24 | 0 | 0 | 0 | 0 |
 | ATK U2 V2 Mini | 0 | 0 | 0 | 0 | 6 |
+| ATK Duckbill | 3 | 0 | 0 | 0 | 0 |
 | ATK A9 Air | 0 | 0 | 0 | 0 | 0 |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 | 0 | 0 |
-| ATK Duckbill | 0 | 0 | 0 | 0 | 0 |
 | ATK ZERO | 0 | 0 | 0 | 0 | 0 |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 | 0 | 0 |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 | 0 | 0 |
@@ -146,7 +144,7 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | Scyrox V8 / V8S | 0 | 549 | 542 |
 | ATK A9 Plus 2.0 | 378 | 267 | 36 |
 | ATK F1 V3 Ultimate | 0 | 297 | 372 |
-| Pulsar Xlite v4 Mini | 636 | 0 | 0 |
+| Pulsar Xlite v4 Mini | 633 | 0 | 0 |
 | ATK Phantom Ultimate | 579 | 0 | 0 |
 | Pulsar X2A v3 | 0 | 495 | 0 |
 | ATK GHOST Ultimate | 87 | 360 | 0 |
@@ -160,9 +158,9 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 | ATK U2 V2 Ultimate | 0 | 45 | 0 |
 | ATK Y9 Ultimate | 12 | 12 | 0 |
 | ATK U2 V2 Mini | 0 | 6 | 0 |
+| ATK Duckbill | 3 | 0 | 0 |
 | ATK A9 Air | 0 | 0 | 0 |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 |
-| ATK Duckbill | 0 | 0 | 0 |
 | ATK ZERO | 0 | 0 | 0 |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 |
@@ -189,7 +187,7 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 | Scyrox V8 / V8S | 183 | 183 | 183 | 542 |
 | ATK A9 Plus 2.0 | 215 | 215 | 215 | 36 |
 | ATK F1 V3 Ultimate | 99 | 99 | 99 | 372 |
-| Pulsar Xlite v4 Mini | 212 | 212 | 212 | 0 |
+| Pulsar Xlite v4 Mini | 211 | 211 | 211 | 0 |
 | ATK Phantom Ultimate | 193 | 193 | 193 | 0 |
 | Pulsar X2A v3 | 165 | 165 | 165 | 0 |
 | ATK GHOST Ultimate | 149 | 149 | 149 | 0 |
@@ -203,9 +201,9 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 | ATK U2 V2 Ultimate | 15 | 15 | 15 | 0 |
 | ATK Y9 Ultimate | 8 | 8 | 8 | 0 |
 | ATK U2 V2 Mini | 2 | 2 | 2 | 0 |
+| ATK Duckbill | 1 | 1 | 1 | 0 |
 | ATK A9 Air | 0 | 0 | 0 | 0 |
 | ATK Blazing Sky U2 Mini | 0 | 0 | 0 | 0 |
-| ATK Duckbill | 0 | 0 | 0 | 0 |
 | ATK ZERO | 0 | 0 | 0 | 0 |
 | Pulsar X2 CrazyLight Medium | 0 | 0 | 0 | 0 |
 | Pulsar X2H CrazyLight Mini | 0 | 0 | 0 | 0 |
@@ -244,9 +242,9 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 | ATK U2 V2 Ultimate | 22.6/40 | 35/40 | 15/40 | 4704 |
 | ATK Y9 Ultimate | 18.8/40 | 25/40 | 15/40 | 5376 |
 | ATK U2 V2 Mini | 25.4/40 | 35/40 | 15/40 | 4410 |
+| ATK Duckbill | 18.5/40 | 30/40 | 10/40 | 6678 |
 | ATK A9 Air | 22.8/40 | 35/40 | 10/40 | 11172 |
 | ATK Blazing Sky U2 Mini | 25.4/40 | 35/40 | 15/40 | 3780 |
-| ATK Duckbill | — | — | — | 0 |
 | ATK ZERO | 22.2/40 | 35/40 | 10/40 | 9828 |
 | Pulsar X2 CrazyLight Medium | 30.7/40 | 40/40 | 20/40 | 4830 |
 | Pulsar X2H CrazyLight Mini | 28.2/40 | 35/40 | 20/40 | 2520 |

@@ -584,7 +584,7 @@ mention explicite → « Élevé », prise non mentionnée → « Inconnu » (ja
 
 | Souris | Prise publiée par le fabricant | Suite |
 |---|---|---|
-| ATK Duckbill | Claw / Palm / Fingertip | prise documentée (souris toujours inutilisable, §11.6) |
+| ATK Duckbill | Claw / Palm / Fingertip | prise documentée ; souris **rendue classable** en 22e passe (§11.9) |
 | ATK Fierce X | **Claw uniquement** | Palm et Fingertip restent « Inconnu » |
 | ATK Phantom Ultimate | Claw / Palm / Fingertip | devient la tête du profil Palm de référence (§11.6) |
 | ATK U2 V2 Mini et Ultimate | **Claw** | Palm et Fingertip restent « Inconnu » |
@@ -618,6 +618,10 @@ vérifié.
 La fiche officielle de la **Duckbill** donne **118 × 55 × 37,4 mm** (« Best for Hand Size:
 Small-to-Medium ») là où EloShapes donne 62,5 mm de largeur : l'écart est écrit dans la note de la
 fiche, **aucune valeur du catalogue n'est remplacée** tant qu'il n'est pas tranché.
+
+**Mise à jour du 2026-10-12 (22e passe, §11.9)** : l'écart est tranché. Le fabricant prime (55 mm
+retenus) et la valeur tierce (62,5 mm) reste consignée dans `conflicts`, avec sa source — rien n'est
+effacé, et aucune donnée tierce n'a servi à corriger le fabricant.
 
 ### 11.4 Effet mesuré
 
@@ -665,8 +669,8 @@ figeaient l'ancien gagnant : réécrits avec la date et la raison (jamais « aju
 ### 11.7 Ce qui reste ouvert après cette passe
 
 1. ~~Une souris sans prise publiée~~ → **réglé en 21e passe** : `atk_f1_v2` reçoit les compatibilités de sa coque jumelle (§11.8) ; plus aucune souris du catalogue n'est `unverified`.
-2. **La Duckbill reste inutilisable** : sa longueur est en conflit (118 vs 117 mm) et sa largeur est
-   contestée (55 mm officiel contre 62,5 mm EloShapes). Trancher avec une seule source à la fois.
+2. ~~**La Duckbill reste inutilisable**~~ → **tranché en 22e passe (§11.9)** : la fiche officielle publie
+   118 × 55 × 37,4 mm ; les deux écarts restent consignés et la souris devient classable (score partiel).
 3. **Hauteur des boutons : 25 souris sur 36** (aucun fabricant ne la publie).
 4. **Bosse de la VXE X3** (`vxe_x3`) : coque partagée avec l'ATK X1, position non publiée.
 5. ~~Deux coques jumelles non tranchées~~ → **tranché depuis la 14e passe** : `pulsar_x2a_v3_medium` et `pulsar_x2_crazylight_medium` portent le même `shell_id` (`pulsar_x2_medium`) ; le verrou est en test (`tests/test_data.py::test_shells_documented_in_the_catalogue_notes_are_registered_in_shell_id`).
@@ -728,3 +732,53 @@ variante « Ultra Max 2.0 / Black », prix normal 63,95 €, relevé le 2026-10-
   (24,01 %)** ; la grille rapide (720 profils) donne elle aussi 0 problème.
 - `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` et `docs/audit/matrice_profils.md`
   régénérés par leurs outils (jamais édités à la main).
+
+---
+
+### 11.9 ATK Duckbill rendue classable, prix des GHOST relus variante par variante (22e passe, 2026-10-12)
+
+**Le problème.** La Duckbill était la dernière souris que **deux conflits internes** bloquaient : longueur
+118 mm (EloShapes) contre 117 mm (article du blog ATK) et largeur 55 mm annoncée par le fabricant contre
+62,5 mm (EloShapes). La règle « aucune valeur remplacée tant que ce n'est pas tranché » la laissait sans
+longueur, donc « à vérifier » sur la totalité de la grille : 12 348 profils en attente, aucune sortie.
+
+**La décision.** La fiche produit du fabricant, relue le 2026-10-12
+(`atk.store/en-fr/products/atk-blazing-sky-duckbill-wireless-mouse?country=FR`), publie le bloc complet :
+**118 × 55 × 37,4 mm**, 46 ± 2 g, Symmetrical, « Best for Hand Size: Small-to-Medium », PAW3950 Ultra,
+Nordic 54H20, 8 000 Hz, switchs optiques ATK Custom, 500 mAh / 150 h. Elle tranche les deux écarts au
+bénéfice du **fabricant** : longueur 118 mm (l'article de blog du même fabricant, plus ancien, reste
+consigné) et largeur 55 mm (la valeur d'EloShapes reste consignée). Rien n'est effacé : les deux valeurs
+écartées vivent dans `conflicts`, avec leurs sources et la raison du choix. Le prix ne bouge pas
+(**81,95 €**, prix normal 118,95 €) : relevé sur la même fiche, il correspond au seul modèle vendu
+(« Ultra », trois coloris, tous en vente).
+
+**Effet mesuré** (grille complète de `tools/recommendation_stats.py`, 18 522 profils, moteur inchangé —
+seule la donnée change) :
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Sorties de l'ATK Duckbill | **0** (12 348 profils « à vérifier ») | **3** (en alternative) — 6 675 profils notés |
+| Souris jamais recommandées | 10 sur 36 | **9 sur 36** |
+| Profils sans aucun résultat | 252 | 252 (inchangé) |
+| Replis « deux places, même coque » | 683 | 683 (inchangé) |
+
+**Le prix des GHOST, variante par variante.** Le `.js` de la fiche GHOST (`?country=FR`, 2026-10-12)
+publie les quatre variantes, en centimes : Ultimate **68,95 €**, Ultimate+ **77,95 €**, Extreme
+**86,95 €**, Extreme+ **95,95 €** (prix normaux 100,95 / 109,95 / 118,95 / 127,95 € ; `price_min` 6895,
+`price_max` 9595). Les deux fiches du catalogue gardent donc **leur** prix : la GHOST Extreme reste à
+86,95 € (et non 68,95 €, minimum de la famille, ni 95,95 €, son maximum) et la GHOST Ultimate à
+68,95 €. Les deux notes de prix ont été réécrites avec la variante, le prix normal et la date.
+
+**Preuves.**
+
+- `pytest -q` : **348 tests** (346 + 2 ajoutés). Le test qui figeait `length_mm = None` pour la Duckbill
+  est **réécrit** (dimensions = valeurs du fabricant, conflits conservés, souris classable) ; deux tests
+  ajoutés : prix de la Duckbill = modèle unique en vente, et prix des deux GHOST lus variante par variante.
+- `tools/recommendation_stats.py` (18 522 profils) : jamais recommandées **10 → 9** ; `atk_duckbill`
+  0 → 3 sorties.
+- `tools/qa_flow_matrix.py` (grille complète, 27 170 profils) : **0 problème**, aucune impasse ;
+  2 561 profils sans résultat, 1 410 replis de coque, 6 523 profils à trois places (24,01 %).
+- `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` et `docs/audit/matrice_profils.md`
+  régénérés par leurs outils (jamais édités à la main) ; `docs/audit/CATALOGUE_ATK.md`,
+  `docs/audit/AUDIT.md` (C13, point ouvert 5), `docs/audit/RAPPORT_FINAL.md` et
+  `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` mis à jour avec la date.
