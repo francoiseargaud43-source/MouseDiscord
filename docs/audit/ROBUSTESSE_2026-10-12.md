@@ -922,6 +922,7 @@ Scyrox V6) pour étalonner la classe « Mid », qu'aucune référence ne produit
 
 ---
 
+
 ## 14. Vingt-sixième passe (2026-10-12) : trois hauteurs de boutons par la coque A9, et ce que la photo ne permet pas
 
 Cette passe répond à la demande « implémenter les souris qu'on n'a pas pu mettre dans le tableau, en
@@ -1026,3 +1027,84 @@ catalogue. Ce n'est ni un bug, ni une donnée manquante — c'est mesuré, écri
 - `tools/recommendation_stats.py` et `tools/compare_profiles.py` régénérés (jamais édités à la main).
 - Campagne d'images : 23 fichiers, `tools/image_corpus_check.py` (doublons signalés), 12 vues testées,
   `data/mouse_db.json` inchangé sur ce point — **aucune valeur issue d'une photo**.
+
+---
+
+## 15. Vingt-septième passe (2026-10-12) : la première hauteur de boutons mesurée entre au catalogue
+
+### 15.1 Ce qui bloquait encore neuf souris
+
+Après la 26e passe, **neuf souris sur 36** ne sortaient jamais de la grille. Quatre d'entre elles (§14.4)
+sont condamnées par leur propre coque : la version allégée est toujours plus chère que sa jumelle à forme
+identique, et le poids n'entre pas dans le score. Les cinq autres avaient un point commun : **21 souris
+du catalogue n'ont pas de hauteur de boutons**, et un critère manquant ne peut pas rapporter les points
+que les autres gagnent (5 points en Palm et Claw, 10 en Fingertip). L'ATK ZERO était de celles-là : notée
+sur 9 828 profils, jamais affichée une seule fois.
+
+### 15.2 Ce qui a débloqué la ZERO
+
+Deux **vues de profil officielles** de l'ATK Blazing Sky ZERO (fiche `atk.store`) donnent **43,3 %** et
+**43,7 %** de la hauteur totale au point d'appui — soit exactement la référence étalonnée « boutons bas »
+(43,3 %, la valeur de l'ATK F1 V2). L'orientation des deux images a été vérifiée visuellement (molette et
+sérigraphie à l'avant) : c'est le piège relevé à la 24e passe, où une image mesurée à l'envers produisait
+l'arrière de la souris.
+
+La première vue porte « **ZERO** » imprimé sur la coque ; la seconde, seulement le logo « ATK ». Pour la
+rattacher au modèle — sans jamais se fier au nom de fichier —, un **outil nouveau** a été écrit :
+`tools/image_identity_check.py` compare le profil supérieur de la silhouette (normalisé en fraction de
+hauteur, remis dans le même sens) et rend un verdict borné.
+
+| Comparaison de silhouettes | Écart moyen | Écart maximum | Verdict |
+|---|---:|---:|---|
+| ZERO (nommée) ↔ ZERO (seconde vue) | **0,24 %** | 4,59 % | même coque |
+| Contrôle : ZERO ↔ ATK A9 (même longueur, autre coque) | 4,47 % | 11,74 % | coques différentes |
+| Contrôle : ZERO ↔ rendu noir anonyme de la même page | 4,78 % | 9,99 % | coques différentes |
+
+Un facteur 19 sépare les deux populations : le rattachement est une mesure, pas une intuition. Le même
+contrôle a **écarté** le rendu noir (4,78 % → ce n'est pas la ZERO) : il n'a reçu aucune valeur.
+
+### 15.3 La règle de publication amendée, explicitement
+
+La règle écrite à la 25e passe exigeait « au moins 3 points de marge sur les seuils ». Or la mesure de la
+ZERO **atteint** le point d'étalonnage « boutons bas » : elle n'est pas « en dessous avec 3 points de
+marge », elle mesure exactement comme la souris étalonnée. La règle est donc amendée, avec sa raison :
+
+> Une hauteur de boutons peut être publiée si l'identité du modèle est **prouvée sur l'image** (nom
+> imprimé, ou rattachement de silhouette validé par `tools/image_identity_check.py`), que **deux vues
+> distinctes** donnent la même classe, et que la valeur tombe dans une **classe ferme** (jamais dans
+> l'intervalle gris 43,3–55,1 %). La marge de 3 points reste exigée pour toute valeur intermédiaire ;
+> elle n'est pas requise quand la mesure atteint une référence d'étalonnage.
+
+**Risque résiduel, écrit noir sur blanc** : si la vraie classe était « Mid », publier « Low » ferait
+gagner 10 points à tort à cette souris pour une prise **Fingertip**. Contre ce risque : deux rendus
+officiels du même modèle, correctement orientés, à 0,4 point l'un de l'autre, dont la valeur est celle de
+la souris étalonnée « boutons bas ». C'est la **première** valeur du catalogue qui vient d'une mesure.
+
+### 15.4 Effet mesuré (moteur inchangé — seule la donnée change)
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Recommandations de l'ATK ZERO (stats 18 522) | **0** | **933** (idéal 276, alternative 657) |
+| Souris jamais recommandées | 9 sur 36 | **8 sur 36** |
+| Profils sans aucun résultat (stats) | 252 | 252 |
+| Profils où deux places montrent la même coque (stats) | 607 | 595 |
+| Match idéal « partiel » (QA, 27 170 profils) | 7 600 | **7 476** |
+| Résultats à trois places (QA) | 6 583 (24,23 %) | **6 779 (24,95 %)** |
+| Problèmes détectés (QA) | 0 | **0** |
+| Souris sans hauteur de boutons | 25 → 22 (26e passe) | **21 sur 36** |
+
+Aucun canari n'a bougé : Palm 180 × 90 reste Phantom 35/40 (V6 30, Z1 30, A9 Plus 25, X1 20).
+
+### 15.5 Preuves
+
+- `pytest -q` : **363 tests** — dont six pour le nouvel outil d'identité
+  (`tests/test_image_identity_check.py` : même coque, vue retournée, coques différentes, verdict borné,
+  silhouette illisible, profil normalisé) et un pour la valeur elle-même
+  (`test_zero_button_height_measured_on_two_official_views`, qui gèle la valeur, sa provenance datée et
+  l'absence d'héritage de coque).
+- Les deux commandes de mesure, rejouables : `tools/measure_button_height.py
+  image-search/atk-zero-wireless-mouse-2.jpg --length-mm 120.1 --height-mm 38.1 --front right` → 43,3 %
+  « Low » ; `… atk-blazing-sky-zero-wireless-mouse-side-5.jpg … --front left` → 43,7 % « Low » ;
+  `tools/image_identity_check.py --reference … --candidate …` → « même coque » (0,24 %).
+- `tools/qa_flow_matrix.py` (grille complète, 27 170 profils) : **0 problème**.
+- `tools/recommendation_stats.py` et `tools/compare_profiles.py` régénérés (jamais édités à la main).

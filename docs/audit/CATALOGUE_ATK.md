@@ -84,8 +84,10 @@ depuis les fiches officielles (statut `manufacturer_guide`, `ROBUSTESSE_2026-10-
 Blazing Sky F1 V2**, dont le fabricant ne publie aucune recommandation écrite : elle a hérité des compatibilités
 de sa **coque jumelle** (`shell_id` = `atk_f1`, §11.8). Les mentions marketing génériques (« Claw / Palm ») ne
 sont toujours **pas** converties en compatibilité (règle du §1). La hauteur des boutons reste `Inconnu` pour
-**22 souris sur 36** (25 avant la 26e passe) : elles restent classables avec un score partiel, mais ne
-peuvent pas dépasser une souris complète. Les **quatre variantes « large » de la coque A9**
+**21 souris sur 36** (25 avant la 26e passe) : elles restent classables avec un score partiel, mais ne
+peuvent pas dépasser une souris complète. L'**ATK Blazing Sky ZERO** est la première dont la hauteur de
+boutons a été **mesurée** (deux vues officielles concordantes → « Low », §15 de
+`MESURE_BOUTONS_2026-10-12.md`). Les **quatre variantes « large » de la coque A9**
 (`atk_a9_plus` du propriétaire, `atk_a9_ultimate`, `atk_a9_air`, `atk_a9_nb`) partagent désormais la même
 valeur (« Mid »), héritée par coque identique — `ROBUSTESSE_2026-10-12.md` §14.4.
 

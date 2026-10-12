@@ -125,8 +125,10 @@ Une hauteur de boutons n'est écrite que si :
    perspective et donnent la **même classe**, avec **au moins 3 points de marge** sur les seuils.
 
 Aujourd'hui la ZERO a **une** image à identité vérifiée (43,0 % → Low) : il lui en manque une seconde.
-Aucune souris ne remplit les deux conditions → **aucune valeur écrite** dans `data/mouse_db.json`, les
-25 souris restent `Inconnu`, et le catalogue ne gagne aucune valeur inventée.
+Aucune souris ne remplit les deux conditions → **aucune valeur écrite** dans `data/mouse_db.json` à
+partir d'une photo. (Depuis la 26e passe, trois hauteurs de boutons sont entrées au catalogue **par la
+coque**, pas par la photo : voir la section 14 ci-dessous et `ROBUSTESSE_2026-10-12.md` §14.2. Le
+compte courant est de **22 souris sur 36** sans hauteur de boutons.)
 
 ### 13.5 Vues refusées (inchangé)
 
@@ -168,6 +170,88 @@ silhouette ne peut pas servir de preuve d'identité** et le contrôle de perspec
 détecter qu'on lui a donné les cotes du mauvais modèle. Seule la vérification visuelle (nom imprimé,
 logo) fait foi — c'est la règle du §13.4, et elle reste.
 
+### 14.2 Ce qui a débloqué trois souris : la coque, pas la photo
+
+Les trois variantes « large » de la coque A9 (`atk_a9_ultimate`, `atk_a9_air`, `atk_a9_nb`) partagent la
+coque de l'ATK Dragonfly A9 Plus 2.0 du propriétaire, dont la hauteur de boutons est connue (« Mid ») :
+elles l'ont reçue par héritage de coque, avec une source datée par souris. Ce n'est **pas** une mesure
+d'image — la mesure ne pouvait rien apporter ici — et cela fait passer le compte de 25 à **22 souris**
+sans hauteur de boutons. Détail de la règle, des limites (A9 Mini hors coque, VXE X3 non propagée) et de
+l'effet mesuré : `ROBUSTESSE_2026-10-12.md` §14.2 et §14.3.
+
 **Prochaine étape utile** (inchangée, précisée) : une vue **strictement de côté** et **portant le nom
 imprimé** d'une souris à boutons « moyens » (A9 Plus « A9 PLUS », X1 V2 « X1 ULTIMATE », Scyrox V6
 « V6 »). Aucune des douze vues testées ce jour ne remplit ces deux conditions.
+
+## 15. Vingt-septième passe (2026-10-12) : PREMIÈRE hauteur de boutons publiée depuis une mesure
+
+### 15.1 Le cas : l'ATK Blazing Sky ZERO
+
+La ZERO était la souris la plus proche du but : la campagne précédente avait mesuré **43,0 %** sur un
+rendu officiel portant « **ZERO** » imprimé sur la coque — valeur dans la bande « bas » — mais la règle
+de publication exigeait **deux images distinctes** concordantes. Deux nouveaux rendus officiels ATK ont
+été récupérés et mesurés :
+
+| Image (fiche officielle ATK Blazing Sky ZERO) | Avant de l'image | Rapport mesuré | Écart de perspective | Mesure | Classe |
+|---|---|---|---:|---:|---:|---|
+| `…atk-zero-wireless-mouse-2.jpg` (« **ZERO** » imprimé sur le flanc) | droite | 3,09 contre 3,15 | 1,9 % | **43,3 %** | Low |
+| `…atk-blazing-sky-zero-wireless-mouse-side-5.jpg` (logo « ATK » seul) | gauche | 3,07 contre 3,15 | 2,8 % | **43,7 %** | Low |
+
+L'orientation de chaque image a été **vérifiée à l'œil** (molette et sérigraphie à l'avant) : la molette
+se trouve à gauche sur la seconde image et à droite sur la première — c'est le paramètre `--front` qui
+change, et c'est exactement le piège relevé à la 24e passe (une image mesurée à l'envers donne l'arrière
+de la souris, pas le bouton).
+
+### 15.2 La deuxième vue n'a pas de nom : identité prouvée par la silhouette
+
+Sur la seconde image, seul « ATK » est imprimé : impossible de l'attribuer par son nom de fichier (la
+règle « une photo = une identité »). Elle est rattachée à la première par un **outil nouveau**,
+`tools/image_identity_check.py` : le profil supérieur de la silhouette, normalisé en fraction de hauteur
+le long de la longueur, mis dans le même sens, puis comparé point à point.
+
+| Comparaison | Écart moyen | Écart max | Verdict |
+|---|---:|---:|---|
+| ZERO (nommée) ↔ ZERO (seconde vue) | **0,24 %** | 4,59 % | même coque |
+| Contrôle : ZERO ↔ ATK A9 (autre coque, même longueur) | 4,47 % | 11,74 % | coques différentes |
+| Contrôle : ZERO ↔ rendu noir anonyme de la même page | 4,78 % | 9,99 % | coques différentes |
+
+Un facteur **19** sépare les deux populations : le rattachement n'est pas une intuition, c'est une mesure
+reproductible (seuils de l'outil posés dans la zone vide : 1 % / 3 %). **Cette même mesure a écarté le
+rendu noir** : avec 4,78 % d'écart, ce n'est pas la ZERO — il n'a donc reçu aucune valeur.
+
+### 15.3 La règle de publication, explicitée (et non contournée)
+
+La règle écrite à la 25e passe demandait « au moins 3 points de marge sur les seuils ». La mesure de la
+ZERO **est** la référence « boutons bas » (43,3 %, la valeur de l'ATK F1 V2 étalonnée) — elle n'est donc
+pas « en dessous avec 3 points de marge », elle est **exactement sur le point d'étalonnage**. La règle est
+donc amendée explicitement, avec sa raison :
+
+> Une hauteur de boutons peut être publiée si **l'identité du modèle est prouvée sur l'image** (nom
+> imprimé, ou rattachement de silhouette validé par `tools/image_identity_check.py`), que **deux vues
+> distinctes** donnent la même classe, et que la valeur tombe **dans une classe ferme** (jamais dans
+> l'intervalle gris 43,3–55,1 %). La marge de 3 points reste exigée pour toute valeur intermédiaire non
+> étalonnée ; elle n'est pas requise quand la mesure **atteint une référence d'étalonnage**.
+
+Risque résiduel, écrit noir sur blanc : si la vraie classe était « Mid », publier « Low » ferait gagner
+10 points à tort à cette souris pour une prise **Fingertip** (idéal = Low). Contre ce risque : deux rendus
+officiels du même modèle, correctement orientés, à 0,4 point l'un de l'autre, dont la valeur est celle de
+la souris étalonnée « boutons bas ».
+
+### 15.4 Résultat écrit dans le catalogue
+
+`data/mouse_db.json` → `atk_zero.button_height = "Low"`, avec une source datée du 2026-10-12 (les deux
+vues, leurs valeurs et la vérification d'identité) et la note qui décrit la méthode. C'est la **première**
+hauteur de boutons du catalogue qui vient d'une **mesure** et non d'une fiche fabricant, d'un héritage de
+coque ou du cahier des charges. Compte courant : **21 souris sur 36** sans hauteur de boutons.
+
+### 15.5 Effet mesuré (moteur inchangé)
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Recommandations de l'ATK ZERO (grille 18 522 profils) | **0** | **933** (idéal 276, alternative 657) |
+| Souris jamais recommandées | 9 sur 36 | **8 sur 36** |
+| Profils sans aucun résultat | 252 | 252 (inchangé) |
+| Profils où deux places montrent la même coque | 607 | 595 |
+
+La ZERO était notée sur 9 828 profils sans jamais sortir : privée des 5 points de boutons, elle perdait
+tous les départages. Elle est désormais **complète** et sort sur 933 profils.

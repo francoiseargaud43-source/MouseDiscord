@@ -1303,7 +1303,7 @@
     "width_max_mm": 63.2,
     "height_mm": 38.1,
     "hump_position": "Rear",
-    "button_height": "Inconnu",
+    "button_height": "Low",
     "palm_grip_fit": "Élevé",
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
@@ -1316,7 +1316,7 @@
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Dimensions d'une seule source (EloShapes). Forme symétrique moyenne. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, switchs optiques ATK Custom (FE), MCU Nordic 54L15 (54H20 sur la version Extreme).",
+    "notes": "Dimensions d'une seule source (EloShapes). Forme symétrique moyenne. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, switchs optiques ATK Custom (FE), MCU Nordic 54L15 (54H20 sur la version Extreme). Hauteur des boutons (2026-10-12) : MESURÉE sur deux vues de profil officielles de la fiche ATK (43,3 % et 43,7 % de la hauteur totale, soit exactement la référence « boutons bas ») → classe « Low ». Les deux vues montrent la même coque (écart de silhouette 0,24 % — outil tools/image_identity_check.py) ; l'une porte « ZERO » imprimé sur le flanc, l'autre seulement le logo « ATK ». Motif de mesure à 5 % de la longueur depuis l'avant, orientation vérifiée à l'œil (molette et sérigraphie à l'avant). Détail et limites : docs/audit/MESURE_BOUTONS_2026-10-12.md §15 et docs/audit/ROBUSTESSE_2026-10-12.md §15.",
     "sources": [
       {
         "label": "EloShapes — ATK Zero",
@@ -1364,6 +1364,14 @@
           "palm_grip_fit",
           "claw_grip_fit",
           "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche officielle ATK Blazing Sky ZERO : deux vues de profil officielles ; hauteur d'appui des boutons mesurée par tools/measure_button_height.py (43,3 % → « Low », 43,7 % → « Low »), identité des deux vues vérifiée par tools/image_identity_check.py (écart de silhouette 0,24 %)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse",
+        "fields": [
+          "button_height"
         ],
         "date_checked": "2026-10-12"
       }

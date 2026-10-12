@@ -228,6 +228,32 @@ def test_light_versions_can_never_pass_their_cheaper_twin(mice):
         assert vus > 0, f"aucun cas testé pour {allegee} : le contrôle serait vide"
 
 
+def test_zero_button_height_measured_on_two_official_views(mice):
+    """2026-10-12 : première hauteur de boutons MESURÉE (et non déduite) du catalogue.
+
+    Deux vues de profil officielles de l'ATK Blazing Sky ZERO donnent 43,3 % et 43,7 % de la hauteur
+    totale — la référence étalonnée « boutons bas » (43,3 %) — donc la classe « Low ». Les deux vues
+    montrent la même coque (écart de silhouette 0,24 %, mesuré par `tools/image_identity_check.py`) et
+    l'une porte « ZERO » imprimé : l'identité est établie sur l'image, jamais par le nom de fichier.
+    Ce test gèle la valeur, sa provenance et sa reproductibilité.
+    """
+    zero = mice["atk_zero"]
+    assert zero.button_height == "Low"
+    sources = [s for s in zero.sources if "button_height" in s.fields]
+    assert len(sources) == 1, "une seule source doit porter la hauteur des boutons"
+    source = sources[0]
+    assert source.date_checked == "2026-10-12"
+    assert "atk.store" in source.url
+    assert "43,3 %" in source.label and "43,7 %" in source.label, source.label
+    # La valeur est mesurée, pas héritée : elle ne vient pas d'une autre souris de la même coque.
+    assert zero.shell_id in (None, "") or not any(
+        autre.id != zero.id and autre.shell_id == zero.shell_id and autre.button_height == "Low"
+        for autre in mice.values())
+    # Elle change le classement : la ZERO n'est plus « partielle » en Palm (boutons comptés).
+    score = evaluate_mouse(zero, HandMeasure(180, 90), Grip.PALM)
+    assert not score.is_pending
+
+
 def test_no_shell_mixes_two_button_heights(mice):
     """Invariant de coque : deux souris de la MÊME coque ne peuvent pas annoncer deux hauteurs de
     boutons différentes — une coque est une seule pièce de plastique.
