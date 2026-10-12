@@ -1497,6 +1497,63 @@ sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
 
 ---
 
+### 12.15 Mise à jour du 2026-10-12 (6e) : traçabilité vérifiable du catalogue (audit, aucun changement de résultat)
+
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §21) :
+
+1. **44 valeurs du catalogue étaient sourcées dans les notes mais leur source ne déclarait pas le champ**
+   (`sources[].fields`) : la provenance n'était pas vérifiable par la machine. Elle l'est : pages EloShapes
+   (bosse), moule de coque (A9 « large », F1) et cahier des charges du propriétaire, avec **9 sources datées
+   ajoutées**. **Aucune cote, aucun prix, aucun score ne change.**
+2. **Deux écarts de forme consignés** (ATK F1 V3 Ultimate, ATK X1 V2 Ultra Max : bosse « Mid » du propriétaire
+   contre « Back - minimal » chez EloShapes) — la valeur du propriétaire reste, l'écart devient lisible.
+3. **Règle `verified` précisée** dans la documentation : ≥ 2 sources concordantes à ≤ 0,5 mm, **ou la boutique
+   officielle du fabricant** (cas des dix Pulsar). `single_source` = une seule source tierce.
+4. **Deux retouches de forme** : « Votre éminence thénar est **petite** » (accord) et les trois titres de la
+   troisième place décrits dans `REPORTE_DESIGN.md`.
+5. **11 clés `mcu: ""`** remplacées par l'absence de clé (« absent » = « inconnu », une seule écriture).
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+data/mouse_db.json                   (décisif : provenance complétée, clés vides retirées, 2 conflits)
+cogs/finder_flow.py                  (décisif : une phrase du bloc « arrière étroit »)
+tests/test_data.py                   (facultatif : les 5 invariants d'audit)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : §21, audit complet)
+README.md, docs/REPORTE_DESIGN.md    (facultatif : règle « verified », trois titres)
+docs/MASTER_PROMPT_AZEMOUSE.md, docs/PROMPT_RECHERCHE_SOURIS_ATK.md,
+docs/audit/CATALOGUE_ATK.md          (facultatif : même règle « verified » partout)
+```
+
+`utils/matcher.py`, `utils/selection.py`, `utils/catalog.py`, `cogs/mouse_finder.py`,
+`data/commercial_links.json` et les fenêtres des trois places **ne changent pas** : aucun barème, aucun
+seuil, aucun lien, aucune fenêtre.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 36 souris · liens d'achat valides : 36 · 1 erreur attendue (.env sur le serveur)
+.venv/bin/python -m pytest -q        # attendu : 391 passed
+.venv/bin/python tools/qa_flow_matrix.py | tail -1   # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
+
+**5. Vérification en 60 secondes dans Discord** (le résultat doit être **identique** à avant la mise à jour)
+
+1. Faire un parcours en **Palm** 180 × 90, Qualité/Prix : « 🥇 Le match idéal » Phantom Ultimate 91,95 €,
+   « 🥈 L'alternative » Z1 V2 Ultra 59,95 €, « ➕ L'autre option » A9 Mini 59,95 €.
+2. Faire un parcours en **Claw pincée**, thénar **Petite**, 180 × 100, Qualité/Prix : le bloc « 🖐️ Un arrière
+   étroit pour votre thénar » doit commencer par « Votre éminence thénar est **petite** ».
+3. Le reste du message ne bouge pas d'un caractère : ni score, ni prix, ni libellé de place.
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.

@@ -767,3 +767,123 @@ def test_f1_v2_inherits_the_grip_verdicts_of_its_twin_shell(mice):
 def test_no_sold_mouse_is_left_without_grip_compatibility(mice):
     """2026-10-12 : plus aucune souris vendue ne reste « à vérifier » faute de compatibilité de prise."""
     assert [m.id for m in mice.values() if m.fit_status == "unverified"] == []
+
+
+# ---------------------------------------------------------------------------
+# Audit du 2026-10-12 : la traçabilité du catalogue devient VÉRIFIABLE par la machine
+# ---------------------------------------------------------------------------
+# Contexte : les valeurs sont écrites à la main (recherches web, mesures, cahier des charges). Une
+# relecture a montré que 44 valeurs sur 492 étaient bien SOURCÉES dans les notes, mais que la source
+# correspondante ne DÉCLARAIT pas le champ dans ``sources[].fields`` : la chaîne de provenance
+# n'était pas vérifiable automatiquement (et rien ne l'était, sauf pour ``shape`` et les prises).
+# Ces quatre tests transforment la règle en invariant : toute valeur renseignée cite la source qui
+# l'atteste, tout écart est consigné dans ``conflicts``, aucune clé n'est vide, et un statut
+# « verified » se justifie par ses sources.
+CHAMPS_TRAÇABLES = (
+    "length_mm", "width_max_mm", "height_mm", "weight_g", "grip_width_mm", "price_eur",
+    "hump_position", "button_height", "shape", "sensor", "switches", "mcu", "polling_hz",
+    "palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit",
+)
+COTES_MM = ("length_mm", "width_max_mm", "height_mm")
+# Boutiques du FABRICANT (pas des revendeurs) : une cote qui n'y figure que là est tenue pour établie.
+DOMAINES_FABRICANT = frozenset({"www.atk.store", "atk.store", "eu.pulsar.gg", "scyrox.com"})
+# Tolérance de concordance déjà appliquée aux données (voir « verified » dans README) : deux sources
+# qui divergent de plus de 0,5 mm ne concordent pas ; deux entrées d'une même coque non plus.
+TOLERANCE_CONCORDANCE_MM = 0.5
+
+
+def test_chaque_valeur_du_catalogue_cite_la_source_qui_l_atteste(mice):
+    """Aucune valeur renseignée ne peut exister sans qu'une source déclare le champ correspondant.
+
+    C'est la règle « jamais d'invention » rendue exécutable : le catalogue garde ses notes, mais c'est
+    ``sources[].fields`` qui fait foi pour la machine (et c'est là que le chargeur regarde pour la
+    forme depuis l'origine). « Inconnu », une chaîne vide et ``None`` signifient « pas de valeur » et
+    n'ont donc rien à attester.
+    """
+    inventaire = 0
+    sans_source: list[str] = []
+    for mouse in mice.values():
+        declares = {champ for source in mouse.sources for champ in source.fields}
+        for champ in CHAMPS_TRAÇABLES:
+            valeur = getattr(mouse, champ)
+            if valeur in (None, "", "Inconnu"):
+                continue
+            inventaire += 1
+            if champ not in declares:
+                sans_source.append(f"{mouse.id}.{champ} = {valeur!r}")
+    # Garde-fou du test lui-même : si l'inventaire devenait vide, le contrôle ne prouverait plus rien.
+    assert inventaire > 450, f"inventaire des valeurs renseignées suspect : {inventaire}"
+    assert sans_source == [], "valeurs sans source déclarante : " + " | ".join(sans_source)
+
+
+def test_les_ecarts_de_forme_sont_consignes_dans_conflicts(mice):
+    """Un écart connu ne se raconte pas seulement dans les notes : il est consigné dans ``conflicts``.
+
+    Les deux souris de la coque F1 / X1 ont une bosse « Mid » du cahier des charges, alors que la page
+    EloShapes annonce « Back - minimal » : la valeur du propriétaire est conservée (règle « le
+    propriétaire prime »), mais l'écart reste lisible par la machine au lieu de disparaître.
+    """
+    for ident in ("atk_f1_ultimate", "atk_x1_ultra_max"):
+        mouse = mice[ident]
+        conflit = mouse.conflicts.get("hump_position")
+        assert conflit, f"{ident} : écart de bosse non consigné dans « conflicts »"
+        assert mouse.hump_position in conflit["values"], ident
+        assert any("Back - minimal" in valeur for valeur in conflit["values"]), ident
+        assert conflit["sources"] and len(conflit["values"]) >= 2, ident
+        # La note de la fiche dit la même chose que le conflit (jamais deux versions divergentes).
+        assert "Back - minimal" in mouse.notes and "Mid" in mouse.notes, ident
+
+
+def test_le_catalogue_ne_contient_aucune_valeur_vide():
+    """Une chaîne vide n'est pas une donnée : « absent » et « inconnu » se disent par l'absence de clé.
+
+    Le 2026-10-12, dix entrées Pulsar portaient ``"mcu": ""`` là où les autres n'ont pas la clé du
+    tout : deux écritures pour un même état, que le chargeur traite identiquement — mais qui rendent
+    les audits par script faux (une clé absente se lit ``None``, jamais ``""``).
+    """
+    raw = json.loads(MOUSE_DB_PATH.read_text(encoding="utf-8"))
+    assert isinstance(raw, list) and len(raw) >= 36
+    vides = [f"{entree.get('id')}.{cle}" for entree in raw for cle, valeur in entree.items() if valeur == ""]
+    assert vides == [], "clés à valeur vide : " + ", ".join(vides)
+    sans_source = [entree.get("id") for entree in raw if not entree.get("sources")]
+    assert sans_source == [], f"entrées sans aucune source : {sans_source}"
+
+
+def test_un_statut_verified_se_justifie_par_ses_sources(mice):
+    """« verified » = au moins DEUX sources de cotes concordantes, ou UNE seule source quand c'est le
+    fabricant lui-même (sa boutique officielle) — précision écrite dans le README le 2026-10-12.
+
+    Sans cette précision, dix entrées Pulsar (relevées une par une sur la fiche officielle du
+    fabricant) portaient un statut que la règle documentée n'autorisait pas ; à l'inverse, une cote
+    reprise d'un revendeur ne peut jamais être « verified » toute seule.
+    """
+    from urllib.parse import urlparse
+
+    for mouse in mice.values():
+        if mouse.dimension_status != "verified":
+            continue
+        sources_cotes = [s for s in mouse.sources if set(COTES_MM) & set(s.fields)]
+        fabricant = [s for s in sources_cotes if urlparse(s.url).netloc in DOMAINES_FABRICANT]
+        assert len(sources_cotes) >= 2 or fabricant, (
+            f"{mouse.id} : « verified » sans deux sources de cotes ni source du fabricant "
+            f"({[s.label[:40] for s in sources_cotes]})")
+
+
+def test_deux_entrees_de_la_meme_coque_ne_divergent_pas_hors_tolerance(mice):
+    """Deux entrées d'une même coque décrivent une seule pièce de plastique.
+
+    Écart admis : la tolérance de concordance (0,5 mm) — l'ATK A9 Plus 2.0 (cahier des charges,
+    63,5 mm) et l'A9 Ultimate (EloShapes, 64,0 mm) sont à l'intérieur. Au-delà, c'est une erreur de
+    saisie ou deux coques différentes, et le test le dit.
+    """
+    par_coque: dict[str, list] = {}
+    for mouse in mice.values():
+        if mouse.shell_id:
+            par_coque.setdefault(mouse.shell_id, []).append(mouse)
+    assert par_coque, "aucune coque enregistrée : le contrôle serait vide"
+    for coque, groupe in par_coque.items():
+        for champ in COTES_MM:
+            valeurs = [getattr(m, champ) for m in groupe if getattr(m, champ) is not None]
+            assert valeurs, f"{coque}.{champ} : aucune valeur"
+            ecart = max(valeurs) - min(valeurs)
+            assert ecart <= TOLERANCE_CONCORDANCE_MM, (coque, champ, valeurs, ecart)

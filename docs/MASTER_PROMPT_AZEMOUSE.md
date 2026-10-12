@@ -390,8 +390,10 @@ Si tu réintroduis l'étape thénar (pour utiliser `T10` et coller au parcours c
 
 ### 8.2 Statuts de données à respecter à l'affichage
 
-- `verified` (≥2 sources concordantes ≤0.5 mm) → confiance moyenne/élevée possible.
-- `single_source` → confiance faible, afficher « Prix / dimensions d'une seule source ».
+- `verified` (≥2 sources concordantes ≤0.5 mm, **ou une seule source quand c'est le fabricant lui-même** — sa boutique
+  officielle `atk.store` / `eu.pulsar.gg` ; précision du 2026-10-12, dix entrées Pulsar relevées sur la fiche officielle)
+  → confiance moyenne/élevée possible.
+- `single_source` → une seule source **tierce** : confiance faible, afficher « Prix / dimensions d'une seule source ».
 - `conflicting` (ex. Duckbill `118.0 vs 117`) → `length_mm = null`, souris `pending`, ne jamais afficher une valeur tranchée.
 - `owner_spec` / `owner_spec_unverified` (Scyrox) → faible.
 - `fit_status` / `price_status` : même logique.

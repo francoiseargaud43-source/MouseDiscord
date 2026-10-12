@@ -10,7 +10,7 @@ Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma
 ## 1. Conventions
 
 - **Dimensions** : L × l × H en mm, tels que publiés ; `—` = non trouvé.
-- **Statut dimensions** : `verified` = ≥ 2 sources concordantes (écart ≤ 0.5 mm) ; `single_source` = une seule source ; `conflicting` = sources en désaccord > 0.5 mm.
+- **Statut dimensions** : `verified` = ≥ 2 sources concordantes (écart ≤ 0.5 mm), **ou une seule source quand c'est le fabricant lui-même** (sa boutique officielle ; précision du 2026-10-12) ; `single_source` = une seule source, tierce ; `conflicting` = sources en désaccord > 0.5 mm.
 - **Prix** : le store ATK n'affiche que des USD (non convertis). Depuis le 2026-10-11, des prix **EUR** sont relevés
   chez des revendeurs français et écrits dans la base quand la variante correspond exactement
   (voir `docs/RECHERCHE_PRIX_EUR_2026-10-11.md`) ; statut `verified` = prix daté + URL en source.

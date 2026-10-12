@@ -77,6 +77,21 @@
         "url": "https://maxesport.gg/products/scyrox-v8s-8k-wireless-white",
         "fields": [],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Cahier des charges du propriétaire — Scyrox V8 / V8S (8K) (marque non-ATK) : dimensions, bosse, hauteur des boutons et verdicts de prise fournis par le propriétaire, non revérifiés sur le web ; traçabilité relue le 2026-10-12",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "hump_position",
+          "button_height",
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -150,6 +165,22 @@
           "switches"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Cahier des charges du propriétaire — Scyrox V6 / V6S (8K) (marque non-ATK) : dimensions, bosse, hauteur des boutons et verdicts de prise fournis par le propriétaire, non revérifiés sur le web ; prix du cahier des charges (74,90 €, non daté — boutique officielle scyrox.com en dollars : jamais converti) ; traçabilité relue le 2026-10-12",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "hump_position",
+          "button_height",
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -262,6 +293,17 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Cahier des charges du propriétaire — coque ATK F1 (shell_id « atk_f1 ») : verdicts de prise et bosse « Mid » (la page EloShapes annonce « Back - minimal » : écart consigné dans « conflicts », la valeur du propriétaire est conservée) ; traçabilité relue le 2026-10-12",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "hump_position"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -269,7 +311,20 @@
     "sensor": "PAW3955 Master",
     "polling_hz": 8000,
     "switches": "Optiques ATK Custom",
-    "mcu": "Nordic 54LM20"
+    "mcu": "Nordic 54LM20",
+    "conflicts": {
+      "hump_position": {
+        "values": [
+          "Mid",
+          "Back - minimal"
+        ],
+        "sources": [
+          "cahier des charges du propriétaire (Mid)",
+          "EloShapes (Hump placement « Back - minimal »)"
+        ],
+        "note": "Le propriétaire décrit une bosse « Mid » (moule F1 / X1), EloShapes une bosse arrière « minimale » : la valeur du propriétaire est conservée (règle « le propriétaire prime »), l'écart reste consigné au lieu d'être effacé."
+      }
+    }
   },
   {
     "id": "atk_x1_ultra_max",
@@ -306,6 +361,17 @@
           "EloShapes",
           "ATK Store"
         ]
+      },
+      "hump_position": {
+        "values": [
+          "Mid",
+          "Back - minimal"
+        ],
+        "sources": [
+          "cahier des charges du propriétaire (Mid)",
+          "EloShapes (Hump placement « Back - minimal »)"
+        ],
+        "note": "Le propriétaire décrit une bosse « Mid » (moule F1 / X1), EloShapes une bosse arrière « minimale » : la valeur du propriétaire est conservée (règle « le propriétaire prime »), l'écart reste consigné au lieu d'être effacé."
       }
     },
     "sources": [
@@ -365,6 +431,18 @@
         "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse",
         "fields": [
           "price_eur"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Cahier des charges du propriétaire — ATK Blazing Sky X1 V2 Ultra Max : verdicts de prise, bosse « Mid » et hauteur des boutons « Mid » (la page EloShapes annonce « Back - minimal » : écart consigné dans « conflicts », la valeur du propriétaire est conservée) ; traçabilité relue le 2026-10-12",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "hump_position",
+          "button_height"
         ],
         "date_checked": "2026-10-12"
       }
@@ -476,6 +554,17 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Cahier des charges du propriétaire — ATK Blazing Sky Z1 V2 Ultra : verdicts de prise et bosse « Mid-Front » (à confirmer) ; traçabilité relue le 2026-10-12",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "hump_position"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Ergonomic",
@@ -540,12 +629,13 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical »",
+        "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical » — et « Hump placement : Center » sur les cinq modèles de la page (relu le 2026-10-12) → bosse « Mid » (règle de correspondance du projet)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-a9-vs.-atk-a9-plus-vs.-atk-a9-pro-vs.-atk-a9-se-vs.-atk-a9-ultra",
         "fields": [
-          "shape"
+          "shape",
+          "hump_position"
         ],
-        "date_checked": "2026-10-11"
+        "date_checked": "2026-10-12"
       },
       {
         "label": "Maxesport FR — ATK Dragonfly A9 Plus 2.0 Wireless Noir",
@@ -564,6 +654,21 @@
           "sensor"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Cahier des charges du propriétaire — ATK Dragonfly A9 Plus 2.0 (la souris du propriétaire, moule A9 « large ») : dimensions relevées sur la souris (largeur de coque 63,5 mm contre 64,0 mm chez EloShapes : écart de 0,5 mm dans la tolérance de concordance, valeur du propriétaire conservée), bosse « Mid », hauteur des boutons « Mid » et verdicts de prise (Palm / Claw / Fingertip) ; traçabilité relue le 2026-10-12",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "length_mm",
+          "width_max_mm",
+          "height_mm",
+          "hump_position",
+          "button_height",
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -672,7 +777,7 @@
     "notes": "Dimensions d'une seule source (EloShapes). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs ATK Lightblade mécaniques et MCU Nordic 54L15 (fiche ATK Store GHOST). Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "sources": [
       {
-        "label": "EloShapes — ATK GHOST Ultimate",
+        "label": "EloShapes — ATK GHOST Ultimate — bosse « Rear » : « Hump placement » d'EloShapes (« Back - minimal/moderate ») → « Rear » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-ghost-ultimate",
         "fields": [
           "length_mm",
@@ -680,7 +785,8 @@
           "height_mm",
           "weight_g",
           "sensor",
-          "polling_hz"
+          "polling_hz",
+          "hump_position"
         ],
         "date_checked": "2026-10-10"
       },
@@ -762,13 +868,14 @@
     "notes": "Même coque que le GHOST Ultimate selon la comparaison EloShapes (dimensions identiques). Capteur et autonomie non vérifiés. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, 8 000 Hz, MCU Nordic 54H20 (fiches ATK Store GHOST carbone / MaxGaming). Switchs Lightblade ou optiques ATK Custom selon la finition. Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "sources": [
       {
-        "label": "EloShapes — comparaison GHOST Extreme / Ultimate",
+        "label": "EloShapes — comparaison GHOST Extreme / Ultimate — bosse « Rear » : « Hump placement » d'EloShapes (« Back - minimal/moderate ») → « Rear » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-ghost-extreme-vs.-atk-ghost-ultimate-vs.-delux-m800-pro-vs.-razer-viper-mini",
         "fields": [
           "length_mm",
           "width_max_mm",
           "height_mm",
-          "weight_g"
+          "weight_g",
+          "hump_position"
         ],
         "date_checked": "2026-10-10"
       },
@@ -875,16 +982,17 @@
     },
     "sources": [
       {
-        "label": "EloShapes — ATK Y9 Ultimate",
+        "label": "EloShapes — ATK Y9 Ultimate — bosse « Mid » : « Hump placement » d'EloShapes (« Center ») → « Mid » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-y9-ultimate",
         "fields": [
           "length_mm",
           "width_max_mm",
           "height_mm",
           "weight_g",
-          "sensor"
+          "sensor",
+          "hump_position"
         ],
-        "date_checked": "2026-10-10"
+        "date_checked": "2026-10-12"
       },
       {
         "label": "MaxGaming — ATK Y9 Ultimate",
@@ -1115,7 +1223,7 @@
     "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom et MCU Nordic 54L15 (fiche ATK Store U2 V2). Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, palm : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-v2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.\n\nHauteur des boutons (2026-10-12) : MESURÉE sur le rendu officiel de la fiche ATK « U2 V2 Superlight », portant « U2 ULTIMATE » imprimé en doré sur la coque (molette à droite, vue de profil stricte : rapport longueur/hauteur à 1,7 % de la cote officielle). Hauteur d'appui 20,8 mm, soit 53,2 % de la hauteur totale — au-dessus de la frontière « moyens/hauts » (51,2 %), à 1,9 point de la référence « hauts » (ATK Z1 V2, 55,1 %) → classe « High ». UNE seule vue exploitable à ce jour (les autres rendus de la page sont des vues de dessus ou de trois quarts, refusées par le contrôle de perspective) ; réserve écrite au §17.1 de docs/audit/MESURE_BOUTONS_2026-10-12.md : le profil avant complet (0-20 %) est plus proche de la référence « moyens » (A9 Plus) que de la « hauts ». Critère retenu : l'arbitrage du propriétaire du 2026-10-12 (le rapport mesuré sur l'image est le critère). Reproductible : `python tools/measure_button_height.py IMAGE --length-mm 123.7 --height-mm 39.1 --front right`.",
     "sources": [
       {
-        "label": "EloShapes — ATK U2 V2 Ultimate",
+        "label": "EloShapes — ATK U2 V2 Ultimate — bosse « Rear » : « Hump placement » d'EloShapes (« Back - minimal/moderate ») → « Rear » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-u2-v2-ultimate",
         "fields": [
           "length_mm",
@@ -1123,7 +1231,8 @@
           "height_mm",
           "weight_g",
           "sensor",
-          "polling_hz"
+          "polling_hz",
+          "hump_position"
         ],
         "date_checked": "2026-10-10"
       },
@@ -1226,14 +1335,15 @@
     "notes": "119.5 × 63 × 38.5 mm concordants (EloShapes, notice ATK, collection U2). Notice ATK : taille « Small/Medium hands ». Capteur non vérifié. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). U2 V2 Mini : PAW3950 Ultra et Nordic 54L15, comme l'U2 V2 Ultimate (fiche ATK Store U2 V2). Coque partagée enregistrée le 2026-10-12 avec Blazing Sky U2 Mini (shell_id = atk_u2_mini) : dimensions publiées identiques (119,5 × 63 × 38,5 mm) et aucune fiche ATK séparée « U2 V2 Mini ». Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, fingertip : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-v2-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
-        "label": "EloShapes — comparaison F1 V2 Ultimate / U2 V2 Mini",
+        "label": "EloShapes — comparaison F1 V2 Ultimate / U2 V2 Mini — bosse « Rear » : « Hump placement » d'EloShapes (« Back - minimal/moderate ») → « Rear » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-f1-v2-ultimate-vs.-atk-u2-v2-mini",
         "fields": [
           "length_mm",
           "width_max_mm",
           "height_mm",
           "weight_g",
-          "polling_hz"
+          "polling_hz",
+          "hump_position"
         ],
         "date_checked": "2026-10-10"
       },
@@ -1343,7 +1453,7 @@
     "notes": "Dimensions d'une seule source (EloShapes). Forme symétrique moyenne. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, switchs optiques ATK Custom (FE), MCU Nordic 54L15 (54H20 sur la version Extreme). Hauteur des boutons (2026-10-12) : MESURÉE sur deux vues de profil officielles de la fiche ATK (43,3 % et 43,7 % de la hauteur totale, soit exactement la référence « boutons bas ») → classe « Low ». Les deux vues montrent la même coque (écart de silhouette 0,24 % — outil tools/image_identity_check.py) ; l'une porte « ZERO » imprimé sur le flanc, l'autre seulement le logo « ATK ». Motif de mesure à 5 % de la longueur depuis l'avant, orientation vérifiée à l'œil (molette et sérigraphie à l'avant). Détail et limites : docs/audit/MESURE_BOUTONS_2026-10-12.md §15 et docs/audit/ROBUSTESSE_2026-10-12.md §15.",
     "sources": [
       {
-        "label": "EloShapes — ATK Zero",
+        "label": "EloShapes — ATK Zero — bosse « Rear » : « Hump placement » d'EloShapes (« Back - minimal/moderate ») → « Rear » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-zero",
         "fields": [
           "height_mm",
@@ -1351,7 +1461,8 @@
           "polling_hz",
           "shape",
           "weight_g",
-          "width_max_mm"
+          "width_max_mm",
+          "hump_position"
         ],
         "date_checked": "2026-10-10"
       },
@@ -1465,7 +1576,7 @@
     "notes": "Dimensions retenues le 2026-10-12 depuis la fiche officielle : 118 × 55 × 37,4 mm (modèle « Ultra », « Best for Hand Size: Small-to-Medium »). Deux écarts consignés dans « conflicts » : longueur 118 (fiche) contre 117 mm (article du blog ATK, même fabricant), largeur 55 (fiche) contre 62,5 mm (EloShapes, tierce) — le fabricant prime, la tierce n'écrase pas. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom (FE) et MCU Nordic 54H20.",
     "sources": [
       {
-        "label": "EloShapes — ATK Duckbill",
+        "label": "EloShapes — ATK Duckbill — bosse « Rear » : « Hump placement » d'EloShapes (« Back - minimal/moderate ») → « Rear » (règle de correspondance du projet, à confirmer par le propriétaire)",
         "url": "https://www.eloshapes.com/mouse/compare?p=atk-duckbill",
         "fields": [
           "height_mm",
@@ -1474,7 +1585,8 @@
           "sensor",
           "shape",
           "weight_g",
-          "width_max_mm"
+          "width_max_mm",
+          "hump_position"
         ],
         "date_checked": "2026-10-10"
       },
@@ -1637,6 +1749,14 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Coque ATK A9 pleine taille (shell_id « atk_a9_large ») — bosse « Mid » du moule, relevée sur l'ATK Dragonfly A9 Plus 2.0 du propriétaire (même coque, même pièce de plastique) ; traçabilité relue le 2026-10-12 (règle « une propriété de coque se partage », docs/audit/ROBUSTESSE_2026-10-12.md §14.2)",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1726,6 +1846,14 @@
         "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
         "fields": [
           "button_height"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Coque ATK A9 pleine taille (shell_id « atk_a9_large ») — bosse « Mid » du moule, relevée sur l'ATK Dragonfly A9 Plus 2.0 du propriétaire (même coque, même pièce de plastique) ; traçabilité relue le 2026-10-12 (règle « une propriété de coque se partage », docs/audit/ROBUSTESSE_2026-10-12.md §14.2)",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "hump_position"
         ],
         "date_checked": "2026-10-12"
       }
@@ -1838,8 +1966,6 @@
     "category": "VXE",
     "family": "VXE Dragonfly V3",
     "height_mm": 38.2,
-    "grip_width_mm": null,
-    "shell_id": null,
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
@@ -1943,8 +2069,6 @@
     "category": "VXE",
     "family": "VXE Dragonfly R1",
     "height_mm": 37.8,
-    "grip_width_mm": null,
-    "shell_id": null,
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
@@ -2046,8 +2170,6 @@
     "category": "VXE",
     "family": "VXE MAD R",
     "height_mm": 38.1,
-    "grip_width_mm": null,
-    "shell_id": null,
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
@@ -2152,7 +2274,6 @@
     "category": "VXE",
     "family": "VXE Dragonfly X3",
     "height_mm": 40.0,
-    "grip_width_mm": null,
     "shell_id": "atk_x1",
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
@@ -2229,7 +2350,6 @@
     "category": "ATK",
     "family": "ATK Blazing Sky U2",
     "height_mm": 38.5,
-    "grip_width_mm": null,
     "shell_id": "atk_u2_mini",
     "fit_status": "third_party_guide",
     "price_status": "verified",
@@ -2326,7 +2446,6 @@
     "category": "ATK",
     "family": "ATK Dragonfly A9",
     "height_mm": 40.0,
-    "grip_width_mm": null,
     "shell_id": "atk_a9_large",
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
@@ -2426,6 +2545,14 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Coque ATK A9 pleine taille (shell_id « atk_a9_large ») — bosse « Mid » du moule, relevée sur l'ATK Dragonfly A9 Plus 2.0 du propriétaire (même coque, même pièce de plastique) ; traçabilité relue le 2026-10-12 (règle « une propriété de coque se partage », docs/audit/ROBUSTESSE_2026-10-12.md §14.2)",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -2436,7 +2563,6 @@
     "category": "ATK",
     "family": "ATK Blazing Sky F1",
     "height_mm": 38.8,
-    "grip_width_mm": null,
     "shell_id": "atk_f1",
     "fit_status": "owner_spec",
     "price_status": "verified",
@@ -2505,12 +2631,13 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "Coque ATK F1 — verdicts de prise du cahier des charges (identiques à l'ATK F1 V3 Ultimate, shell_id « atk_f1 ») : Palm « Faible », Claw « Élevé », Fingertip « Élevé »",
+        "label": "Coque ATK F1 — verdicts de prise du cahier des charges (identiques à l'ATK F1 V3 Ultimate, shell_id « atk_f1 ») : Palm « Faible », Claw « Élevé », Fingertip « Élevé » ; bosse « Mid » du même moule F1 (le catalogue n'a qu'une seule pièce F1, shell_id « atk_f1 »)",
         "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
         "fields": [
           "palm_grip_fit",
           "claw_grip_fit",
-          "fingertip_grip_fit"
+          "fingertip_grip_fit",
+          "hump_position"
         ],
         "date_checked": "2026-10-12"
       },
@@ -2540,8 +2667,6 @@
     "category": "ATK",
     "family": "ATK Blazing Sky U2",
     "height_mm": 39.1,
-    "grip_width_mm": null,
-    "shell_id": null,
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
@@ -2653,7 +2778,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 119.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
@@ -2723,7 +2847,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 119.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
@@ -2798,7 +2921,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 119.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
@@ -2869,7 +2991,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 149.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
@@ -2931,7 +3052,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 119.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
@@ -3006,7 +3126,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 119.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
@@ -3080,7 +3199,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 149.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
@@ -3150,7 +3268,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 149.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
@@ -3225,7 +3342,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 149.9,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU : 149,90 €.",
@@ -3299,7 +3415,6 @@
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "mcu": "",
     "price_eur": 119.99,
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",

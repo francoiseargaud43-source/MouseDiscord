@@ -90,8 +90,9 @@ MISSION
 
 SOURCES — RÈGLE CENTRALE
 - Chaque valeur doit venir d'une source consultable, avec son URL et la date de consultation (AAAA-MM-JJ).
-- Une dimension n'est `verified` que si AU MOINS DEUX sources indépendantes concordent à ≤ 0.5 mm près.
-  Sinon : `single_source` (une seule source) ou `conflicting` (désaccord : alors `length_mm`/`width_max_mm` = null
+- Une dimension n'est `verified` que si AU MOINS DEUX sources indépendantes concordent à ≤ 0.5 mm près,
+  OU si la seule source est le FABRICANT lui-même (sa boutique officielle : `atk.store`, `eu.pulsar.gg`).
+  Sinon : `single_source` (une seule source tierce) ou `conflicting` (désaccord : alors `length_mm`/`width_max_mm` = null
   et le conflit est documenté dans `conflicts`).
 - Utilise par priorité : site officiel ATK (fiches produit et pages « shape/dimensions »), bases de formes
   (EloShapes), fiches revendeurs, tests et vidéos documentées (dont les vidéos fournies par l'utilisateur).
@@ -181,7 +182,7 @@ RÈGLES DE REMPLISSAGE
 - `length_mm` ou `width_max_mm` à `null` : uniquement si les sources se contredisent, ET le conflit est décrit ainsi :
   "conflicts": {"length_mm": {"values": [118.0, 117.0], "sources": ["https://…", "https://…"]}}
 - `dimension_status = "verified"` ou `"single_source"` ⇒ `sources` non vide (au moins une source pour `single_source`,
-  au moins deux concordantes pour `verified`).
+  au moins deux concordantes pour `verified`, ou une source du fabricant lui-même).
 - `price_status = "verified"` ⇒ `price_eur` renseigné ; sinon `price_status` = "unknown" ou "owner_spec_unverified".
 - `fit_status` = "unverified" pour tout ce que tu trouves sur le web (seul le propriétaire pose "owner_spec").
 - `id` : minuscules, préfixe de marque, underscore, jamais un identifiant déjà présent dans `ids_existants.txt`.
@@ -245,7 +246,7 @@ question du thénar).
 | Règle | Pourquoi |
 |---|---|
 | Aucune valeur inventée, tout est sourcé et daté | Une valeur plausible mais fausse se propage dans tous les scores |
-| Deux sources concordantes à ≤ 0.5 mm pour « verified » | C'est le seuil déjà appliqué aux 12 variantes ATK du catalogue |
+| Deux sources concordantes à ≤ 0.5 mm pour « verified » (ou la boutique officielle du fabricant) | C'est le seuil déjà appliqué aux variantes ATK du catalogue, et la règle des dix entrées Pulsar du 2026-10-12 |
 | Prix en euros uniquement s'ils sont documentés en euros | Aucune conversion ne doit être faite (règle du projet) |
 | `grip_width_mm` laissé `null` | Cette donnée exige une mesure réelle, pas une estimation de catalogue |
 | Compatibilités de prise en « Inconnu » sans source explicite | La forme ne prouve pas le confort de prise |

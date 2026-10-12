@@ -861,8 +861,8 @@ def _narrow_rear_embed() -> discord.Embed:
     embed = discord.Embed(
         title="🖐️ Un arrière étroit pour votre thénar",
         description=(
-            "Votre thénar est **Petite** : un arrière étroit, en « pilule », laisse la main se poser "
-            "sans forcer.\n\n"
+            "Votre éminence thénar est **petite** : un arrière étroit, en « pilule », laisse la main se "
+            "poser sans forcer.\n\n"
             "**Information seule** : le thénar ne modifie pas le score — c'est un repère "
             "morphologique, pas un critère de calcul."
         ),

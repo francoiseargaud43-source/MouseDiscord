@@ -245,8 +245,15 @@ tête du classement ; l'alternative est la souris qui correspond le mieux au pro
 peu moins chère (son pourcentage sert sinon à faire accepter un léger surcoût) ; la troisième place a sa propre
 fenêtre (`ECONOMY_SLOT_TOLERANCE_POINTS`, ±5 points) et prend **la moins chère des options restantes**, en
 préférant une autre coque que celles déjà affichées ; elle est **toujours remplie** (décision du propriétaire du
-2026-10-12) et son titre suit le prix réel — « 💸 L'économie » si elle est moins chère que les deux autres,
-« ➕ L'autre option » sinon. Les montants et mesures s'affichent à la française (« 118,8–123,8 mm », « 74,90 € »).
+2026-10-12) et son titre dit son rôle réel, lisible par le membre sans rien connaître du moteur :
+**« 💸 L'économie »** quand elle est strictement moins chère que les deux lignes affichées (le prix d'abord, même
+si elle est sortie de la fenêtre des ±5 points), **« 🔎 Autre piste »** quand elle vient du dernier palier
+(fenêtre vide ou budget serré : son pourcentage montre alors qu'elle est loin), **« ➕ L'autre option »** sinon
+(dans la fenêtre, mais pas moins chère ; « L'autre option » reste le libellé par défaut quand l'appel vient d'un
+outil sans score de référence). La **deuxième place** suit la même honnêteté : « 🥈 L'alternative » si elle est
+dans la zone du mode (ou dans l'élargissement unique à ±5 points sans coûter plus cher), « 🔎 Autre piste » si
+c'est la meilleure souris restante faute de comparable. Les montants et mesures s'affichent à la française
+(« 118,8–123,8 mm », « 74,90 € »).
 
 ## 11. Boutons « Fermer » / « Refaire » / « Détails » : retirés (2026-10-11)
 

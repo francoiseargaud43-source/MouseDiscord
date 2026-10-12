@@ -65,7 +65,7 @@ et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'uti
 - toute erreur inattendue est tracée et expliquée en privé au membre — jamais un silence.
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
-théorique** pour le match idéal, l'alternative et la troisième place (toujours remplie : « économie » si elle en est une, « autre option » sinon). Ni score /40, ni souris
+théorique** pour le match idéal, l'alternative et la troisième place (remplies dès que le budget le permet : « 💸 économie » si elle en est une, « ➕ autre option » sinon, « 🔎 autre piste » quand la souris vient du dernier palier). Ni score /40, ni souris
 écartées à ce niveau : le détail vient **plus bas dans le même message privé**, en petits blocs illustrés,
 dans l'ordre de l'outil de référence (Oblivity) :
 
@@ -263,7 +263,8 @@ python tools/build_ai_bundle.py     # crée pack_ia_mousediscord.zip (prompt + r
 
 Le pack ne contient **aucun secret** (ni `.env`, ni `state/`, ni liens d'affiliation) et rappelle les règles du projet :
 aucune valeur inventée, prix en euros uniquement s'ils sont documentés en euros, compatibilités « Inconnu » sans source
-explicite, deux sources concordantes à ≤ 0.5 mm pour un statut `verified`.
+explicite, deux sources concordantes à ≤ 0.5 mm — ou la boutique officielle du fabricant elle-même —
+pour un statut `verified`.
 
 ---
 
@@ -279,7 +280,7 @@ explicite, deux sources concordantes à ≤ 0.5 mm pour un statut `verified`.
 | `width_max_mm` | Largeur maximale **de la coque** (catalogue). |
 | `grip_width_mm` | Largeur de prise **mesurée** — `null` tant qu'aucune mesure n'existe. |
 | `height_mm` | Hauteur (informative). |
-| `dimension_status` | `verified` (≥ 2 sources concordantes), `single_source`, `conflicting`, `owner_spec`, `owner_spec_unverified`. |
+| `dimension_status` | `verified` (**deux sources de cotes concordantes à ≤ 0,5 mm, ou une seule quand c'est le fabricant lui-même** — sa boutique officielle, ex. `atk.store`, `eu.pulsar.gg`), `single_source` (une seule source, tierce), `conflicting`, `owner_spec`, `owner_spec_unverified`. |
 | `conflicts` | Valeurs divergentes et leurs sources (ex. longueur 118.0 vs 117 mm). |
 | `shell_id` | Même coque = dimensions partagées (ex. A9 Ultimate / A9 Air / A9 Plus). |
 

@@ -1510,3 +1510,105 @@ Autrement dit : partout où le budget permet de montrer trois souris, le message
   distinct (« 🔎 Autre piste »), et le banc d'essai **échoue** si une piste est annoncée autrement
   (`tools/qa_flow_matrix.py`, deux contrôles de titre indépendants du moteur).
 - **Le texte du résultat ne change pas** par ailleurs : ni score /40, ni confiance, ni liste d'écartées.
+
+---
+
+## 21. Trente-deuxième passe : audit des données et de la traçabilité (traque des bugs)
+
+**Commande du propriétaire (2026-10-12)** : après le palier « trois lignes partout où le budget le permet »,
+passer à l'**audit** et à la **chasse aux bugs** — sans nouvelle campagne d'images. Cette passe n'a donc
+touché ni le moteur (`utils/matcher.py`, `utils/selection.py`, `utils/catalog.py`), ni les fenêtres des
+trois places : elle a contrôlé la **donnée** et sa **provenance**, et corrigé ce qui ne tenait pas.
+
+### 21.1 Méthode : trois contrôles automatisés, exhaustifs
+
+| Contrôle | Ce qu'il vérifie | Résultat initial |
+|---|---|---|
+| Inventaire (souris × champ) | toute valeur renseignée est-elle déclarée par une source (`sources[].fields`) ? | **44 valeurs non attestées** sur 492 renseignées |
+| Cohérence de coque | deux entrées d'une même coque (`shell_id`) : mêmes dimensions, même bosse, même hauteur de boutons ? | 1 écart de 0,5 mm (cohérent), 1 exception nommée (X3) |
+| Statuts | `verified` se justifie-t-il par ses sources ? prix `verified` a-t-il un prix ? sources datées et en `https` ? identifiants uniques ? valeurs vides ? | 10 statuts `verified` non couverts par la règle écrite · 11 clés `mcu: ""` |
+
+Les scripts d'audit sont jetables (aucun outil ajouté au dépôt : la règle du projet est de livrer des
+*invariants* sous forme de tests, pas des scripts de circonstance). Les invariants correspondants sont
+désormais dans `tests/test_data.py`.
+
+### 21.2 Ce qui était cassé, et la correction apportée
+
+**1. 44 valeurs sourcées dans les notes… mais non déclarées par leur source.** La valeur existait, la
+source aussi (dans `notes`), mais `sources[].fields` ne la mentionnait pas : la chaîne de provenance
+n'était donc **pas vérifiable par la machine** — exactement ce que la règle « jamais d'invention » veut
+empêcher. Le catalogue est complet désormais, **valeur par valeur**, sans qu'aucune valeur géométrique ne
+change :
+
+| Origine de la valeur | Souris concernées | Ce qui a été déclaré |
+|---|---|---|
+| Page **EloShapes** du modèle (bosse « Center » → Mid, « Back - minimal/moderate » → Rear) | GHOST Ultimate, GHOST Extreme, Y9 Ultimate, U2 V2 Ultimate, U2 V2 Mini, ZERO, Duckbill, A9 Plus | `hump_position` ajouté à la source EloShapes qui portait déjà les cotes. Les pages **Y9 Ultimate** et **famille A9** ont été relues le 2026-10-12 : « Hump placement : Center » y est écrit pour ces modèles (date de source mise à jour). |
+| **Moule** partagé (une coque = une pièce) | A9 Ultimate, A9 Air, A9 NB (nouvelle source datée) · F1 V2 (source de coque existante étendue) | `hump_position` : la coque A9 « large » a une bosse « Mid » (moule de l'A9 Plus 2.0 du propriétaire), la coque F1 aussi |
+| **Cahier des charges du propriétaire** (valeur fournie, non revérifiée sur le web) | A9 Plus, Z1 V2 Ultra, X1 V2 Ultra Max, F1 V3 Ultimate, Scyrox V8/V8S, Scyrox V6/V6S | prises, bosse, hauteur des boutons, dimensions et prix (V6) — **9 sources ajoutées**, datées du 2026-10-12, URL = master prompt |
+
+**2. Deux écarts de forme racontés seulement dans les notes.** L'ATK F1 V3 Ultimate et l'ATK X1 V2 Ultra Max
+ont une bosse « Mid » (cahier des charges) alors qu'EloShapes écrit « Back - minimal ». La valeur du
+propriétaire est conservée (règle « le propriétaire prime ») — mais l'écart manquait dans `conflicts`, le
+champ que la machine lit. Il y est désormais, avec les deux valeurs et leurs sources.
+
+**3. La règle « `verified` = ≥ 2 sources concordantes » n'autorisait pas dix entrées du catalogue.** Les dix
+Pulsar sont relevées sur **une seule** source : la fiche officielle du fabricant (`eu.pulsar.gg`). Le
+catalogue était plus permissif que la règle écrite. La règle a été précisée partout (README, master prompt,
+`CATALOGUE_ATK.md`, prompt de recherche) : **≥ 2 sources concordantes à ≤ 0,5 mm, OU une seule source quand
+c'est le fabricant lui-même** (sa boutique officielle). `single_source` désigne désormais explicitement une
+seule source **tierce**.
+
+**4. Deux écritures pour un même état : `"mcu": ""` d'un côté, clé absente de l'autre.** Le chargeur traite
+les deux identiquement, mais un audit par script lit `None` quand la clé manque, jamais `""` — c'est ce qui
+a produit un faux positif de 11 champs pendant cet audit. Les 22 clés vides (11 `mcu`, 8 `grip_width_mm`,
+2 `height_mm`, 1 `shell_id`… dont les valeurs nulles redondantes) ont été retirées : « absent » veut dire
+« inconnu », et c'est la seule écriture qui reste.
+
+**5. La largeur de l'ATK A9 Plus (63,5 mm) venait du cahier des charges, pas d'EloShapes (64,0 mm).** La
+source du propriétaire déclare maintenant aussi les **cotes** de sa souris, écart de 0,5 mm inclus (dans la
+tolérance de concordance). Aucune valeur n'a bougé.
+
+**6. Deux corrections de forme (affichage et documentation).** Le bloc « arrière étroit » écrivait
+« Votre thénar est **Petite** » (article masculin, adjectif féminin) : il dit désormais « Votre éminence
+thénar est **petite** », le terme du master prompt. Et `REPORTE_DESIGN.md` ne citait que deux titres pour la
+troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme dans le README.
+
+### 21.3 Constats vérifiés mais NON modifiés (et pourquoi)
+
+| Constat | Pourquoi rien n'a été changé |
+|---|---|
+| Le pied de message renvoie au bloc « Comment lire ce résultat », **qui n'existe plus** dans le résultat actuel (les explications vivent dans « 🧭 Pourquoi ce choix ? » et les blocs illustrés). Renvoi mort, visible par le membre. | Le master prompt dit **« `set_footer(text=SCORE_DISCLAIMER)` — garder tel quel »** : le texte est verrouillé volontairement. **Signalé au propriétaire** ; un mot de sa part et le renvoi est corrigé. |
+| L'emoji 🔎 sert à deux choses : le titre « 🔎 Autre piste » et le champ « 🔎 *souris* en clair » du bloc des repères. | Collision bénigne, **verrouillée par un test** (`tests/test_flow.py`) : la changer est une décision de libellé, pas un bug. Signalée. |
+| Les deux entrées de la coque A9 « large » diffèrent de **0,5 mm** en largeur (63,5 mm cahier des charges / 64,0 mm EloShapes). | Dans la tolérance de concordance (0,5 mm) appliquée partout ; et « ne pas modifier les valeurs géométriques pour faire joli » (master prompt). Un **invariant de tolérance** est ajouté pour que l'écart ne puisse pas grandir en silence. |
+| La **VXE X3** partage la coque de l'ATK X1 V2 Ultra Max sans hériter de sa bosse ni de ses boutons. | Exception **nommée et testée** depuis le 2026-10-12 : la bosse de l'X1 est contestée par une source tierce, et rien ne prouve que la X3 (gamme VXE, switchs Omron, puce Broadcom) reprenne les siens. |
+| `grip_width_mm` reste `null` pour les 36 souris : la confiance « élevée » n'est donc atteignable par personne (la largeur de prise est estimée « coque − 3 mm »). | La mesure de la largeur de prise exige une photo retournée, calibrée : c'est une **campagne** à part entière, pas un correctif d'audit. Déjà documenté (`docs/audit/MESURE_BOUTONS_2026-10-12.md`). |
+| Un salon verrouillé (`LOCK_FINDER_CHANNEL=true`) : les réponses **éphémères** d'interaction ne dépendent pas du droit « Envoyer des messages », mais un repli par `followup` en dépendrait. | Déjà écrit noir sur blanc dans le guide de déploiement §8.3 (« à confirmer lors de votre test manuel »). Rien à corriger dans le code : le repli est journalisé, jamais silencieux. |
+| **Trois fichiers suivis dans un dossier ignoré** (`image-search/eloshapes-atk-f1-v3-mouse-top-view-shape-1|2|3`) et un résidu `image.png` à la racine (premier commit, listé « à ne pas envoyer sur le serveur »). | Suppression interdite sans inventaire complet validé par le propriétaire (règle du projet). **Signalé**, rien supprimé. |
+
+### 21.4 Preuves d'exécution (2026-10-12, 32e passe)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **391 passed** (386 avant : 5 tests d'audit ajoutés, aucun test modifié) |
+| `pyflakes` (cogs, utils, tools, tests, bot.py) | 0 avertissement |
+| `tools/privacy_scan.py` | **0 violation** |
+| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places **23 231 (85,50 %)** · 2 places 1 196 · 1 place 182 · 0 place 2 561 · repli « même coque » 990 · match idéal partiel 3 118 — **chiffres identiques à la 31e passe : aucune valeur du moteur n'a bougé** |
+| `tools/recommendation_stats.py` (pleine grille, 18 522 profils) | rapport régénéré **identique au fichier livré** (aucun diff Git) |
+| `tools/compare_profiles.py` | matrice régénérée **identique** (aucun diff Git) |
+| `tools/flow_effect.py --rapide` | « aucun changement » (0 profil modifié, 0 point perdu) |
+| `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
+| Diff des valeurs du catalogue | 36 souris × 30 champs comparés **avant/après** : seuls `conflicts` (2 souris) changent — **aucune cote, aucun prix, aucun score** |
+
+### 21.5 Les cinq invariants ajoutés (les bugs corrigés ne peuvent plus revenir)
+
+1. `test_chaque_valeur_du_catalogue_cite_la_source_qui_l_atteste` — 492 valeurs inventoriées, 0 tolérée
+   sans source déclarante (et le test refuse de passer si l'inventaire devient vide : un contrôle vide ne
+   prouve rien).
+2. `test_les_ecarts_de_forme_sont_consignes_dans_conflicts` — tout écart de bosse connu est lisible par la
+   machine, et la note de la fiche doit dire la même chose que le conflit.
+3. `test_le_catalogue_ne_contient_aucune_valeur_vide` — jamais d'`""` : « absent » et « inconnu » s'écrivent
+   de la même façon pour tout le monde, y compris pour un audit par script.
+4. `test_un_statut_verified_se_justifie_par_ses_sources` — un `verified` doit montrer soit deux sources de
+   cotes, soit la boutique du fabricant.
+5. `test_deux_entrees_de_la_meme_coque_ne_divergent_pas_hors_tolerance` — une même coque ne peut pas
+   annoncer deux largeurs à plus de 0,5 mm d'écart.
