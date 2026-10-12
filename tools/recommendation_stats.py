@@ -194,8 +194,11 @@ def main(argv: list[str] | None = None) -> int:
         "disparaître. Les paires concernées, par fréquence :")
     for (premier, second), nombre in data["same_shell_pairs"].most_common(6):
         add(f"  - `{premier}` + `{second}` : {nombre} profils")
-    add("  Élargir la recherche à une autre coque (au-delà de la zone du mode) est une décision du "
-        "propriétaire : elle changerait la deuxième place de ces profils.\n")
+    add("  Depuis la décision du 2026-10-12, l'alternative est déjà élargie une fois au-delà de la "
+        "zone du mode (±5 points) — mais uniquement vers une souris qui ne coûte pas plus cher que le "
+        "match idéal, et seulement quand la zone du mode ne contient que des variantes de la coque "
+        "retenue. Le repli ci-dessus ne subsiste donc que là où même cet élargissement ne trouve pas "
+        "d'autre coque à prix égal ou inférieur.\n")
     add("## Nombre de fois où chaque souris est recommandée\n")
     add("| Souris | Idéal | Alternative | Économie | Total | % des profils |")
     add("|---|---:|---:|---:|---:|---:|")
@@ -291,7 +294,8 @@ def main(argv: list[str] | None = None) -> int:
         "partiellement, donc désavantagées au classement (le critère manquant ne peut pas leur "
         "rapporter les points que les autres gagnent).")
     add("\nCompléter ces trois familles est la seule façon de faire sortir les souris listées plus "
-        "haut ; aucune valeur ne peut être devinée (règle du propriétaire : jamais d'invention).\n")
+        "haut ; aucune valeur ne peut être devinée. Depuis le 2026-10-12, les sources tierces sont "
+        "autorisées pour les données que le fabricant ne publie pas.\n")
 
     output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Profils passés : {total}")

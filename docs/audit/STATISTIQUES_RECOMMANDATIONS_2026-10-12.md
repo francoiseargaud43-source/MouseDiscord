@@ -15,7 +15,7 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
   - `atk_a9_plus` + `atk_a9_ultimate` : 54 profils
   - `atk_a9_nb` + `atk_a9_plus` : 18 profils
   - `atk_a9_nb` + `atk_a9_ultimate` : 12 profils
-  Élargir la recherche à une autre coque (au-delà de la zone du mode) est une décision du propriétaire : elle changerait la deuxième place de ces profils.
+  Depuis la décision du 2026-10-12, l'alternative est déjà élargie une fois au-delà de la zone du mode (±5 points) — mais uniquement vers une souris qui ne coûte pas plus cher que le match idéal, et seulement quand la zone du mode ne contient que des variantes de la coque retenue. Le repli ci-dessus ne subsiste donc que là où même cet élargissement ne trouve pas d'autre coque à prix égal ou inférieur.
 
 ## Nombre de fois où chaque souris est recommandée
 
@@ -264,5 +264,5 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
   - VXE Dragonfly X3 / X3 Pro / X3 Turbo (`vxe_x3`)
 - **Sans hauteur de boutons documentée (25 souris)** : classées partiellement, donc désavantagées au classement (le critère manquant ne peut pas leur rapporter les points que les autres gagnent).
 
-Compléter ces trois familles est la seule façon de faire sortir les souris listées plus haut ; aucune valeur ne peut être devinée (règle du propriétaire : jamais d'invention).
+Compléter ces trois familles est la seule façon de faire sortir les souris listées plus haut ; aucune valeur ne peut être devinée. Depuis le 2026-10-12, les sources tierces sont autorisées pour les données que le fabricant ne publie pas.
 
