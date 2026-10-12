@@ -2309,10 +2309,10 @@
     "height_mm": 38.8,
     "grip_width_mm": null,
     "shell_id": "atk_f1",
-    "fit_status": "unverified",
+    "fit_status": "owner_spec",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Même coque que l'ATK F1 V3 Ultimate déjà au catalogue (d'où shell_id « atk_f1 ») : géométrie (bosse « Mid », boutons bas) reprise de cette fiche ; génération précédente, plus lourde (38-39 g contre 36-37 g). Compatibilités de prise non héritées : à valider par le propriétaire pour cette génération. Switchs optiques ATK Custom (FE) — Omron optiques sur la version Extreme — et MCU Nordic 54L15.",
+    "notes": "Même coque que l'ATK F1 V3 Ultimate déjà au catalogue (shell_id « atk_f1 » : 118,2 × 62,4 × 38,8 mm, bosse « Mid », boutons bas) ; génération précédente, un peu plus lourde (39 g contre 37 g). Compatibilités de prise renseignées le 2026-10-12 par héritage de cette coque (verdicts du cahier des charges) : sans elles la souris restait « à vérifier » sur tous les profils — décision documentée dans docs/audit/ROBUSTESSE_2026-10-12.md §11.8. Switchs optiques ATK Custom (FE) — Omron optiques sur la version Extreme — et MCU Nordic 54L15. Fiche ATK (2026-10-12) : « Grip Style: Claw / Palm », « Best for Hand Size: Small-to-Medium Hands », modèles Ultra Max 2.0 (54 ± 2 g, PAW3395 Ultra), Ultimate 2.0 (39 ± 2 g, PAW3950 Ultra) et Extreme 2.0 (38 ± 2 g, Omron optiques).",
     "id": "atk_f1_v2",
     "brand": "ATK",
     "model": "Blazing Sky F1 V2",
@@ -2321,16 +2321,16 @@
     "width_max_mm": 62.4,
     "hump_position": "Mid",
     "button_height": "Low",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Même coque compacte que la F1 V3 déjà au catalogue (118,2 × 62,4 × 38,8), génération V2 plus lourde ; compatibilités par prise non documentées pour cette génération.",
+    "palm_grip_fit": "Faible",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque identique à l'ATK F1 V3 Ultimate (shell_id « atk_f1 » : 118,2 × 62,4 × 38,8 mm, bosse « Mid », boutons bas) : verdicts de prise du cahier des charges repris tels quels — Palm « Faible » (exclusion 180×90), Claw « Élevé », Fingertip « Élevé ». Le fabricant annonce « Grip Style: Claw / Palm » (fiche ATK 2026-10-12) : accord total sur Claw, mais le verdict palm du propriétaire sur cette coque prime sur la formule fabricant.",
     "dimension_status": "verified",
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": 41.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Blazing Sky F1 V2 « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
+    "price_eur": 40.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 40,95 € (boutique ATK pays France, fiche F1 V2, variante « Ultra Max 2.0 / Black », prix normal 63,95 €). L'ancienne valeur (41,95 €) venait du « à partir de » de la collection ATK française relevé le 2026-10-11. Les autres modèles sont plus chers : « Ultimate 2.0 » (39 ± 2 g, modèle décrit ici) 54,95 € et « Extreme 2.0 » 77,95 €. Prix retenu = variante la moins chère en stock, comme pour l'A9 Ultimate et le GHOST.",
     "sources": [
       {
         "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
@@ -2374,6 +2374,25 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Coque ATK F1 — verdicts de prise du cahier des charges (identiques à l'ATK F1 V3 Ultimate, shell_id « atk_f1 ») : Palm « Faible », Claw « Élevé », Fingertip « Élevé »",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "fields": [
+          "palm_grip_fit",
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Boutique ATK pays France — fiche officielle ATK Blazing Sky F1 V2 (spécifications, modèles, prix EUR)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse?country=FR",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",

@@ -664,9 +664,65 @@ figeaient l'ancien gagnant : réécrits avec la date et la raison (jamais « aju
 
 ### 11.7 Ce qui reste ouvert après cette passe
 
-1. **Une souris sans prise publiée** : `atk_f1_v2` (fiche illisible, aucun équivalent chez les tiers).
+1. ~~Une souris sans prise publiée~~ → **réglé en 21e passe** : `atk_f1_v2` reçoit les compatibilités de sa coque jumelle (§11.8) ; plus aucune souris du catalogue n'est `unverified`.
 2. **La Duckbill reste inutilisable** : sa longueur est en conflit (118 vs 117 mm) et sa largeur est
    contestée (55 mm officiel contre 62,5 mm EloShapes). Trancher avec une seule source à la fois.
 3. **Hauteur des boutons : 25 souris sur 36** (aucun fabricant ne la publie).
 4. **Bosse de la VXE X3** (`vxe_x3`) : coque partagée avec l'ATK X1, position non publiée.
 5. **Deux coques jumelles non tranchées** : `pulsar_x2a_v3_medium` / `pulsar_x2_crazylight_medium`.
+
+---
+
+### 11.8 ATK F1 V2 débloquée par sa coque jumelle (21e passe, 2026-10-12)
+
+**Le problème.**
+
+Depuis la 16e passe, le rapport de statistiques désignait une souris que rien ne pouvait faire entrer
+dans le tableau : l'**ATK Blazing Sky F1 V2**, la **seule** du catalogue sans aucune compatibilité de
+prise publiée. Sa fiche officielle ne contient aucune recommandation de prise — le « Grip Style:
+Claw / Palm » de sa page est la mention marketing générique que la règle du §1 de
+`docs/audit/CATALOGUE_ATK.md` interdit de convertir en compatibilité — et `mouseshape.com/mice/atk-f1-v2`
+(page tierce autorisée depuis le 2026-10-12) répond **404** : vérifié ce jour.
+
+**La décision : hériter de la coque, jamais deviner.**
+
+La F1 V2 partage la **coque** de l'ATK F1 V3 Ultimate (`shell_id` = `atk_f1` : 118,2 × 62,4 × 38,8 mm,
+bosse « Mid », boutons bas) — le catalogue utilise déjà `shell_id` pour les dimensions partagées
+(`utils/models.py`). Les verdicts de prise de cette coque sont connus et datés (cahier des charges du
+propriétaire : Palm « Faible », Claw « Élevé », Fingertip « Élevé ») : ils sont **repris tels quels**
+pour la F1 V2, avec `fit_status = owner_spec` et une source dédiée qui déclare les trois champs. Rien
+n'est deviné : géométrie identique au dixième de millimètre, et le verdict palm reste défavorable
+(exclusion 180×90), donc les deux générations restent cohérentes entre elles.
+
+**Effet mesuré** (grille complète, 18 522 profils, moteur inchangé — seule la donnée change) :
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Sorties de l'ATK F1 V2 | **0** (11 760 profils « à vérifier ») | **4 778** (idéal 2 503, alternative 1 685, économie 590) |
+| Souris jamais recommandées | 11 sur 36 | **10 sur 36** |
+| Sorties de l'ATK F1 V3 Ultimate (même coque) | 4 073 | **669** |
+| Profils où deux places montrent la même coque | 299 | 683 (dont 384 paires F1 V3 + F1 V2) |
+| Profils sans aucun résultat | 252 | 252 (inchangé) |
+
+La V3 Ultimate cède donc sa place à la V2 là où seule la même coque était éligible : c'est le
+comportement voulu (même forme, moins chère — 40,95 € contre 59,95 €) ; la V3 garde les profils où le
+mode « Peu importe le prix » départage par les composants (PAW3955 Master, Nordic 54LM20). Le repli
+« deux places, même coque » passe de 299 à 683 profils sur 18 522 (3,7 %) : c'est le repli documenté de
+`result_slots()`, il reste minoritaire. Le chiffre « souris jamais recommandées » du tableau §11.4
+(passé de 17 à 11 sur 36 par les cinq prix du 19e) est donc maintenant de **10 sur 36**.
+
+**Prix relevé au passage.**
+
+La même vérification a mis à jour le prix officiel de la F1 V2 : **40,95 €** (fiche ATK pays France,
+variante « Ultra Max 2.0 / Black », prix normal 63,95 €, relevé le 2026-10-12) contre 41,95 €
+(« à partir de » de la collection relevé le 2026-10-11). Autres modèles de la série : Ultimate 2.0
+(39 ± 2 g, modèle décrit en base) **54,95 €**, Extreme 2.0 **77,95 €**.
+
+**Preuves.**
+
+- `pytest -q` : **346 tests** (344 + 2 ajoutés) — dont deux nouveaux tests dans `tests/test_data.py` :
+  la F1 V2 porte exactement les verdicts de sa coque jumelle et une source déclare chaque champ ;
+  **aucune souris du catalogue n'est `unverified`**.
+- `tools/qa_flow_matrix.py --rapide` : 0 problème, aucune impasse.
+- `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` et `docs/audit/matrice_profils.md`
+  régénérés par leurs outils (jamais édités à la main).

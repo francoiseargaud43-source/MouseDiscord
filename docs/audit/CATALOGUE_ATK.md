@@ -79,10 +79,13 @@ de prix du store (< 50 $ = Économique, 50–100 $ = Qualité-Prix, > 100 $ = Ha
 | **ATK Blazing Sky F1 V2** (`atk_f1_v2`) | 118,2 × 62,4 × 38,8 | 38–39 g | Mid (coque F1, `shell_id` = `atk_f1`) | dès 44,98 $ | — | verified | ATK Store ; Loadout |
 | **ATK Blazing Sky U2** (`atk_u2`) | 123,7 × 64,6 × 39,1 | 49–55 g | **Rear** | dès 24,98 $ | — | verified | ATK Store ; EloShapes ; Meckeys |
 
-**Non renseigné volontairement** : `palm_grip_fit`, `claw_grip_fit`, `fingertip_grip_fit` et `button_height` restent
-`Inconnu` (les mentions marketing « Claw / Palm » de l'éditeur ne sont pas converties en compatibilité, règle du §1).
-Ces 8 souris apparaissent donc en « À vérifier » et ne sont jamais recommandées tant que le propriétaire n'a pas
-validé ces quatre valeurs.
+**Mise à jour du 2026-10-12** : les compatibilités de prise de ces souris ont été complétées une par une
+depuis les fiches officielles (statut `manufacturer_guide`, `ROBUSTESSE_2026-10-12.md` §11.1) — sauf l'**ATK
+Blazing Sky F1 V2**, dont le fabricant ne publie aucune recommandation écrite : elle a hérité des compatibilités
+de sa **coque jumelle** (`shell_id` = `atk_f1`, §11.8). Les mentions marketing génériques (« Claw / Palm ») ne
+sont toujours **pas** converties en compatibilité (règle du §1). La hauteur des boutons reste `Inconnu` pour
+25 souris sur 36 : elles restent classables avec un score partiel, mais ne peuvent pas dépasser une souris
+complète.
 
 **Couverture après ajouts** : 26 souris, longueurs 116,6 → 127,0 mm. La `vxe_v3` (116,6 mm) est la première souris
 « Small » du catalogue : elle comble le manque de formes compactes pour les mains de moins de ~175 mm.

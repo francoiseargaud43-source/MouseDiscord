@@ -495,3 +495,30 @@ def test_shells_documented_in_the_catalogue_notes_are_registered_in_shell_id(mic
         assert mice[identifiant].shell_id == coque, identifiant
     # Deux entrées de la même coque ne peuvent plus occuper deux places du même résultat.
     assert mice["atk_a9_nb"].shell_id == mice["atk_a9_plus"].shell_id == mice["atk_a9_ultimate"].shell_id
+
+
+def test_f1_v2_inherits_the_grip_verdicts_of_its_twin_shell(mice):
+    """2026-10-12 : l'ATK F1 V2 était la SEULE souris sans aucune compatibilité de prise publiée —
+    donc jamais classable, jamais recommandée (rapport STATISTIQUES : 0 sortie sur 18 522 profils).
+
+    Sa coque est celle de l'ATK F1 V3 Ultimate (shell_id « atk_f1 » : 118,2 × 62,4 × 38,8 mm, bosse
+    « Mid », boutons bas) : les verdicts du cahier des charges sont repris tels quels et sourcés.
+    La fiche ATK du 2026-10-12 annonce « Grip Style: Claw / Palm » : accord total sur Claw ; pour
+    Palm, le verdict du propriétaire sur cette coque (exclusion 180×90) reste prioritaire.
+    """
+    v2, v3 = mice["atk_f1_v2"], mice["atk_f1_ultimate"]
+    assert v2.shell_id == v3.shell_id == "atk_f1"
+    verdicts = ("Faible", "Élevé", "Élevé")
+    assert (v2.palm_grip_fit, v2.claw_grip_fit, v2.fingertip_grip_fit) == verdicts
+    assert (v3.palm_grip_fit, v3.claw_grip_fit, v3.fingertip_grip_fit) == verdicts
+    assert v2.fit_status == "owner_spec"
+    assert grip_fields_are_sourced_or_unknown(v2)
+    # Elle est désormais classée là où la coque a un verdict non éliminatoire, et exclue en Palm.
+    claw = evaluate_mouse(v2, HandMeasure(150, 75), Grip.CLAW)
+    assert claw.is_scored and not claw.is_pending
+    assert evaluate_mouse(v2, HandMeasure(180, 90), Grip.PALM).is_excluded
+
+
+def test_no_sold_mouse_is_left_without_grip_compatibility(mice):
+    """2026-10-12 : plus aucune souris vendue ne reste « à vérifier » faute de compatibilité de prise."""
+    assert [m.id for m in mice.values() if m.fit_status == "unverified"] == []
