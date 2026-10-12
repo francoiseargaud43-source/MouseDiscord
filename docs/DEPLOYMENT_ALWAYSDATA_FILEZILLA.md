@@ -1219,6 +1219,71 @@ ls -lt ~/admin/logs/jobs/ | head  # le journal doit afficher « Composants durab
 
 ---
 
+### 12.11 Mise à jour du 2026-10-12 (2e) : le thénar ne modifie plus le score, coques corrigées
+
+**Ce que corrige cette mise à jour.** Deux défauts trouvés dans le résultat lui-même (détail, preuves et
+mesures : `docs/audit/ROBUSTESSE_2026-10-12.md` §7) :
+
+1. **Le thénar modifiait le score et la recommandation** alors que le README, le `MASTER_PROMPT` §7.6 et
+   l'audit promettent « aucun effet sur le score ». Mesure : **537 profils sur 2 805 (19,1 %)** changeaient
+   de réponse selon la taille de thénar déclarée. Les trois valeurs de l'ajustement sont désormais **à 0** :
+   le thénar reste demandé, affiché et expliqué, mais il ne change plus rien au calcul (après correction :
+   **0 profil sur 2 805**).
+2. **Deux entrées de la même coque pouvaient être proposées ensemble** (« le match idéal » puis
+   « l'alternative » = la même souris) : **92 profils** concernés (A9 Plus 2.0 + A9 NB Ultra ; X2A v3 +
+   X2 CrazyLight Medium). Les coques déjà documentées sont maintenant enregistrées dans le catalogue.
+
+> **Les résultats peuvent donc changer** par rapport à la version en ligne : c'est précisément l'objet de la
+> correction. Les barèmes de longueur, de largeur, de prise, de bosse et de boutons sont **inchangés**, ainsi
+> que les prix et les liens d'achat.
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+utils/matcher.py                     (décisif : l'ajustement thénar passe à 0 / 0 / 0)
+cogs/finder_flow.py                  (décisif : textes de l'étape thénar et du bloc « arrière étroit »)
+data/mouse_db.json                   (décisif : coques partagées enregistrées — 36 souris)
+tools/build_mouse_db.py              (facultatif : garde-fou, le script ne peut plus écraser le catalogue)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : documentation, §7)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md   (facultatif : tableau statistique complet)
+docs/REVERSE_ENGINEERING_OBLIVITY.md (facultatif : la décision de pause y est consignée)
+```
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python tools/check_deployment.py
+# attendu : catalogue lisible : 36 souris · liens d'achat valides : 36 · 0 erreur(s) bloquante(s)
+
+# l'ajustement thénar doit être en pause (0 / 0 / 0)
+grep -q "THENAR_WIDTH_ADJUSTMENT = {Thenar.PETITE: 0" utils/matcher.py \
+  && echo "OK   utils/matcher.py (thénar sans effet sur le score)" || echo "ANCIEN utils/matcher.py"
+
+# les coques partagées doivent être enregistrées (23 souris sur 36, 14 coques distinctes)
+.venv/bin/python -c "import json; d=json.load(open('data/mouse_db.json')); \
+  print(sum(1 for m in d if m.get('shell_id')), 'souris avec shell_id')"   # attendu : 23
+```
+
+**4. Redémarrage**
+
+```bash
+pkill -f "bot.py"                 # la tâche planifiée relance le bot au prochain créneau (≤ 1 min)
+```
+
+**5. Vérification en 60 secondes dans Discord**
+
+1. Faire un parcours en choisissant « Thénar Petite » puis, avec les **mêmes mesures**, un second parcours
+   avec « Thénar Grande » → **les deux réponses doivent être identiques** (avant : elles pouvaient différer).
+2. À l'étape du thénar, le texte doit dire **« le thénar ne modifie pas le score »** (avant : « Effet borné à
+   ±2 points »).
+3. Sur une main 190 × 105 en **Palm**, puis en recliquant sur le même profil → **jamais deux fois la même
+   souris** dans les deux ou trois places (le cas « A9 Plus 2.0 » + « A9 NB Ultra » ne doit plus apparaître).
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.

@@ -82,13 +82,21 @@ BUTTON_MAX_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 PARTIAL_SCORING_ALLOWED = True
 PARTIAL_MISSING_ALLOWED = frozenset({"hauteur des boutons non vérifiée"})
 
-# --- D. Ajustement thénar ↔ arrière marqué (reverse engineering Oblivity, 2026-10-11) ----
-# L'outil d'Oblivity ne donne AUCUN point au thénar : il s'en sert pour imposer une forme d'arrière
-# (« arrière étroit en pilule » pour un thénar petit OU moyen, aucune contrainte pour un thénar grand)
-# et ne pose même pas la question en Fingertip (dossier Reverse/, 10 sorties datées 2026-10-11).
-# Nous traduisons cette contrainte en un ajustement BORNÉ du sous-score de largeur, appliqué
-# uniquement aux souris à bosse arrière marquée (c'est l'arrière qui « remplit » la paume).
-THENAR_WIDTH_ADJUSTMENT = {Thenar.PETITE: -2, Thenar.MOYENNE: 0, Thenar.GRANDE: +2}
+# --- D. Ajustement thénar ↔ arrière marqué : mécanisme en place, EFFET EN PAUSE (0 point) -----
+# Règle du propriétaire, confirmée le 2026-10-12 : le thénar est collecté, affiché et expliqué,
+# mais il N'INFLUENCE PAS le score (« zéro effet sur les équations, seuils, points, score,
+# classement, exclusion » — docs/MASTER_PROMPT_AZEMOUSE.md §7.6 ; docs/audit/AUDIT.md §3 et §8 ;
+# README « aucun effet sur le score »). L'outil d'Oblivity, lui, ne donne AUCUN point au thénar :
+# il s'en sert seulement pour conseiller une forme d'arrière (« arrière étroit en pilule » pour un
+# thénar petit ou moyen, aucune contrainte pour un grand) et ne pose pas la question en Fingertip
+# (dossier Reverse/, 10 sorties datées 2026-10-11).
+#
+# Les trois valeurs sont donc NEUTRES : quel que soit le thénar choisi, le barème historique est
+# strictement inchangé. Le mécanisme reste en place (ajustement borné dans le sous-score de largeur
+# 0–10, uniquement pour les souris à bosse arrière marquée, jamais en Fingertip) : l'hypothèse
+# bornée du reverse engineering se réactive en remettant les trois valeurs ci-dessous à
+# -2 / 0 / +2 (les deux versions sont décrites dans docs/REVERSE_ENGINEERING_OBLIVITY.md §3).
+THENAR_WIDTH_ADJUSTMENT = {Thenar.PETITE: 0, Thenar.MOYENNE: 0, Thenar.GRANDE: 0}
 THENAR_REAR_HUMP = "Rear"          # seule géométrie concernée (bosse arrière marquée)
 # Libellé accordé au masculin dans la phrase « Thénar <taille> × arrière marqué ».
 THENAR_SIZE_LABEL = {Thenar.PETITE: "petit", Thenar.MOYENNE: "moyen", Thenar.GRANDE: "grand"}

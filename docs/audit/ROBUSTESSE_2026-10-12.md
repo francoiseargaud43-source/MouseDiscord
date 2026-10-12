@@ -184,3 +184,58 @@ zone. Deux options, à trancher par le propriétaire (cela changerait une règle
 1. laisser ainsi : la place apparaît quand elle existe vraiment ;
 2. élargir la zone de la seule ligne « économie » (par exemple jusqu'à 5 points sous le meilleur
    score), avec une mention du type « un peu moins compatible, mais moins chère ».
+
+---
+
+## 7. Troisième vague (13e passe) : le thénar modifiait le score en silence
+
+Les deux premières vagues (§5 et §6) portaient sur le parcours et les fichiers de données. Cette
+troisième passe part du résultat lui-même : le score, le classement et la coque des souris.
+
+### 7.1 Les deux défauts corrigés
+
+| # | Défaut | Preuve (avant correction) | Correction |
+|---|---|---|---|
+| 10 | **Le thénar changeait le score et donc la recommandation**, alors que le README (« aucun effet sur le score »), le `MASTER_PROMPT` §7.6 (« zéro effet sur les équations, seuils, points, score, classement »), `docs/audit/AUDIT.md` §3 et §8 et le rapport final promettent tous l'inverse. `THENAR_WIDTH_ADJUSTMENT` valait **−2 / 0 / +2** (hypothèse bornée du reverse engineering d'Oblivity, présentée comme réversible) alors que la décision retenue était le repli « conforme Oblivity » à **0 point**. | Banc de mesure : **2 805 profils** comparés avec « Thénar Petite » et « Thénar Grande » → **537 profils (19,1 %)** donnaient une réponse différente. Sur le Paris main 190 × 80 en Qualité/Prix, le gagnant changeait de souris selon la taille de thénar déclarée. | Les trois valeurs repassent à **0** : le score, le classement et les exclusions sont désormais **identiques quel que soit le thénar**, comme promis. Le mécanisme, le bornage 0–10 et la note d'embed restent en place (test dédié), donc une activation reste possible en changeant une ligne (`docs/REVERSE_ENGINEERING_OBLIVITY.md` §3). Les trois textes qui annonçaient un effet (« Effet borné à ±2 points », « pénalisée à la marge dans le score ») sont corrigés. **Après correction : 0 profil sur 2 805 change de réponse.** |
+| 11 | **Deux entrées de la même coque pouvaient être proposées ensemble** dans le même résultat (le match idéal, puis « l'alternative » = la même souris). `shell_id` était vide pour l'A9 NB Ultra, les deux U2 Mini et la X3, alors que les notes du catalogue affirment déjà « coque A9 pleine taille », « même coque » (page de série A9 d'ATK), « coque de la famille X1 » et que les dimensions publiées sont identiques au dixième de millimètre. | **92 profils** montraient deux fois la même souris : 68 avec « A9 Plus 2.0 » (45 €) et « A9 NB Ultra » (72,95 €), 24 avec « X2A v3 » et « X2 CrazyLight Medium ». | `shell_id` enregistrés (`atk_a9_large` pour l'A9 NB, `atk_u2_mini` pour les deux U2 Mini, `atk_x1` pour la X3) d'après les notes déjà sourcées. **Après correction : 0 profil** pour la paire A9 et les U2 Mini ; il reste la paire Pulsar (voir points ouverts). |
+| 12 | **`tools/build_mouse_db.py` écrasait le catalogue** : ce script régénère le relevé d'origine (**18 souris**, 2026-10-10) et écrivait sans prévenir dans `data/mouse_db.json`, qui contient **36 souris** enrichies à la main (prix, mesures, sources, prises). Une exécution par distraction détruisait 18 souris et tous les enrichissements postérieurs — dont les 10 Pulsar. | Mesure : le script génère 18 identifiants, le catalogue en contient 36 → 18 perdues. | Refus d'écrire quand des entrées seraient perdues, **message qui les nomme**, écriture atomique et option `--force` pour régénérer volontairement ; 3 tests (`tests/test_build_mouse_db_guard.py`). |
+
+### 7.2 Ce qui a été vérifié sans rien changer
+
+- **Les cinq modes tiennent leur promesse** : 1 395 profils contrôlés mode par mode (économie = la
+  moins chère de la zone de tolérance ; qualité/prix = le meilleur rapport points/€ ; haut de gamme =
+  le meilleur indice de performance documenté ; peu importe le prix et budget personnalisé = le
+  meilleur score) → **0 violation**.
+- **Les composants Discord de chaque étape** (identifiants fixes, ≤ 5 boutons par rangée, liens
+  d'achat en `https://`, ≤ 25 options par menu) et le résultat sur les **15 combinaisons prise ×
+  mode** → 0 erreur.
+- **Le banc des 27 170 profils** reste à 0 problème, `tools/privacy_scan.py` à 0 violation, et le
+  catalogue se charge sans erreur (36 souris, 36 liens).
+- **Aucun résultat vide sans explication** : sur les profils extrêmes (main 140 × 60 ou 250 × 130,
+  budget minuscule), le message affiche « Aucun match classable… » et propose une autre gamme —
+  jamais une impasse.
+
+### 7.3 Limite constatée (outil de mesure) — aucune valeur inventée
+
+`tools/measure_button_height.py` refuse toute vue qui n'a pas les proportions officielles du modèle.
+Limite honnête découverte cette passe : ce contrôle valide des **proportions**, pas l'**identité** de
+la souris. Une vue de profil du X1 V2 (page produit X1 V2) est acceptée aux cotes du U2 Mini
+(rapport mesuré 3,09 contre 3,10 attendu) : les deux coques sont trop proches pour être distinguées
+par ce seul critère. Règle appliquée : une image n'est mesurée que si elle vient de la **fiche du
+modèle mesuré**, et la vérification visuelle reste obligatoire. Conséquence : aucune nouvelle hauteur
+de boutons n'a été ajoutée cette passe — les vues de profil disponibles (Xlite v4 Large et Mini) sont
+**refusées** (0,4 % d'écart accepté, ici 72 à 87 %), et les recherches d'images « U2 Mini » renvoient
+des vues d'autres souris. Aucune valeur n'a donc été inventée.
+
+### 7.4 Points ouverts (décision du propriétaire)
+
+1. **La troisième place (« 💸 L'économie »)** n'apparaît que dans 0,1 % des profils (voir §5).
+2. **Deux paires de coques à trancher** : `atk_u2` / `atk_u2_v2_ultimate` (dimensions publiées
+   identiques : 123,7 × 64,6 × 39,1 mm) et `pulsar_x2a_v3_medium` / `pulsar_x2_crazylight_medium`
+   (120,4 × 63 × 38 mm). Aujourd'hui, aucune des deux ne peut apparaître deux fois dans un résultat
+   (l'une des deux entrées est toujours « à vérifier »), mais il faut une source fabricant pour
+   enregistrer la coque — les deux paires sont donc listées dans un test canari et dans les points
+   ouverts du rapport statistique.
+3. **Souris jamais recommandées** : le tableau complet (57 057 profils, 5 modes, toutes les tailles
+   de main) est dans `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`, avec le motif exact
+   souris par souris.

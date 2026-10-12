@@ -749,20 +749,38 @@ def test_result_image_key_prioritises_the_hump_then_the_buttons():
     assert flow.result_image_key(None, Grip.PALM) is None
 
 
-def test_thenar_only_weighs_on_rear_hump_mice():
-    """Reverse engineering Oblivity (2026-10-11) : le thénar ne touche que les souris à bosse arrière."""
-    store_a = SessionStore(ttl_seconds=600)
-    without = start_for(store_a, user_id=1, grip=Grip.PALM, length=180.0, width=90.0)
-    without.budget_mode = BudgetMode.QUALITE_PRIX
-    store_b = SessionStore(ttl_seconds=600)
-    with_thenar = start_for(store_b, user_id=2, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.GRANDE)
-    with_thenar.budget_mode = BudgetMode.QUALITE_PRIX
-    base = flow.compute_selection(without)
-    other = flow.compute_selection(with_thenar)
-    # Le gagnant Palm (bosse Mid) n'est pas concerné : classement et scores identiques.
-    assert base.ranked[0].mouse.id == other.ranked[0].mouse.id
-    assert base.ranked[0].total == other.ranked[0].total == 30  # non-régression du barème Palm 180 × 90
-    assert all(s.breakdown.thenar_pts == 0 for s in other.ranked if s.mouse.hump_position != "Rear")
+def test_thenar_never_changes_the_recommendation():
+    """Règle « zéro effet » (MASTER_PROMPT §7.6) : le thénar déclaré ne change ni le choix ni le score.
+
+    Mesure du 2026-10-12, avant correction : avec l'ajustement ±2 activé par erreur, 537 profils sur
+    2 805 (19,1 %) changeaient de recommandation selon le thénar déclaré. Ce test verrouille le retour
+    à la règle du propriétaire : trois profils (dont un Palm et un Claw où une souris à bosse ARRIÈRE
+    gagne) × trois thénar × trois modes → un seul et même résultat.
+    """
+    profils = ((Grip.PALM, 180.0, 90.0), (Grip.PALM, 150.0, 75.0), (Grip.CLAW, 170.0, 85.0))
+    modes = (BudgetMode.QUALITE_PRIX, BudgetMode.HAUT_DE_GAMME, BudgetMode.PEU_IMPORTE_PRIX)
+    for grip, length, width in profils:
+        for mode in modes:
+            reference = None
+            for thenar in Thenar:
+                store = SessionStore(ttl_seconds=600)
+                session = start_for(store, grip=grip, length=length, width=width, thenar=thenar)
+                session.budget_mode = mode
+                selection = flow.compute_selection(session)
+                resultat = (tuple(s.mouse.id for s in selection.ranked),
+                            tuple(s.total for s in selection.ranked),
+                            selection.reference_score)
+                if reference is None:
+                    reference = resultat
+                assert resultat == reference, f"{grip.label} {length}×{width} {mode.value} thénar {thenar.label}"
+                assert selection.ranked, "au moins un résultat attendu sur ces profils"
+                assert all(s.breakdown.thenar_pts == 0 for s in (*selection.ranked, *selection.pending))
+
+    # Non-régression du barème Palm 180 × 90 (cahier des charges) : 30/40 pour le gagnant.
+    store = SessionStore(ttl_seconds=600)
+    palm = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.GRANDE)
+    palm.budget_mode = BudgetMode.QUALITE_PRIX
+    assert flow.compute_selection(palm).ranked[0].total == 30
 
 
 def test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration(monkeypatch):
@@ -774,7 +792,9 @@ def test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration(monkey
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     narrow = next(e for e in embeds if "arrière étroit" in e.title)
     assert "arrière étroit" in narrow.title
-    assert "pilule" in narrow.description and "pénalisée à la marge" in narrow.description
+    assert "pilule" in narrow.description
+    # Règle « zéro effet » : le paragraphe dit lui-même que le thénar ne modifie pas le score.
+    assert "ne modifie pas le score" in narrow.description
     assert narrow.image is not None and "T13_arriere_etroit" in narrow.image.url
     # Le bloc « comment lire ce résultat » garde l'illustration des repères de taille.
     assert "T12_souris_longueur_largeur" in embeds[1].image.url

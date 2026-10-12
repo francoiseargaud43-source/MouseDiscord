@@ -54,8 +54,9 @@ class FinderSession:
     user_id: int
     session_id: str = field(default_factory=lambda: secrets.token_urlsafe(12))
     grip: Grip | None = None
-    # Éminence thénar : lue au moment du calcul, elle ajuste de ±2 points au maximum le sous-score
-    # de largeur des souris à bosse arrière marquée (THENAR_WIDTH_ADJUSTMENT, utils/matcher.py).
+    # Éminence thénar : collectée et affichée, SANS effet sur le score (règle du propriétaire,
+    # MASTER_PROMPT §7.6). Le mécanisme d'ajustement existe mais est en pause, valeurs neutres :
+    # THENAR_WIDTH_ADJUSTMENT (utils/matcher.py) vaut 0 / 0 / 0.
     thenar: Thenar | None = None
     # Variante de Claw : demandée seulement pour cette prise, et seulement pour affiner le conseil
     # de bosse (elle n'entre dans aucun calcul). Voir ClawVariant dans utils/models.py.

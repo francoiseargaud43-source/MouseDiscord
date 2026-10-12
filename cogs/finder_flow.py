@@ -23,10 +23,10 @@ possible, il faut tout recommencer ») :
   aucune interaction ne reste sans réponse.
 
 Parcours : 1/4 prise -> 2/4 thénar -> 3/4 mesures de la main -> 4/4 budget (en Fingertip, la question du
-thénar n'est pas posée : 3 étapes). Le thénar sert à lire l'arrière de la souris : ajustement **borné**
-(±2 points au maximum) du sous-score de largeur, appliqué **uniquement** aux souris à bosse arrière
-marquée et jamais en Fingertip (``THENAR_WIDTH_ADJUSTMENT`` dans utils/matcher.py ; méthode :
-docs/REVERSE_ENGINEERING_OBLIVITY.md). Sans thénar renseigné (ou thénar moyen), le barème est inchangé.
+thénar n'est pas posée : 3 étapes). Le thénar sert à lire l'arrière de la souris : **conseil indicatif**,
+sans aucun effet sur le score (règle « zéro effet » du MASTER_PROMPT §7.6 : le barème est strictement le
+même quel que soit le thénar déclaré). Le mécanisme d'ajustement borné existe mais est en pause, valeurs
+neutres (``THENAR_WIDTH_ADJUSTMENT`` dans utils/matcher.py ; méthode : docs/REVERSE_ENGINEERING_OBLIVITY.md).
 
 CHARTE AZEMOUSE (voir docs/REPORTE_DESIGN.md) :
 - **Bordeaux #8A2342** = couleur latérale de tous les embeds (identité) ; seul « session expirée » reste orange ;
@@ -599,8 +599,8 @@ def thenar_step_embed(grip: Grip = Grip.PALM) -> discord.Embed:
         description=(
             "Votre réponse indique l'arrière de souris qui vous convient : un petit thénar préfère un "
             "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n\n"
-            "Effet **borné à ±2 points** sur le score, et **uniquement** pour les souris à bosse "
-            "arrière marquée — sinon le score ne change pas."
+            "**Information seule : le thénar ne modifie pas le score** (recommandation morphologique "
+            "indicative, non prise en compte dans le calcul)."""
         ),
         color=COLOR,
     )
@@ -706,7 +706,8 @@ def _narrow_rear_embed() -> discord.Embed:
         description=(
             "Votre thénar est **Petite** : un arrière étroit, en « pilule », laisse la main se poser "
             "sans forcer.\n\n"
-            "Une souris à bosse arrière marquée est **pénalisée à la marge** dans le score."
+            "**Information seule** : le thénar ne modifie pas le score — c'est un repère "
+            "morphologique, pas un critère de calcul."
         ),
         color=COLOR,
     )
@@ -1035,7 +1036,7 @@ class ClawVariantView(FinderView):
 
 
 # ---------------------------------------------------------------------------
-# Étape 3 : éminence thénar (ajustement borné du sous-score de largeur : THENAR_WIDTH_ADJUSTMENT)
+# Étape 3 : éminence thénar (informative : THENAR_WIDTH_ADJUSTMENT est en pause à 0 / 0 / 0)
 # ---------------------------------------------------------------------------
 class ThenarSelect(discord.ui.Select):
     def __init__(self) -> None:
@@ -1054,7 +1055,7 @@ class ThenarSelect(discord.ui.Select):
         session = await _current_session(interaction)
         if session is None:
             return
-        session.thenar = Thenar(self.values[0])  # stocké ; ajustement borné au calcul du score
+        session.thenar = Thenar(self.values[0])  # stocké et affiché ; aucun effet sur le score
         _remember(interaction)
         await _show_step(interaction, session)
 

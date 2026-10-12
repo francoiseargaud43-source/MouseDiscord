@@ -69,13 +69,16 @@ BUDGET_LABELS = {
 
 
 class Thenar(Enum):
-    """Taille de l'éminence thénar : collectée, affichée, et utilisée pour UN seul ajustement.
+    """Taille de l'éminence thénar : collectée et affichée, **sans effet sur le score**.
 
-    Depuis le reverse engineering de l'outil Oblivity (2026-10-11, dossier ``Reverse/``), le thénar
-    sert à trancher la forme de l'arrière (« arrière étroit en pilule » pour un thénar petit ou
-    moyen, aucune contrainte pour un grand). Il ne modifie donc que le sous-score de largeur, et
-    uniquement pour les souris à bosse arrière marquée (``THENAR_WIDTH_ADJUSTMENT`` dans
-    ``utils/matcher.py``). En Fingertip, la question n'est jamais posée, donc jamais appliquée.
+    Règle du propriétaire (2026-10-11, confirmée le 2026-10-12) : le thénar est une information
+    morphologique, pas un critère de notation — « zéro effet » sur les équations, les seuils, les
+    points, le score, le classement et les exclusions (``MASTER_PROMPT_AZEMOUSE.md`` §7.6).
+    Le reverse engineering de l'outil Oblivity (dossier ``Reverse/``) l'utilise seulement pour
+    conseiller une forme d'arrière (« arrière étroit en pilule » pour un thénar petit ou moyen).
+    Le mécanisme d'ajustement existe toujours (``THENAR_WIDTH_ADJUSTMENT`` dans ``utils/matcher.py``)
+    mais ses trois valeurs sont neutres : pour l'activer, voir
+    ``docs/REVERSE_ENGINEERING_OBLIVITY.md`` §3. En Fingertip, la question n'est jamais posée.
     """
 
     PETITE = "petite"

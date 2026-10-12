@@ -14,6 +14,7 @@ from config import MOUSE_DB_PATH
 from utils.catalog import load_catalog
 from utils.matcher import (
     GRIP_WIDTH_ESTIMATE_OFFSET_MM,
+    THENAR_WIDTH_ADJUSTMENT,
     MAX_SCORE,
     STATUS_EXCLUDED,
     STATUS_PENDING,
@@ -27,6 +28,7 @@ from utils.matcher import (
     grip_width_for_scoring,
     rank_by_compatibility,
 )
+from utils import matcher as matcher_module
 from utils.models import BudgetMode, Grip, HandMeasure, Mouse, Thenar
 
 
@@ -81,17 +83,43 @@ def test_max_score_is_sum_of_criteria():
     assert MAX_SCORE == 10 + 10 + 10 + 5 + 5
 
 
-def test_thenar_adjustment_is_bounded_and_rear_hump_only(catalog):
-    """Ajustement thénar : ±2 bornés, uniquement bosse arrière, jamais en Fingertip, défaut inchangé."""
+def test_thenar_never_changes_the_score(catalog):
+    """Règle « zéro effet » du propriétaire (MASTER_PROMPT §7.6) : le thénar ne change RIEN au score.
+
+    Le thénar est collecté et affiché, mais le barème est strictement le même quel que soit le
+    thénar déclaré — y compris pour les souris à bosse arrière marquée, seul cas où le mécanisme
+    d'ajustement pourrait s'appliquer. C'est la version conforme à l'outil Oblivity, qui ne donne
+    aucun point au thénar (« arrière étroit en pilule » à titre de conseil).
+    """
+    for mouse in catalog.values():
+        for grip in Grip:
+            reference = evaluate_mouse(mouse, HAND, grip)
+            for thenar in Thenar:
+                other = evaluate_mouse(mouse, HAND, grip, thenar=thenar)
+                assert other.total == reference.total, f"{mouse.id} / {grip.label} / {thenar.label}"
+                assert other.status == reference.status
+                assert other.breakdown == reference.breakdown
+                assert other.thenar_note is None
+    # Le mécanisme est en pause : les trois valeurs sont neutres (0 point).
+    assert all(value == 0 for value in THENAR_WIDTH_ADJUSTMENT.values())
+
+
+def test_thenar_adjustment_mechanism_stays_bounded_and_ready(monkeypatch, catalog):
+    """Le mécanisme reste prêt : borné 0–10, bosse arrière seule, jamais en Fingertip.
+
+    Réactivation = remettre -2 / 0 / +2 dans utils/matcher.py (voir
+    docs/REVERSE_ENGINEERING_OBLIVITY.md §3) : ce test vérifie que le bornage est correct le jour
+    où le propriétaire l'activera.
+    """
+    monkeypatch.setattr(matcher_module, "THENAR_WIDTH_ADJUSTMENT",
+                        {Thenar.PETITE: -2, Thenar.MOYENNE: 0, Thenar.GRANDE: +2})
     rear = catalog["scyrox_v8"]          # bosse Rear, compatible Claw
     mid = catalog["scyrox_v6"]           # bosse Mid
     base = evaluate_mouse(rear, HAND, Grip.CLAW)
     petite = evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.PETITE)
     grande = evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.GRANDE)
-    moyenne = evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.MOYENNE)
-    assert base.total == moyenne.total            # défaut et thénar moyen : barème historique
+    assert base.total == evaluate_mouse(rear, HAND, Grip.CLAW, thenar=Thenar.MOYENNE).total
     assert grande.breakdown.thenar_pts == 2 and petite.breakdown.thenar_pts == -2
-    assert grande.total - petite.total == 4
     assert 0 <= petite.breakdown.width_pts + petite.breakdown.thenar_pts <= 10   # borné 0–10
     assert evaluate_mouse(mid, HAND, Grip.PALM, thenar=Thenar.GRANDE).breakdown.thenar_pts == 0
     assert evaluate_mouse(rear, HAND, Grip.FINGERTIP, thenar=Thenar.PETITE).breakdown.thenar_pts == 0

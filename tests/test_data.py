@@ -409,3 +409,51 @@ def test_partial_scoring_opens_the_choice_without_inventing_points(mice):
     assert palm["pulsar_xlite_v4_mini"].is_pending, "bosse + boutons inconnus : toujours bloquée"
     claw = {m.id: evaluate_mouse(m, HandMeasure(150, 75), Grip.CLAW) for m in mice.values()}
     assert sum(1 for s in claw.values() if s.is_scored) >= 13, "le profil Claw 150 × 75 doit s'ouvrir"
+
+
+# Deux entrées dont les dimensions publiées sont identiques au dixième de millimètre décrivent la
+# même coque : le moteur ne doit jamais les proposer comme DEUX choix dans un résultat (« le match
+# idéal » puis « l'alternative » étant la même souris). Encore faut-il que la coque soit enregistrée
+# dans ``shell_id`` : mesure du 2026-10-12, 92 profils montraient deux fois la même souris
+# (A9 Plus 2.0 + A9 NB Ultra ; X2A v3 + X2 CrazyLight Medium) faute de ce champ. Corrigé pour
+# l'A9 NB Ultra, les deux U2 Mini et la X3 ; deux paires restent en attente d'une source fabricant
+# explicite (elles ne sortent aujourd'hui jamais ensemble, mais le champ doit être tranché).
+SAME_SHELL_PAIRS_PENDING_SOURCE = (
+    ("atk_u2", "atk_u2_v2_ultimate"),
+    ("pulsar_x2a_v3_medium", "pulsar_x2_crazylight_medium"),
+)
+
+
+def test_two_entries_with_identical_dimensions_share_their_shell(mice):
+    """Canari : aucune paire de dimensions identiques ne doit rester sans coque partagée."""
+    groupes: dict[tuple, list[str]] = {}
+    for mouse in mice.values():
+        key = (mouse.length_mm, mouse.width_max_mm, mouse.height_mm)
+        if None in key:
+            continue
+        groupes.setdefault(key, []).append(mouse.id)
+    inexpliquees = []
+    for identifiants in groupes.values():
+        for i, premier in enumerate(identifiants):
+            for second in identifiants[i + 1:]:
+                paire = (premier, second)
+                if mice[premier].shell_id and mice[premier].shell_id == mice[second].shell_id:
+                    continue
+                if paire in SAME_SHELL_PAIRS_PENDING_SOURCE or paire[::-1] in SAME_SHELL_PAIRS_PENDING_SOURCE:
+                    continue
+                inexpliquees.append(paire)
+    assert inexpliquees == [], f"coque à enregistrer (shell_id) : {inexpliquees}"
+
+
+def test_shells_documented_in_the_catalogue_notes_are_registered_in_shell_id(mice):
+    """Les coques déjà documentées dans les notes du catalogue doivent l'être aussi dans shell_id."""
+    attendus = {
+        "atk_a9_nb": "atk_a9_large",        # « coque A9 pleine taille », « même coque »
+        "atk_u2_mini": "atk_u2_mini",       # une seule fiche ATK « U2 Mini », dimensions identiques
+        "atk_u2_v2_mini": "atk_u2_mini",
+        "vxe_x3": "atk_x1",                 # « coque de la famille X1 »
+    }
+    for identifiant, coque in attendus.items():
+        assert mice[identifiant].shell_id == coque, identifiant
+    # Deux entrées de la même coque ne peuvent plus occuper deux places du même résultat.
+    assert mice["atk_a9_nb"].shell_id == mice["atk_a9_plus"].shell_id == mice["atk_a9_ultimate"].shell_id

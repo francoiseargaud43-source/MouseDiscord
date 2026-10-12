@@ -83,6 +83,16 @@ pas, à lui seul, faire gagner ou perdre un rang à une souris mal dimensionnée
 à leur outil » (0 point, conseil d'arrière uniquement) s'obtient en mettant les trois valeurs à 0 —
 c'est le repli si tu trouves l'ajustement trop interventionniste.
 
+> **Décision appliquée le 2026-10-12 : repli retenu.** Les trois valeurs de `THENAR_WIDTH_ADJUSTMENT`
+> sont à **0** dans `utils/matcher.py` : le thénar est collecté, affiché et expliqué, mais il ne
+> modifie **ni le score, ni le classement, ni les exclusions** (règle « zéro effet » du
+> `MASTER_PROMPT` §7.6 et de `docs/audit/AUDIT.md` §3). Mesure qui a motivé ce retour : avec ±2
+> activé, **537 profils sur 2 805 (19,1 %)** changeaient de recommandation selon la taille de thénar
+> déclarée — un effet que le README et le prompt de référence annonçaient pourtant comme inexistant.
+> Le mécanisme reste en place et testé (`tests/test_matcher.py::test_thenar_adjustment_mechanism_stays_bounded_and_ready`) :
+> il suffit de remettre −2 / 0 / +2 pour le réactiver, puis de mettre à jour les trois textes et la
+> documentation d'un coup.
+
 ### Ce qui manque pour aller plus loin
 
 La seule façon d'objectiver « arrière large » est de **mesurer** : largeur à 60–90 % de la longueur,

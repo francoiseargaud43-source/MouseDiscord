@@ -7,7 +7,9 @@ relancé que si l'on souhaite régénérer l'ensemble à partir de ce fichier-so
 """
 from __future__ import annotations
 
+import argparse
 import json
+import os
 from pathlib import Path
 
 DATE = "2026-10-10"
@@ -332,6 +334,55 @@ for m in mice:
     m.setdefault("notes", "")
     m.setdefault("sources", [])
 
-out = ROOT / "data" / "mouse_db.json"
-out.write_text(json.dumps(mice, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-print(f"{len(mice)} entrées écrites dans {out}")
+def _existing_ids(path: Path) -> list[str]:
+    """Identifiants déjà présents dans le fichier cible (liste vide si absent ou illisible)."""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+    return [m["id"] for m in data if isinstance(m, dict) and isinstance(m.get("id"), str)]
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Écrit le catalogue GÉNÉRÉ, sans jamais détruire un catalogue enrichi à la main.
+
+    Garde-fou ajouté le 2026-10-12 : ce script est l'artefact de traçabilité du premier relevé
+    (18 entrées, 2026-10-10). Depuis, ``data/mouse_db.json`` est enrichi à la main (36 souris,
+    prix, mesures, sources) : une exécution par distraction écraserait tout ce travail. Le script
+    refuse donc d'écrire quand il perdrait des entrées, et n'écrit qu'avec ``--force``.
+    """
+    parser = argparse.ArgumentParser(
+        description="Régénère data/mouse_db.json à partir du relevé d'origine (artefact de traçabilité).",
+    )
+    parser.add_argument("--sortie", default=str(ROOT / "data" / "mouse_db.json"),
+                        help="fichier à écrire (par défaut : data/mouse_db.json)")
+    parser.add_argument("--force", action="store_true",
+                        help="écrase le fichier cible même si des souris seraient perdues")
+    args = parser.parse_args(argv)
+
+    out = Path(args.sortie)
+    generated = {m["id"] for m in mice}
+    existing = _existing_ids(out)
+    lost = [ident for ident in existing if ident not in generated]
+
+    if (lost or (existing and len(existing) != len(generated))) and not args.force:
+        print(f"REFUS D'ÉCRIRE : ce script génère {len(generated)} entrée(s), "
+              f"alors que {out} en contient {len(existing)}.")
+        if lost:
+            print(f"Souris qui seraient PERDUES ({len(lost)}) : " + ", ".join(lost))
+        print("Le catalogue courant est enrichi à la main (sources, prix, mesures de largeur…) : "
+              "il est la source de vérité du bot.")
+        print("Pour régénérer volontairement l'ensemble, relancez avec --force "
+              "(pensez à sauvegarder data/mouse_db.json avant).")
+        return 1
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    temporary = out.with_name(f"{out.name}.tmp")
+    temporary.write_text(json.dumps(mice, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporary, out)          # écriture atomique : jamais de catalogue à moitié écrit
+    print(f"{len(mice)} entrées écrites dans {out}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
