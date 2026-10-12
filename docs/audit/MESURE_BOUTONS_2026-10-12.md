@@ -79,3 +79,36 @@ concernent des souris dont la valeur était **déjà connue** (F1 V2, Z1 V2 — 
 Les valeurs « non tranchées » (A9 Ultimate 47,3 %, ZERO 48,0 %) ne sont pas inscrites : elles ne
 permettent pas de choisir entre « moyens » et « hauts ». **Le relevé reste donc à faire**, modèle par
 modèle, à mesure que des vues exploitables sont trouvées.
+
+## 13. Campagne du 2026-10-12 (24e passe) : ce que la méthode peut et ne peut pas dire
+
+Nouvelles images officielles ATK (CDN `atk.store`, 1500 px) récupérées par recherche d'images, puis
+mesurées avec l'outil calibré. **Quatre vues acceptées** par le contrôle de perspective, **six refusées**
+(« vue en perspective ») :
+
+| Image | Mesure `--front right` | Mesure `--front left` | Décision |
+|---|---:|---:|---|
+| ATK Z1 V2 Ultra (référence « High » du propriétaire) | **55,0 % → High** ✔ | 37,0 % (sens inversé) | référence validée |
+| ATK ZERO, profil blanc | **43,0 % → Low** (limite) | 47,8 % → aucune | **rien** : les deux lectures encadrent le seuil |
+| ATK ZERO, coque givrée | 48,0 % → aucune | **44,0 % → Low** | **rien** : l'autre photo du même modèle ne dit pas la même chose |
+| ATK A9 Ultimate | 47,3 % → aucune | 48,3 % → aucune | **rien** : bande grise (l'A9 Plus, coque identique, est « Mid ») |
+| ATK X1 V2 Ultra Max (référence « Mid » du propriétaire) | 48,0 % → aucune | **44,0 % → Low** | **rien** : la lecture « Low » contredirait le propriétaire |
+
+Refus : ATK U2 (rapport 2,69 vs 3,16), ATK Y9 Ultimate (écart 6,7 %), ATK F1 V3 Ultimate, Scyrox V8,
+ATK A9 Plus 2.0, Scyrox V6.
+
+**Ce que cela établit.** (1) La méthode est juste quand l'image est une vraie vue de profil *et* que
+l'orientation est vérifiée : elle redonne la valeur du propriétaire à 0,1 point près sur la Z1 V2.
+(2) Sa précision sur les photos web est de l'ordre de ± 2 à 3 points — insuffisante pour trancher un cas
+limite (43,0 % contre un seuil à 43,3 %). (3) Les deux souris connues « Mid » du propriétaire mesurent
+44,0 – 48,0 %, c'est-à-dire **dans** la bande grise : la bande 43,3 – 55,1 % correspond bien à « Mid »,
+mais elle *touche* la référence « Low » (43,3 %) — **l'outil ne sépare pas finement « Low » et « Mid »**.
+
+**Règle de publication retenue** : au moins **deux photos distinctes** de la souris, orientation vérifiée
+à l'œil, **même classe** avec **au moins 3 points de marge** sur les deux seuils. Aucune souris testée
+dans cette campagne ne remplit ces conditions → **aucune valeur n'a été écrite** dans `data/mouse_db.json`.
+
+**Ce qui débloquerait la suite** : reconnaître la bande 43,3 – 55,1 % comme la classe « Mid » (question
+posée au propriétaire). Sans cela, la méthode ne peut publier que les « High » très francs (≥ 55 %) et les
+« Low » très francs (≤ 40 %) ; avec cela, la campagne peut couvrir les souris de profil bas, qui sont
+majoritaires au catalogue.
