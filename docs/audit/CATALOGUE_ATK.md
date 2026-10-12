@@ -37,7 +37,7 @@ Date de vérification : **2026-10-10**. Données : `data/mouse_db.json` (schéma
 | ATK | Duckbill | Forme canard, bosse arrière | **longueur en conflit** (118.0 vs 117) × 62.5 × 37.4 | 46 g (≈49 g blog) | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; blog ATK Duck Bill | conflicting | à vérifier (longueur non retenue) |
 | ATK A9 | A9 Ultimate | Grande, symétrique | 125.0 × 64.0 (EloShapes) / 63.5 (ATK) × 40.0 | 53 g (ATK : 55 ± 3 g) | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; ATK Store (Dragonfly A9 Ultimate) | verified (écart 0.5 mm) | à vérifier |
 | ATK A9 | A9 Air | Même taille que A9 Ultimate (EloShapes) | 125.0 × 64.0 × 40.0 | 47 g | 8000 Hz | — | non vérifiée | EloShapes (comparaison) | single_source | à vérifier |
-| ATK A9 | A9 Mini | Petite | 118.4 × 61.2 × 38.6 | 39 ± 3 g | — | — | non vérifiée | ATK Store (fiche produit) | single_source | à vérifier (bosse, boutons, grip) |
+| ATK A9 | A9 Mini | Petite | 118.4 × 61.2 × 38.6 | 39 ± 3 g | PAW3955, 8 000 Hz | **59,95 €** | **vérifiée** (ATK + EloShapes) | ATK Store ; EloShapes | verified | **classable** depuis le 2026-10-12 (bosse « Center » → Mid) — hauteur des boutons non documentée |
 
 Dans le tableau, « à vérifier » signifie que la souris est en attente (`pending`) : le score partiel est affiché mais jamais classé.
 

@@ -131,8 +131,11 @@ Effet mesuré de l'ajout des dix Pulsar (souris réellement classables, donc pro
 | Claw 180 × 100 mm | 4 | **10** | **Pulsar X2A v3 40/40**, puis Pulsar X2 CrazyLight Medium 40/40 |
 | Fingertip 200 × 100 mm | 4 | **8** | Scyrox V6 40/40, puis **Pulsar X2 v3 Mini 40/40** |
 
-Le profil Palm ne bouge pas encore : les souris qui lui correspondent (Xlite v4 et Xlite CrazyLight) attendent
-la bosse et la hauteur des boutons. **Liste à compléter** (générée depuis le catalogue) :
+**Mise à jour du 2026-10-12 (16e passe)** : la **bosse des Xlite v4 et de la Xlite CrazyLight Medium**
+a été relevée sur EloShapes (« Hump placement : Center » → **Mid**), et l'**ATK A9 Mini** a reçu son prix
+EUR officiel (59,95 €) ainsi que sa bosse. Ces cinq souris ne sont plus « à vérifier » : il ne leur
+manque que la hauteur des boutons. Le tableau ci-dessous est donc conservé tel quel, à l'exception des
+lignes corrigées ci-dessous. **Liste à compléter** (générée depuis le catalogue) :
 
 | Souris | Ce qui manque pour qu'elle puisse être proposée |
 |---|---|
@@ -153,7 +156,7 @@ la bosse et la hauteur des boutons. **Liste à compléter** (générée depuis l
 | ATK Duckbill (`atk_duckbill`) | hauteur des boutons · prise palm · prise claw · prise fingertip · longueur |
 | ATK A9 Ultimate (`atk_a9_ultimate`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
 | ATK A9 Air (`atk_a9_air`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
-| ATK A9 Mini (`atk_a9_mini`) | hauteur des boutons · prise palm · prise claw · prise fingertip · position de la bosse |
+| ATK A9 Mini (`atk_a9_mini`) | hauteur des boutons (**prix 59,95 € et bosse Mid ajoutés le 2026-10-12** : classable, partielle) |
 | VXE Dragonfly V3 / V3 Pro (`vxe_v3`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
 | VXE Dragonfly R1 / R1 Pro (`vxe_r1`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
 | VXE MAD R / MAD R Major (`vxe_mad_r`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
@@ -166,12 +169,12 @@ la bosse et la hauteur des boutons. **Liste à compléter** (générée depuis l
 | Pulsar X2H v3 Mini (`pulsar_x2h_v3_mini`) | hauteur des boutons · prise palm · prise fingertip |
 | Pulsar X2A v3 (`pulsar_x2a_v3_medium`) | prise palm |
 | Pulsar X2 CrazyLight Medium (`pulsar_x2_crazylight_medium`) | prise palm |
-| Pulsar Xlite v4 Mini (`pulsar_xlite_v4_mini`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
-| Pulsar Xlite v4 Medium (`pulsar_xlite_v4_medium`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
+| Pulsar Xlite v4 Mini (`pulsar_xlite_v4_mini`) | hauteur des boutons (**bosse Mid ajoutée le 2026-10-12** : classable, partielle) |
+| Pulsar Xlite v4 Medium (`pulsar_xlite_v4_medium`) | hauteur des boutons (**bosse Mid ajoutée le 2026-10-12** : classable, jamais gagnante) |
 | Pulsar X2 CrazyLight Mini (`pulsar_x2_crazylight_mini`) | prise palm |
 | Pulsar X2H CrazyLight Mini (`pulsar_x2h_crazylight_mini`) | hauteur des boutons · prise palm · prise fingertip |
-| Pulsar Xlite CrazyLight Medium (`pulsar_xlite_crazylight_medium`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
-| Pulsar Xlite v4 Large (`pulsar_xlite_v4_large`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
+| Pulsar Xlite CrazyLight Medium (`pulsar_xlite_crazylight_medium`) | hauteur des boutons (**bosse Mid ajoutée le 2026-10-12** : classable, jamais gagnante) |
+| Pulsar Xlite v4 Large (`pulsar_xlite_v4_large`) | hauteur des boutons (**bosse Mid ajoutée le 2026-10-12** : classable, jamais gagnante) |
 
 ## 6. Points à trancher (jamais devinés)
 

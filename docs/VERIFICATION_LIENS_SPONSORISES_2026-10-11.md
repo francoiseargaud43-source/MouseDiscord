@@ -77,10 +77,19 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
    de l'Extreme reste à trancher.
 6. **U2 V2 Mini** : la variante Mini s'affiche à **59,95 €** sur la page FR, alors que la base porte
    77,95 € (source = l'ancienne « U2 Mini ») → prix à corriger.
+   **Réglé le 2026-10-12** : corrigé à 59,95 € au catalogue, source ATK datée à l'appui.
 7. **A9 Air** : variante Air / Black à 64,98 $ ; la base porte 89,90 € (relevé Maxesport « A9 Air 8K »)
    → deux marchés différents, à trancher.
+   **Toujours à trancher au 2026-10-12** : la boutique ATK (pays France) affiche la variante
+   « Air / Shadow White » à **59,95 €** (prix normal 72,95 €). La base garde la valeur d'origine
+   jusqu'à la décision du propriétaire (voir `docs/audit/ROBUSTESSE_2026-10-12.md` §9.5).
 8. **A9 Mini** : **aucun prix en base** ; la page FR affiche 59,95 € (72,95 € barré) pour Mini / Black.
+   **Réglé le 2026-10-12** : prix inscrit au catalogue (59,95 €, variante « Mini », source ATK datée),
+   avec la bosse (« Center » → Mid) et les dimensions passées en « vérifié » : la souris entre dans le
+   tableau des recommandations.
 9. **MAD R** : **aucun prix en base** ; de retour en stock chez ATK FR, « à partir de 41,95 € ».
+   **Au 2026-10-12** : la fiche affiche « à partir de » 40,95 € mais le produit est en rupture de stock ;
+   aucun prix n'est retenu (la base ne retient que les variantes en stock).
 10. **Duckbill** : aucun produit « Barbell » n'existe chez ATK : le bon handle est
     `atk-blazing-sky-duckbill-wireless-mouse` (81,95 €).
 11. **A9 Plus** : la variante A9 Plus / White est en **précommande** au moment du relevé (le lien

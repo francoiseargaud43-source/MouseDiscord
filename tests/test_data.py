@@ -148,6 +148,30 @@ def test_two_missing_criteria_still_block_a_mouse(mice):
             assert s.is_scored and s.is_partial, mid
 
 
+def test_bosse_des_xlite_et_prix_de_l_a9_mini_sont_sources(mice):
+    """Données ajoutées le 2026-10-12 : bosse des Pulsar Xlite (EloShapes) et prix de l'ATK A9 Mini.
+
+    Ce sont les deux manques qui empêchaient ces souris d'entrer dans le tableau des recommandations.
+    Aucune valeur devinée : chaque champ ajouté cite une source datée, et la souris devient classable
+    (partielle) dès qu'il ne lui reste qu'UN manque.
+    """
+    for ident in ("pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium", "pulsar_xlite_v4_large",
+                  "pulsar_xlite_crazylight_medium"):
+        mouse = mice[ident]
+        assert mouse.hump_position == "Mid", ident
+        assert any("eloshapes.com" in s.url and "hump_position" in s.fields for s in mouse.sources), ident
+        # Un seul manque restant (la hauteur des boutons) : plus jamais « à vérifier » faute de bosse.
+        # Pour un profil donné la souris peut bien sûr être écartée par ses mesures (une « Large » ne
+        # convient pas à une main de 180 mm), mais elle n'est plus mise en attente.
+        assert not evaluate_mouse(mouse, HandMeasure(180, 90), Grip.PALM).is_pending, ident
+    a9 = mice["atk_a9_mini"]
+    assert (a9.price_eur, a9.price_status) == (59.95, "verified")
+    assert (a9.hump_position, a9.dimension_status) == ("Mid", "verified")
+    assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields for s in a9.sources)
+    score = evaluate_mouse(a9, HandMeasure(180, 90), Grip.PALM)
+    assert score.is_scored and score.is_partial      # un seul manque : hauteur des boutons
+
+
 def test_duckbill_length_is_not_filled_while_sources_conflict(mice):
     duck = mice["atk_duckbill"]
     assert duck.length_mm is None
@@ -400,13 +424,20 @@ def test_partial_scoring_opens_the_choice_without_inventing_points(mice):
     """Ouverture du critère « hauteur des boutons » (2026-10-12) : mesurée souris par souris.
 
     Effets attendus : la Y9 (ergonomique main droite, palm Élevé publié par ATK) devient classable en
-    Palm, et les Pulsar Mini en Claw/Fingertip. Les souris qui gardent DEUX manques (les Xlite v4,
-    dont la position de la bosse n'est publiée nulle part) restent, elles, « à vérifier ».
+    Palm, et les Pulsar Mini en Claw/Fingertip. Les souris qui gardent DEUX manques restent, elles,
+    « à vérifier » — après le relevé de la bosse des Xlite v4 (EloShapes, 2026-10-12), l'exemple réel
+    de deux manques est la VXE X3 (bosse inconnue + prise non publiée).
     """
     palm = {m.id: evaluate_mouse(m, HandMeasure(180, 90), Grip.PALM) for m in mice.values()}
     assert palm["atk_y9_ultimate"].is_scored, "la Y9 doit être classable en Palm"
     assert palm["atk_y9_ultimate"].is_partial
-    assert palm["pulsar_xlite_v4_mini"].is_pending, "bosse + boutons inconnus : toujours bloquée"
+    # Depuis le 2026-10-12 (bosse des Xlite v4 relevée sur EloShapes → Mid), ces Pulsar n'ont plus
+    # qu'UN manque (la hauteur des boutons) : elles entrent dans le choix, partielles comme la Y9.
+    assert palm["pulsar_xlite_v4_mini"].is_scored, "bosse connue : un seul manque, donc classable"
+    assert palm["pulsar_xlite_v4_mini"].is_partial
+    # La règle des DEUX manques, elle, reste vérifiée sur une souris réelle : la VXE X3 cumule une
+    # bosse inconnue et une prise non publiée.
+    assert palm["vxe_x3"].is_pending, "deux manques : toujours « à vérifier »"
     claw = {m.id: evaluate_mouse(m, HandMeasure(150, 75), Grip.CLAW) for m in mice.values()}
     assert sum(1 for s in claw.values() if s.is_scored) >= 13, "le profil Claw 150 × 75 doit s'ouvrir"
 

@@ -373,3 +373,88 @@ Trois sorties possibles, **chacune mesurable** (à trancher par le propriétaire
 2. **Souris sans prise publiée** — autoriser une source tierce (EloShapes, test écrit) pour les 11
    souris ci-dessus, ou les laisser hors service. Sans source, elles resteront invisibles ; avec une
    source tierce, il faut ajouter une provenance explicite dans le catalogue (`fit_status`).
+
+## 9. Cinquième vague (16e passe) : les souris « jamais recommandées » sortent du tableau
+
+### 9.1 Le doute sur les coques répétées est refermé, la preuve est dans la commande
+
+Le §8.7 laissait une piste ouverte : quatre profils semblaient montrer deux fois la même coque alors
+qu'une AUTRE coque se trouvait, d'après un contrôle indépendant, dans la zone de tolérance du mode.
+Contrôle refait **avec le moteur réel** sur la grille complète (27 170 profils : longueurs 140–230 mm,
+largeurs 60–120 mm, trois prises, trois thénars, cinq modes et cinq budgets personnalisés) :
+
+- **4 472 profils (16,5 %)** affichent deux places sur la même coque ;
+- **0 profil** où une autre coque est dans la zone de tolérance du mode ;
+- les cinq paires concernées : `pulsar_x2_crazylight_mini` + `pulsar_x2_v3_mini` **2 214** ·
+  `atk_a9_plus` + `atk_a9_ultimate` **1 500** · `pulsar_x2_crazylight_medium` + `pulsar_x2a_v3_medium`
+  **380** · `atk_a9_nb` + `atk_a9_plus` **332** · `atk_ghost_extreme` + `atk_ghost_ultimate` **46**.
+
+Conclusion : le repli « même coque » n'est jamais un défaut de calcul — il ne se produit que lorsque la
+zone ne contient rien d'autre. **Piste fermée**, pas « en attente d'explication ».
+
+### 9.2 Deux familles de données manquantes complétées (sourcées, datées)
+
+- **Pulsar Xlite v4 Mini, v4 Medium, v4 Large et Xlite CrazyLight Medium** : la position de la bosse est
+  publiée par EloShapes (« Hump placement : **Center** »), relevée fiche par fiche le 2026-10-12 →
+  **Mid** (règle de correspondance du projet, `tools/build_mouse_db.py`). Les dimensions de la boutique
+  Pulsar sont confirmées à l'identique (Xlite v4 Mini 115,6 × 63,4 × 40,7 · 52 g ; Medium 122 × 66 × 43
+  · 54 g ; Large 126 × 69,5 × 44,5 · 58 g ; CrazyLight Medium 122 × 66 × 43 · 44 g). Ces quatre souris
+  sortent de l'état « à vérifier » en Palm et en Claw.
+- **ATK A9 Mini** : prix EUR officiel **59,95 €** (boutique ATK, pays France, variante « Mini » de la
+  fiche A9 Ultimate, prix normal 72,95 €) et bosse « Center » → **Mid** ; dimensions passées en
+  **vérifié** (EloShapes donne exactement 118,4 × 61,2 × 38,6 · 39 g, et son lien « où acheter » pointe
+  la variante ATK 47852235718874 identifiée dès le 2026-10-11 dans
+  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §6.8).
+  Précision honnête : EloShapes annonce un capteur **PAW3950 Ultra** là où la fiche InputGear FR annonce
+  un **PAW3955** — divergence signalée dans la fiche, valeur d'origine conservée, rien de tranché.
+- **ATK U2 V2 Mini** : prix corrigé de 77,95 € à **59,95 €** (variante « U2 V2 Mini / White », boutique
+  ATK, pays France). La correction était demandée par
+  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §6.6 : l'ancienne valeur venait de l'U2 Mini,
+  qui n'est pas la V2.
+
+### 9.3 Effet mesuré (même grille de 18 522 profils, `tools/recommendation_stats.py`)
+
+| Mesure | Avant (15e passe) | Après (16e passe) |
+|---|---:|---:|
+| Profils sans aucun résultat | 1 422 (7,7 %) | **1 212 (6,5 %)** |
+| dont une souris « à vérifier » faute de donnée publiée | 1 170 | 960 |
+| Profils à deux places sur la même coque | 3 109 (16,8 %) | **2 830 (15,3 %)** |
+| Souris jamais recommandées | 19 sur 36 | **17 sur 36** |
+
+Deux souris entrent au tableau : l'**ATK A9 Mini** (prix) et la **Pulsar Xlite v4 Mini** (bosse).
+Trois autres deviennent classables sans jamais gagner : Xlite v4 Medium, Xlite v4 Large et Xlite
+CrazyLight Medium — mêmes formes que la v4 Mini, plus grandes et plus chères : elles perdent le match,
+ce n'est pas une donnée manquante.
+
+### 9.4 Ce que cela change dans le message de référence (canaris mis à jour, jamais « ajustés »)
+
+Sur le profil Palm 180 × 90 en Qualité/Prix, cinq souris sont à 30/40 et le mode « rapport points/€ »
+retient la moins chère : l'**ATK A9 Mini (59,95 €)**, devant l'ATK GHOST Ultimate (68,95 €). L'image du
+résultat, le bloc « en clair » et l'alternative suivent (illustration T14, bosse centrale). Trois tests
+figeaient l'ancien gagnant : ils ont été réécrits avec la date et la raison, et un canari a été ajouté
+pour figer les nouvelles données. **344 tests verts**, banc d'essai **0 problème** (720 profils),
+`pyflakes` propre, `privacy_scan` 0 violation.
+
+À l'œil du propriétaire : la compatibilité Palm de l'A9 Mini vient de la phrase du fabricant sur la
+**série** A9 (« comfortably accommodating claw, palm, and fingertip grips », fiche ATK), appliquée à la
+version Mini — exactement comme pour l'A9 Plus, l'A9 NB et l'A9 Air. C'est ce transfert qui la place en
+tête de ces profils ; s'il doit être revu, c'est une décision du propriétaire, pas un calcul à changer
+seul.
+
+### 9.5 Ce qui reste, après cette passe
+
+1. **11 souris sans compatibilité de prise publiée** : `atk_f1_v2`, `atk_duckbill`, `atk_fierce_x`,
+   `atk_phantom_ultimate`, `atk_u2_v2_mini`, `atk_u2_v2_ultimate`, `atk_zero`, `vxe_r1`, `vxe_v3`,
+   `vxe_x3`, `vxe_mad_r`. Jamais classables, donc jamais proposées, quel que soit le profil — aucune
+   valeur ne peut être devinée. Décision attendue : source tierce autorisée (§8.8, choix 2).
+   Deux pistes vérifiées le 2026-10-12 : la fiche officielle de la **VXE MAD R** porte la phrase
+   « Perfect Fit for **Claw and Palm** Grips » (même nature de source que celle utilisée pour l'U2), et
+   la fiche **U2 V2** ne publie rien de plus que « two sizes to fit different hand types ».
+2. **Hauteur des boutons manquante sur 25 souris sur 36** : c'est le critère qui pèse le plus — sur le
+   banc rapide, 345 profils sur 720 ont un match idéal « partiel » (boutons non documentés).
+3. **Trois souris complètes ne sortent jamais parce qu'elles perdent** : A9 Air, U2 Mini, X2H
+   CrazyLight Mini (formes et prix toujours battus par une voisine moins chère).
+4. **Prix en attente d'arbitrage** : l'**A9 Air** vaut 89,90 € chez Maxesport (relevé du 2026-10-11)
+   mais la boutique ATK affiche la variante « Air / Shadow White » à **59,95 €** (relevé du 2026-10-12,
+   `?country=FR`). Deux marchés : la base garde la valeur d'origine jusqu'à la décision du propriétaire.
+   La **VXE MAD R** est affichée « à partir de 40,95 € » mais en rupture de stock : aucun prix retenu.

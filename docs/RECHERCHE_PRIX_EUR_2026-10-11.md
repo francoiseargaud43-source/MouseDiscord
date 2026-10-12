@@ -50,6 +50,12 @@ officielle dans leurs notes (ex. F1 V3 « à partir de » 59,95 € contre 70 �
 Sans prix EUR distinct à ce jour : **A9 Mini** (vendue dans la famille A9 « à partir de » 18,95 €)
 et **U2 V2 Mini** (le store ne liste qu'un « U2 Mini », 77,95 €, qui partage la coque).
 
+**Suite du 2026-10-12 (16e passe)** : les deux cas sont réglés. L'**A9 Mini** (variante « Mini » de la
+fiche A9 Ultimate, 59,95 €, prix normal 72,95 €) et l'**U2 V2 Mini** (variante « U2 V2 Mini / White »,
+59,95 €, prix normal 72,95 €) ont un prix EUR officiel distinct, relevé sur la boutique ATK en France et
+inscrit au catalogue avec sa source datée. L'ancienne valeur de 77,95 € de l'U2 V2 Mini venait du
+produit « U2 Mini », qui n'est pas la V2 : elle a été corrigée.
+
 ## 2. Autres sources EUR (pour comparaison, non utilisées dans la base)
 
 - **Maxesport** (revendeur FR, expédition depuis la France) : F1 V3 Ultimate+ 89,90 €,

@@ -318,14 +318,15 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
     alt = next(v for k, v in fields.items() if "alternative" in k)
-    # Depuis l'ouverture du critère « hauteur des boutons » (2026-10-12), le classement réel du
-    # profil Palm 180 × 90 en Qualité/Prix place l'ATK GHOST Ultimate en tête (30/40, 68,95 €),
-    # suivie du Scyrox V6 (30/40) : deux coques différentes, jamais deux variantes de la même.
-    assert "ATK GHOST Ultimate" in ideal
-    assert "68,95 €" in ideal and "**75 %**" in ideal   # nom · poids · prix · pourcentage · forme
+    # Depuis le 2026-10-12, deux données de plus sont en base (bosse des Pulsar Xlite, prix EUR de
+    # l'ATK A9 Mini) : sur ce profil Palm 180 × 90 en Qualité/Prix, cinq souris sont à 30/40 et le
+    # mode « rapport points/€ » retient la moins chère, l'ATK A9 Mini (30/40, 59,95 €, prise Palm
+    # publiée par ATK) ; l'alternative est une AUTRE coque, l'ATK GHOST Ultimate (30/40, 68,95 €).
+    assert "ATK A9 Mini" in ideal
+    assert "59,95 €" in ideal and "**75 %**" in ideal   # nom · poids · prix · pourcentage · forme
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
-    assert "Scyrox V6" in alt
+    assert "ATK GHOST Ultimate" in alt
     assert guide.title == "📐 Vos repères de taille"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
     assert "30/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
@@ -333,7 +334,7 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert "Hauteur des boutons non documentée" in guide_text
     assert "Pourquoi ce choix" in " ".join(f.name for f in guide.fields)
     # La souris choisie est reliée aux repères de taille, juste au-dessus.
-    assert any(f.name.startswith("🔎 ATK GHOST Ultimate") and "en clair" in f.name for f in guide.fields)
+    assert any(f.name.startswith("🔎 ATK A9 Mini") and "en clair" in f.name for f in guide.fields)
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in kwargs["embeds"])
     assert "ni une probabilité" in kwargs["embeds"][-1].footer.text
 
@@ -826,16 +827,17 @@ def test_result_hump_illustration_follows_the_winner(monkeypatch):
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     main = flow.results_embeds(session, flow.compute_selection(session))[0]
-    # Illustration liée à la bosse de la souris RÉELLEMENT retenue : ATK GHOST (bosse arrière) → T07.
-    assert "T07_bosse_arriere" in main.image.url
+    # Illustration liée à la bosse de la souris RÉELLEMENT retenue : la retenue du profil Palm
+    # 180 × 90 Qualité/Prix est l'ATK A9 Mini, bosse au milieu (« Center » EloShapes → Mid) → T14.
+    assert "T14_bosse_centrale" in main.image.url
 
 
 @pytest.mark.asyncio
 async def test_two_slots_never_show_the_same_shell():
     """2026-10-12 : le match idéal et l'alternative ne sont jamais deux variantes de la même coque.
 
-    « ATK GHOST Ultimate » puis « ATK GHOST Extreme » serait la même souris deux fois : le résultat
-    descend donc la liste jusqu'à une coque différente.
+    « ATK A9 Mini » puis un autre ATK A9 serait la même souris deux fois : le résultat descend donc la
+    liste jusqu'à une coque différente (ici l'ATK GHOST Ultimate, autre coque, même score de 30/40).
     """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
@@ -843,7 +845,7 @@ async def test_two_slots_never_show_the_same_shell():
     ideal, alternative, _ = flow.result_slots(flow.compute_selection(session))
     assert ideal is not None and alternative is not None
     assert not selection._same_shell(ideal, alternative)
-    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK GHOST Ultimate", "Scyrox V6")
+    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK A9 Mini", "ATK GHOST Ultimate")
 
 
 @pytest.mark.asyncio
