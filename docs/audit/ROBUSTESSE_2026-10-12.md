@@ -1209,3 +1209,97 @@ n'annonce pas le gagnant que le moteur calcule (ATK Z1 V2 Ultra) ».
   1 194 replis de coque, 6 779 profils à trois places (24,95 %).
 - `python tools/compare_profiles.py` : matrice régénérée (23 insertions, 17 suppressions).
 - `pyflakes` : aucun avertissement.
+
+---
+
+## 17. Vingt-huitième passe (suite) : les huit souris jamais recommandées, expliquées une par une
+
+**Rappel de la demande** : « implémenter les souris qu'on n'a pas pu mettre dans le tableau, en faisant
+tout le travail derrière (mesures, tailles) ». Avant de mesurer quoi que ce soit, il fallait savoir
+**pourquoi** chacune des huit ne sort jamais : une souris peut être bloquée par une donnée manquante
+(mesurable) ou par une règle (non mesurable). La commande qui produit le tableau :
+
+```
+.venv/bin/python tools/recommendation_stats.py        # grille complète : 3 990 profils
+```
+
+| Souris | Notée | En attente | Écartée | Cause, mesurée |
+|---|---:|---:|---:|---|
+| ATK A9 Air | 11 172 | 0 | 7 350 | **coque jumelle** : A9 Ultimate devant sur **11 172 / 11 172** |
+| ATK Blazing Sky U2 Mini | 5 544 | 3 780 | 9 198 | **coque jumelle** : U2 V2 Mini devant sur **5 544 / 5 544** ; + hauteur des boutons et prise Palm absentes |
+| Pulsar X2 CrazyLight Medium | 4 830 | 3 360 | 10 332 | **coque jumelle** : X2A v3 devant sur **4 830 / 4 830** ; + prise Palm absente |
+| Pulsar X2H CrazyLight Mini | 3 990 | 2 520 | 12 012 | **coque jumelle** : X2H v3 Mini devant sur **3 990 / 3 990** ; + hauteur des boutons et prise Palm absentes |
+| Pulsar Xlite CrazyLight Medium | 5 760 | 900 | 11 862 | hauteur des boutons et **prise Fingertip** absentes ; jamais 1re là où elle est notée |
+| Pulsar Xlite v4 Large | 1 440 | 0 | 17 082 | hauteur des boutons et **prise Fingertip** absentes ; jamais 1re là où elle est notée |
+| Pulsar Xlite v4 Medium | 5 760 | 900 | 11 862 | idem Xlite CrazyLight Medium |
+| VXE Dragonfly X3 | 1 792 | **10 752** | 5 978 | **position de la bosse** et hauteur des boutons absentes : non classable dans 10 752 profils sur 12 544 |
+
+### 17.1 Les quatre jumelles : la moins chère gagne toujours, et c'est voulu
+
+Mesure sur chaque paire (mêmes coque, forme, bosse et boutons) :
+
+| Paire (coque) | Prix | Poids | Qui sort |
+|---|---|---|---|
+| A9 Ultimate / A9 Air | **41,95 €** / 59,95 € | 53 g / 47 g | la moins chère |
+| U2 V2 Mini / U2 Mini | **59,95 €** / 77,95 € | 39 g / 38 g | la moins chère |
+| X2A v3 / X2 CrazyLight Medium | **119,99 €** / 149,99 € | 56 g / 39 g | la moins chère |
+| X2H v3 Mini / X2H CrazyLight Mini | **119,99 €** / 149,99 € | 51 g / 37 g | la moins chère |
+
+Autrement dit : le bot ne propose **jamais** la version plus chère d'une forme identique, ce qui est
+exactement la règle « la personne doit être contente de son achat pour le prix ». Ce qui distingue ces
+quatre souris de leur jumelle tient au **poids** (elles sont plus légères) — or le poids n'entre dans
+aucun score (`docs/MASTER_PROMPT_AZEMOUSE.md` §7.5, décision du propriétaire en attente). Tant que ce
+choix n'est pas tranché, ces quatre souris resteront derrière leur jumelle moins chère : **ce n'est pas
+un bug, c'est la conséquence directe de la règle**. Le jour où le poids comptera, elles pourront sortir.
+
+### 17.2 Les trois Xlite : la donnée existe, mais elle est « Not ideal »
+
+Une fiche tierce autorisée (mouseshape.com) publie trois verdicts par souris. Relevés le 2026-10-12 :
+
+| Souris | Palm | Claw | Fingertip |
+|---|---|---|---|
+| Pulsar Xlite v4 Medium (`/mice/pulsar-xlite-v4-medium`) | Not ideal | Recommended | **Not ideal** |
+| Pulsar X2 CrazyLight Medium (`/mice/pulsar-x2-crazylight-medium`) | **Not ideal** | Recommended | Not ideal |
+| ATK U2 Mini (`/mice/atk-u2-mini`) | **Not ideal** | Recommended | Okay |
+
+La règle du projet est explicite et testée
+(`tests/test_data.py::test_third_party_grip_guide_fills_only_what_the_brand_silences`) :
+« Recommended » → « Élevé », « Okay » → « Moyen », et **« Not ideal » n'est jamais converti en
+« Faible » — une valeur tierce n'exclut personne**. Ces prises restent donc « Inconnu », et les trois
+Xlite restent « à vérifier » en Fingertip. **Compléter ces champs serait inventer** : la seule façon
+d'obtenir un verdict Fingertip exploitable est une source qui le publie (le fabricant aujourd'hui ne
+publie que le Palm ; MouseShape dit « Not ideal »).
+
+### 17.3 La VXE Dragonfly X3 : le seul cas qui reste à débloquer
+
+Deux champs lui manquent — bosse et hauteur des boutons — et ils sont **mesurables**, contrairement aux
+prises. Ce qui a été tenté le 2026-10-12 :
+
+- fiche officielle ATK (`atk.store`, EN et FR) : publie poids, dimensions, forme, prise, capteur, MCU,
+  switchs, batterie… **ni position de la bosse, ni hauteur des boutons** ;
+- EloShapes : pas de fiche `vxe-x3` (déjà constaté) ; mouseshape.com : pas de page ;
+- images : `image_search` « VXE Dragonfly X3 mouse side view profile » → les quatre fichiers reçus sont
+  **d'autres modèles** (VXE R1 Pro Max, VXE R1, ATK X1, R1 « Smart Speed X »), vérifié à l'œil sur une
+  planche de contrôle. Les fichiers ont été supprimés du corpus : leur nom mentait, ils auraient piégé
+  une passe suivante.
+
+Conclusion honnête : **la X3 reste bloquée** tant qu'une vue strictement de profil (ou une fiche
+publiant la bosse) n'est pas disponible. C'est un cul-de-sac borné, pas une piste ouverte.
+
+### 17.4 Point de maintenance : 20 prix sur 36 sont des prix promotionnels
+
+Le relevé officiel a été fait pendant une période de promotions ATK (10 % à 40 % sur presque toutes les
+fiches, dont l'événement « Halloween Specials » du 5 au 31 octobre 2026). Le prix normal est consigné
+dans `price_note` quand il est publié — par exemple A9 Ultimate : **41,95 € aujourd'hui, 63,95 € hors
+promotion**. Le classement utilise le prix du jour, comme demandé (« le prix de la boutique
+officielle »), mais ces valeurs ont une **date de péremption** : une revérification mensuelle des 20
+prix est nécessaire pour que l'Économique ne recommande pas une souris dont le prix a doublé. Aucune
+valeur n'a été modifiée dans cette passe.
+
+### 17.5 Ce qui reste ouvert, dit sans détour
+
+- **21 souris sur 36** n'ont toujours pas de hauteur de boutons publiée : la campagne de mesure par
+  image continue (protocole `tools/measure_button_height.py`, deux vues, identité prouvée), et c'est le
+  seul levier qui débloquera des scores partiels.
+- La décision **« le poids compte-t-il ? »** appartient au propriétaire : elle décide du sort des quatre
+  jumelles légères (17.1).
