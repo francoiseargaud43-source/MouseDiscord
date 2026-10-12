@@ -14,6 +14,11 @@ Méthode (reproductible, sans invention de valeur) :
    propriétaire). Aucune valeur absolue n'est inventée : seule une **classe** est produite, avec
    l'incertitude affichée.
 
+L'image doit d'**abord** être identifiée : le nom de fichier ne prouve rien (le même fichier circule
+souvent sous plusieurs noms de modèles — voir ``tools/image_corpus_check.py``). L'identité se vérifie
+à l'œil sur l'image (nom imprimé sur la coque, logo) ; une image non identifiée ne produit aucune
+valeur publiable, quelle que soit la qualité de la mesure.
+
 Usage :
     python tools/measure_button_height.py IMAGE --length-mm 122.5 --height-mm 42.4 [--front left|right]
 """

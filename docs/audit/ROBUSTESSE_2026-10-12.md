@@ -880,63 +880,42 @@ est inférieur de 5 points (Palm, Claw) ou 10 points (Fingertip) à celui d'une 
 cause structurelle qui maintient neuf souris hors des trois places (§12.5). Le propriétaire a demandé que
 ces hauteurs soient mesurées **sur les images** : c'est l'objet de cette passe.
 
-### 13.2 La méthode, et sa validation sur une souris connue
+### 13.2 Vingt-cinquième passe : contrôle d'identité du corpus — la conclusion change
 
-`tools/measure_button_height.py` mesure, sur une **vue de profil**, la hauteur de la falaise avant de la
-coque (l'appui des boutons) en pourcentage de la hauteur officielle, puis classe : ≤ 43,3 % → « Low »,
-≥ 55,1 % → « High », entre les deux → aucune classe (aucune référence « Mid » n'existe). Le paramètre
-`--front` (côté où se trouve l'avant) est décisif.
+Nouveau `tools/image_corpus_check.py` (+ `tests/test_image_corpus_check.py`) : les images sont regroupées
+par **empreinte SHA-256**. Sur le corpus de recherche (92 fichiers) : **70 images distinctes, 10 groupes de
+doublons**, dont une image qui circule sous **huit noms de modèles** (Z1 V2, F1 Ultimate, ZERO, Phantom
+Ultimate, U2 Mini, U2, X1 series, X1 V2 Ultra Max). Une image qui porte plusieurs noms ne peut être
+attribuée à aucun : le nom de fichier ne prouve rien, l'identité se vérifie à l'œil sur l'image (nom
+imprimé sur la coque, logo).
 
-**Validation** sur l'**ATK Z1 V2 Ultra**, dont la hauteur de boutons est connue (« High », cahier des
-charges) :
+**Ré-attribution des mesures** (vérifiée visuellement) :
 
-| Image | `--front` | Mesure | Classe rendue |
-|---|---|---:|---|
-| `atk-blazing-sky-z1-v2-gaming-mouse-side--1.jpg` | `right` | **55 %** | **High** ✔ (valeur propriétaire) |
-| même image | `left` | 37 % | Low (orientation fausse → mesure fausse) |
+| Image (tel qu'elle circule) | Ce qu'elle montre | `--front` | Mesure | Classe |
+|---|---|---|---:|---|
+| `…z1-v2-gaming-mouse-side--1.jpg` (8 noms) | « Z1 ULTIMATE » imprimé | droite | **55,0 %** | High (= valeur propriétaire) |
+| `…f1-ultimate-white-mouse--3.jpg` | « F1 ULTIMATE » imprimé | droite | **42,0 %** | Low (= valeur propriétaire) |
+| `…zero-gaming-mouse-side-p-1.jpg` | « ZERO » imprimé | droite | **43,0 %** | Low (une seule image vérifiée) |
+| `…a9-ultimate-wireless-mouse-side-view-1.jpg` | « **A9 AIR** » imprimé | droite | 47,3 % | aucune (bande grise) |
+| `…x1-v2-mouse-side-view-wh-1.jpg` | souris ATK blanche, **aucun nom** | gauche | 44,0 % | image inexploitable |
 
-Vue acceptée par le contrôle de perspective (écart 3,0 % au rapport officiel) : **la méthode reproduit la
-valeur du propriétaire à 0,1 point près quand l'orientation est bonne.**
+**Trois corrections de la rédaction précédente** :
 
-### 13.3 Ce que donnent les vues de face trouvées (relevé du 2026-10-12)
+1. « Deux photos du même modèle donnent 43,0 % et 48,0 % » — **faux** : la lecture 48,0 % mesurait
+   l'**arrière** d'une image dont l'avant est à gauche (molette et logo) ; à l'endroit elle lit 44,0 %.
+2. « Une souris « Mid » (X1 V2 Ultra Max) se fait classer « Low » » — **non établi** : l'image invoquée ne
+   porte aucun nom de modèle.
+3. « ATK A9 Ultimate 47,3 % » — la photo porte « **A9 AIR** » imprimé : la mesure concerne l'A9 Air.
 
-Images ATK officielles (`atk.store`, CDN 1500 px) récupérées par recherche d'images :
+**Règle de publication** (durcie) : identité vérifiée visuellement **et** deux images distinctes
+(empreintes différentes) donnant la même classe avec **≥ 3 points de marge** sur les seuils. Aucune souris
+ne remplit ces conditions aujourd'hui : les 25 hauteurs de boutons restent `Inconnu`, **aucune valeur
+inventée**. La ZERO n'est plus qu'à **une** image vérifiée près (43,0 % → Low).
 
-| Souris | Image | `--front right` | `--front left` | Conclusion |
-|---|---|---:|---:|---|
-| ATK ZERO | `1500_2db506d5…jpg` (profil blanc) | **43,0 %** → Low | 47,8 % → aucune | les deux lectures encadrent le seuil : rien de publiable |
-| ATK ZERO | `1500_dc713aa9…jpg` (coque givrée) | 48,0 % → aucune | **44,0 %** → Low | idem, et **l'autre photo du même modèle ne donne pas la même lecture** |
-| ATK A9 Ultimate | vue de profil | 47,3 % → aucune | 48,3 % → aucune | dans la bande grise (= « Mid », comme l'A9 Plus du propriétaire) |
-| ATK X1 V2 Ultra Max | vue de profil | 48,0 % → aucune | **44,0 % → Low** | **le propriétaire dit « Mid »** : la lecture « Low » est un faux positif |
+**Validation de la méthode** (inchangée) : quand l'image est une vraie vue de profil correctement
+orientée, l'outil reproduit la valeur du propriétaire — Z1 V2 → 55,0 % (« High »), F1 Ultimate → 42,0 %
+(« Low »), toutes deux vérifiées par le nom imprimé sur la coque. Vues refusées par le contrôle de
+perspective : ATK U2, Y9 Ultimate, F1 V3 Ultimate, Scyrox V8, A9 Plus 2.0, Scyrox V6.
 
-Vues **refusées** par le contrôle de perspective (rapport longueur/hauteur trop éloigné des cotes
-officielles) : ATK U2 (`2,69` vs `3,16` attendu), ATK Y9 Ultimate (écart 6,7 %), ATK F1 V3 Ultimate,
-Scyrox V8, ATK A9 Plus 2.0, Scyrox V6. Aucune image strictement de profil n'existe pour les autres
-souris du catalogue dans les résultats de recherche.
-
-### 13.4 Décision : aucune valeur n'est écrite (et pourquoi)
-
-Deux raisons mesurées, aucune hypothèse :
-
-1. **Deux photos du même modèle ne donnent pas la même lecture** : 43,0 % et 48,0 % pour l'ATK ZERO,
-   soit 5 points d'écart à cheval sur le seuil « Low » (43,3 %). La précision des photos web (± 2 à 3
-   points) ne permet pas de trancher un cas limite.
-2. **Une souris « Mid » peut être classée « Low » par une lecture** : l'ATK X1 V2 Ultra Max (hauteur
-   « Mid » au cahier des charges) lit 44,0 % avec une orientation, 48,0 % avec l'autre. Publier la
-   première valeur aurait inscrit une valeur **fausse** dans le catalogue.
-
-Règle de publication retenue (elle est écrite ici pour la suite) : ne publier une hauteur de boutons que
-si **au moins deux photos distinctes** de la souris, **orientation vérifiée à l'œil**, donnent la **même
-classe** avec **au moins 3 points de marge** sur les deux seuils. Aucune des souris de cette passe ne
-remplit ces trois conditions — donc les 25 souris restent `Inconnu`, et le catalogue ne gagne aucune
-valeur inventée.
-
-**Ce qui débloquerait la mesure** (à trancher par le propriétaire, question posée) : reconnaître la bande
-**43,3 – 55,1 %** comme la classe **« Mid »**. La preuve que cette bande est bien du « Mid » existe déjà :
-l'ATK X1 V2 Ultra Max (Mid) lit 48 %, l'ATK A9 Ultimate — même coque que l'A9 Plus 2.0, « Mid » au cahier
-des charges — lit 47,3 à 48,3 %. Sans cette reconnaissance, la méthode ne peut publier que « Low » et
-« High » très francs, et une souris « Mid » proche du seuil bas se fait appeler « Low ».
-
-**Preuves.** Les quatre mesures acceptées et les six refus sont ci-dessus avec leurs valeurs ; le banc
-affiche pour chacune l'écart au rapport officiel (« vue refusée : rapport longueur/hauteur trop éloigné
-des cotes officielles »). Aucune donnée du catalogue n'a été modifiée par cette passe.
+**Prochaine étape utile** : chercher des vues à nom imprimé des souris « Mid » (A9 Plus, X1 V2 Ultra Max,
+Scyrox V6) pour étalonner la classe « Mid », qu'aucune référence ne produit encore.

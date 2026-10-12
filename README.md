@@ -432,6 +432,7 @@ MouseDiscord/
 │   ├── build_ai_bundle.py    # Prépare le pack (prompt + règles + catalogue) pour une IA de recherche
 │   ├── measure_grip_width.py # Largeur de prise en mm depuis une capture vue de dessus (méthode Oblivity)
 │   ├── measure_button_height.py # Classe de hauteur des boutons depuis une vue de côté (vue en perspective refusée)
+│   ├── image_corpus_check.py # Doublons d'un corpus d'images : une photo = une identité (sinon mesure refusée)
 │   ├── qa_flow_matrix.py     # Banc d'essai du parcours : toute la grille de profils passe par le moteur
 │   ├── flow_effect.py        # Effet d'une modification des trois places : avant/après mesuré, jamais supposé
 │   ├── recommendation_stats.py # Combien de fois chaque souris est recommandée (rapport dans docs/audit/)
@@ -464,6 +465,7 @@ python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 python tools/qa_flow_matrix.py       # banc d'essai du parcours (27 170 profils, 0 problème attendu)
 python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (720 profils)
 python tools/flow_effect.py          # effet d'une modification des trois places (trois places avant/après)
+python tools/image_corpus_check.py  # doublons d'un corpus d'images (identité vérifiable avant mesure)
 python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md
 ```
 

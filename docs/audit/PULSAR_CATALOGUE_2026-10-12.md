@@ -123,13 +123,14 @@ plus ; seule la famille X2 a une phrase exploitable (« la X2 a une implantation
 large »). C'est donc le relevé que le propriétaire est seul à pouvoir fournir — son outil Oblivity pose
 exactement cette question à chaque souris.
 
-**Mise à jour du 2026-10-12 (24e passe)** : la mesure a été tentée par l'agent sur des vues de profil
+**Mise à jour du 2026-10-12 (24e-25e passes)** : la mesure a été tentée par l'agent sur des vues de profil
 officielles (`tools/measure_button_height.py`), pas seulement demandée au propriétaire. La méthode est
-validée (l'ATK Z1 V2, « High » connue, redonne 55 % quand l'orientation est bonne) mais **aucune valeur n'a
-pu être écrite** : deux photos du même modèle ATK ZERO donnent 43,0 % et 48,0 % (à cheval sur le seuil), et
-une souris « Mid » (ATK X1 V2 Ultra Max) se fait classer « Low » par une des deux lectures. Détail complet :
-`ROBUSTESSE_2026-10-12.md` §13. Ce qui débloquerait la publication : reconnaître la bande 43,3 – 55,1 %
-comme la classe « Mid » (question posée au propriétaire).
+validée (photo « Z1 ULTIMATE » imprimé → 55,0 % « High », photo « F1 ULTIMATE » imprimé → 42,0 % « Low »,
+toutes deux conformes aux valeurs du propriétaire), mais **aucune valeur n'a pu être écrite** : le contrôle
+d'identité du corpus (`tools/image_corpus_check.py`) montre qu'une même photo circule sous **huit noms de
+modèles** — une image qui n'est pas identifiée visuellement (nom imprimé sur la coque) ne peut être
+attribuée à personne. Détail complet et corrections : `ROBUSTESSE_2026-10-12.md` §13,
+`MESURE_BOUTONS_2026-10-12.md` §13.
 
 Effet mesuré de l'ajout des dix Pulsar (souris réellement classables, donc proposables) :
 
@@ -231,12 +232,15 @@ connus est aujourd'hui écartée uniquement parce que ce relevé manque).
 **Trois voies possibles** (aucune n'invente de valeur) :
 
 1. **Vos valeurs** — vous disposez de l'outil Oblivity, qui pose exactement cette question souris par
-   souris : les valeurs entrent avec la provenance « cahier des charges », comme vos six souris actuelles.
+   souris : les valeurs entrent avec la provenance « cahier des charges », comme vos sept souris
+   actuelles.
 2. **Relevé de mesure** — tenté le 2026-10-12 : l'outil `tools/measure_button_height.py` mesure la
-   hauteur au bord d'attaque des boutons et **retrouve exactement les deux classes connues** testables
-   (ATK F1 V2 « bas » → 43,3 % ; ATK Z1 V2 « hauts » → 55,1 %). Limite : seules 4 vues officielles sur
-   11 passent le contrôle qualité (les autres sont en perspective et sont **refusées**, jamais
-   approximées). Détail complet, chiffres et vues refusées : ``docs/audit/MESURE_BOUTONS_2026-10-12.md``.
+   hauteur au bord d'attaque des boutons et **retrouve les classes connues** testables (photo « F1
+   ULTIMATE » imprimé → 42,0 % « bas » ; photo « Z1 ULTIMATE » imprimé → 55,0 % « hauts »). Deux
+   limites mesurées : peu de vues passent le contrôle de perspective (les autres sont **refusées**,
+   jamais approximées), et une photo doit d'abord être **identifiée à l'œil** — le contrôle d'identité
+   (`tools/image_corpus_check.py`) a montré qu'une même image circule sous huit noms de modèles. Détail
+   complet, chiffres et vues refusées : ``docs/audit/MESURE_BOUTONS_2026-10-12.md``.
 3. **Critère non bloquant** — accepter qu'une souris dont **seul** ce relevé manque soit proposée avec un
    score calculé sur les points disponibles (30/35, 35/35, 30/30 ci-dessus) et la mention « hauteur des
    boutons non documentée ». Aucun point n'est inventé : le critère n'est simplement pas noté, et le
