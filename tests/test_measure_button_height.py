@@ -22,8 +22,10 @@ WIDTH_PX, HEIGHT_PX = 1182, 388             # 10 px/mm, vue orthographique parfa
 
 
 def _profil(click_height_ratio: float, path: Path) -> Path:
-    """Le ratio demandé est la hauteur du dessus AU POINT DE MESURE (bord d'attaque des boutons)."""
-    """Dessine une souris de profil : avant à gauche, bosse au milieu, hauteur d'appui contrôlée."""
+    """Dessine une souris de profil : avant à gauche, bosse au milieu, hauteur d'appui contrôlée.
+
+    Le ratio demandé est la hauteur du dessus AU POINT DE MESURE (bord d'attaque des boutons).
+    """
     img = Image.new("RGB", (WIDTH_PX + 200, HEIGHT_PX + 200), (255, 255, 255))
     draw = ImageDraw.Draw(img)
     top = 100
@@ -51,21 +53,31 @@ def test_mesure_exacte_sur_une_vue_orthographique(orthographique):
     assert result.click_height_mm == pytest.approx(0.40 * HEIGHT_MM, abs=1.5)
 
 
-def test_low_et_high_sont_reconnus_et_mid_reste_non_tranche(tmp_path):
-    """« Low » et « High » sont étalonnés sur deux souris réelles ; « Mid » reste NON TRANCHÉ.
+def test_les_trois_classes_sont_reconnues(tmp_path):
+    """« Low », « Mid » et « High » sont étalonnés sur des souris dont la classe est connue.
 
-    Tant qu'aucune souris de référence « boutons moyens » n'a été mesurée, l'outil ne doit jamais
-    écrire « Mid » : mieux vaut une classe absente qu'une classe inventée.
+    Trois références mesurées : l'ATK F1 V2 (43,3 %, « bas »), l'ATK A9 Plus (47,3 %, « moyens » —
+    deux rendus officiels distincts, tous deux à 47,3 %) et l'ATK Z1 V2 (55,1 %, « hauts »). Chaque
+    classe est reconnue sur une silhouette synthétique dont la hauteur d'appui est contrôlée.
     """
     classes = {}
-    for nom, ratio in (("bas", 0.40), ("haut", 0.80)):
+    for nom, ratio, attendu in (("bas", 0.40, "Low"), ("moyens", 0.48, "Mid"), ("hauts", 0.80, "High")):
         result = measure(_profil(ratio, tmp_path / f"{nom}.png"), LENGTH_MM, HEIGHT_MM, front="left")
+        assert result.klass == attendu, f"{nom} : classe {result.klass!r} au lieu de {attendu!r}"
         classes[nom] = result.klass
-        assert result.click_ratio == pytest.approx(ratio, abs=0.02)
-    assert classes == {"bas": "Low", "haut": "High"}
-    intermediaire = measure(_profil(0.50, tmp_path / "intermediaire.png"), LENGTH_MM, HEIGHT_MM, front="left")
-    assert intermediaire.klass is None
-    assert "NON TRANCHÉE" in intermediaire.verdict
+    assert classes == {"bas": "Low", "moyens": "Mid", "hauts": "High"}
+
+
+def test_une_valeur_proche_d_une_frontiere_entre_deux_classes_reste_non_tranchee(tmp_path):
+    """Aucune classe n'est devinée : à moins d'un point d'une frontière, la mesure reste NON TRANCHÉE.
+
+    Les frontières sont posées à mi-chemin des références (45,3 % entre « bas » et « moyens »,
+    51,2 % entre « moyens » et « hauts »).
+    """
+    for ratio in (0.45, 0.51):
+        result = measure(_profil(ratio, tmp_path / f"limite{ratio}.png"), LENGTH_MM, HEIGHT_MM, front="left")
+        assert result.klass is None, f"{ratio} : classe {result.klass!r} produite alors qu'elle est à la frontière"
+        assert "NON TRANCHÉE" in result.verdict
 
 
 def test_une_vue_en_perspective_est_refusee_sans_valeur(tmp_path):

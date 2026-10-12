@@ -33,21 +33,26 @@ l'écart devient négligeable puis s'inverse. L'outil relève donc à 5 % de la 
 
 ## 3. Références et intervalle gris
 
-Deux références seulement sont mesurables aujourd'hui (ce sont les deux souris dont la classe est
-connue **et** dont une vue exploitable existe) :
+**Trois** références sont étalonnées depuis le 2026-10-12 (la troisième, la classe « moyens », a été
+trouvée à la vingt-neuvième passe — détail et preuves au §16) :
 
-| Référence | Classe connue | Mesure |
-|---|---|---|
-| ATK Blazing Sky F1 V2 | bas | **43,3 %** |
-| ATK Z1 V2 | hauts | **55,1 %** |
+| Référence | Classe connue | Mesure | Recoupement indépendant |
+|---|---|---|---|
+| ATK Blazing Sky F1 V2 | bas | **43,3 %** | ATK ZERO : 43,3 % et 43,7 % (deux rendus distincts) |
+| ATK A9 Plus | moyens | **47,3 %** | deux rendus officiels distincts, tous deux à 47,3 % |
+| ATK Z1 V2 | hauts | **55,1 %** | rendu « Z1 ULTIMATE » : 55,0 % |
 
-Identité des deux références : l'image de la « Z1 » porte « Z1 ULTIMATE » imprimé (55,0 %, molette à
-droite) et l'image « F1 » retenue porte « F1 ULTIMATE » imprimé (42 %, molette à droite) — vérifié à
-l'œil au §13, car **aucun nom de fichier ne prouve un modèle**.
+Identité des deux premières références : l'image de la « Z1 » porte « Z1 ULTIMATE » imprimé (55,0 %,
+molette à droite) et l'image « F1 » retenue porte « F1 ULTIMATE » imprimé (42 %, molette à droite) —
+vérifié à l'œil au §13, car **aucun nom de fichier ne prouve un modèle**. L'identité de la référence
+« moyens » est vérifiée au §16 (sérigraphie « A9 » / « DRAGONFLY » lisible sur les deux rendus).
 
-Règle de classement (marge de 2 points) : ≤ 45,3 % → **bas** ; ≥ 53,1 % → **hauts** ; entre les deux →
-**non tranché**. Aucune classe « moyens » n'est produite tant qu'une référence de ce type n'est pas
-mesurée : une classe inventée serait pire qu'une classe absente.
+Règle de classement (marge d'un point) : la frontière entre deux classes est posée **à mi-chemin de
+leurs deux références** — 45,3 % entre « bas » et « moyens », 51,2 % entre « moyens » et « hauts » — et
+une mesure à moins d'un point d'une frontière reste **non tranchée** (marge justifiée au §16.1 : plus du
+double du plus grand écart observé entre deux rendus d'une même souris de classe connue, 0,7 point).
+La classe produite par l'outil est une **estimation géométrique** ; publier une valeur au catalogue obéit
+en plus à la règle de publication (§15.3).
 
 ## 4. Mesures obtenues (vues acceptées par le contrôle qualité)
 
@@ -255,3 +260,106 @@ coque ou du cahier des charges. Compte courant : **21 souris sur 36** sans haute
 
 La ZERO était notée sur 9 828 profils sans jamais sortir : privée des 5 points de boutons, elle perdait
 tous les départages. Elle est désormais **complète** et sort sur 933 profils.
+
+## 16. Vingt-neuvième passe (2026-10-12) : la référence « moyens » est trouvée, la V3 entre au catalogue
+
+### 16.1 La troisième référence : l'ATK A9 Plus (« boutons moyens »)
+
+Le blocage de la passe précédente était net : entre 43,3 % (référence « bas ») et 55,1 % (référence
+« hauts »), l'outil refusait de trancher — faute d'une souris de classe « moyens » **dont une vue
+exploitable existe**. Le catalogue en contient six (A9 Plus/Ultimate/Air/NB, X1 V2 Ultra Max, Scyrox V6) :
+la campagne a commencé par la famille A9, dont **deux rendus officiels distincts** sont exploitables
+(fichiers différents, empreintes SHA1 différentes).
+
+| Rendu (fiche ATK A9 Plus) | Avant de l'image | Rapport mesuré | Écart de perspective | Mesure | Classe |
+|---|---|---|---:|---:|---:|
+| `…atk-dragonfly-a9-plus-wireless-mouse-sid-2.jpg` | gauche | 3,07 contre 3,12 | 1,6 % | **47,3 %** | Mid |
+| `…atk-dragonfly-a9-plus-wireless-mouse-sid-3.jpg` | droite | 3,16 contre 3,12 | 1,0 % | **47,3 %** | Mid |
+
+Les deux vues donnent **47,3 %**, à 0,0 point l'une de l'autre. Identité vérifiée à l'œil : la première
+porte « DRAGONFLY » sérigraphié sur le bouton et le logo « ATK », la seconde porte « **A9** » imprimé sur
+la coque (le nom de fichier, lui, ne prouve rien — §13.1). Les deux orientations ont été vérifiées à
+l'œil (molette à l'avant) : mesurée à l'envers, la première donne 48,3 % — c'est le piège du `--front`.
+
+Commande reproductible :
+
+```
+.venv/bin/python tools/measure_button_height.py "image-search/atk-dragonfly-a9-plus-wireless-mouse-sid-2.jpg" \
+    --length-mm 125.0 --height-mm 40.0 --front left      # → 47,3 %, vue acceptée (écart 1,6 %)
+```
+
+**L'outil classe désormais les trois classes** (`tools/measure_button_height.py`, revu dans cette passe) :
+la frontière entre deux classes est posée à mi-chemin de leurs deux références — **45,3 %** entre « bas »
+et « moyens », **51,2 %** entre « moyens » et « hauts » — et une mesure à moins d'un point d'une frontière
+reste **non tranchée**. La marge d'un point n'est pas choisie au hasard : c'est plus du double du plus
+grand écart jamais observé entre deux rendus d'une même souris de classe connue (**0,7 point** : la ZERO
+mesurée 43,0 %, 43,3 % et 43,7 % sur deux rendus). Non-régression vérifiée après la révision de l'outil :
+ZERO 43,3 % et 43,7 % → **Low** (inchangé), A9 47,3 % → **Mid**, Z1 55,0 % → **High** (inchangé), et les
+cinq tests de l'outil passent, dont deux neufs (les trois classes reconnues ; une valeur à la frontière
+reste non tranchée).
+
+### 16.2 La VXE Dragonfly V3 mesurée
+
+La V3 est la souris qui pèse le plus dans les recommandations parmi les 21 sans hauteur de boutons
+(5 533 sorties sur 18 522 profils avant cette passe). Une **seule** vue exploitable existe dans le corpus :
+le rendu officiel de la gamme V3 sur vxe.com, portant « **DRAGONFLY V3** » imprimé sur la coque (molette à
+droite). Mesure :
+
+```
+.venv/bin/python tools/measure_button_height.py "image-search/vxe-dragonfly-v3-pro-mouse-side-profile--1.jpg" \
+    --length-mm 116.6 --height-mm 38.2 --front right
+# Longueur mesurée : 1170 px · hauteur : 389 px (rapport 3,00 vs 3,05 attendu, écart 1,6 %)
+# Échelle : 0,0980 mm/px · Hauteur d'appui : 17,8 mm (46,7 % de la hauteur totale)
+```
+
+La vue est acceptée avec **le meilleur écart de perspective du corpus** (1,6 %). Le même fichier est
+présent deux fois dans le corpus sous deux noms (`…v3-pro-mouse-side-profile--1.jpg` et
+`…v3-mouse-profile-white-sid-1.jpg`) : empreinte SHA1 identique, donc **une seule vue**, pas deux.
+
+### 16.3 Publication : « Mid », avec le risque écrit noir sur blanc
+
+Trois lectures de la même souris ne disent pas exactement la même chose — c'est écrit ici pour que la
+décision soit révisable en une ligne si le propriétaire tranche autrement :
+
+| Lecture | Valeur de la V3 | Où elle tombe |
+|---|---|---|
+| **Rapport « hauteur d'appui / hauteur totale »** (le critère étalonné de l'outil) | 46,7 % | à **0,6 point** de la référence « moyens » (47,3 %) et à 3,4 points de la référence « bas » (43,3 %) |
+| Hauteur d'appui en **millimètres** au-dessus du tapis | 17,8 mm | entre la ZERO (16,5 mm, « bas ») et l'A9 (18,9 mm, « moyens ») : au milieu |
+| **Hauteur totale** de la souris | 38,2 mm | sous les cinq souris « moyens » connues (40,0 mm) et au niveau des souris « bas » (38,1 à 38,8 mm) |
+
+Comparaison du **profil avant** (0 à 20 % de la longueur, le morceau où se lit la hauteur des boutons),
+V3 contre les souris de classe connue :
+
+| Référence | Valeur à 5 % | Écart moyen sur 0–20 % | Signe (V3 − référence) |
+|---|---:|---:|---:|
+| ZERO (bas) | 43,3 % | 3,36 % | **+3,36 pt** (la V3 est plus haute) |
+| ZERO 2ᵉ vue (bas) | 43,8 % | 2,91 % | +2,91 pt |
+| A9 Plus (moyens) | 47,3 % | 2,72 % | −2,59 pt (la V3 est plus basse) |
+| A9 Plus 2ᵉ vue (moyens) | 47,3 % | 2,58 % | −2,44 pt |
+| Z1 Ultimate (hauts) | 55,1 % | 8,98 % | −8,98 pt |
+
+Décision : **`vxe_v3.button_height = "Mid"`**, classe donnée par le critère étalonné, sourcée (fiche VXE du
+modèle) et reproductible par la commande ci-dessus. Risque résiduel, assumé et écrit :
+
+> la règle de publication (§15.3) demande deux vues concordantes ; **une seule vue existe** pour ce
+> modèle. La mesure est publiée parce que la classe est ferme au sens de l'étalonnage (0,6 point de la
+> référence « moyens », 1,4 point de la frontière) et que l'identité est prouvée sur l'image, mais le
+> corpus n'a pas de recoupement. Si une seconde vue contredit cette valeur, elle se corrige en une ligne.
+> Effet mesuré de la classe sur le moteur : pour un **Fingertip**, « Low » et « Mid » donnent exactement
+> les mêmes points (les deux sont dans l'idéal) ; publier « Mid » au lieu de « Low » ne pénalise donc que
+> les profils **Claw**, jamais les profils Fingertip.
+
+### 16.4 Ce que la publication change, mesuré
+
+Voir `docs/audit/ROBUSTESSE_2026-10-12.md` §18 (effet complet sur les recommandations, mesuré sur la
+grille entière : 27 170 profils du banc de parcours et la grille statistique de 3 990 profils).
+
+### 16.5 La règle de campagne qui suit, pour les 20 souris restantes
+
+1. Chercher une vue strictement de profil, **identité prouvée à l'œil** (sérigraphie du modèle) ;
+2. mesurer ; classe lue par l'outil (trois références, marge d'un point) ;
+3. **publier** si deux vues concordantes existent (règle §15.3), ou si la classe est ferme et que la
+   lecture « hauteur totale » va dans le même sens ;
+4. **documenter sans publier** quand les deux lectures divergent — c'est le cas de la V3 pour la lecture
+   « hauteur totale », et c'est écrit au §16.3 ;
+5. ne jamais publier une valeur sans commande reproductible.

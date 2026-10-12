@@ -336,7 +336,11 @@ Affichage : `Score de correspondance : X/40 — Y% du maximum théorique du bar�
 - `moyenne` si `verified`+`owner_spec` mais `width_source==estimated`
 - `faible` sinon
 
-Aujourd'hui : toutes les souris sont `estimated` → confiance max `moyenne` (sauf Scyrox qui sont `owner_spec_unverified` → `faible`). Ne pas inventer de `measured`.
+Aujourd'hui (relevé du 2026-10-12, calculé sur les 36 souris du catalogue) : **5 souris** sont
+`verified` + `owner_spec` → confiance `moyenne` ; **31 souris** sont `faible` — 12 `verified` +
+`manufacturer_guide`, 10 `verified` + `third_party_guide`, 7 `single_source` + `manufacturer_guide`,
+2 `owner_spec_unverified` + `owner_spec` (les Scyrox). Aucune souris n'a de `grip_width_mm` mesurée : la
+largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inventer de `measured`.
 
 ### 7.4 Modes de sélection (`utils/selection.py`) — tolérances PROVISOIRES à conserver
 

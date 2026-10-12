@@ -14,6 +14,16 @@ Méthode (reproductible, sans invention de valeur) :
    propriétaire). Aucune valeur absolue n'est inventée : seule une **classe** est produite, avec
    l'incertitude affichée.
 
+Les trois références d'étalonnage (bas, moyens, hauts) sont vérifiées le 2026-10-12 : la classe
+« moyens » a été obtenue en mesurant l'**ATK A9 Plus** (classe « Mid » du cahier des charges) sur
+**deux rendus officiels distincts**, tous deux à 47,3 % — la même méthode qui avait donné les deux
+autres références. La frontière entre deux classes est posée à mi-chemin des deux références, et une
+mesure à moins d'un point d'une frontière reste **non tranchée**.
+
+Ce que l'outil ne fait pas : il ne décide pas la publication d'une valeur au catalogue. Celle-ci
+exige en plus que l'identité du modèle soit prouvée sur l'image et que **deux vues distinctes**
+donnent la même classe (règle écrite dans `docs/audit/MESURE_BOUTONS_2026-10-12.md`, §15.3).
+
 L'image doit d'**abord** être identifiée : le nom de fichier ne prouve rien (le même fichier circule
 souvent sous plusieurs noms de modèles — voir ``tools/image_corpus_check.py``). L'identité se vérifie
 à l'œil sur l'image (nom imprimé sur la coque, logo) ; une image non identifiée ne produit aucune
@@ -40,15 +50,21 @@ CLICK_FRACTION = 0.05
 # Tolérance du contrôle qualité sur le rapport longueur/hauteur (vue acceptée si l'écart est faible).
 PERSPECTIVE_TOLERANCE = 0.06
 # Références mesurées le 2026-10-12 sur des souris dont la hauteur de boutons est CONNUE (valeurs du
-# propriétaire) : ce sont les deux seuls points d'étalonnage disponibles. Ils encadrent la frontière
-# entre « bas » et « haut » ; entre les deux, l'outil REFUSE de trancher (aucune classe inventée).
+# propriétaire). Chaque référence est un rapport « hauteur d'appui / hauteur totale » relevé au bord
+# d'attaque des boutons, sur des rendus officiels dont l'identité a été vérifiée :
+#   - « bas »   : ATK F1 V2 (43,3 %) — valeur d'étalonnage d'origine, recoupée par l'ATK ZERO
+#                 (deux rendus : 43,3 % et 43,7 %) ;
+#   - « moyens » : ATK A9 Plus (47,3 %) — deux rendus officiels distincts, tous deux à 47,3 % ;
+#   - « hauts » : ATK Z1 V2 (55,1 %), recoupé par le rendu « Z1 ULTIMATE » (55,0 %).
 CALIBRATION_REFERENCES = (
     ("ATK F1 V2 (boutons bas)", "Low", 0.433),
+    ("ATK A9 Plus (boutons moyens)", "Mid", 0.473),
     ("ATK Z1 V2 (boutons hauts)", "High", 0.551),
 )
-# Marge d'incertitude : une mesure n'est classée que si elle dépasse la référence correspondante
-# d'au moins cette marge. Entre les deux, la valeur reste NON TRANCHÉE.
-CALIBRATION_MARGIN = 0.02
+# Marge d'incertitude : une mesure à moins de cette distance d'une frontière entre deux classes reste
+# NON TRANCHÉE. Un point, c'est plus du double du plus grand écart observé entre deux rendus d'une
+# même souris de classe connue (0,7 point : l'ATK ZERO mesurée 43,0 %, 43,3 % et 43,7 %).
+CALIBRATION_MARGIN = 0.01
 
 
 @dataclass(frozen=True)
@@ -166,27 +182,30 @@ def measure(path: str | Path, length_mm: float, height_mm: float, front: str = "
                    scale, click_height_mm, ratio, verdict=verdict, klass=klass)
 
 
-def _classify(ratio: float) -> tuple[str | None, str]:
-    """Classe la mesure à partir des références étalonnées, ou refuse de trancher.
+def _boundaries() -> list[tuple[tuple[str, str, float], tuple[str, str, float], float]]:
+    """Les frontières entre classes : à mi-chemin entre deux références voisines (triées)."""
+    refs = sorted(CALIBRATION_REFERENCES, key=lambda r: r[2])
+    return [(gauche, droite, (gauche[2] + droite[2]) / 2) for gauche, droite in zip(refs, refs[1:])]
 
-    Aucune « Mid » n'est produite : la classe moyenne n'est pas étalonnée, donc une valeur
-    intermédiaire reste non tranchée. C'est volontaire — une classe inventée serait pire
-    qu'une classe absente.
+
+def _classify(ratio: float) -> tuple[str | None, str]:
+    """Classe la mesure par la référence la plus proche, ou refuse de trancher.
+
+    Les trois hauteurs de boutons sont ordonnées (bas < moyens < hauts). La frontière entre deux
+    classes est posée à mi-chemin de leurs deux références étalonnées ; une mesure à moins de
+    ``CALIBRATION_MARGIN`` d'une frontière reste **non tranchée**, car l'incertitude de la mesure ne
+    permet pas de la placer d'un côté plutôt que de l'autre. Aucune classe n'est inventée.
     """
-    low = min(r for _, k, r in CALIBRATION_REFERENCES if k == "Low")
-    high = max(r for _, k, r in CALIBRATION_REFERENCES if k == "High")
-    # Les trois hauteurs de boutons sont ordonnées (bas < moyen < haut) : mesurer au plus la
-    # référence « bas » (à la marge près) prouve « bas » ; mesurer au moins la référence « hauts »
-    # prouve « hauts ». Entre les deux, la classe moyenne reste indécidable.
-    if ratio <= low + CALIBRATION_MARGIN:
-        return "Low", ("vue acceptée : mesure au niveau ou sous la référence « boutons bas » "
-                       f"({low * 100:.1f} %)")
-    if ratio >= high - CALIBRATION_MARGIN:
-        return "High", ("vue acceptée : mesure au niveau ou au-dessus de la référence « boutons hauts » "
-                        f"({high * 100:.1f} %)")
-    return None, (f"vue acceptée, mais classe NON TRANCHÉE : la mesure ({ratio * 100:.1f} %) tombe "
-                  f"dans l'intervalle gris {low * 100:.1f}–{high * 100:.1f} % entre les deux "
-                  "références ; aucune référence « boutons moyens » n'est disponible")
+    for gauche, droite, frontiere in _boundaries():
+        if abs(ratio - frontiere) <= CALIBRATION_MARGIN:
+            return None, (f"vue acceptée, mais classe NON TRANCHÉE : la mesure ({ratio * 100:.1f} %) "
+                          f"est à {abs(ratio - frontiere) * 100:.1f} point de la frontière "
+                          f"« {gauche[1]}/{droite[1]} » ({frontiere * 100:.1f} %), en deçà de la marge "
+                          f"de {CALIBRATION_MARGIN * 100:.0f} point")
+    ecart, reference = min(((abs(ratio - r[2]), r) for r in CALIBRATION_REFERENCES), key=lambda t: t[0])
+    return reference[1], (f"vue acceptée : mesure à {ecart * 100:.1f} point de la référence "
+                          f"« {reference[0]} » ({reference[2] * 100:.1f} %) → classe estimée "
+                          f"« {reference[1]} »")
 
 
 def main() -> int:

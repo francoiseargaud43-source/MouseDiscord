@@ -1303,3 +1303,58 @@ valeur n'a été modifiée dans cette passe.
   seul levier qui débloquera des scores partiels.
 - La décision **« le poids compte-t-il ? »** appartient au propriétaire : elle décide du sort des quatre
   jumelles légères (17.1).
+
+## 18. Vingt-neuvième passe : l'effet mesuré de la première hauteur de boutons publiée (VXE V3)
+
+La VXE Dragonfly V3 est passée de `button_height = "Inconnu"` à `"Mid"` (mesure et preuve :
+`docs/audit/MESURE_BOUTONS_2026-10-12.md` §16). Une seule donnée change, et tout est remesuré :
+
+```
+.venv/bin/python tools/recommendation_stats.py     # grille statistique complète (3 990 profils)
+.venv/bin/python tools/qa_flow_matrix.py           # banc du parcours (27 170 profils)
+.venv/bin/python tools/compare_profiles.py         # matrice des profils de référence
+```
+
+### 18.1 Ce qui s'améliore
+
+| Mesure | Avant | Après |
+|---|---:|---:|
+| Souris jamais recommandées | 8 | **8** (inchangé) |
+| Profils sans aucun résultat | 252 | **252** (inchangé) |
+| Profils au match idéal **partiel** (donnée manquante) | 7 476 | **4 526** (−39 %) |
+| Profils où **deux places montrent la même coque** (repli documenté) | 1 194 | **546** (−54 %) |
+| dont la paire F1 Ultimate + F1 V2 | 296 profils | **48 profils** |
+
+La V3 passe de 5 533 à **7 713 sorties** (29,9 % → 41,6 % des profils), dont 3 759 en match idéal. Le
+report est pris par les souris que la V3 déplace : F1 V2 4 744 → 3 594, A9 Ultimate 2 926 → 2 598, R1
+2 776 → 2 532, Scyrox V6 1 214 → 969, ZERO 933 → 741.
+
+### 18.2 Ce qui se dégrade un peu, et pourquoi (prouvé, pas supposé)
+
+| Places remplies dans le résultat | Avant | Après |
+|---|---:|---:|
+| 3 places | 6 779 (24,95 %) | **6 185 (22,76 %)** |
+| 2 places | 14 909 | 15 095 |
+| 1 place | 2 921 | 3 329 |
+| 0 place | 2 561 | 2 561 |
+
+Diff par profil (mêmes 27 170 profils, deux bases, un seul champ de différence) :
+
+| Transition | Profils |
+|---|---:|
+| 3 → 2 places | 492 |
+| 3 → 1 place | 102 |
+| 2 → 1 place | 798 |
+| 1 → 2 places | 492 |
+
+**Cause identifiée sur 900 des 1 392 profils qui perdent une place** : la V3 devient le match idéal. Or la
+troisième place (« l'économie ») est, par construction, **strictement moins chère que le match idéal** —
+et la V3, à 13,95 €, est **la souris la moins chère du catalogue** : plus rien ne peut remplir cette
+place. C'est une conséquence mécanique de la règle des trois places, pas une erreur de calcul : le banc
+de parcours rend **0 problème** sur les 27 170 profils.
+
+> **Décision demandée au propriétaire** (le moteur ne change que sur demande explicite) : quand le match
+> idéal est déjà la souris la moins chère du catalogue, faut-il (a) laisser la troisième place vide —
+> l'état actuel, 2 561 profils n'ayant aucune souris à montrer restant inchangés —, (b) afficher une
+> souris un peu plus chère à la place de l'économie, ou (c) garder trois places en changeant le critère
+> de la troisième ? Aucune de ces trois options n'a été appliquée : elle modifie le moteur.

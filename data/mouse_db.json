@@ -1819,7 +1819,7 @@
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Première souris « Small » du catalogue (116,6 mm, EloShapes) : comble le manque de formes compactes. EloShapes : hump « Back - moderate » → Rear (règle de correspondance du projet) ; front flare « Inward - moderate » ; courbure des flancs « Inward ». Éditeur : « Claw / Palm / Fingertip », « small to medium hands ». Compatibilités de prise à valider par le propriétaire (marketing non assimilé à une compatibilité). Switchs Huano Blue Glow Pink Dot V2 mécaniques ; MCU Nordic 52840 annoncé sur la V3 (la V3 Pro embarque la puce ATK ONE selon Maxesport) : valeur de la V3 retenue.",
+    "notes": "Première souris « Small » du catalogue (116,6 mm, EloShapes) : comble le manque de formes compactes. EloShapes : hump « Back - moderate » → Rear (règle de correspondance du projet) ; front flare « Inward - moderate » ; courbure des flancs « Inward ». Éditeur : « Claw / Palm / Fingertip », « small to medium hands ». Compatibilités de prise à valider par le propriétaire (marketing non assimilé à une compatibilité). Switchs Huano Blue Glow Pink Dot V2 mécaniques ; MCU Nordic 52840 annoncé sur la V3 (la V3 Pro embarque la puce ATK ONE selon Maxesport) : valeur de la V3 retenue.\n\nHauteur des boutons (2026-10-12) : MESURÉE sur la vue de profil officielle de la gamme V3 — rendu vxe.com portant « DRAGONFLY V3 » imprimé sur la coque (molette à droite) : hauteur d'appui 17,8 mm, soit 46,7 % de la hauteur totale, à 0,6 point de la référence « boutons moyens » (ATK A9 Plus, 47,3 %, mesurée sur deux rendus officiels distincts) et à 3,4 points de la référence « boutons bas » (ATK F1 V2, 43,3 %) → classe « Mid ». Vue acceptée par le contrôle du rapport longueur/hauteur (écart 1,6 %, le meilleur écart du corpus) ; à ce jour UNE seule vue exploitable de ce modèle : la règle des deux vues (docs/audit/MESURE_BOUTONS_2026-10-12.md §15.3) n'est donc pas satisfaite, et le risque résiduel est écrit au §16.3 du même document (le critère du propriétaire pourrait suivre la hauteur absolue, qui placerait la V3 entre les deux classes). Reproductible : `python tools/measure_button_height.py IMAGE --length-mm 116.6 --height-mm 38.2 --front right`.",
     "id": "vxe_v3",
     "brand": "VXE",
     "model": "Dragonfly V3 / V3 Pro",
@@ -1827,7 +1827,7 @@
     "length_mm": 116.6,
     "width_max_mm": 62.2,
     "hump_position": "Rear",
-    "button_height": "Inconnu",
+    "button_height": "Mid",
     "palm_grip_fit": "Élevé",
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
@@ -1899,6 +1899,14 @@
           "palm_grip_fit",
           "claw_grip_fit",
           "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "VXE (fabricant) — fiche V3 : vue de profil officielle mesurée (hauteur d'appui des boutons)",
+        "url": "https://vxe.com/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse",
+        "fields": [
+          "button_height"
         ],
         "date_checked": "2026-10-12"
       }

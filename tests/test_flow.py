@@ -244,13 +244,21 @@ async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeyp
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.FINGERTIP, length=190.0, width=95.0)
     session.budget_mode = BudgetMode.ECONOMIQUE
-    embeds = flow.results_embeds(session, flow.compute_selection(session))
+    selection = flow.compute_selection(session)
+    ideal, _, _ = flow.result_slots(selection)
+    embeds = flow.results_embeds(session, selection)
     # Fingertip : ni thénar, ni arrière étroit, ni conseil de bosse (elle n'y travaille pas).
     assert [e.title for e in embeds] == ["🎯 Votre recommandation", "📐 Vos repères de taille",
                                          "🖱️ La hauteur des boutons"]
     assert not any("Thénar" in field.name for embed in embeds for field in embed.fields)
     assert all("arriere_etroit" not in (embed.image.url or "") for embed in embeds)
-    assert "T02_boutons_bas" in embeds[0].image.url  # bosse ignorée en Fingertip → illustration des boutons
+    # Boss ignorée en Fingertip → l'illustration est celle des BOUTONS, et elle suit la classe de la
+    # souris retenue (toutes les classes possibles sont vérifiées : la souris du scénario peut changer
+    # quand le catalogue gagne une valeur mesurée — c'est la règle d'affichage qui est testée ici).
+    attendues = {"High": "T01_boutons_hauts", "Low": "T02_boutons_bas", "Mid": "T03_boutons_moyens"}
+    illustration = attendues.get(ideal.mouse.button_height)
+    assert illustration is not None, f"{ideal.mouse.label} : classe {ideal.mouse.button_height!r} inattendue"
+    assert illustration in embeds[0].image.url
 
 
 def test_steps_total_follows_the_grip():
