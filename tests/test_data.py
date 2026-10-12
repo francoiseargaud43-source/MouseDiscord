@@ -70,9 +70,9 @@ def grip_fields_are_sourced_or_unknown(mouse) -> bool:
     values = (mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit)
     if all(v == "Inconnu" for v in values):
         return True
-    if mouse.fit_status not in {"owner_spec", "manufacturer_guide"}:
+    if mouse.fit_status not in {"owner_spec", "manufacturer_guide", "third_party_guide"}:
         return False
-    if mouse.fit_status == "manufacturer_guide" and "Faible" in values:
+    if mouse.fit_status in {"manufacturer_guide", "third_party_guide"} and "Faible" in values:
         return False
     for field, value in zip(("palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit"), values):
         if value != "Inconnu" and not any(field in s.fields for s in mouse.sources):
@@ -124,7 +124,7 @@ def test_new_models_have_no_invented_compatibility_or_price(mice):
     for mid in NEW_ATK_IDS:
         m = mice[mid]
         assert price_is_either_absent_or_sourced(m), f"{mid} : prix non sourcé"
-        assert m.fit_status in {"unverified", "manufacturer_guide"}, mid
+        assert m.fit_status in {"unverified", "manufacturer_guide", "third_party_guide"}, mid
         assert grip_fields_are_sourced_or_unknown(m), f"{mid} : compatibilité de prise non sourcée"
         assert m.sources, f"{mid} : toute donnée doit citer une source"
 
@@ -221,6 +221,43 @@ def test_ghost_prices_are_read_variant_by_variant(mice):
                    for s in mouse.sources), mouse.id
         assert f"« {variante} »" in mouse.price_note, mouse.id
     assert "95,95" in extreme.price_note     # la variante la plus chère ne doit pas être masquée
+
+
+def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
+    """2026-10-12 : une source tierce AUTORISÉE (mouseshape.com) complète les prises non publiées.
+
+    Règles vérifiées ici, sans exception :
+    - la valeur vient d'une fiche mouseshape datée qui déclare le champ ;
+    - le fabricant garde la main : une souris tierce garde aussi sa source constructeur, et une valeur
+      fabricant n'est jamais remplacée (vérifié champ par champ sur deux cas concrets) ;
+    - « Recommended » → « Élevé », « Okay » → « Moyen » ;
+    - « Not ideal » n'est JAMAIS converti en « Faible » : une valeur tierce n'exclut personne.
+    """
+    tiers = [m for m in mice.values() if m.fit_status == "third_party_guide"]
+    assert len(tiers) >= 10, "les dix souris complétées doivent porter le statut dédié"
+    for mouse in tiers:
+        valeurs = (mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit)
+        assert "Faible" not in valeurs, mouse.id
+        assert not all(v == "Inconnu" for v in valeurs), mouse.id
+        assert any("atk.store" in s.url or "eu.pulsar.gg" in s.url for s in mouse.sources), mouse.id
+        tierce = [s for s in mouse.sources if "mouseshape.com" in s.url]
+        assert tierce and all(s.date_checked == "2026-10-12" for s in tierce), mouse.id
+        for champ in ("palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit"):
+            if getattr(mouse, champ) != "Inconnu":
+                assert any(champ in s.fields for s in mouse.sources), (mouse.id, champ)
+
+    # Cas concrets : « Recommended » accepté, « Not ideal » laissé « Inconnu ».
+    xlite = mice["pulsar_xlite_v4_medium"]
+    assert (xlite.palm_grip_fit, xlite.claw_grip_fit) == ("Élevé", "Élevé")
+    assert xlite.fingertip_grip_fit == "Inconnu"          # « Not ideal » n'est pas « Faible »
+    x2 = mice["pulsar_x2_v3_mini"]
+    assert (x2.claw_grip_fit, x2.fingertip_grip_fit) == ("Élevé", "Élevé")
+    assert x2.palm_grip_fit == "Inconnu"                  # idem pour le palm
+    # Résultat : ces souris sont notées dès qu'une prise leur manque n'est PAS celle du profil.
+    for ident, grip in (("pulsar_x2h_v3_mini", Grip.FINGERTIP), ("atk_fierce_x", Grip.FINGERTIP),
+                        ("atk_u2_mini", Grip.FINGERTIP), ("pulsar_xlite_v4_large", Grip.CLAW)):
+        score = evaluate_mouse(mice[ident], HandMeasure(175, 85), grip)
+        assert score.is_scored or score.is_excluded, (ident, grip)
 
 
 def test_commercial_links_are_official_and_verified():

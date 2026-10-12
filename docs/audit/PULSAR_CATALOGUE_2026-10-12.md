@@ -106,7 +106,8 @@ Arbitrages documentés (aucune valeur devinée) :
   officielle X2 / X2H) → **Low** pour la famille X2 (X2 v3 Mini, X2A v3, X2 CrazyLight Medium). Pour la X2H
   v3 Mini et les deux Xlite v4, **aucune valeur publiée** → champ laissé « Inconnu ».
 - **Compatibilités de prise** : « Élevé » uniquement là où le fabricant l'écrit (voir tableau) ; les autres
-  prises restent « Inconnu ». Nouveau statut `manufacturer_guide` dans `utils/models.py`.
+  prises restent « Inconnu ». Statut `manufacturer_guide` dans `utils/models.py`, complété le 2026-10-12 par
+  `third_party_guide` (source tierce autorisée mouseshape.com, §12 de `ROBUSTESSE_2026-10-12.md`).
 
 ## 5. Blocage à lever : la hauteur des boutons (recherche du 2026-10-12)
 
@@ -135,7 +136,7 @@ Effet mesuré de l'ajout des dix Pulsar (souris réellement classables, donc pro
 a été relevée sur EloShapes (« Hump placement : Center » → **Mid**), et l'**ATK A9 Mini** a reçu son prix
 EUR officiel (59,95 €) ainsi que sa bosse. Ces cinq souris ne sont plus « à vérifier » : il ne leur
 manque que la hauteur des boutons. Le tableau ci-dessous est donc conservé tel quel, à l'exception des
-lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026-10-12 (21e passe)** : il reflète l'état réel des données — les « prise palm / claw / fingertip » encore listées ici ont été complétées depuis les fiches officielles (`ROBUSTESSE_2026-10-12.md` §11.1) ou par la coque jumelle pour l'ATK F1 V2 (§11.8). **Liste à compléter** (générée depuis le catalogue) :
+lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026-10-12 (23e passe)** : il reflète l'état réel des données. Les prises ont été complétées d'abord depuis les fiches officielles (`ROBUSTESSE_2026-10-12.md` §11.1), puis par la coque jumelle pour l'ATK F1 V2 (§11.8), puis par la source tierce autorisée mouseshape.com pour les seules prises que le fabricant ne publie pas (§12, statut `third_party_guide`) : « Recommended » → « Élevé », « Okay » → « Moyen », et « Not ideal » **jamais** converti en « Faible » — la prise reste alors « Inconnu », raison écrite dans les notes de la fiche. **Liste à compléter** (générée depuis le catalogue) :
 
 | Souris | Ce qui manque pour qu'elle puisse être proposée |
 |---|---|
@@ -149,11 +150,11 @@ lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026
 | ATK GHOST Ultimate (`atk_ghost_ultimate`) | hauteur des boutons |
 | ATK GHOST Extreme (`atk_ghost_extreme`) | hauteur des boutons |
 | ATK Y9 Ultimate (`atk_y9_ultimate`) | hauteur des boutons · prise fingertip |
-| ATK Fierce X (`atk_fierce_x`) | hauteur des boutons · prise palm · prise fingertip |
-| ATK U2 V2 Ultimate (`atk_u2_v2_ultimate`) | hauteur des boutons · prise palm · prise fingertip |
-| ATK U2 V2 Mini (`atk_u2_v2_mini`) | hauteur des boutons · prise palm · prise fingertip |
+| ATK Fierce X (`atk_fierce_x`) | hauteur des boutons · prise palm |
+| ATK U2 V2 Ultimate (`atk_u2_v2_ultimate`) | hauteur des boutons · prise fingertip |
+| ATK U2 V2 Mini (`atk_u2_v2_mini`) | hauteur des boutons · prise palm |
 | ATK ZERO (`atk_zero`) | hauteur des boutons |
-| ATK Duckbill (`atk_duckbill`) | hauteur des boutons (longueur tranchée le 2026-10-12 : 118 mm, fiche officielle) |
+| ATK Duckbill (`atk_duckbill`) | hauteur des boutons |
 | ATK A9 Ultimate (`atk_a9_ultimate`) | hauteur des boutons |
 | ATK A9 Air (`atk_a9_air`) | hauteur des boutons |
 | ATK A9 Mini (`atk_a9_mini`) | hauteur des boutons |
@@ -161,20 +162,20 @@ lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026
 | VXE Dragonfly R1 / R1 Pro (`vxe_r1`) | hauteur des boutons |
 | VXE MAD R / MAD R Major (`vxe_mad_r`) | hauteur des boutons · prise fingertip |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo (`vxe_x3`) | hauteur des boutons · position de la bosse |
-| ATK Blazing Sky U2 Mini (`atk_u2_mini`) | hauteur des boutons · prise palm · prise fingertip |
+| ATK Blazing Sky U2 Mini (`atk_u2_mini`) | hauteur des boutons · prise palm |
 | ATK Dragonfly A9 NB Ultra (`atk_a9_nb`) | hauteur des boutons |
 | ATK Blazing Sky F1 V2 (`atk_f1_v2`) | **complète** |
 | ATK Blazing Sky U2 / U2 Plus / U2 Ultimate (`atk_u2`) | hauteur des boutons · prise fingertip |
 | Pulsar X2 v3 Mini (`pulsar_x2_v3_mini`) | prise palm |
-| Pulsar X2H v3 Mini (`pulsar_x2h_v3_mini`) | hauteur des boutons · prise palm · prise fingertip |
+| Pulsar X2H v3 Mini (`pulsar_x2h_v3_mini`) | hauteur des boutons · prise palm |
 | Pulsar X2A v3 (`pulsar_x2a_v3_medium`) | prise palm |
 | Pulsar X2 CrazyLight Medium (`pulsar_x2_crazylight_medium`) | prise palm |
-| Pulsar Xlite v4 Mini (`pulsar_xlite_v4_mini`) | hauteur des boutons · prise claw · prise fingertip |
-| Pulsar Xlite v4 Medium (`pulsar_xlite_v4_medium`) | hauteur des boutons · prise claw · prise fingertip |
+| Pulsar Xlite v4 Mini (`pulsar_xlite_v4_mini`) | hauteur des boutons |
+| Pulsar Xlite v4 Medium (`pulsar_xlite_v4_medium`) | hauteur des boutons · prise fingertip |
 | Pulsar X2 CrazyLight Mini (`pulsar_x2_crazylight_mini`) | prise palm |
-| Pulsar X2H CrazyLight Mini (`pulsar_x2h_crazylight_mini`) | hauteur des boutons · prise palm · prise fingertip |
-| Pulsar Xlite CrazyLight Medium (`pulsar_xlite_crazylight_medium`) | hauteur des boutons · prise claw · prise fingertip |
-| Pulsar Xlite v4 Large (`pulsar_xlite_v4_large`) | hauteur des boutons · prise claw · prise fingertip |
+| Pulsar X2H CrazyLight Mini (`pulsar_x2h_crazylight_mini`) | hauteur des boutons · prise palm |
+| Pulsar Xlite CrazyLight Medium (`pulsar_xlite_crazylight_medium`) | hauteur des boutons · prise fingertip |
+| Pulsar Xlite v4 Large (`pulsar_xlite_v4_large`) | hauteur des boutons · prise fingertip |
 
 ## 6. Points à trancher (jamais devinés)
 

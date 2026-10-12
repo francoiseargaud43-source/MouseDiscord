@@ -834,7 +834,7 @@
     "weight_g": 55.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "125.6 × 67.5 × 43.3 mm concordants (EloShapes, MaxGaming, FPSTools). Poids 55 g (EloShapes, MaxGaming) contre 58 g (FPSTools) : conflit de poids, sans impact géométrique. Polling 8000 Hz (EloShapes, MaxGaming) contre 1000 Hz (FPSTools) : non retenu. Forme ergonomique : compatibilité de grip NON vérifiée. Fréquence 8 000 Hz (filaire et sans fil), switchs Huano Ice Berry, MCU Nordic 54L15. Fabricant : « right-handed ergonomic mouse with a contoured back and asymmetrical rear for stable palm and thumb support » — prise palm retenue ; claw et fingertip ne sont pas mentionnés.",
+    "notes": "125.6 × 67.5 × 43.3 mm concordants (EloShapes, MaxGaming, FPSTools). Poids 55 g (EloShapes, MaxGaming) contre 58 g (FPSTools) : conflit de poids, sans impact géométrique. Polling 8000 Hz (EloShapes, MaxGaming) contre 1000 Hz (FPSTools) : non retenu. Forme ergonomique : compatibilité de grip NON vérifiée. Fréquence 8 000 Hz (filaire et sans fil), switchs Huano Ice Berry, MCU Nordic 54L15. Fabricant : « right-handed ergonomic mouse with a contoured back and asymmetrical rear for stable palm and thumb support » — prise palm retenue ; claw et fingertip ne sont pas mentionnés. La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-y9-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "conflicts": {
       "polling_hz": {
         "values": [
@@ -974,17 +974,17 @@
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
     "claw_grip_fit": "Élevé",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "manufacturer_guide",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "third_party_guide",
     "dimension_status": "verified",
     "price_eur": 69.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 69.95 € (ATK FIERCE X, prix du produit, prix normal 81.95 €).",
-    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » seulement (« competitive claw-grip mouse ») ; mains petites-moyennes.",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » seulement (« competitive claw-grip mouse ») ; mains petites-moyennes. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du ATK Fierce X, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : fingertip : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "weight_g": 42.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "119.57 × 60.99 × 36.26 mm (ATK) concordants à 0.1 mm près avec EloShapes (119.6 × 60.9 × 36.2) et MouseMetric. ATK présente la Fierce X comme une souris « claw grip » : indication marketing, NON assimilée à une compatibilité « Élevé ». Dimensions identiques à celles attribuées à la Z1 originale : à surveiller. Switchs optiques (Omron, ou ATK selon révision) et MCU Nordic 52840.",
+    "notes": "119.57 × 60.99 × 36.26 mm (ATK) concordants à 0.1 mm près avec EloShapes (119.6 × 60.9 × 36.2) et MouseMetric. ATK présente la Fierce X comme une souris « claw grip » : indication marketing, NON assimilée à une compatibilité « Élevé ». Dimensions identiques à celles attribuées à la Z1 originale : à surveiller. Switchs optiques (Omron, ou ATK selon révision) et MCU Nordic 52840. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, fingertip : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ».",
     "sources": [
       {
         "label": "ATK Store — ATK FIERCE X",
@@ -1058,6 +1058,14 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — ATK Fierce X (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/atk-fierce-x",
+        "fields": [
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1076,19 +1084,19 @@
     "height_mm": 39.1,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
+    "palm_grip_fit": "Moyen",
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 59.95 € (ATK Blazing Sky U2 V2, prix du produit, prix normal 72.95 €).",
-    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Ultimate) ; mains moyennes-grandes.",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Ultimate) ; mains moyennes-grandes. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du ATK U2 V2 Ultimate, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : palm : Okay. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "weight_g": 45.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom et MCU Nordic 54L15 (fiche ATK Store U2 V2).",
+    "notes": "123.7 × 64.6 × 39.1 mm concordants (EloShapes, notice ATK). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs optiques ATK Custom et MCU Nordic 54L15 (fiche ATK Store U2 V2). Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, palm : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-v2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "EloShapes — ATK U2 V2 Ultimate",
@@ -1153,6 +1161,14 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — ATK U2 V2 Ultimate (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/atk-u2-v2-ultimate",
+        "fields": [
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1173,17 +1189,17 @@
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
     "claw_grip_fit": "Élevé",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "manufacturer_guide",
+    "fingertip_grip_fit": "Moyen",
+    "fit_status": "third_party_guide",
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59,95 € (ATK Blazing Sky U2 V2, variante « U2 V2 Mini / White », prix normal 72,95 €, affiché en euros pays France). L'ancienne valeur (77,95 €) venait du produit « U2 Mini », qui n'est pas la V2 : correction demandée par docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md §6.6.",
-    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Mini) ; mains petites-moyennes.",
+    "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Mini) ; mains petites-moyennes. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du ATK U2 V2 Mini, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : fingertip : Okay. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "119.5 × 63 × 38.5 mm concordants (EloShapes, notice ATK, collection U2). Notice ATK : taille « Small/Medium hands ». Capteur non vérifié. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). U2 V2 Mini : PAW3950 Ultra et Nordic 54L15, comme l'U2 V2 Ultimate (fiche ATK Store U2 V2). Coque partagée enregistrée le 2026-10-12 avec Blazing Sky U2 Mini (shell_id = atk_u2_mini) : dimensions publiées identiques (119,5 × 63 × 38,5 mm) et aucune fiche ATK séparée « U2 V2 Mini ».",
+    "notes": "119.5 × 63 × 38.5 mm concordants (EloShapes, notice ATK, collection U2). Notice ATK : taille « Small/Medium hands ». Capteur non vérifié. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). U2 V2 Mini : PAW3950 Ultra et Nordic 54L15, comme l'U2 V2 Ultimate (fiche ATK Store U2 V2). Coque partagée enregistrée le 2026-10-12 avec Blazing Sky U2 Mini (shell_id = atk_u2_mini) : dimensions publiées identiques (119,5 × 63 × 38,5 mm) et aucune fiche ATK séparée « U2 V2 Mini ». Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, fingertip : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-v2-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "EloShapes — comparaison F1 V2 Ultimate / U2 V2 Mini",
@@ -1258,6 +1274,14 @@
         "fields": [
           "palm_grip_fit",
           "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — ATK U2 V2 Mini (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/atk-u2-v2-mini",
+        "fields": [
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
@@ -1971,7 +1995,7 @@
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Blazing Sky ZERO déjà au catalogue (120,1 × 63,2 × 38,1) : coque équivalente, modèle VXE moins cher. EloShapes : front flare « Outward - slight », flancs plats. MCU Nordic 52840. Switchs : le FABRICANT annonce « ATK Custom Tuned Optical » (fiche officielle, relevé du 2026-10-12) là où le revendeur Maxesport annonçait « Omron » — la valeur fabricant est retenue, la divergence est signalée ici.",
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky ZERO déjà au catalogue (120,1 × 63,2 × 38,1) : coque équivalente, modèle VXE moins cher. EloShapes : front flare « Outward - slight », flancs plats. MCU Nordic 52840. Switchs : le FABRICANT annonce « ATK Custom Tuned Optical » (fiche officielle, relevé du 2026-10-12) là où le revendeur Maxesport annonçait « Omron » — la valeur fabricant est retenue, la divergence est signalée ici. La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/vxe-mad-r, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "id": "vxe_mad_r",
     "brand": "VXE",
     "model": "MAD R / MAD R Major",
@@ -2151,10 +2175,10 @@
     "height_mm": 38.5,
     "grip_width_mm": null,
     "shell_id": "atk_u2_mini",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ». U2 Mini : switchs Huano Ice Berry et processeur Nordic 52840 (fiche GamerGear). Fabricant : « the compact U2 shape gives small-to-medium hands a fast, agile feel tailored for claw grip ». Coque partagée enregistrée le 2026-10-12 avec U2 V2 Mini (shell_id = atk_u2_mini) : dimensions publiées identiques (119,5 × 63 × 38,5 mm) et aucune fiche ATK séparée « U2 V2 Mini ».",
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ». U2 Mini : switchs Huano Ice Berry et processeur Nordic 52840 (fiche GamerGear). Fabricant : « the compact U2 shape gives small-to-medium hands a fast, agile feel tailored for claw grip ». Coque partagée enregistrée le 2026-10-12 avec U2 V2 Mini (shell_id = atk_u2_mini) : dimensions publiées identiques (119,5 × 63 × 38,5 mm) et aucune fiche ATK séparée « U2 V2 Mini ». Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, fingertip : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "id": "atk_u2_mini",
     "brand": "ATK",
     "model": "Blazing Sky U2 Mini",
@@ -2165,8 +2189,8 @@
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
     "claw_grip_fit": "Élevé",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Fabricant : « the compact U2 shape gives small-to-medium hands a fast, agile feel tailored for claw grip ».",
+    "fingertip_grip_fit": "Moyen",
+    "fit_rationale": "Fabricant : « the compact U2 shape gives small-to-medium hands a fast, agile feel tailored for claw grip ». Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du ATK U2 Mini, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : fingertip : Okay. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "dimension_status": "verified",
     "weight_g": 38.0,
     "sensor": "PAW3950",
@@ -2228,6 +2252,14 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "MouseShape — ATK U2 Mini (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/atk-u2-mini",
+        "fields": [
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -2441,7 +2473,7 @@
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté. Séries U2 anciennes (notre entrée) : switchs Huano mécaniques ; les U2 V2 Ultimate/Mini sont documentées à part (optiques ATK Custom + Nordic 54L15). MCU non tranché pour ces séries. Fabricant : « its inward-curved symmetrical profile is shaped for secure claw and palm control on medium-to-large hands ».",
+    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté. Séries U2 anciennes (notre entrée) : switchs Huano mécaniques ; les U2 V2 Ultimate/Mini sont documentées à part (optiques ATK Custom + Nordic 54L15). MCU non tranché pour ces séries. Fabricant : « its inward-curved symmetrical profile is shaped for secure claw and palm control on medium-to-large hands ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/atk-u2-ultimate, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "id": "atk_u2",
     "brand": "ATK",
     "model": "Blazing Sky U2 / U2 Plus / U2 Ultimate",
@@ -2548,7 +2580,7 @@
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
-    "notes": "Coque symétrique, taille large et bosse basse : le fabricant la destine au claw et au fingertip grip (« Recommended for Claw / Fingertip Grip ») ; aucune recommandation palm publiée. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "notes": "Coque symétrique, taille large et bosse basse : le fabricant la destine au claw et au fingertip grip (« Recommended for Claw / Fingertip Grip ») ; aucune recommandation palm publiée. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-x2-v3-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2 v3 Mini",
@@ -2606,8 +2638,8 @@
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
     "claw_grip_fit": "Élevé",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Le fabricant la recommande pour le claw et le « palm claw » (« Recommended for Claw / Palm Claw Grip ») ; prises palm et fingertip non publiées.",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Le fabricant la recommande pour le claw et le « palm claw » (« Recommended for Claw / Palm Claw Grip ») ; prises palm et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar X2H v3 Mini, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : fingertip : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
@@ -2616,9 +2648,9 @@
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "conflicts": {},
-    "notes": "Coque symétrique à taille resserrée et bosse haute arrière : le fabricant la destine au claw grip et au « palm claw » (« Recommended for Claw / Palm Claw Grip ») ; le palm claw n'étant pas le palm complet, la prise palm reste « Inconnu ». Position de la bosse : « Narrow Waist / High Hump » sur la fiche de ce modèle ; la fiche officielle Pulsar de la X2 CrazyLight précise que « la X2H a une bosse centrale plus haute et une pente arrière plus marquée que la X2 » → « Rear » retenu. Hauteur des boutons : aucune valeur publiée par le fabricant → champ laissé « Inconnu », la souris reste « à vérifier » tant que ce relevé n'est pas fait.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "notes": "Coque symétrique à taille resserrée et bosse haute arrière : le fabricant la destine au claw grip et au « palm claw » (« Recommended for Claw / Palm Claw Grip ») ; le palm claw n'étant pas le palm complet, la prise palm reste « Inconnu ». Position de la bosse : « Narrow Waist / High Hump » sur la fiche de ce modèle ; la fiche officielle Pulsar de la X2 CrazyLight précise que « la X2H a une bosse centrale plus haute et une pente arrière plus marquée que la X2 » → « Rear » retenu. Hauteur des boutons : aucune valeur publiée par le fabricant → champ laissé « Inconnu », la souris reste « à vérifier » tant que ce relevé n'est pas fait.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, fingertip : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-x2h-v3-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2H v3 Mini",
@@ -2653,6 +2685,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — Pulsar X2H v3 Mini (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/pulsar-x2h-v3-mini",
+        "fields": [
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ]
   },
@@ -2685,7 +2725,7 @@
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
-    "notes": "Coque symétrique ambidextre (boutons latéraux amovibles) à bosse basse et taille large : « Recommended for Claw / Fingertip Grip » chez le fabricant ; aucune recommandation palm publiée. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Coque partagée avec l'autre X2 Medium (« pulsar_x2_medium ») : la fiche officielle classe ce modèle dans la série « X2 » (étiquettes « Series/X2 » et « X2 ») et la taille « Medium » ; mêmes dimensions publiées au dixième de millimètre (120,4 × 63 × 38), même bosse (Mid), mêmes boutons (Low), même forme (Symétrique). Corrige le dernier cas où deux entrées de la même coque pouvaient occuper deux places du même résultat (2026-10-12).",
+    "notes": "Coque symétrique ambidextre (boutons latéraux amovibles) à bosse basse et taille large : « Recommended for Claw / Fingertip Grip » chez le fabricant ; aucune recommandation palm publiée. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Coque partagée avec l'autre X2 Medium (« pulsar_x2_medium ») : la fiche officielle classe ce modèle dans la série « X2 » (étiquettes « Series/X2 » et « X2 ») et la taille « Medium » ; mêmes dimensions publiées au dixième de millimètre (120,4 × 63 × 38), même bosse (Mid), mêmes boutons (Low), même forme (Symétrique). Corrige le dernier cas où deux entrées de la même coque pouvaient occuper deux places du même résultat (2026-10-12). La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-x2a-v3, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2A v3 — série « X2 » (étiquettes « Series/X2 », « X2 », taille « Medium ») documentée par la fiche",
@@ -2756,7 +2796,7 @@
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
-    "notes": "Poids de la fiche officielle : 39 ±1 g avec patins « dot skates », 41 ±1 g avec patins classiques (les deux valeurs sont publiées par le fabricant). « Optimized for Claw and fingertip grip players » : claw et fingertip renseignés, palm non. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Coque partagée avec l'autre X2 Medium (« pulsar_x2_medium ») : la coque CrazyLight est le X2 Medium en version allégée ; mêmes dimensions publiées au dixième de millimètre (120,4 × 63 × 38), même bosse (Mid), mêmes boutons (Low), même forme (Symétrique). Corrige le dernier cas où deux entrées de la même coque pouvaient occuper deux places du même résultat (2026-10-12).",
+    "notes": "Poids de la fiche officielle : 39 ±1 g avec patins « dot skates », 41 ±1 g avec patins classiques (les deux valeurs sont publiées par le fabricant). « Optimized for Claw and fingertip grip players » : claw et fingertip renseignés, palm non. Position de la bosse : la fiche de ce modèle annonce une « Low Hump » sans en préciser la place ; la fiche officielle Pulsar de la X2 CrazyLight (même famille de coque X2) décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid » retenu. Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » retenu pour la famille X2, dont cette souris reprend la coque.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Coque partagée avec l'autre X2 Medium (« pulsar_x2_medium ») : la coque CrazyLight est le X2 Medium en version allégée ; mêmes dimensions publiées au dixième de millimètre (120,4 × 63 × 38), même bosse (Mid), mêmes boutons (Low), même forme (Symétrique). Corrige le dernier cas où deux entrées de la même coque pouvaient occuper deux places du même résultat (2026-10-12). La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-x2-crazylight-medium, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2 CrazyLight Medium — série « X2 » (étiquettes « Series/X2 », « X2 », taille « Medium ») documentée par la fiche",
@@ -2805,9 +2845,9 @@
     "hump_position": "Mid",
     "button_height": "Inconnu",
     "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Coque ergonomique main droite « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées.",
+    "claw_grip_fit": "Moyen",
+    "fingertip_grip_fit": "Moyen",
+    "fit_rationale": "Coque ergonomique main droite « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar Xlite v4 Mini, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : claw : Okay ; fingertip : Okay. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
@@ -2816,9 +2856,9 @@
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "conflicts": {},
-    "notes": "Seule souris ergonomique main droite du catalogue au format 115,6 mm. Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip (« Recommended for Palm Grip ») : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (et aucune fiche MouseShape pour cette génération) → champs laissés « Inconnu », la souris reste « à vérifier » tant que ces deux relevés n'existent pas. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw.",
+    "notes": "Seule souris ergonomique main droite du catalogue au format 115,6 mm. Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip (« Recommended for Palm Grip ») : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (et aucune fiche MouseShape pour cette génération) → champs laissés « Inconnu », la souris reste « à vérifier » tant que ces deux relevés n'existent pas. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, claw : Okay ; fingertip : Okay, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ».",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite v4 Mini",
@@ -2852,6 +2892,15 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — Pulsar Xlite v4 Mini (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/pulsar-xlite-v4-mini",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ]
   },
@@ -2871,9 +2920,9 @@
     "hump_position": "Mid",
     "button_height": "Inconnu",
     "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Coque ergonomique main droite « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées.",
+    "fit_rationale": "Coque ergonomique main droite « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar Xlite v4 Medium, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : claw : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
@@ -2882,9 +2931,9 @@
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "conflicts": {},
-    "notes": "Coque ergonomique main droite haute (43 mm) et large (66 mm). Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip (« Recommended for Palm Grip ») : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (et aucune fiche MouseShape pour cette génération) → champs laissés « Inconnu », la souris reste « à vérifier » tant que ces deux relevés n'existent pas. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw.",
+    "notes": "Coque ergonomique main droite haute (43 mm) et large (66 mm). Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip (« Recommended for Palm Grip ») : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (et aucune fiche MouseShape pour cette génération) → champs laissés « Inconnu », la souris reste « à vérifier » tant que ces deux relevés n'existent pas. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément (non inclus) — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar (« Recommended for … Grip ») : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, claw : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-xlite-v4-medium, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite v4 Medium",
@@ -2916,6 +2965,14 @@
         "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-xlite-v4-medium",
         "fields": [
           "hump_position"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — Pulsar Xlite v4 Medium (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/pulsar-xlite-v4-medium",
+        "fields": [
+          "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
       }
@@ -2950,7 +3007,7 @@
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
-    "notes": "« Same Size as the X2 Size 1 ». Poids publiés : ±35 g avec patins « dot skates », ±37 g avec patins classiques. « Optimized for Claw and fingertip grip players » : claw et fingertip renseignés, palm non. Position de la bosse : « LOW HUMP, WIDE WAIST » sur la fiche de ce modèle ; la fiche officielle Pulsar de la X2 CrazyLight décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid ». Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » pour la famille X2.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "notes": "« Same Size as the X2 Size 1 ». Poids publiés : ±35 g avec patins « dot skates », ±37 g avec patins classiques. « Optimized for Claw and fingertip grip players » : claw et fingertip renseignés, palm non. Position de la bosse : « LOW HUMP, WIDE WAIST » sur la fiche de ce modèle ; la fiche officielle Pulsar de la X2 CrazyLight décrit une bosse qui « monte progressivement de l'avant vers le centre, culmine au milieu puis redescend vers l'arrière » → « Mid ». Hauteur des boutons : la même fiche officielle indique que « la X2 a une implantation de boutons plus basse et plus large » (par opposition à la X2H) → « Low » pour la famille X2.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-x2-crazylight-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2 CrazyLight Mini",
@@ -3008,8 +3065,8 @@
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
     "claw_grip_fit": "Élevé",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "« Choix idéal pour le claw et le claw relâché » selon le fabricant (bosse haute) ; prises palm et fingertip non publiées.",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "« Choix idéal pour le claw et le claw relâché » selon le fabricant (bosse haute) ; prises palm et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar X2H CrazyLight Mini, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : fingertip : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
@@ -3018,9 +3075,9 @@
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "conflicts": {},
-    "notes": "Poids publiés : 37 g ±1 avec patins « dot skates », 39 g ±1 avec patins classiques. « An ideal choice for relaxed claw and claw grip users » : claw renseigné ; le palm claw n'étant pas le palm complet, palm et fingertip restent « Inconnu ». Position de la bosse : « HIGH HUMP, NARROW WAIST » sur la fiche de ce modèle ; la fiche officielle Pulsar indique que « la X2H a une bosse centrale plus haute et une pente arrière plus marquée que la X2 », et la famille X2H est décrite « higher rear hump » → « Rear ». Hauteur des boutons : le fabricant ne publie aucune valeur (la fiche précise seulement que l'implantation est « plus étroite » que celle de la X2) → champ laissé « Inconnu », la souris reste « à vérifier » jusqu'au relevé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion.",
+    "notes": "Poids publiés : 37 g ±1 avec patins « dot skates », 39 g ±1 avec patins classiques. « An ideal choice for relaxed claw and claw grip users » : claw renseigné ; le palm claw n'étant pas le palm complet, palm et fingertip restent « Inconnu ». Position de la bosse : « HIGH HUMP, NARROW WAIST » sur la fiche de ce modèle ; la fiche officielle Pulsar indique que « la X2H a une bosse centrale plus haute et une pente arrière plus marquée que la X2 », et la famille X2H est décrite « higher rear hump » → « Rear ». Hauteur des boutons : le fabricant ne publie aucune valeur (la fiche précise seulement que l'implantation est « plus étroite » que celle de la X2) → champ laissé « Inconnu », la souris reste « à vérifier » jusqu'au relevé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, fingertip : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise palm reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-x2h-crazylight-mini, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2H CrazyLight Mini",
@@ -3055,6 +3112,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — Pulsar X2H CrazyLight Mini (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/pulsar-x2h-crazylight-mini",
+        "fields": [
+          "fingertip_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ]
   },
@@ -3074,9 +3139,9 @@
     "hump_position": "Mid",
     "button_height": "Inconnu",
     "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Coque ergonomique main droite « pensée pour le palm grip » selon le fabricant ; prises claw et fingertip non publiées.",
+    "fit_rationale": "Coque ergonomique main droite « pensée pour le palm grip » selon le fabricant ; prises claw et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar Xlite CrazyLight Medium, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : claw : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
@@ -3085,9 +3150,9 @@
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU : 149,90 €.",
     "dimension_status": "verified",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "conflicts": {},
-    "notes": "« Same Size as the Xlite Size 2 ». Poids publiés : ±44 g avec patins « dot skates », ±46 g avec patins classiques. Coque ergonomique main droite à encoche de pouce : « a focus on right-hand palm grips ». Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (aucune fiche MouseShape pour ces générations) → champs laissés « Inconnu », la souris reste « à vérifier » jusqu'au relevé. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw.",
+    "notes": "« Same Size as the Xlite Size 2 ». Poids publiés : ±44 g avec patins « dot skates », ±46 g avec patins classiques. Coque ergonomique main droite à encoche de pouce : « a focus on right-hand palm grips ». Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (aucune fiche MouseShape pour ces générations) → champs laissés « Inconnu », la souris reste « à vérifier » jusqu'au relevé. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, claw : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-xlite-crazylight-medium, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite CrazyLight Medium",
@@ -3121,6 +3186,14 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — Pulsar Xlite CrazyLight Medium (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/pulsar-xlite-crazylight-medium",
+        "fields": [
+          "claw_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ]
   },
@@ -3140,9 +3213,9 @@
     "hump_position": "Mid",
     "button_height": "Inconnu",
     "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Coque ergonomique main droite haut de gamme « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées.",
+    "fit_rationale": "Coque ergonomique main droite haut de gamme « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar Xlite v4 Large, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : claw : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "sensor": "Pulsar XS-1",
     "polling_hz": 1000,
     "switches": "Optiques Pulsar",
@@ -3151,9 +3224,9 @@
     "price_status": "verified",
     "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
-    "fit_status": "manufacturer_guide",
+    "fit_status": "third_party_guide",
     "conflicts": {},
-    "notes": "La plus grand format de la gamme Xlite v4 (58 g ±1) : coque ergonomique main droite « Recommended for Palm Grip ». Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (aucune fiche MouseShape pour ces générations) → champs laissés « Inconnu », la souris reste « à vérifier » jusqu'au relevé. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw.",
+    "notes": "La plus grand format de la gamme Xlite v4 (58 g ±1) : coque ergonomique main droite « Recommended for Palm Grip ». Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (aucune fiche MouseShape pour ces générations) → champs laissés « Inconnu », la souris reste « à vérifier » jusqu'au relevé. Aucun point inventé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, claw : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-xlite-v4-large, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite v4 Large",
@@ -3185,6 +3258,14 @@
         "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-xlite-v4-large",
         "fields": [
           "hump_position"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "MouseShape — Pulsar Xlite v4 Large (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
+        "url": "https://mouseshape.com/mice/pulsar-xlite-v4-large",
+        "fields": [
+          "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
       }

@@ -26,8 +26,16 @@ PRICE_STATUSES = frozenset({"owner_spec_unverified", "verified", "unknown"})
 # - « manufacturer_guide » : valeurs reprises d'une recommandation ÉCRITE du fabricant
 #                            (« Recommended for Claw / Fingertip Grip ») — jamais d'une déduction :
 #                            une prise absente des recommandations reste « Inconnu » ;
+# - « third_party_guide »  : valeurs reprises d'une recommandation ÉCRITE d'une source tierce
+#                            AUTORISÉE par le propriétaire (mouseshape.com), uniquement pour une prise
+#                            que le fabricant ne publie pas, et uniquement « Élevé » (« Recommended »)
+#                            ou « Moyen » (« Okay »). « Not ideal » n'est JAMAIS converti en « Faible » :
+#                            l'élimination reste réservée au fabricant et au propriétaire — la source
+#                            tierce contredit d'ailleurs le fabricant sur certaines prises, donc elle
+#                            ne peut pas servir à écarter une souris. Une valeur fabricant n'est jamais
+#                            remplacée par une valeur tierce ;
 # - « unverified »         : aucune compatibilité renseignée (toutes « Inconnu »).
-FIT_STATUSES = frozenset({"owner_spec", "manufacturer_guide", "unverified"})
+FIT_STATUSES = frozenset({"owner_spec", "manufacturer_guide", "third_party_guide", "unverified"})
 
 
 class Grip(Enum):

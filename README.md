@@ -290,7 +290,7 @@ explicite, deux sources concordantes à ≤ 0.5 mm pour un statut `verified`.
 | `palm_grip_fit`, `claw_grip_fit`, `fingertip_grip_fit` | Compatibilité par grip. `Inconnu` = non vérifié : la souris est mise **à vérifier** (aucun point n'est attribué). |
 | `hump_position` | `Front`, `Mid`, `Rear`, `Mid-Front`, `Mid-Rear`, `Any` ou `Inconnu`. |
 | `button_height` | `Low`, `Mid`, `High` ou `Inconnu`. |
-| `fit_status` | `owner_spec` (cahier des charges, ou coque jumelle de la même forme), `manufacturer_guide` (recommandation écrite du fabricant) ou `unverified` (tout `Inconnu`). |
+| `fit_status` | `owner_spec` (cahier des charges, ou coque jumelle de la même forme), `manufacturer_guide` (recommandation écrite du fabricant), `third_party_guide` (recommandation écrite d'une source tierce autorisée — mouseshape.com — pour une prise que le fabricant ne publie pas : jamais « Faible », jamais à la place d'une valeur fabricant) ou `unverified` (tout `Inconnu`). |
 | `fit_rationale` | Texte affiché dans le résultat. |
 
 **Commercial** (ne modifie jamais le score géométrique)

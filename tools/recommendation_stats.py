@@ -89,6 +89,7 @@ def run(fast: bool = False):
     scores_seen: dict[str, list[int]] = defaultdict(list)      # points obtenus quand la souris est notée
     in_zone: Counter = Counter()                              # présent dans la zone de tolérance du mode
     same_shell_pairs: Counter = Counter()                     # deux places, une seule coque (repli documenté)
+    dominated_by: dict[str, Counter] = defaultdict(Counter)    # qui remporte l'idéal quand la souris est notée
     empty_causes: Counter = Counter()
     total = 0
     empty = 0
@@ -148,11 +149,16 @@ def run(fast: bool = False):
                 pass                                  # déjà compté en « en attente » ci-dessus
             elif mouse.id not in shown:
                 statuses[mouse.id]["scored-not-shown"] += 1
+                if ideal is not None:
+                    # Pourquoi cette souris ne sort pas ALORS QU'elle est notée : on enregistre qui
+                    # occupe la première place sur ces profils (réponse mesurée, pas supposée).
+                    dominated_by[mouse.id][ideal.mouse.id] += 1
     return {
         "mice": mice, "counter": counter, "by_mode": by_mode, "by_grip": by_grip, "by_thenar": by_thenar,
         "statuses": statuses, "scores": scores_seen, "in_zone": in_zone,
         "total": total, "empty": empty, "fast": fast,
         "empty_causes": empty_causes, "empty_with_unusable": empty_with_unusable,
+        "dominated_by": dominated_by,
         "same_shell_profiles": same_shell_profiles, "same_shell_pairs": same_shell_pairs,
     }
 
@@ -217,6 +223,7 @@ def main(argv: list[str] | None = None) -> int:
         add("\n### Pourquoi elles ne sortent pas\n")
         add("| Souris | Notée | En attente (donnée manquante) | Écartée | Motif principal |")
         add("|---|---:|---:|---:|---|")
+        labels = {m.id: m.label for m in mice}
         for mouse in never:
             st = data["statuses"][mouse.id]
             scored = st["scored-not-shown"]
@@ -225,19 +232,35 @@ def main(argv: list[str] | None = None) -> int:
             motifs = []
             if mouse.price_eur is None:
                 motifs.append("aucun prix EUR (les modes à prix l'écartent d'office)")
+            # Ce qui manque vraiment : chaque champ non renseigné est nommé (le statut de provenance
+            # `fit_status` n'est PAS une donnée manquante — `manufacturer_guide` ou `owner_spec`
+            # veulent dire que la prise est renseignée, pas qu'elle est absente).
             missing = []
-            for field, label in ((mouse.hump_position, "position de la bosse"),
-                                 (mouse.button_height, "hauteur des boutons")):
-                if field == "Inconnu":
+            if mouse.hump_position == "Inconnu":
+                missing.append("position de la bosse")
+            if mouse.button_height == "Inconnu":
+                missing.append("hauteur des boutons")
+            for value, label in ((mouse.palm_grip_fit, "prise Palm"),
+                                 (mouse.claw_grip_fit, "prise Claw"),
+                                 (mouse.fingertip_grip_fit, "prise Fingertip")):
+                if value == "Inconnu":
                     missing.append(label)
-            if mouse.fit_status != "verified":
-                missing.append("compatibilité de prise (statut non vérifié)")
+            if mouse.length_mm is None:
+                missing.append("longueur")
             if missing:
                 motifs.append("donnée absente : " + ", ".join(missing))
-            if not motifs and scored == 0:
-                motifs.append("toujours classée mais jamais dans les places (scores insuffisants)")
-            if not motifs and scored > 0:
-                motifs.append("classée et éligible : jamais retenue (classement dominé)")
+            if scored > 0:
+                top = data["dominated_by"][mouse.id].most_common(1)
+                if top:
+                    dominante, combien = top[0]
+                    motifs.append(f"notée, mais devancée par **{labels.get(dominante, dominante)}** "
+                                  f"sur {combien} des {scored} profils où elle reste éligible")
+                else:
+                    motifs.append("notée, jamais retenue (classement dominé)")
+            elif pending > 0:
+                motifs.append("en attente sur toute la grille : aucune place tant qu'une donnée manque")
+            else:
+                motifs.append("jamais notée : écartée par une règle éliminatoire, un budget ou un prix")
             add(f"| {mouse.label} | {scored} | {pending} | {excluded} | {' · '.join(motifs) or '—'} |")
 
     add("\n## Par mode (nombre de sorties)\n")

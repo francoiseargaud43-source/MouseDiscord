@@ -782,3 +782,89 @@ publie les quatre variantes, en centimes : Ultimate **68,95 €**, Ultimate+ **7
   régénérés par leurs outils (jamais édités à la main) ; `docs/audit/CATALOGUE_ATK.md`,
   `docs/audit/AUDIT.md` (C13, point ouvert 5), `docs/audit/RAPPORT_FINAL.md` et
   `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` mis à jour avec la date.
+
+---
+
+## 12. Vingt-troisième passe (2026-10-12) : les prises que le fabricant ne publie pas
+
+### 12.1 Le problème
+
+Neuf souris sur 36 ne sortaient **jamais** de la grille. Le rapport de statistiques nommait une cause
+par souris (§11.9) : soit une donnée absente interdit de la classer sur une prise (elle reste « à
+vérifier »), soit elle est bel et bien notée mais toujours devancée. Les fabricants ne publient leurs
+recommandations de prise que pour les prises qui les arrangent : Pulsar dit « Recommended for Palm
+Grip » pour les Xlite et « Claw / Fingertip » pour les X2/X2H, ATK dit « Claw » pour les U2. Les autres
+prises restaient `Inconnu`, donc la souris restait hors classement sur ces profils-là.
+
+### 12.2 La décision : une source tierce autorisée, vers le haut uniquement
+
+Le propriétaire a autorisé les **sources tierces pour les prises** (2026-10-12). Le guide
+`mouseshape.com` (déjà utilisé comme source de dimensions) publie, pour chaque souris, un « Grip Fit
+Guide » : `Recommended` / `Okay` / `Not ideal` par prise. Règle retenue, écrite dans `utils/models.py` :
+
+| Verdict de la source tierce | Valeur retenue | Pourquoi |
+|---|---|---|
+| `Recommended` | **Élevé** | elle recommande la prise pour cette souris |
+| `Okay` | **Moyen** | ni recommandée, ni déconseillée |
+| `Not ideal` | **`Inconnu`** (rien n'est écrit) | une valeur tierce ne sert **jamais** à écarter une souris |
+
+Trois garde-fous, tous vérifiés par test :
+
+1. **Le fabricant garde la main** : seules les colonnes `Inconnu` sont remplies ; une valeur publiée par
+   le fabricant n'est jamais remplacée (même quand la source tierce la contredit — voir 12.3).
+2. **Pas d'élimination par une tierce** : « Faible » (exclusion) reste réservé au fabricant et au
+   propriétaire — aucun « Faible » n'est accepté sur une souris `third_party_guide` (vérifié par test).
+3. **Traçabilité** : chaque valeur est déclarée par une source `mouseshape.com` datée du 2026-10-12,
+   et la note de la souris écrit ce qui n'a **pas** été retenu.
+
+### 12.3 Preuve que la prudence est nécessaire
+
+La source tierce **contredit le fabricant** sur plusieurs prises : elle juge le **palm** « Not ideal »
+sur toute la famille **Xlite**, alors que Pulsar l'écrit « Recommended for Palm Grip » ; elle juge le
+**claw** « Okay » sur les X2 alors que Pulsar le recommande. Aucune de ces divergences n'a été
+transférée : le fabricant l'emporte (Xlite palm « Élevé », X2 claw « Élevé »), et c'est bien pour cela
+qu'un « Not ideal » ne peut pas servir à écarter une souris.
+
+### 12.4 Effet mesuré
+
+Dix souris reçoivent une ou deux prises (statut `third_party_guide`), toutes les autres valeurs restant
+celles des fabricants :
+
+| Souris | Prise ajoutée | Verdict source |
+|---|---|---|
+| ATK Fierce X | Fingertip « Élevé » | Recommended |
+| ATK U2 Mini / U2 V2 Mini | Fingertip « Moyen » | Okay |
+| ATK U2 V2 Ultimate | Palm « Moyen » | Okay |
+| Pulsar X2H v3 Mini / X2H CrazyLight Mini | Fingertip « Élevé » | Recommended |
+| Pulsar Xlite v4 Medium / v4 Large / CrazyLight Medium | Claw « Élevé » | Recommended |
+| Pulsar Xlite v4 Mini | Claw « Moyen » · Fingertip « Moyen » | Okay |
+
+Mesures (grille complète de `tools/recommendation_stats.py`, 18 522 profils, moteur inchangé) :
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Pulsar Xlite v4 Medium (profils notés / en attente) | 2 880 / 3 780 | **5 760 / 900** |
+| Pulsar Xlite v4 Large (profils notés / en attente) | 720 / 720 | **1 440 / 0** |
+| Pulsar X2H CrazyLight Mini (profils notés / en attente) | 2 520 / 3 990 | **3 990 / 2 520** |
+| ATK U2 Mini (profils notés / en attente) | 3 780 / 5 544 | **5 544 / 3 780** |
+| Colonnes de prise encore « Inconnu » dans le catalogue | 27 | **16** (11 valeurs complétées) |
+| Souris jamais recommandées | 9 sur 36 | 9 sur 36 (inchangé — voir 12.5) |
+
+La grille QA complète (27 170 profils) reste à **0 problème** : 2 561 profils sans résultat, 8 661
+matchs idéaux partiels, 1 410 replis de coque, 6 523 profils à trois places (24,01 %).
+
+### 12.5 Ce que ça change — et ce que ça ne change pas encore
+
+Les souris concernées sont maintenant **notées** sur des profils où elles étaient « à vérifier », mais
+elles restent devancées : aucune n'entre dans les trois places. La raison est mesurée, souris par
+souris, dans `STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` : ce n'est plus une donnée absente, c'est le
+classement (par exemple l'ATK ZERO, notée sur 9 828 profils, est devancée sur 1 611 d'entre eux par
+l'ATK X1 V2 Ultra Max). La cause structurelle restante est connue : **25 souris sur 36 n'ont pas de
+hauteur de boutons** — le critère ne peut pas leur être compté, leur total maximal est donc inférieur
+de 5 à 10 points à celui d'une souris complète. C'est le chantier suivant : mesurer ces hauteurs sur
+des visuels de profil (`tools/measure_button_height.py`).
+
+**Preuves.** `pytest -q` : **349 tests** (deux contrôles de provenance étendus, un test dédié au guide
+tiers ajouté : chaque valeur tierce déclarée par une source datée, aucun « Faible », aucune valeur
+fabricant remplacée) ; `pyflakes` propre ; `privacy_scan` 0 ; `tools/recommendation_stats.py` et
+`tools/compare_profiles.py` régénérés ; `tools/qa_flow_matrix.py` complet (27 170 profils) : 0 problème.

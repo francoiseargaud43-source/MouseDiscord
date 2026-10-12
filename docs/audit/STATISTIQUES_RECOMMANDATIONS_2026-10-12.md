@@ -77,15 +77,15 @@ Une « recommandation » = une souris affichée dans le résultat, à l'une des 
 
 | Souris | Notée | En attente (donnée manquante) | Écartée | Motif principal |
 |---|---:|---:|---:|---|
-| ATK A9 Air | 11172 | 0 | 7350 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| ATK Blazing Sky U2 Mini | 3780 | 5544 | 9198 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| ATK ZERO | 9828 | 0 | 8694 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| Pulsar X2 CrazyLight Medium | 4830 | 3360 | 10332 | donnée absente : compatibilité de prise (statut non vérifié) |
-| Pulsar X2H CrazyLight Mini | 2520 | 3990 | 12012 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| Pulsar Xlite CrazyLight Medium | 2880 | 3780 | 11862 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| Pulsar Xlite v4 Large | 720 | 720 | 17082 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| Pulsar Xlite v4 Medium | 2880 | 3780 | 11862 | donnée absente : hauteur des boutons, compatibilité de prise (statut non vérifié) |
-| VXE Dragonfly X3 / X3 Pro / X3 Turbo | 1792 | 10752 | 5978 | donnée absente : position de la bosse, hauteur des boutons, compatibilité de prise (statut non vérifié) |
+| ATK A9 Air | 11172 | 0 | 7350 | donnée absente : hauteur des boutons · notée, mais devancée par **ATK X1 V2 Ultra Max** sur 3078 des 11172 profils où elle reste éligible |
+| ATK Blazing Sky U2 Mini | 5544 | 3780 | 9198 | donnée absente : hauteur des boutons, prise Palm · notée, mais devancée par **ATK Blazing Sky F1 V2** sur 1367 des 5544 profils où elle reste éligible |
+| ATK ZERO | 9828 | 0 | 8694 | donnée absente : hauteur des boutons · notée, mais devancée par **ATK X1 V2 Ultra Max** sur 1611 des 9828 profils où elle reste éligible |
+| Pulsar X2 CrazyLight Medium | 4830 | 3360 | 10332 | donnée absente : prise Palm · notée, mais devancée par **Pulsar X2 v3 Mini** sur 1069 des 4830 profils où elle reste éligible |
+| Pulsar X2H CrazyLight Mini | 3990 | 2520 | 12012 | donnée absente : hauteur des boutons, prise Palm · notée, mais devancée par **Pulsar X2 v3 Mini** sur 1069 des 3990 profils où elle reste éligible |
+| Pulsar Xlite CrazyLight Medium | 5760 | 900 | 11862 | donnée absente : hauteur des boutons, prise Fingertip · notée, mais devancée par **ATK X1 V2 Ultra Max** sur 1371 des 5760 profils où elle reste éligible |
+| Pulsar Xlite v4 Large | 1440 | 0 | 17082 | donnée absente : hauteur des boutons, prise Fingertip · notée, mais devancée par **ATK X1 V2 Ultra Max** sur 630 des 1440 profils où elle reste éligible |
+| Pulsar Xlite v4 Medium | 5760 | 900 | 11862 | donnée absente : hauteur des boutons, prise Fingertip · notée, mais devancée par **ATK X1 V2 Ultra Max** sur 1371 des 5760 profils où elle reste éligible |
+| VXE Dragonfly X3 / X3 Pro / X3 Turbo | 1792 | 10752 | 5978 | donnée absente : position de la bosse, hauteur des boutons · notée, mais devancée par **ATK Blazing Sky F1 V2** sur 1008 des 1792 profils où elle reste éligible |
 
 ## Par mode (nombre de sorties)
 
@@ -228,7 +228,7 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 | Scyrox V8 / V8S | 31.4/40 | 40/40 | 20/40 | 5292 |
 | ATK A9 Plus 2.0 | 24.3/40 | 35/40 | 15/40 | 12768 |
 | ATK F1 V3 Ultimate | 32.5/40 | 40/40 | 20/40 | 6174 |
-| Pulsar Xlite v4 Mini | 25.7/40 | 35/40 | 15/40 | 2520 |
+| Pulsar Xlite v4 Mini | 22.1/40 | 35/40 | 10/40 | 6510 |
 | ATK Phantom Ultimate | 25.9/40 | 35/40 | 10/40 | 7770 |
 | Pulsar X2A v3 | 30.7/40 | 40/40 | 20/40 | 4830 |
 | ATK GHOST Ultimate | 24.9/40 | 35/40 | 10/40 | 9828 |
@@ -236,21 +236,21 @@ Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profil
 | VXE MAD R / MAD R Major | 22.3/40 | 35/40 | 10/40 | 10752 |
 | Pulsar X2 CrazyLight Mini | 35.2/40 | 40/40 | 25/40 | 3990 |
 | ATK Dragonfly A9 NB Ultra | 23.5/40 | 35/40 | 10/40 | 9576 |
-| ATK Fierce X | 27.6/40 | 35/40 | 20/40 | 3780 |
-| Pulsar X2H v3 Mini | 28.2/40 | 35/40 | 20/40 | 2520 |
+| ATK Fierce X | 27.2/40 | 35/40 | 15/40 | 5544 |
+| Pulsar X2H v3 Mini | 27.2/40 | 35/40 | 15/40 | 3990 |
 | ATK GHOST Extreme | 24.9/40 | 35/40 | 10/40 | 9828 |
-| ATK U2 V2 Ultimate | 22.6/40 | 35/40 | 15/40 | 4704 |
+| ATK U2 V2 Ultimate | 17.6/40 | 35/40 | 5/40 | 9408 |
 | ATK Y9 Ultimate | 18.8/40 | 25/40 | 15/40 | 5376 |
-| ATK U2 V2 Mini | 25.4/40 | 35/40 | 15/40 | 4410 |
+| ATK U2 V2 Mini | 22.9/40 | 35/40 | 5/40 | 6468 |
 | ATK Duckbill | 18.5/40 | 30/40 | 10/40 | 6678 |
 | ATK A9 Air | 22.8/40 | 35/40 | 10/40 | 11172 |
-| ATK Blazing Sky U2 Mini | 25.4/40 | 35/40 | 15/40 | 3780 |
+| ATK Blazing Sky U2 Mini | 22.9/40 | 35/40 | 5/40 | 5544 |
 | ATK ZERO | 22.2/40 | 35/40 | 10/40 | 9828 |
 | Pulsar X2 CrazyLight Medium | 30.7/40 | 40/40 | 20/40 | 4830 |
-| Pulsar X2H CrazyLight Mini | 28.2/40 | 35/40 | 20/40 | 2520 |
-| Pulsar Xlite CrazyLight Medium | 20.4/40 | 30/40 | 15/40 | 2880 |
-| Pulsar Xlite v4 Large | 18.8/40 | 25/40 | 15/40 | 720 |
-| Pulsar Xlite v4 Medium | 20.4/40 | 30/40 | 15/40 | 2880 |
+| Pulsar X2H CrazyLight Mini | 27.2/40 | 35/40 | 15/40 | 3990 |
+| Pulsar Xlite CrazyLight Medium | 20.4/40 | 30/40 | 15/40 | 5760 |
+| Pulsar Xlite v4 Large | 18.8/40 | 25/40 | 15/40 | 1440 |
+| Pulsar Xlite v4 Medium | 20.4/40 | 30/40 | 15/40 | 5760 |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo | 19.4/40 | 30/40 | 10/40 | 1792 |
 
 ## Ce qui manque, souris par souris (à trouver, jamais à inventer)

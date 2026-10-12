@@ -16,7 +16,7 @@ def test_only_sourced_records_carry_non_unknown_grip_values():
     for m in load_catalog(MOUSE_DB_PATH):
         values = (m.palm_grip_fit, m.claw_grip_fit, m.fingertip_grip_fit)
         if any(v != "Inconnu" for v in values):
-            assert m.fit_status in {"owner_spec", "manufacturer_guide"}, (
+            assert m.fit_status in {"owner_spec", "manufacturer_guide", "third_party_guide"}, (
                 f"{m.id} : compatibilité renseignée sans provenance ({m.fit_status})"
             )
             assert m.fit_rationale, f"{m.id} : compatibilité renseignée sans justification"

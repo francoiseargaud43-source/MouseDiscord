@@ -87,6 +87,13 @@ sont toujours **pas** converties en compatibilité (règle du §1). La hauteur d
 25 souris sur 36 : elles restent classables avec un score partiel, mais ne peuvent pas dépasser une souris
 complète.
 
+**Complément du 2026-10-12 (23e passe, `ROBUSTESSE_2026-10-12.md` §12)** : les prises que le fabricant ne
+publie pas sont complétées par la source tierce **autorisée** mouseshape.com (statut `third_party_guide`),
+uniquement vers le haut (« Recommended » → « Élevé », « Okay » → « Moyen ») — un « Not ideal » n'est **jamais**
+converti en « Faible », la prise reste alors `Inconnu` avec la raison écrite dans les notes. Dix souris sont
+concernées, dont la **Fierce X** (fingertip), les **U2 Mini / U2 V2 Mini** (fingertip), l'**U2 V2 Ultimate**
+(palm) et les familles **Xlite v4 / X2H** (prises complétées), sans jamais remplacer une valeur du fabricant.
+
 **Couverture après ajouts** (mise à jour du 2026-10-12) : **36 souris**, longueurs 115,6 → 127,0 mm. La plus
 courte est la Pulsar X2 CrazyLight Mini (115,6 mm) ; la `vxe_v3` (116,6 mm) reste la première souris « Small » du
 catalogue : elle comble le manque de formes compactes pour les mains de moins de ~175 mm.
