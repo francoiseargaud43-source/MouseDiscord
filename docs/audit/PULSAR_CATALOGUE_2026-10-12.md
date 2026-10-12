@@ -220,9 +220,11 @@ connus est aujourd'hui écartée uniquement parce que ce relevé manque).
 
 1. **Vos valeurs** — vous disposez de l'outil Oblivity, qui pose exactement cette question souris par
    souris : les valeurs entrent avec la provenance « cahier des charges », comme vos six souris actuelles.
-2. **Relevé de mesure** — mesurer la hauteur d'appui des boutons sur les vues de profil officielles
-   (rendus fabricants), méthode calibrée sur les sept souris dont la valeur est déjà connue, avec
-   incertitude affichée. Reproductible, mais c'est une mesure, pas une donnée constructeur.
+2. **Relevé de mesure** — tenté le 2026-10-12 : l'outil `tools/measure_button_height.py` mesure la
+   hauteur au bord d'attaque des boutons et **retrouve exactement les deux classes connues** testables
+   (ATK F1 V2 « bas » → 43,3 % ; ATK Z1 V2 « hauts » → 55,1 %). Limite : seules 4 vues officielles sur
+   11 passent le contrôle qualité (les autres sont en perspective et sont **refusées**, jamais
+   approximées). Détail complet, chiffres et vues refusées : ``docs/audit/MESURE_BOUTONS_2026-10-12.md``.
 3. **Critère non bloquant** — accepter qu'une souris dont **seul** ce relevé manque soit proposée avec un
    score calculé sur les points disponibles (30/35, 35/35, 30/30 ci-dessus) et la mention « hauteur des
    boutons non documentée ». Aucun point n'est inventé : le critère n'est simplement pas noté, et le
