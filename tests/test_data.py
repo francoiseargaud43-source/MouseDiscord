@@ -60,15 +60,34 @@ def price_is_either_absent_or_sourced(mouse) -> bool:
     return mouse.price_status == "verified" and dated_price_source and "EUR" in mouse.price_note
 
 
+def grip_fields_are_sourced_or_unknown(mouse) -> bool:
+    """Aucune compatibilité de prise n'est inventée : soit « Inconnu », soit attestée par une source.
+
+    Depuis le 2026-10-12, une valeur autre que « Inconnu » est admise si le FABRICANT l'écrit
+    (statut « manufacturer_guide ») et qu'une source du catalogue déclare le champ. Une valeur
+    « Faible » (éliminatoire) reste réservée au cahier des charges du propriétaire.
+    """
+    values = (mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit)
+    if all(v == "Inconnu" for v in values):
+        return True
+    if mouse.fit_status not in {"owner_spec", "manufacturer_guide"}:
+        return False
+    if mouse.fit_status == "manufacturer_guide" and "Faible" in values:
+        return False
+    for field, value in zip(("palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit"), values):
+        if value != "Inconnu" and not any(field in s.fields for s in mouse.sources):
+            return False
+    return True
+
+
 def test_store_additions_are_sourced_and_never_invent_compatibility(mice):
-    """Les ajouts « produits vendus » sont sourcés, sans prix EUR inventé ni compatibilité de prise inventée."""
+    """Les ajouts « produits vendus » sont sourcés, sans prix EUR inventé ni compatibilité inventée."""
     for mouse_id in STORE_2026_10_11_IDS:
         mouse = mice[mouse_id]
         assert mouse.sources, f"{mouse_id} doit citer au moins une source"
         assert all(s.date_checked and s.url.startswith("http") for s in mouse.sources)
         assert price_is_either_absent_or_sourced(mouse), mouse_id
-        assert mouse.fit_status == "unverified", mouse_id
-        assert {mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit} == {"Inconnu"}, mouse_id
+        assert grip_fields_are_sourced_or_unknown(mouse), mouse_id
 
 
 def test_small_shape_gap_is_filled_by_the_pulsar_minis(mice):
@@ -105,16 +124,23 @@ def test_new_models_have_no_invented_compatibility_or_price(mice):
     for mid in NEW_ATK_IDS:
         m = mice[mid]
         assert price_is_either_absent_or_sourced(m), f"{mid} : prix non sourcé"
-        assert m.palm_grip_fit == "Inconnu" and m.claw_grip_fit == "Inconnu" and m.fingertip_grip_fit == "Inconnu"
-        assert m.fit_status == "unverified"
+        assert m.fit_status in {"unverified", "manufacturer_guide"}, mid
+        assert grip_fields_are_sourced_or_unknown(m), f"{mid} : compatibilité de prise non sourcée"
         assert m.sources, f"{mid} : toute donnée doit citer une source"
 
 
 def test_new_models_are_pending_not_ranked_for_palm(mice):
+    """Sans la hauteur des boutons relevée, une souris reste « à vérifier » : jamais classée.
+
+    C'est la règle qui empêche de proposer une souris sur des données incomplètes — et la raison
+    pour laquelle peu de souris apparaissent tant que ce relevé n'est pas fait.
+    """
     hand = HandMeasure(180, 90)
     for mid in NEW_ATK_IDS:
         s = evaluate_mouse(mice[mid], hand, Grip.PALM)
         assert not s.is_scored, f"{mid} ne doit pas être classé sans compatibilité vérifiée"
+        if mice[mid].button_height == "Inconnu" and not s.is_excluded:
+            assert s.is_pending
 
 
 def test_duckbill_length_is_not_filled_while_sources_conflict(mice):

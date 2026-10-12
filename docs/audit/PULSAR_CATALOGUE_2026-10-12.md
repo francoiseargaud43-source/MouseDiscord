@@ -185,3 +185,47 @@ la bosse et la hauteur des boutons. **Liste à compléter** (générée depuis l
 4. **Éditions de couleur** (T1, PRX, Bruce Lee, Demon Slayer, BlueArchive…) : mêmes coques et mêmes
    spécifications annoncées, seuls le coloris et le prix changent — une entrée par modèle a été retenue,
    les éditions restent citées dans le relevé §2.
+
+---
+
+## 7. Pourquoi si peu de souris proposées, et ce qu'il faut débloquer (mesuré le 2026-10-12)
+
+**La règle du moteur.** Une souris n'est proposée que si **les cinq critères** sont connus : longueur
+vérifiée, largeur de prise, compatibilité avec la prise de l'utilisateur, position de la bosse et
+**hauteur des boutons**. Dès qu'un seul manque, la souris passe « à vérifier » et n'est **jamais**
+affichée — c'est la règle qui garantit qu'aucun point n'est inventé. Conséquence : ce n'est pas le
+nombre de souris du catalogue qui limite les choix, mais le nombre de souris **complètement documentées**.
+
+**Relevés faits ce jour** (recherche chez les fabricants, sourcés dans le catalogue) : ATK publie ses
+recommandations de prise pour neuf souris — Y9 (« right-handed ergonomic … for stable **palm** and thumb
+support »), A9 Ultimate / Air / NB / Mini (« claw, palm, and fingertip grips »), GHOST Ultimate / Extreme
+(« across all grip styles »), U2 (« claw and palm »), U2 Mini (« tailored for claw grip »). Ces valeurs
+n'existaient pas dans le catalogue : ATK ne les avait pas été relevées jusqu'ici.
+
+**Ce qui bloque encore, souris par souris** (simulation, moteur réel) : en n'acceptant que les souris dont
+**tout est connu sauf la hauteur des boutons**, on obtient :
+
+| Profil | Proposables aujourd'hui | Bloquées par la SEULE hauteur des boutons | Meilleure bloquée (connu / total connu) |
+|---|---|---|---|
+| Palm 180 × 90 mm | 4 | **7** | ATK GHOST Ultimate 30/35 (86 %) — devant les 30/40 actuels |
+| Claw 150 × 75 mm | 7 | **6** | Pulsar X2H v3 Mini 30/35 (86 %) |
+| Claw 180 × 100 mm | 10 | **9** | ATK GHOST Ultimate, U2 Mini : **35/35 (100 %)** |
+| Fingertip 200 × 100 mm | 8 | **6** | ATK GHOST Ultimate, A9 Mini : **30/30 (100 %)** |
+
+Autrement dit : **la hauteur des boutons vaut à elle seule 6 à 9 souris de plus par profil**, et fait
+potentiellement changer le match idéal en Palm (une souris qui ne perd aucun point sur les critères
+connus est aujourd'hui écartée uniquement parce que ce relevé manque).
+
+**Trois voies possibles** (aucune n'invente de valeur) :
+
+1. **Vos valeurs** — vous disposez de l'outil Oblivity, qui pose exactement cette question souris par
+   souris : les valeurs entrent avec la provenance « cahier des charges », comme vos six souris actuelles.
+2. **Relevé de mesure** — mesurer la hauteur d'appui des boutons sur les vues de profil officielles
+   (rendus fabricants), méthode calibrée sur les sept souris dont la valeur est déjà connue, avec
+   incertitude affichée. Reproductible, mais c'est une mesure, pas une donnée constructeur.
+3. **Critère non bloquant** — accepter qu'une souris dont **seul** ce relevé manque soit proposée avec un
+   score calculé sur les points disponibles (30/35, 35/35, 30/30 ci-dessus) et la mention « hauteur des
+   boutons non documentée ». Aucun point n'est inventé : le critère n'est simplement pas noté, et le
+   pourcentage est calculé sur le maximum réellement calculable. Les souris portant **deux** manques ou
+   plus resteraient, elles, non proposées.
+

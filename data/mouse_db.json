@@ -607,19 +607,19 @@
     "height_mm": 38.0,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
     "price_eur": 68.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Dimensions d'une seule source (EloShapes). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs ATK Lightblade mécaniques et MCU Nordic 54L15 (fiche ATK Store GHOST).",
+    "notes": "Dimensions d'une seule source (EloShapes). Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Switchs ATK Lightblade mécaniques et MCU Nordic 54L15 (fiche ATK Store GHOST). Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "sources": [
       {
         "label": "EloShapes — ATK GHOST Ultimate",
@@ -659,13 +659,16 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "ATK Store — ATK Blazing Sky GHOST (carbone)",
+        "label": "ATK Store — ATK Blazing Sky GHOST (carbone) (recommandations de prise publiées par ATK)",
         "url": "https://www.atk.store/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse",
         "fields": [
-          "switches",
-          "mcu"
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "mcu",
+          "palm_grip_fit",
+          "switches"
         ],
-        "date_checked": "2026-10-11"
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -685,19 +688,19 @@
     "height_mm": 38.0,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
     "price_eur": 68.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 68.95 € (ATK Blazing Sky GHOST (carbone) « à partir de », même coque, prix normal 100.95 €). Prix « à partir de » : variante la moins chère en stock.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Même coque que le GHOST Ultimate selon la comparaison EloShapes (dimensions identiques). Capteur et autonomie non vérifiés. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, 8 000 Hz, MCU Nordic 54H20 (fiches ATK Store GHOST carbone / MaxGaming). Switchs Lightblade ou optiques ATK Custom selon la finition.",
+    "notes": "Même coque que le GHOST Ultimate selon la comparaison EloShapes (dimensions identiques). Capteur et autonomie non vérifiés. Correspondance bosse EloShapes -> schéma : « Center » = Mid ; « Back - minimal/moderate » = Rear (règle de correspondance, à confirmer par le propriétaire). Capteur PAW3950 Ultra, 8 000 Hz, MCU Nordic 54H20 (fiches ATK Store GHOST carbone / MaxGaming). Switchs Lightblade ou optiques ATK Custom selon la finition. Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "sources": [
       {
         "label": "EloShapes — comparaison GHOST Extreme / Ultimate",
@@ -727,15 +730,18 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "ATK Store — ATK Blazing Sky GHOST (carbone)",
+        "label": "ATK Store — ATK Blazing Sky GHOST (carbone) (recommandations de prise publiées par ATK)",
         "url": "https://www.atk.store/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse",
         "fields": [
-          "sensor",
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "mcu",
+          "palm_grip_fit",
           "polling_hz",
-          "switches",
-          "mcu"
+          "sensor",
+          "switches"
         ],
-        "date_checked": "2026-10-11"
+        "date_checked": "2026-10-12"
       },
       {
         "label": "MaxGaming — ATK GHOST Extreme",
@@ -763,19 +769,19 @@
     "height_mm": 43.3,
     "hump_position": "Mid",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
+    "palm_grip_fit": "Élevé",
     "claw_grip_fit": "Inconnu",
     "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
     "price_eur": 41.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Dragonfly Y9 « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant : « right-handed ergonomic mouse with a contoured back and asymmetrical rear for stable palm and thumb support » — prise palm retenue ; claw et fingertip ne sont pas mentionnés.",
     "weight_g": 55.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "125.6 × 67.5 × 43.3 mm concordants (EloShapes, MaxGaming, FPSTools). Poids 55 g (EloShapes, MaxGaming) contre 58 g (FPSTools) : conflit de poids, sans impact géométrique. Polling 8000 Hz (EloShapes, MaxGaming) contre 1000 Hz (FPSTools) : non retenu. Forme ergonomique : compatibilité de grip NON vérifiée. Fréquence 8 000 Hz (filaire et sans fil), switchs Huano Ice Berry, MCU Nordic 54L15.",
+    "notes": "125.6 × 67.5 × 43.3 mm concordants (EloShapes, MaxGaming, FPSTools). Poids 55 g (EloShapes, MaxGaming) contre 58 g (FPSTools) : conflit de poids, sans impact géométrique. Polling 8000 Hz (EloShapes, MaxGaming) contre 1000 Hz (FPSTools) : non retenu. Forme ergonomique : compatibilité de grip NON vérifiée. Fréquence 8 000 Hz (filaire et sans fil), switchs Huano Ice Berry, MCU Nordic 54L15. Fabricant : « right-handed ergonomic mouse with a contoured back and asymmetrical rear for stable palm and thumb support » — prise palm retenue ; claw et fingertip ne sont pas mentionnés.",
     "conflicts": {
       "polling_hz": {
         "values": [
@@ -871,6 +877,14 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — Dragonfly Y9 Series (fiche officielle : « right-handed ergonomic mouse ... for stable palm and thumb support ») (recommandations de prise publiées par ATK)",
+        "url": "https://www.atk.store/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse",
+        "fields": [
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Ergonomic",
@@ -1324,19 +1338,19 @@
     "height_mm": 40.0,
     "hump_position": "Mid",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
     "price_eur": 41.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Dragonfly A9 Ultimate « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique).",
     "weight_g": 53.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air.",
+    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air. Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique).",
     "sources": [
       {
         "label": "EloShapes — ATK A9 Ultimate",
@@ -1399,6 +1413,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — Dragonfly A9 Series (fiche officielle : « comfortably accommodating claw, palm, and fingertip grips ») (recommandations de prise publiées par ATK)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-series-lightweight-wireless-mouse",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1418,19 +1442,19 @@
     "height_mm": 40.0,
     "hump_position": "Mid",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
     "price_eur": 89.9,
     "price_status": "verified",
     "price_note": "Prix EUR (public France) constaté le 2026-10-11 : 89,90 € (ATK Dragonfly A9 Air 8K, Shadow White, en stock) chez Maxesport.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque).",
     "weight_g": 47.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master.",
+    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master. Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque).",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Air / A9 Ultimate",
@@ -1464,6 +1488,16 @@
           "weight_g"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — Dragonfly A9 Series (fiche officielle : « comfortably accommodating claw, palm, and fingertip grips ») (recommandations de prise publiées par ATK)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-series-lightweight-wireless-mouse",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1482,19 +1516,19 @@
     "height_mm": 38.6,
     "hump_position": "Inconnu",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_status": "unverified",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_status": "manufacturer_guide",
     "dimension_status": "single_source",
     "price_eur": null,
     "price_status": "unknown",
     "price_note": "Aucun prix EUR vérifié.",
-    "fit_rationale": "",
+    "fit_rationale": "Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (version Mini de la même coque).",
     "weight_g": 39.0,
     "sensor": "PAW3955",
     "polling_hz": 8000,
-    "notes": "Dimensions d'une seule source (ATK, fiche produit). Bosse, boutons et grip non vérifiés. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 18,95 € ; pas de prix distinct pour l'A9 Mini. A9 Mini : PAW3955, 8 000 Hz, switchs optiques ATK et MCU Nordic 54L15 (fiches InputGear FR / ATK Store). La Mini+ est annoncée avec le PAW3955 Master Plus.",
+    "notes": "Dimensions d'une seule source (ATK, fiche produit). Bosse, boutons et grip non vérifiés. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 18,95 € ; pas de prix distinct pour l'A9 Mini. A9 Mini : PAW3955, 8 000 Hz, switchs optiques ATK et MCU Nordic 54L15 (fiches InputGear FR / ATK Store). La Mini+ est annoncée avec le PAW3955 Master Plus. Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (version Mini de la même coque).",
     "sources": [
       {
         "label": "ATK Store — ATK Dragonfly A9 Ultimate",
@@ -1534,6 +1568,16 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — Dragonfly A9 Series (fiche officielle : « comfortably accommodating claw, palm, and fingertip grips ») (recommandations de prise publiées par ATK)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-series-lightweight-wireless-mouse",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1871,10 +1915,10 @@
     "height_mm": 38.5,
     "grip_width_mm": null,
     "shell_id": null,
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ». U2 Mini : switchs Huano Ice Berry et processeur Nordic 52840 (fiche GamerGear).",
+    "notes": "Mêmes dimensions que l'ATK Blazing Sky U2 V2 Mini déjà au catalogue (119,5 × 63 × 38,5). EloShapes : hump « Back - minimal » → Rear ; front flare « Outward - slight » ; flancs « Inward ». U2 Mini : switchs Huano Ice Berry et processeur Nordic 52840 (fiche GamerGear). Fabricant : « the compact U2 shape gives small-to-medium hands a fast, agile feel tailored for claw grip ».",
     "id": "atk_u2_mini",
     "brand": "ATK",
     "model": "Blazing Sky U2 Mini",
@@ -1884,9 +1928,9 @@
     "hump_position": "Rear",
     "button_height": "Inconnu",
     "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Version compacte du U2 (119,5 mm) à bosse arrière minimale (EloShapes) ; compatibilités par prise non documentées.",
+    "fit_rationale": "Fabricant : « the compact U2 shape gives small-to-medium hands a fast, agile feel tailored for claw grip ».",
     "dimension_status": "verified",
     "weight_g": 38.0,
     "sensor": "PAW3950",
@@ -1909,13 +1953,14 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "ATK Store — ATK Blazing Sky U2 Mini",
+        "label": "ATK Store — ATK Blazing Sky U2 Mini (recommandations de prise publiées par ATK)",
         "url": "https://www.atk.store/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse",
         "fields": [
+          "claw_grip_fit",
           "price_note",
           "shape"
         ],
-        "date_checked": "2026-10-11"
+        "date_checked": "2026-10-12"
       },
       {
         "label": "EloShapes (X, 20/08/2026) — U2 Mini annoncé",
@@ -1959,10 +2004,10 @@
     "height_mm": 40.0,
     "grip_width_mm": null,
     "shell_id": null,
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Dragonfly A9 Plus 2.0 déjà au catalogue (125,0 × 63,5 × 40,0) : coque A9 pleine taille, bosse « Mid » héritée de cette fiche. Version à station de charge 2-en-1, 56 g. Éditeur : « Claw / Fingertip / Palm ». Le distributeur Standesk insiste sur claw / relaxed claw / fingertip. Switchs optiques ATK Custom (FE) et puce maison BK Custom Esports (fiche ATK Store A9 NB).",
+    "notes": "Mêmes dimensions que l'ATK Dragonfly A9 Plus 2.0 déjà au catalogue (125,0 × 63,5 × 40,0) : coque A9 pleine taille, bosse « Mid » héritée de cette fiche. Version à station de charge 2-en-1, 56 g. Éditeur : « Claw / Fingertip / Palm ». Le distributeur Standesk insiste sur claw / relaxed claw / fingertip. Switchs optiques ATK Custom (FE) et puce maison BK Custom Esports (fiche ATK Store A9 NB). Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque).",
     "id": "atk_a9_nb",
     "brand": "ATK",
     "model": "Dragonfly A9 NB Ultra",
@@ -1971,10 +2016,10 @@
     "width_max_mm": 63.5,
     "hump_position": "Mid",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Coque de la famille A9 « pleine taille » (125 × 63,5 × 40) avec station de charge ; compatibilités par prise non documentées.",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque).",
     "dimension_status": "verified",
     "weight_g": 56.0,
     "sensor": "PAW3950 Ultra",
@@ -2039,6 +2084,16 @@
           "mcu"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "ATK Store — Dragonfly A9 Series (fiche officielle : « comfortably accommodating claw, palm, and fingertip grips ») (recommandations de prise publiées par ATK)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-series-lightweight-wireless-mouse",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -2128,10 +2183,10 @@
     "height_mm": 39.1,
     "grip_width_mm": null,
     "shell_id": null,
-    "fit_status": "unverified",
+    "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté. Séries U2 anciennes (notre entrée) : switchs Huano mécaniques ; les U2 V2 Ultimate/Mini sont documentées à part (optiques ATK Custom + Nordic 54L15). MCU non tranché pour ces séries.",
+    "notes": "Génération d'origine de la famille U2 (l'U2 V2 Ultimate et l'U2 V2 Mini sont déjà au catalogue, mêmes dimensions). Poids annoncé variable selon la variante : 49 g (EloShapes) à 55 ± 3 g (fiche ATK). Modèle d'entrée de gamme de la famille, utile aux modes « Économique » une fois le prix EUR documenté. Séries U2 anciennes (notre entrée) : switchs Huano mécaniques ; les U2 V2 Ultimate/Mini sont documentées à part (optiques ATK Custom + Nordic 54L15). MCU non tranché pour ces séries. Fabricant : « its inward-curved symmetrical profile is shaped for secure claw and palm control on medium-to-large hands ».",
     "id": "atk_u2",
     "brand": "ATK",
     "model": "Blazing Sky U2 / U2 Plus / U2 Ultimate",
@@ -2140,10 +2195,10 @@
     "width_max_mm": 64.6,
     "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Inconnu",
-    "claw_grip_fit": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Symétrique à flancs rentrants et bosse arrière (famille U2, clone du Zowie U2 selon les revues) ; compatibilités par prise non documentées.",
+    "fit_rationale": "Fabricant : « its inward-curved symmetrical profile is shaped for secure claw and palm control on medium-to-large hands ».",
     "dimension_status": "verified",
     "weight_g": 49.0,
     "sensor": "PAW3395 Ultra",
@@ -2152,18 +2207,20 @@
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 22.95 € (série ATK Blazing Sky U2 « à partir de », prix normal 28.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
-        "label": "ATK Store — ATK Blazing Sky U2 Series",
+        "label": "ATK Store — ATK Blazing Sky U2 Series (recommandations de prise publiées par ATK)",
         "url": "https://www.atk.store/products/atk-blazing-sky-u2-series-wireless-mouse",
         "fields": [
+          "claw_grip_fit",
           "height_mm",
           "length_mm",
+          "palm_grip_fit",
           "price_note",
           "sensor",
           "shape",
           "weight_g",
           "width_max_mm"
         ],
-        "date_checked": "2026-10-11"
+        "date_checked": "2026-10-12"
       },
       {
         "label": "EloShapes — ATK U2",
