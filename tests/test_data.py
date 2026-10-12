@@ -351,7 +351,12 @@ def test_duckbill_dimensions_resolved_from_the_manufacturer(mice):
     """
     duck = mice["atk_duckbill"]
     assert (duck.length_mm, duck.width_max_mm, duck.height_mm) == (118.0, 55.0, 37.4)
-    assert duck.dimension_status == "single_source"
+    # Statut corrigé le 2026-10-12 (34e passe) : « single_source » (« une seule source, tierce »)
+    # contredisait les trois sources de cotes de l'entrée, dont deux du fabricant. La règle écrite
+    # (README) rend « verified » obligatoire dès que la boutique officielle publie les cotes ; aucun
+    # score ne change (seul le statut ``conflicting`` bloque une souris). Le sens inverse est
+    # désormais contrôlé par ``test_le_statut_des_cotes_ne_reste_pas_sous_estime``.
+    assert duck.dimension_status == "verified"
     assert duck.conflicts["length_mm"]["values"] == [118.0, 117.0]
     assert duck.conflicts["width_max_mm"]["values"] == [55.0, 62.5]
     assert any(s.url.startswith("https://www.atk.store/") and "width_max_mm" in s.fields
@@ -996,3 +1001,69 @@ def test_deux_entrees_de_la_meme_coque_publient_les_memes_cotes(mice):
             if non_consigne:
                 ecarts.append(f"{coque}.{champ} = {valeurs} (non consigné pour {non_consigne})")
     assert ecarts == [], "cotes divergentes entre entrées d'une même coque : " + " ; ".join(ecarts)
+
+
+def test_aucune_source_n_est_enregistree_deux_fois_dans_une_entree(raw_entries):
+    """Une source identique (même libellé, même URL, même date) ne peut pas être listée deux fois.
+
+    Défaut trouvé le 2026-10-12 (34e passe) : l'ATK Y9 Ultimate portait **deux fois** la même fiche
+    du fabricant — deux entrées au libellé, à l'URL et à la date rigoureusement identiques —, la
+    première déclarant ``claw_grip_fit`` et la seconde ``price_eur``. Le catalogue paraissait donc
+    attester deux fois la même lecture, et tout comptage de sources (règle des deux sources
+    concordantes, audits par script) gonflait d'une unité. Les deux entrées sont fusionnées en une
+    seule, qui déclare les deux champs.
+
+    À ne pas confondre : **deux lectures d'une même page** (dates ou libellés différents, par exemple
+    une première lecture des cotes puis une relecture du tableau de dimensions) restent deux sources
+    légitimes — c'est le doublon *strict* qui est interdit ici.
+    """
+    assert len(raw_entries) >= 36, "catalogue incomplet : le contrôle serait vide"
+    vues = doublons = 0
+    fautives: list[str] = []
+    for entree in raw_entries:
+        cles: set[tuple] = set()
+        for source in entree.get("sources", []):
+            vues += 1
+            cle = (source.get("label"), source.get("url"), source.get("date_checked"))
+            if cle in cles:
+                doublons += 1
+                fautives.append(f"{entree.get('id')} → {str(cle[0])[:50]} ({cle[2]})")
+            cles.add(cle)
+    assert vues >= 200, f"trop peu de sources ({vues}) : le contrôle ne prouve rien"
+    assert doublons == 0, "source enregistrée deux fois à l'identique : " + " ; ".join(fautives)
+
+
+def test_le_statut_des_cotes_ne_reste_pas_sous_estime(mice):
+    """La règle des statuts se vérifie DANS LES DEUX SENS.
+
+    Le sens « statut fort sans preuve » est contrôlé par
+    ``test_un_statut_verified_se_justifie_par_ses_sources``. Le sens inverse n'était vérifié nulle
+    part : une entrée pouvait garder ``single_source`` alors que ses propres sources réunissaient déjà
+    les conditions de ``verified`` (deux sources distinctes de cotes, ou la boutique officielle du
+    fabricant). Trois cas mesurés le 2026-10-12 (34e passe) — l'ATK Duckbill (trois sources de cotes,
+    dont deux du fabricant), l'ATK A9 Air et la VXE X3 (la fiche du fabricant) — annonçaient
+    « une seule source tierce » alors que la fiche officielle du fabricant attestait les cotes : le
+    statut est corrigé, et ce test interdit le retour d'un statut sous-estimé.
+
+    Les sources sont comptées **distinctes** (libellé + URL + date) : un doublon ne vaut pas deux
+    attestations (voir ``test_aucune_source_n_est_enregistree_deux_fois_dans_une_entree``). Le statut
+    ``conflicting`` reste hors contrôle : il signale un désaccord, pas une faiblesse de provenance.
+    """
+    from urllib.parse import urlparse
+
+    controle = 0
+    sous_estimes: list[str] = []
+    for mouse in mice.values():
+        if mouse.dimension_status in {"verified", "conflicting"}:
+            continue
+        uniques = {(s.label, s.url, s.date_checked): s for s in mouse.sources}
+        cotes = [s for s in uniques.values() if set(COTES_MM) & set(s.fields)]
+        fabricant = [s for s in cotes if urlparse(s.url).netloc in DOMAINES_FABRICANT]
+        controle += 1
+        if len(cotes) >= 2 or fabricant:
+            sous_estimes.append(
+                f"{mouse.id} = {mouse.dimension_status} ({len(cotes)} source(s) de cotes, "
+                f"{len(fabricant)} du fabricant)")
+    assert controle >= 5, f"trop peu d'entrées contrôlées ({controle}) : le contrôle ne prouve rien"
+    assert sous_estimes == [], ("statut de cotes sous-estimé (les sources justifient « verified ») : "
+                               + " ; ".join(sous_estimes))

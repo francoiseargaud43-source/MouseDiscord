@@ -757,7 +757,7 @@ def thenar_step_embed(grip: Grip = Grip.PALM) -> discord.Embed:
             "Votre réponse indique l'arrière de souris qui vous convient : un petit thénar préfère un "
             "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n\n"
             "**Information seule : le thénar ne modifie pas le score** (recommandation morphologique "
-            "indicative, non prise en compte dans le calcul)."""
+            "indicative, non prise en compte dans le calcul)."
         ),
         color=COLOR,
     )

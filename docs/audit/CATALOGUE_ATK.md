@@ -1,6 +1,6 @@
 # Catalogue ATK vérifié (livrable B)
 
-Date de vérification : **2026-10-10**, corrigé le **2026-10-12** (33e passe : largeur de la coque A9 tranchée à 63,5 mm pour ses quatre entrées). Données courantes : `data/mouse_db.json` (schéma v2) ; l'état d'un point ouvert est tenu à jour dans `docs/audit/AUDIT.md` §8.
+Date de vérification : **2026-10-10**, corrigé le **2026-10-12** (33e passe : largeur de la coque A9 tranchée à 63,5 mm pour ses quatre entrées ; 34e passe : source dupliquée de l'Y9 fusionnée et statut de cotes de la Duckbill, de l'A9 Air et de la X3 porté à `verified` — la fiche du fabricant attestait déjà leurs cotes, aucun résultat ne change). Données courantes : `data/mouse_db.json` (schéma v2) ; l'état d'un point ouvert est tenu à jour dans `docs/audit/AUDIT.md` §8.
 
 > **Ce catalogue n'est pas exhaustif.** La collection ATK (store) listait 23 produits, mais la correspondance produit ↔ statut
 > de disponibilité n'a pas été extraite, et seule la première page de la collection a été lue. Plusieurs variantes
@@ -34,9 +34,9 @@ Date de vérification : **2026-10-10**, corrigé le **2026-10-12** (33e passe : 
 | ATK U2 | U2 V2 Ultimate | Moyenne, symétrique, bosse arrière | 123.7 × 64.6 × 39.1 | 45 g | PAW3950 Ultra, 8000 Hz | — | non vérifiée | EloShapes ; notice ATK ; ATK collection U2 | verified | à vérifier |
 | ATK U2 | U2 V2 Mini | Petite à moyenne | 119.5 × 63.0 × 38.5 | 39 g | 8000 Hz ; capteur non vérifié | — | non vérifiée | EloShapes ; notice ATK ; ATK collection U2 | verified | à vérifier |
 | ATK | ZERO | Moyenne, symétrique | 120.1 × 63.2 × 38.1 | 39 g | 8000 Hz | — | non vérifiée | EloShapes | single_source | à vérifier |
-| ATK | Duckbill | Forme canard, bosse arrière | **118.0 × 55.0 × 37.4** (fiche officielle, 2026-10-12 ; les deux écarts sont consignés dans `conflicts`) | 46 ± 2 g (blog : ≈49 g) | PAW3950 Ultra, 8000 Hz, Nordic 54H20 | **81,95 €** (prix normal 118,95 €) | en vente (modèle « Ultra », 3 coloris) | ATK Store — fiche officielle (2026-10-12) ; EloShapes ; blog ATK Duck Bill | single_source | **classable depuis le 2026-10-12** — hauteur des boutons non documentée |
+| ATK | Duckbill | Forme canard, bosse arrière | **118.0 × 55.0 × 37.4** (fiche officielle, 2026-10-12 ; les deux écarts sont consignés dans `conflicts`) | 46 ± 2 g (blog : ≈49 g) | PAW3950 Ultra, 8000 Hz, Nordic 54H20 | **81,95 €** (prix normal 118,95 €) | en vente (modèle « Ultra », 3 coloris) | ATK Store — fiche officielle (2026-10-12) ; EloShapes ; blog ATK Duck Bill | verified (34e passe) | **classable depuis le 2026-10-12** — hauteur des boutons non documentée |
 | ATK A9 | A9 Ultimate | Grande, symétrique | 125.0 × **63.5** (fiche ATK) / 64.0 (EloShapes) × 40.0 | 53 g (ATK : 55 ± 3 g) | PAW3950 Ultra, 8000 Hz | **41,95 €** | en vente (coque pleine taille) | EloShapes ; ATK Store (fiche de la série A9 : « 125 x 63.5 x 40 mm ») | verified (écart 0.5 mm consigné) | **31,5 % des sorties** (grille statistique) |
-| ATK A9 | A9 Air | Même taille que A9 Ultimate (EloShapes et fiche ATK) | 125.0 × **63.5** / 64.0 (EloShapes) × 40.0 | 47 g | 8000 Hz | **59,95 €** | en vente | EloShapes (comparaison) ; ATK Store (fiche de la série A9) | single_source (écart consigné) | devancée par sa jumelle de coque, moins chère |
+| ATK A9 | A9 Air | Même taille que A9 Ultimate (EloShapes et fiche ATK) | 125.0 × **63.5** / 64.0 (EloShapes) × 40.0 | 47 g | 8000 Hz | **59,95 €** | en vente | EloShapes (comparaison) ; ATK Store (fiche de la série A9) | verified (34e passe ; écart consigné) | devancée par sa jumelle de coque, moins chère |
 | ATK A9 | A9 Mini | Petite | 118.4 × 61.2 × 38.6 | 39 ± 3 g | PAW3955, 8 000 Hz | **59,95 €** | **vérifiée** (ATK + EloShapes) | ATK Store ; EloShapes | verified | **classable** depuis le 2026-10-12 (bosse « Center » → Mid) — hauteur des boutons non documentée |
 
 Dans le tableau, « à vérifier » signifie que la souris est en attente (`pending`) : le score partiel est affiché mais jamais classé.
@@ -73,7 +73,7 @@ de prix du store (< 50 $ = Économique, 50–100 $ = Qualité-Prix, > 100 $ = Ha
 | **VXE Dragonfly V3 / V3 Pro** (`vxe_v3`) | 116,6 × 62,2 × 38,2 | 49–54 g | Back-moderate → **Rear** | dès 14,98 $ | Front flare « Inward - moderate », flancs « Inward » | verified | ATK Store ; EloShapes (V3 / V3 Pro) |
 | **VXE Dragonfly R1 / R1 Pro** (`vxe_r1`) | 120,6 × 64,0 × 37,8 | 51 g | Back-moderate → **Rear** | dès 14,98 $ | Front flare « Flat », flancs « Flat » | verified | EloShapes ; GamerGear ; ATK Store |
 | **VXE MAD R / Major** (`vxe_mad_r`) | 120,1 × 63,1 × 38,1 | 36 g | Back-moderate → **Rear** | dès 44,98 $ | Front flare « Outward - slight », flancs « Flat » | verified | EloShapes ; MouseShape ; ATK Store |
-| **VXE Dragonfly X3 / Pro / Turbo** (`vxe_x3`) | 127,0 × 64,0 × 40,0 | 51–54 g | *inconnue* | dès 29,98 $ | — | single_source | ATK Store |
+| **VXE Dragonfly X3 / Pro / Turbo** (`vxe_x3`) | 127,0 × 64,0 × 40,0 | 51–54 g | *inconnue* | dès 29,98 $ | — | verified (34e passe : la fiche du fabricant atteste les cotes) | ATK Store |
 | **ATK Blazing Sky U2 Mini** (`atk_u2_mini`) | 119,5 × 63,0 × 38,5 | 38 g | Back-minimal → **Rear** | 84,98 $ | Front flare « Outward - slight », flancs « Inward » | verified | EloShapes (fiche + annonce) ; ATK Store |
 | **ATK Dragonfly A9 NB Ultra** (`atk_a9_nb`) | 125,0 × 63,5 × 40,0 | 56 g | Mid (coque A9) | 79,98 $ | — | verified | ATK Store ; Ryugear ; Standesk |
 | **ATK Blazing Sky F1 V2** (`atk_f1_v2`) | 118,2 × 62,4 × 38,8 | 38–39 g | Mid (coque F1, `shell_id` = `atk_f1`) | dès 44,98 $ | — | verified | ATK Store ; Loadout |

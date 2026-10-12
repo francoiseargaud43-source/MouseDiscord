@@ -447,7 +447,8 @@ MouseDiscord/
 │   ├── image_corpus_check.py # Doublons d'un corpus d'images : une photo = une identité (sinon mesure refusée)
 │   ├── image_identity_check.py # Rattache une image SANS nom à une image nommée (comparaison de silhouette)
 │   ├── qa_flow_matrix.py     # Banc d'essai du parcours : toute la grille de profils passe par le moteur
-│   ├── flow_effect.py        # Effet d'une modification des trois places : avant/après mesuré, jamais supposé
+│   ├── flow_effect.py        # Effet d'une modification du CODE des trois places : avant/après mesuré
+│   ├── db_effect.py          # Effet d'une modification des DONNÉES : deux catalogues, mêmes profils
 │   ├── recommendation_stats.py # Combien de fois chaque souris est recommandée (rapport dans docs/audit/)
 │   ├── render_preview.py     # Aperçu PNG du parcours et du résultat, sans lancer le bot
 │   ├── privacy_scan.py       # Contrôle statique de confidentialité (0 violation attendue)
@@ -477,7 +478,8 @@ python tools/privacy_scan.py          # contrôle statique de confidentialité (
 python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 python tools/qa_flow_matrix.py       # banc d'essai du parcours (27 170 profils, 0 problème attendu)
 python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (720 profils)
-python tools/flow_effect.py          # effet d'une modification des trois places (trois places avant/après)
+python tools/flow_effect.py          # effet d'une modification du CODE des trois places (avant/après)
+python tools/db_effect.py --avant ancien_mouse_db.json   # effet d'une modification des DONNÉES
 python tools/image_corpus_check.py  # doublons d'un corpus d'images (identité vérifiable avant mesure)
 python tools/image_identity_check.py --reference IMG --candidate IMG  # même coque ? (silhouettes)
 python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md
@@ -495,6 +497,12 @@ python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOM
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
 - `tests/test_ai_bundle.py` : contenu du pack IA (`tools/build_ai_bundle.py`) — fichiers attendus, **aucun secret** (`.env`, `state/`, liens d'affiliation), liste des identifiants existants.
 - `tests/test_flow.py` : parcours complet 1/4 à 4/4 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), charte d'embeds, limites Discord des embeds, refus des détails internes (`pts`), thénar stocké mais sans effet sur le score, illustrations branchées, lien manquant → « Liens à venir ».
+- `tests/test_code_hygiene.py` : hygiène du code livré — aucun résidu de guillemets (le défaut trouvé le
+  2026-10-12, invisible à la compilation), aucun `print` dans le bot (il ne laisserait aucune trace dans
+  `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré.
+- `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
+  deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
+  ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main

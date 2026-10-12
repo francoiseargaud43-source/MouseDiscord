@@ -62,6 +62,9 @@ Gravité : **H** élevée (résultat ou sécurité des données faux/trompeur), 
 | C28 | Catalogue — source et valeur | Les deux Scyrox déclaraient `height_mm` dans leur source (« cahier des charges » : V6S 119 × 61 × 40, V8S 118 × 63 × 40) alors que le champ valait `null` : la fiche disait à la fois « hauteur attestée » et « hauteur inconnue ». | M | **Corrigé le 2026-10-12 (33e passe)** : hauteur **40,0 mm** publiée pour les deux (valeur déjà écrite dans la source qui la déclarait). Aucun effet sur les scores (la hauteur n'entre dans aucun barème). `tests/test_data.py::test_aucune_source_ne_declare_un_champ_resté_vide` balaie tout le catalogue. |
 | C29 | Catalogue — coque A9 | La même coque (125 mm) publiait **deux largeurs** : 63,5 mm (propriétaire, fiche ATK pour l'A9 Plus / NB) et 64,0 mm (EloShapes, pour l'A9 Ultimate et l'A9 Air), sans que l'écart soit écrit pour ces deux dernières. | H | **Corrigé le 2026-10-12 (33e passe)** : fiche ATK de la série A9 relue (« Dimensions 125 x 63.5 x 40 mm ») → la coque publie **63,5 mm partout**, l'écart reste dans `conflicts` pour les trois entrées concernées. Effet mesuré : **1 043 profils sur 27 170 (3,8 %)** changent d'une place, dont **977 (93,7 %) au profit d'une autre variante de la même coque, plus légère et moins chère** (A9 Ultimate remplace A9 Plus 2.0 / A9 NB) ; l'A9 Ultimate passe de 27,6 % à **31,5 %** des sorties. Places remplies et détection d'anomalies : **inchangées** (85,50 %, 0 problème). |
 | C30 | Catalogue — note contradictoire | La note de l'ATK X1 V2 Ultra Max annonçait un capteur « non renseigné » alors que le champ publiait « PAW3395 Ultra » (et la même note le citait plus loin). Le conflit, lui, citait des sources vagues. | M | **Corrigé le 2026-10-12 (33e passe)** : note réécrite (valeur retenue, pourquoi), source EloShapes déclarant le champ, conflit nommant la variante et renvoyant au tableau du fabricant. **Aucune valeur changée** : la page ATK liste deux capteurs pour six modèles sans correspondance lisible → point signalé au propriétaire (§8) plutôt que deviné. `test_la_note_de_l_x1_ne_contredit_pas_ses_champs` le verrouille. |
+| C31 | Code — résidu d'édition | `cogs/finder_flow.py` gardait, à la fin du texte de l'étape thénar, un point suivi d'un guillemet de fermeture et de trois guillemets collés : une chaîne vide implicite. Le défaut était **invisible** — les littéraux voisins se concatènent à la compilation (le texte affiché restait juste) et `pyflakes` ne signale pas une chaîne vide. | B | **Corrigé le 2026-10-12 (34e passe)** : résidu retiré. `tests/test_code_hygiene.py` interdit désormais ce motif dans tout le code livré, interdit `print()` dans le bot (il ne laisserait aucune trace horodatée dans `~/admin/logs/jobs/`) et vérifie que le contrôle porte bien sur l'ensemble des fichiers. |
+| C32 | Catalogue — provenance | L'ATK Y9 Ultimate listait **deux fois la même source** (libellé, URL et date rigoureusement identiques) : la même lecture était comptée pour deux attestations, et tout audit de provenance gonflait d'une unité. | M | **Corrigé le 2026-10-12 (34e passe)** : fusion en une seule source déclarant les deux champs (`claw_grip_fit`, `price_eur`). `tests/test_data.py::test_aucune_source_n_est_enregistree_deux_fois_dans_une_entree` interdit le retour du doublon ; deux lectures d'une même page à des dates ou libellés différents restent deux sources légitimes. |
+| C33 | Catalogue — statut de cotes | Trois entrées annonçaient `dimension_status = "single_source"` (« une seule source, tierce ») alors que leurs propres sources réunissaient déjà les conditions de `"verified"` : la fiche du fabricant atteste les cotes de l'ATK Duckbill (trois sources de cotes), de l'ATK A9 Air et de la VXE X3. Le sens « statut fort sans preuve » était testé ; le sens inverse ne l'était pas. | M | **Corrigé le 2026-10-12 (34e passe)** : `verified` pour les trois (règle écrite du README : « deux sources concordantes, ou la boutique officielle du fabricant »). Aucun score ne change — seul le statut `conflicting` bloque une souris — et la grille complète le prouve : **0 profil sur 27 170** modifié (nouvel outil `tools/db_effect.py`). `tests/test_data.py::test_le_statut_des_cotes_ne_reste_pas_sous_estime` contrôle la règle **dans les deux sens**. |
 
 ## 3. Audit du muscle thénar
 
@@ -129,6 +132,20 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
    compter dans le classement.
 9. **Libellé** « sur 100 » ou « sur 40 » ?
 10. **Tolérances de sélection** : valider 5 / 2 / 2 / 2 pts.
+12. **Coque `atk_x1` — VXE X3** : la X3 partage les **cotes** de l'ATK X1 V2 Ultra Max (`shell_id`,
+    même 127 × 64 × 40 mm) mais ni sa bosse ni sa hauteur de boutons ne lui sont propagées : la bosse de
+    l'X1 est elle-même contestée par une source tierce (« Back - minimal » chez EloShapes contre « Mid »
+    du propriétaire), et rien ne prouve encore que la X3 reprend la même pièce de plastique. **Exception
+    documentée et testée** (`test_no_shell_mixes_two_button_heights`) : la X3 reste « à vérifier » (deux
+    manques) et n'est donc jamais recommandée. Elle se débloquera le jour où une source publiera sa bosse —
+    aucune valeur n'est devinée en attendant.
+13. **Ordre des pourcentages entre les places** : mesuré le 2026-10-12 sur la grille complète (27 170
+    profils). En mode **Économique**, le « match idéal » est la souris la moins chère de la zone de
+    tolérance (c'est la règle du mode) : sa deuxième place, meilleure mais plus chère, affiche donc parfois
+    un pourcentage supérieur — **1 622 profils (6,0 %)**. De même, une troisième place peut dépasser la
+    deuxième (24 à 128 profils selon le mode, 0,09 % à 0,47 %) quand l'alternative a été choisie pour son
+    prix dans la zone étroite du mode. Les titres et les prix restent exacts ; **à trancher par le
+    propriétaire** si l'ordre des pourcentages doit devenir une garantie du moteur.
 11. **Vérifications Discord** : à faire par le propriétaire (§9).
 
 ## 9. Vérifications Discord

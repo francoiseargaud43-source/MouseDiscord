@@ -337,9 +337,11 @@ Affichage : `Score de correspondance : X/40 — Y% du maximum théorique du bar�
 - `faible` sinon
 
 Aujourd'hui (relevé du 2026-10-12, calculé sur les 36 souris du catalogue) : **5 souris** sont
-`verified` + `owner_spec` → confiance `moyenne` ; **31 souris** sont `faible` — 12 `verified` +
-`manufacturer_guide`, 10 `verified` + `third_party_guide`, 7 `single_source` + `manufacturer_guide`,
-2 `owner_spec_unverified` + `owner_spec` (les Scyrox). Aucune souris n'a de `grip_width_mm` mesurée : la
+`verified` + `owner_spec` → confiance `moyenne` ; **31 souris** sont `faible` — 15 `verified` +
+`manufacturer_guide`, 10 `verified` + `third_party_guide`, 4 `single_source` + `manufacturer_guide`,
+2 `owner_spec_unverified` + `owner_spec` (les Scyrox). Les trois passages de `single_source` à `verified`
+(34e passe : Duckbill, A9 Air, VXE X3, dont la fiche du fabricant attestait déjà les cotes) ne changent
+aucune confiance : ces trois souris restent `manufacturer_guide`, donc `faible`. Aucune souris n'a de `grip_width_mm` mesurée : la
 largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inventer de `measured`.
 
 ### 7.4 Modes de sélection (`utils/selection.py`) — tolérances PROVISOIRES à conserver
@@ -823,6 +825,14 @@ Aucun autre fichier ne lit `thenar` pour calculer.
 - **Y9 polling** 8000 vs 1000 → `polling_hz = null`, conflit listé.
 - **Capteur X1** PAW3395 vs PAW3950/3955 → **point signalé au propriétaire (2026-10-12)** : `sensor = PAW3395 Ultra` (trois sources du modèle exact) et le conflit reste listé — la page du fabricant couvre six modèles sans correspondance lisible, aucune valeur n'est changée sur une ambiguïté.
 - **Hébergement d'images** : le bot ne sert pas d'images ; il ne fait qu'afficher des URLs `https://` publiques. Prévoir un hébergement durable (pas d'URL éphémère Discord CDN).
+- **Bosse de la VXE X3** : inconnue → souris en « à vérifier » (bosse **et** hauteur des boutons), donc
+  jamais recommandée. La coque `atk_x1` ne lui partage que ses **cotes** (127 × 64 × 40 mm, comme l'ATK
+  X1 V2 Ultra Max) : sa bosse n'est pas propagée, celle de l'X1 étant elle-même contestée par une source
+  tierce. Exception documentée et testée ; rien n'est deviné en attendant une source publiée.
+- **Ordre des pourcentages** : mesuré le 2026-10-12 (34e passe) — en mode Économique, le match idéal étant
+  la souris la moins chère de la zone, sa deuxième place affiche parfois un pourcentage supérieur
+  (1 622 profils sur 27 170, 6,0 %) ; une troisième place peut aussi dépasser la deuxième (24 à 128
+  profils selon le mode). Titres et prix restent exacts ; l'ordre n'est pas garanti par le moteur.
 - **Thème Discord clair** : tester la lisibilité (embed bordeaux sur fond clair reste OK, mais vérifier).
 
 ---

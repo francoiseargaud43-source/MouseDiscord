@@ -1082,14 +1082,7 @@
         "label": "ATK Store — fiche officielle (2026-10-12)",
         "url": "https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse",
         "fields": [
-          "claw_grip_fit"
-        ],
-        "date_checked": "2026-10-12"
-      },
-      {
-        "label": "ATK Store — fiche officielle (2026-10-12)",
-        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse",
-        "fields": [
+          "claw_grip_fit",
           "price_eur"
         ],
         "date_checked": "2026-10-12"
@@ -1546,7 +1539,7 @@
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
-    "dimension_status": "single_source",
+    "dimension_status": "verified",
     "price_eur": 81.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-12 : 81,95 € (fiche ATK pays France, modèle « Ultra », prix normal 118,95 €). Le relevé du 2026-10-11 donnait le même montant (« prix du produit »).",
@@ -1818,7 +1811,7 @@
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
-    "dimension_status": "single_source",
+    "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
     "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59,95 € (ATK Dragonfly A9 Air, variante « Air / Shadow White », prix normal 72,95 €, boutique ATK pays France). Règle du propriétaire du 2026-10-12 : le prix retenu est celui de la boutique officielle ; l'ancienne valeur (89,90 €) était un relevé du revendeur français Maxesport, conservé ici comme observation.",
@@ -2352,7 +2345,7 @@
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » (modèle X3) ; mains moyennes-grandes.",
-    "dimension_status": "single_source",
+    "dimension_status": "verified",
     "weight_g": 51.0,
     "sensor": "PAW3315",
     "polling_hz": 1000,

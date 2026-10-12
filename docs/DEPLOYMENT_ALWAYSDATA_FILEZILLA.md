@@ -1618,6 +1618,75 @@ sinon `pkill -f "bot.py"`.
 3. Aucun libellé ne doit promettre une économie qui n'en est pas une, et aucune souris au-dessus du budget
    personnalisé ne doit apparaître.
 
+### 12.17 Mise à jour du 2026-10-12 (8e) : code et données remis au propre (aucun résultat ne change)
+
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §23) :
+
+1. **Un résidu d'édition dans le texte de l'étape thénar** (`cogs/finder_flow.py`) : un guillemet de
+   fermeture suivi de trois guillemets collés — une chaîne vide invisible, que ni Python ni `pyflakes` ne
+   signalent (le texte affiché restait juste). Résidu retiré ; `tests/test_code_hygiene.py` interdit
+   désormais ce motif dans tout le code livré.
+2. **Une source comptée deux fois** dans l'ATK Y9 Ultimate (même libellé, même URL, même date) : les deux
+   entrées fusionnent en une seule, qui déclare les deux champs (`claw_grip_fit`, `price_eur`).
+3. **Trois statuts de cotes sous-estimés** (ATK Duckbill, ATK A9 Air, VXE X3) : elles annonçaient
+   « une seule source tierce » alors que la fiche officielle du fabricant attestait déjà leurs cotes →
+   statut `verified`, conforme à la règle écrite du README.
+
+> **Aucun résultat ne change** : c'est **mesuré**, pas supposé — la grille complète (27 170 profils) passée
+> dans l'ancien et le nouveau catalogue ne montre **aucune différence** (`tools/db_effect.py`, nouveau dans
+> cette mise à jour). Les barèmes, seuils, fenêtres, prix et liens sont identiques.
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+cogs/finder_flow.py                  (décisif : le résidu de guillemets retiré)
+data/mouse_db.json                   (décisif : source fusionnée, trois statuts de cotes)
+tools/db_effect.py                   (facultatif : NOUVEAU, mesure l'effet d'un changement de données)
+tests/test_code_hygiene.py           (facultatif : NOUVEAU, hygiène du code livré)
+tests/test_db_effect.py              (facultatif : NOUVEAU, verrouille le comparateur de données)
+tests/test_data.py                   (facultatif : doublon de source et statuts, contrôlés dans les deux sens)
+README.md                            (facultatif : outils et tests nouveaux décrits)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : §23, l'audit complet de la passe)
+docs/audit/AUDIT.md                  (facultatif : C31 à C33, points ouverts 12 et 13)
+docs/MASTER_PROMPT_AZEMOUSE.md       (facultatif : §17, deux limites mesurées ajoutées)
+```
+
+`utils/`, `bot.py`, `assets/`, `data/commercial_links.json` **ne changent pas**. Le moteur est identique :
+seul le texte de la source Python est nettoyé, et les trois statuts corrigés n'entrent dans aucun barème.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 403 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+.venv/bin/python tools/db_effect.py --avant /tmp/ancien_mouse_db.json --grille rapide   # attendu : 0,00 %
+```
+
+La dernière commande est facultative : elle compare l'ancien catalogue (si vous l'avez conservé) au nouveau
+et doit annoncer **0 profil modifié**.
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"`.
+
+**5. Vérification en 60 secondes dans Discord** — le résultat doit être **identique à celui d'avant la mise à
+jour** (c'est le point de cette passe) :
+
+1. Parcours **Palm**, main **180 × 90**, Qualité/Prix : **ATK Phantom Ultimate** (91,95 €), puis
+   **ATK Z1 V2 Ultra** (59,95 €), puis **ATK A9 Mini** (59,95 €).
+2. Parcours **Palm**, main **200 × 110**, Haut de Gamme : **ATK A9 Ultimate** (41,95 €), puis
+   **ATK X1 V2 Ultra Max**, puis **ATK A9 Plus 2.0**.
+3. Le parcours démarre et se termine normalement (le clic « Start » ouvre bien l'étape 1/4).
+
+**Retour arrière** : remettre l'ancien `cogs/finder_flow.py` (ou l'ancien `data/mouse_db.json`) par
+FileZilla, puis `pkill -f "bot.py"`. Ces corrections ne touchent ni les prix, ni les liens, ni les cotes
+publiées : le retour arrière n'a d'effet que sur le nettoyage de source et trois mentions de provenance.
+
+---
+
 ---
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)

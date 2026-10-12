@@ -1727,3 +1727,155 @@ propriétaire** (AUDIT.md §8) au lieu d'être deviné. Invariant ajouté :
 | `tools/flow_effect.py --rapide` | « aucun changement » : le **code** n'a pas bougé, seules des données |
 | `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
 | `tools/privacy_scan.py` | 0 violation |
+
+---
+
+## 23. Trente-quatrième passe : quatre défauts trouvés en relisant le code livré
+
+**Suite de l'audit du 2026-10-12** (même commande du propriétaire : audit et chasse aux bugs). Les passes
+précédentes relisaient surtout les **données** et les **messages**. Celle-ci relit **le code livré**
+(`cogs/finder_flow.py` ligne à ligne, `utils/`, `bot.py`, les outils) avec la question : « qu'est-ce qui
+pourrait être faux ici sans que rien ne plante ? ». Quatre défauts en sont sortis — plus deux mesures de
+présentation publiées telles quelles, et un outil nouveau pour prouver les effets d'une modification de
+données.
+
+### 23.1 Un résidu d'édition que ni Python ni `pyflakes` ne signalaient (code)
+
+À la fin du texte de l'étape « Votre éminence thénar », `cogs/finder_flow.py` gardait la séquence
+`calcul).` suivie d'un guillemet de fermeture et de **trois guillemets collés** : le vestige d'une édition
+antérieure du texte. Conséquence technique : une **chaîne vide implicite** en fin de description.
+
+Pourquoi personne ne le voyait :
+
+- les littéraux voisins se **concatènent à la compilation** : le texte affiché au membre restait juste ;
+- `pyflakes` ne dit rien d'une chaîne vide (ce n'est pas une variable inutilisée) ;
+- aucune assertion ne portait sur ce texte précis, et les tests d'affichage comparent des fragments.
+
+**Correction** : résidu retiré. **Preuve de non-effet** : `tools/flow_effect.py --rapide` compare le module
+d'avant (HEAD) et d'après → « aucun changement » : rien de visible n'a bougé, seule la source est propre.
+
+**Invariant ajouté** — `tests/test_code_hygiene.py`, trois contrôles sur **tout le code livré** :
+
+| Contrôle | Ce qu'il interdit |
+|---|---|
+| Résidu de guillemets | une ligne-texte qui commence par un guillemet simple et finit par un triple (la signature exacte du défaut) |
+| `print()` dans le bot | une sortie qui ne serait **pas** horodatée dans `~/admin/logs/jobs/` — donc indiagnosticable sur le serveur |
+| Contrôle non vide | que ces vérifications portent bien sur l'ensemble des fichiers (sinon elles ne prouveraient rien) |
+
+Détail savoureux : ce test a dû être écrit **en mots** — écrire le motif en toutes lettres terminait la
+chaîne de documentation du test lui-même. C'est bien la preuve que ce motif est un piège réel.
+
+### 23.2 Une source comptée deux fois (données)
+
+L'ATK Y9 Ultimate listait **deux fois la même source** : libellé, URL et date rigoureusement identiques, la
+première déclarant `claw_grip_fit`, la seconde `price_eur`. La même lecture comptait donc pour **deux
+attestations** — exactement ce que la règle « deux sources concordantes » cherche à éviter.
+
+**Correction** : les deux entrées fusionnent en une seule source, qui déclare les deux champs. Aucune valeur
+n'est modifiée. Vérification faite au passage : **aucun** des statuts `verified` d'alors (27 entrées) ne
+reposait sur un doublon (contrôle sur les sources dédupliquées) — le défaut était donc d'honnêteté de la
+traçabilité, pas de statut.
+
+**Invariant ajouté** : `test_aucune_source_n_est_enregistree_deux_fois_dans_une_entree` (0 tolérance sur les
+**218** sources du catalogue, dont 218 distinctes après la fusion). Deux **lectures** d'une même page (dates ou libellés différents) restent
+légitimes : c'est le doublon strict qui est interdit.
+
+### 23.3 Trois statuts de cotes sous-estimés (données)
+
+La règle écrite dans le README est claire depuis la 32e passe : `verified` = **deux sources de cotes
+concordantes (≤ 0,5 mm)**, **ou la boutique officielle du fabricant** ; `single_source` = une seule source
+**tierce**. Le sens « statut fort sans preuve » était testé. Le sens **inverse** ne l'était pas — et trois
+entrées s'y étaient installées :
+
+| Entrée | Statut avant | Sources de cotes que l'entrée citait elle-même | Statut après |
+|---|---|---|---|
+| ATK Duckbill | `single_source` | 3 (EloShapes, blog ATK, fiche officielle) dont **2 du fabricant** | `verified` |
+| ATK A9 Air | `single_source` | 2 (EloShapes + fiche officielle du fabricant) | `verified` |
+| VXE X3 | `single_source` | 1, **celle du fabricant** (fiche ATK de la série X3) | `verified` |
+
+**Correction** : statut `verified` pour les trois. **Aucun score ne change** — seul le statut `conflicting`
+bloque une souris dans le moteur ; `single_source` n'a jamais servi qu'à la confiance affichée dans les
+outils, et la confiance de ces trois souris reste inchangée (`fit_status` ≠ `owner_spec` pour les trois,
+donc « faible » dans les deux cas).
+
+**Preuve d'effet** : mesurée sur la grille complète (27 170 profils) avec l'outil nouveau (§23.6) →
+**0 profil modifié**.
+
+**Invariant ajouté** : `test_le_statut_des_cotes_ne_reste_pas_sous_estime` — la règle est désormais
+contrôlée **dans les deux sens**, sur les sources **dédupliquées** (un doublon ne vaut pas deux
+attestations), et l'assertion du test du Duckbill (qui figeait l'ancien statut) est mise à jour avec la
+justification.
+
+### 23.4 La coque de la VXE X3 : cotes partagées, bosse non devinée (décision, rien changé)
+
+Point ouvert d'audit qui traînait depuis la 32e passe : la VXE X3 porte `shell_id = atk_x1` (la coque de
+l'ATK X1 V2 Ultra Max, même 127 × 64 × 40 mm) alors que sa **bosse** est « Inconnu » — une contradiction en
+apparence. La relecture la tranche dans ce sens :
+
+- `shell_id` veut dire, dans ce projet, « **même coque = dimensions partagées** » (README) : les cotes de la
+  X3 sont donc bien celles de la famille X1, toutes deux publiées par la fiche ATK de la série X3
+  (« Dimensions 127 x 64 x 40 mm », page relue le 2026-10-12 avec `?country=FR`) ;
+- la **bosse** et la **hauteur des boutons**, elles, ne se propagent pas : la bosse de l'X1 est elle-même
+  contestée par une source tierce (« Back - minimal » chez EloShapes contre « Mid » du propriétaire), et
+  **rien ne prouve** que la X3 — gamme VXE, switchs Omron, puce Broadcom — reprenne la même pièce de
+  plastique. La page du fabricant, relue le 2026-10-12, publie 51 g ± 3 g, 1 000 Hz, PAW 3395SE, les poids,
+  « Ambidextrous Design » et les trois prises recommandées : **aucune information de bosse** ;
+- la conséquence est assumée : la X3 reste « à vérifier » (deux manques) et **n'est jamais recommandée**.
+  Elle se débloquera le jour où une source publiera sa bosse — aucune valeur n'est devinée en attendant.
+
+L'exception est **écrite dans le test** (`test_no_shell_mixes_two_button_heights`) et dans la note du
+catalogue : elle ne peut donc pas être prise pour un oubli.
+
+### 23.5 Deux mesures de présentation, publiées telles quelles (rien changé)
+
+Le balayage complet (27 170 profils, `compute_selection` + `result_slots`) a mesuré deux comportements
+qu'aucun banc ne regardait — **le pourcentage d'une place peut dépasser celui de la place du dessus** :
+
+| Comportement | Cas (grille complète) | Pourquoi c'est possible |
+|---|---|---|
+| En mode **Économique**, la 2e place affiche un **meilleur** pourcentage que le « match idéal » | **1 622 (6,0 %)** | le match idéal de ce mode est la souris **la moins chère** de la zone de tolérance (c'est la règle du mode) : il est donc légitime qu'une souris mieux notée, mais plus chère, le dépasse en deuxième ligne |
+| La **3e place** dépasse la 2e | 24 (économique) · 62 (qualité/prix) · 70 (sans mode, haut de gamme, peu importe le prix) · 128 (budget personnalisé) — 0,09 % à 0,47 % | la fenêtre de la 3e place (±5 points) est **plus large** que la zone du mode (±2), et la 2e place a pu être choisie pour son **prix** |
+| La 2e et la 3e place affichent le **même** pourcentage | 4 916 en budget personnalisé, 512 à 1 138 ailleurs | deux souris **différentes** au même score de forme : les lignes restent distinctes (nom, poids, prix), c'est le prix qui distingue les deux rôles |
+
+Aucun libellé n'est faux (les titres disent « L'économie », « L'autre option », « Autre piste » selon le
+prix réel) et le pourcentage affiché est exact. **Rien n'a été modifié** : changer l'ordre des places serait
+une modification du moteur, et le master prompt réserve ces décisions au propriétaire. Le point est inscrit
+dans `AUDIT.md` §8 (point 13) pour arbitrage.
+
+### 23.6 Un outil nouveau : mesurer l'effet d'une modification de DONNÉES
+
+La 33e passe avait besoin d'un comparateur de catalogues ; il avait été écrit dans `/tmp` et a disparu (le
+dossier temporaire est volatil). Le voici au dépôt, propre et testé :
+
+```bash
+.venv/bin/python tools/db_effect.py --avant /tmp/mouse_db_avant.json                  # grille complète
+.venv/bin/python tools/db_effect.py --avant ancien.json --grille rapide               # 720 profils
+.venv/bin/python tools/db_effect.py --avant ancien.json --grille mini                 # 180 profils
+```
+
+Il passe **la même grille de profils** dans les deux catalogues (le barème, les fenêtres des trois places et
+la présentation ne bougent pas : seul le fichier de données change) et rend : profils comparés, profils dont
+le résultat change, répartition par place, place gagnée ou perdue, et si la nouvelle liste montre deux fois
+la même coque. Il n'écrit rien dans le dépôt (les catalogues sont copiés dans un dossier temporaire) et
+refuse de comparer deux catalogues qui ne contiennent pas les mêmes souris — au lieu de rendre un chiffre
+qui ne voudrait rien dire.
+
+**Ce qu'il a prouvé pour cette passe** : la grille complète (27 170 profils) avant/après la correction des
+trois statuts et la fusion de la source dupliquée → **0 profil modifié**. C'est le résultat attendu (ces
+champs n'entrent dans aucun barème) et il est désormais **mesuré**, pas supposé.
+
+`tests/test_db_effect.py` verrouille l'outil dans les deux sens : deux catalogues identiques → aucun écart ;
+un prix réellement modifié → des écarts (et la souris modifiée apparaît dans les changements) ; deux
+catalogues différents → refus explicite.
+
+### 23.7 Preuves d'exécution (34e passe)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **403 passed** (395 avant la passe : 8 tests ajoutés — 3 hygiène du code, 2 données, 3 comparateur de données) |
+| `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
+| `tools/db_effect.py --grille complete` (27 170 profils) | **0 profil modifié** par les corrections de cette passe |
+| `tools/qa_flow_matrix.py --rapide` (720 profils) | **0 problème** · 3 places 711 (98,75 %) · 2 places 9 · repli « même coque » 10 · match idéal partiel 120 |
+| `tools/flow_effect.py --rapide` | « aucun changement » : le résidu retiré ne changeait rien de visible |
+| `tools/privacy_scan.py` | 0 violation |
+| `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
