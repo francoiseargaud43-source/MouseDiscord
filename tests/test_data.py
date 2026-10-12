@@ -132,6 +132,10 @@ def test_new_models_have_no_invented_compatibility_or_price(mice):
 def test_two_missing_criteria_still_block_a_mouse(mice):
     """Règle du 2026-10-12 : UNE seule donnée manquante (hauteur des boutons) n'empêche plus le
     classement ; dès qu'il en manque une DEUXIÈME, la souris reste « à vérifier », jamais classée.
+
+    Mise à jour du 2026-10-12 (hauteur des boutons héritée de la coque A9) : une souris dont plus
+    AUCUNE donnée ne manque est classée **complète** — c'est désormais le cas des trois variantes
+    « large » de la coque A9 (`atk_a9_ultimate`, `atk_a9_air`, `atk_a9_nb`).
     """
     hand = HandMeasure(180, 90)
     for mid in NEW_ATK_IDS:
@@ -144,8 +148,103 @@ def test_two_missing_criteria_still_block_a_mouse(mice):
         gaps += mouse.length_mm is None
         if s.is_excluded or gaps >= 2:
             assert not s.is_scored, f"{mid} ne doit pas être classé avec {gaps} données manquantes"
-        else:
+        elif gaps == 1:
             assert s.is_scored and s.is_partial, mid
+        else:
+            assert s.is_scored and not s.is_partial, mid
+
+
+# Hauteur des boutons héritée par coque (2026-10-12) : les quatre variantes « large » de la coque A9
+# (125 mm) sont la même souris avec des entrailles différentes — le propriétaire a donné la hauteur de
+# boutons de la sienne (A9 Plus 2.0 : « Mid »), donc les trois autres la partagent. La A9 Mini (118,4 mm)
+# n'est PAS de cette coque : elle garde « Inconnu ».
+A9_LARGE_SHELL = ("atk_a9_plus", "atk_a9_ultimate", "atk_a9_air", "atk_a9_nb")
+
+
+def test_a9_shell_variants_share_the_owners_button_height(mice):
+    """Les quatre variantes de la coque A9 « large » ont la même hauteur de boutons, sourcée."""
+    assert {mice[i].shell_id for i in A9_LARGE_SHELL} == {"atk_a9_large"}
+    for ident in A9_LARGE_SHELL:
+        assert mice[ident].button_height == "Mid", ident
+    # La valeur d'origine est celle du propriétaire (aucune source web ne la publie) ; les trois
+    # variantes héritées déclarent, elles, une source datée qui porte le champ `button_height`.
+    assert mice["atk_a9_plus"].fit_status == "owner_spec"
+    for ident in ("atk_a9_ultimate", "atk_a9_air", "atk_a9_nb"):
+        assert any("button_height" in s.fields and s.date_checked for s in mice[ident].sources), ident
+    assert mice["atk_a9_mini"].button_height == "Inconnu"
+    # Effet voulu : plus de score « partiel » pour ces trois-là (le critère est désormais compté).
+    for ident in ("atk_a9_ultimate", "atk_a9_air", "atk_a9_nb"):
+        score = evaluate_mouse(mice[ident], HandMeasure(180, 90), Grip.CLAW)
+        assert not score.is_pending, ident
+
+
+# Versions « allégées » condamnées par les règles actuelles (2026-10-12) : mêmes données de score que
+# leur jumelle de coque, mais plus chères — et le poids n'entre pas dans le score. Mesuré sur la grille
+# complète : 100 % des profils notés les voient devancées par leur jumelle (0 exception).
+PAIRES_DOMINEES = (
+    ("atk_a9_air", "atk_a9_ultimate"),
+    ("atk_u2_mini", "atk_u2_v2_mini"),
+    ("pulsar_x2_crazylight_medium", "pulsar_x2a_v3_medium"),
+    ("pulsar_x2h_crazylight_mini", "pulsar_x2h_v3_mini"),
+)
+CHAMPS_DE_SCORE = ("length_mm", "width_max_mm", "height_mm", "hump_position", "button_height",
+                   "palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit")
+
+
+def test_light_versions_can_never_pass_their_cheaper_twin(mice):
+    """Preuve de domination : quatre souris « jamais recommandées » ne peuvent pas gagner.
+
+    Chaque paire partage la même coque (`shell_id`) et **exactement les mêmes données de score** ; seuls
+    le poids et le prix diffèrent, et le poids ne compte pas. Dans les cinq modes, à score égal, le
+    départage finit par le prix : la version allégée ne peut donc jamais passer devant sa jumelle.
+    Vérifié sur la grille complète de `tools/recommendation_stats.py` : 11 172 profils pour l'ATK A9 Air
+    (0 fois devant), 5 544 pour l'U2 Mini, 4 830 pour la X2 CrazyLight Medium, 3 990 pour la X2H
+    CrazyLight Mini. Ce test rejoue le contrôle sur le catalogue entier (cinq modes × trois prises ×
+    trois mains) et échoue si la domination disparaît — par exemple si une donnée change d'un côté.
+    """
+    from utils.models import BudgetMode
+    from utils.selection import select
+
+    modes = (None, BudgetMode.ECONOMIQUE, BudgetMode.QUALITE_PRIX, BudgetMode.HAUT_DE_GAMME,
+             BudgetMode.PEU_IMPORTE_PRIX, BudgetMode.CUSTOM)
+    for allegee, jumelle in PAIRES_DOMINEES:
+        a, b = mice[allegee], mice[jumelle]
+        assert a.shell_id and a.shell_id == b.shell_id, (allegee, a.shell_id, b.shell_id)
+        for champ in CHAMPS_DE_SCORE:
+            assert getattr(a, champ) == getattr(b, champ), (allegee, champ)
+        assert b.price_eur < a.price_eur, (allegee, a.price_eur, b.price_eur)
+        vus = 0
+        for mode in modes:
+            # Le mode Budget personnalisé exige un plafond : 200 € couvrent tout le catalogue.
+            plafond = 200.0 if mode is BudgetMode.CUSTOM else None
+            for grip in Grip:
+                for hand in (HandMeasure(160, 75), HandMeasure(180, 90), HandMeasure(200, 100)):
+                    scores = [evaluate_mouse(m, hand, grip, mode, plafond) for m in mice.values()]
+                    ranked = [s.mouse.id for s in select(scores, mode, top_n=len(scores)).ranked]
+                    if allegee not in ranked:
+                        continue
+                    vus += 1
+                    assert ranked.index(jumelle) < ranked.index(allegee), (allegee, mode, grip, hand)
+        assert vus > 0, f"aucun cas testé pour {allegee} : le contrôle serait vide"
+
+
+def test_no_shell_mixes_two_button_heights(mice):
+    """Invariant de coque : deux souris de la MÊME coque ne peuvent pas annoncer deux hauteurs de
+    boutons différentes — une coque est une seule pièce de plastique.
+
+    Exception documentée : la VXE X3 partage la coque de l'ATK X1 V2 Ultra Max, mais ni sa hauteur de
+    boutons ni sa bosse ne sont propagées — la bosse de l'X1 est contestée par une source tierce
+    (« Back - minimal » chez EloShapes contre « Mid » du propriétaire), et rien ne prouve encore que la
+    X3, gamme VXE à switchs Omron et puce Broadcom, reprend les boutons de la X1.
+    """
+    exceptions = {"vxe_x3"}
+    par_coque: dict[str, set] = {}
+    for mouse in mice.values():
+        if not mouse.shell_id or mouse.id in exceptions:
+            continue
+        par_coque.setdefault(mouse.shell_id, set()).add(mouse.button_height)
+    incoherentes = {coque: valeurs for coque, valeurs in par_coque.items() if len(valeurs) > 1}
+    assert incoherentes == {}, f"coques avec deux hauteurs de boutons : {incoherentes}"
 
 
 def test_bosse_des_xlite_et_prix_de_l_a9_mini_sont_sources(mice):

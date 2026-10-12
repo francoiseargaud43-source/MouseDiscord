@@ -81,6 +81,7 @@ def make_session(grip, thenar, length, width, mode, budget) -> FinderSession:
 def run(fast: bool = False):
     """Passe toute la grille et renvoie les comptages + l'état d'éligibilité de chaque souris."""
     mice = load_catalog(MOUSE_DB_PATH)
+    shell_of = {mouse.id: mouse.shell_id for mouse in mice}    # coque partagée (mêmes dimensions)
     counter = {mouse.id: Counter() for mouse in mice}          # ideal / alternative / economie
     by_mode: dict[str, Counter] = defaultdict(Counter)
     by_grip: dict[str, Counter] = defaultdict(Counter)
@@ -90,6 +91,7 @@ def run(fast: bool = False):
     in_zone: Counter = Counter()                              # présent dans la zone de tolérance du mode
     same_shell_pairs: Counter = Counter()                     # deux places, une seule coque (repli documenté)
     dominated_by: dict[str, Counter] = defaultdict(Counter)    # qui remporte l'idéal quand la souris est notée
+    twin_ahead: dict[str, Counter] = defaultdict(Counter)      # coque jumelle classée devant (structurel)
     empty_causes: Counter = Counter()
     total = 0
     empty = 0
@@ -140,6 +142,7 @@ def run(fast: bool = False):
             key = "—" if session.thenar is None else session.thenar.value
             by_thenar[key][score.mouse.id] += 1
         shown = {s.mouse.id for s in (ideal, alternative, economy) if s is not None}
+        positions = {s.mouse.id: i for i, s in enumerate(selection.ranked)}
         evaluated = {s.mouse.id: s for s in (*selection.ranked, *selection.pending)}
         for mouse in mice:
             score = evaluated.get(mouse.id)
@@ -153,12 +156,21 @@ def run(fast: bool = False):
                     # Pourquoi cette souris ne sort pas ALORS QU'elle est notée : on enregistre qui
                     # occupe la première place sur ces profils (réponse mesurée, pas supposée).
                     dominated_by[mouse.id][ideal.mouse.id] += 1
+                # Deuxième cause, structurelle : une souris de la MÊME coque (mêmes dimensions, même
+                # pièce) est classée devant elle. Mesuré dans l'ordre réel du classement.
+                coque = shell_of.get(mouse.id)
+                rang = positions.get(mouse.id)
+                if coque and rang is not None:
+                    devant = [autre for autre, j in positions.items()
+                              if j < rang and autre != mouse.id and shell_of.get(autre) == coque]
+                    if devant:
+                        twin_ahead[mouse.id][devant[0]] += 1
     return {
         "mice": mice, "counter": counter, "by_mode": by_mode, "by_grip": by_grip, "by_thenar": by_thenar,
         "statuses": statuses, "scores": scores_seen, "in_zone": in_zone,
         "total": total, "empty": empty, "fast": fast,
         "empty_causes": empty_causes, "empty_with_unusable": empty_with_unusable,
-        "dominated_by": dominated_by,
+        "dominated_by": dominated_by, "twin_ahead": twin_ahead,
         "same_shell_profiles": same_shell_profiles, "same_shell_pairs": same_shell_pairs,
     }
 
@@ -253,10 +265,22 @@ def main(argv: list[str] | None = None) -> int:
                 top = data["dominated_by"][mouse.id].most_common(1)
                 if top:
                     dominante, combien = top[0]
-                    motifs.append(f"notée, mais devancée par **{labels.get(dominante, dominante)}** "
-                                  f"sur {combien} des {scored} profils où elle reste éligible")
+                    motifs.append(f"notée, jamais affichée : la 1re place revient à "
+                                  f"**{labels.get(dominante, dominante)}** sur {combien} des {scored} "
+                                  "profils où elle reste éligible")
                 else:
                     motifs.append("notée, jamais retenue (classement dominé)")
+                jumelles = data["twin_ahead"][mouse.id]
+                if jumelles:
+                    # Cause structurelle mesurée : une variante de SA coque est classée devant elle.
+                    # Le compte est la somme sur toutes les variantes de la coque (une souris peut
+                    # avoir plusieurs jumelles), et le nom cité est le plus fréquent.
+                    autre, combien = jumelles.most_common(1)[0]
+                    total = sum(jumelles.values())
+                    precisions = "" if len(jumelles) == 1 else f", dont {combien} avec {labels.get(autre, autre)}"
+                    motifs.append(f"**une variante de sa coque ({labels.get(autre, autre)}) est classée "
+                                  f"devant elle sur {total} des {scored} profils où elle est notée**"
+                                  f"{precisions} — coque identique, prix différent")
             elif pending > 0:
                 motifs.append("en attente sur toute la grille : aucune place tant qu'une donnée manque")
             else:

@@ -919,3 +919,110 @@ perspective : ATK U2, Y9 Ultimate, F1 V3 Ultimate, Scyrox V8, A9 Plus 2.0, Scyro
 
 **Prochaine étape utile** : chercher des vues à nom imprimé des souris « Mid » (A9 Plus, X1 V2 Ultra Max,
 Scyrox V6) pour étalonner la classe « Mid », qu'aucune référence ne produit encore.
+
+---
+
+## 14. Vingt-sixième passe (2026-10-12) : trois hauteurs de boutons par la coque A9, et ce que la photo ne permet pas
+
+Cette passe répond à la demande « implémenter les souris qu'on n'a pas pu mettre dans le tableau, en
+faisant tout le travail derrière ». Aucun barème n'a bougé, aucun moteur n'a été touché : uniquement des
+**données** (avec leur source) et les **preuves** qui les accompagnent.
+
+### 14.1 Campagne d'images : huit visuels de plus, toujours aucune valeur publiable
+
+Huit images ont été récupérées (galeries ATK des A9 / X1 / ZERO, Reddit r/MouseReview, revendeurs Scyrox) :
+le corpus de travail passe à 23 fichiers, dont **un doublon exact de plus** (deux noms de fichiers pour
+la même empreinte SHA-256, servis pour deux modèles différents). **Quatre vues** passent le contrôle de
+perspective ; aucune ne porte le **nom du modèle imprimé** sur la coque, donc aucune ne satisfait la
+règle de publication du §13.4 : **aucune hauteur de boutons n'a été écrite depuis une photo**. Détail
+image par image et mesure : `docs/audit/MESURE_BOUTONS_2026-10-12.md` §14.
+
+**Piste fermée par la mesure** : le rapport longueur/hauteur de la silhouette **n'identifie pas** un
+modèle (plusieurs souris du catalogue ont des rapports à moins de 0,4 % — 3,05 à 3,13 pour une
+silhouette mesurée à 3,06–3,09). Le contrôle de perspective ne peut donc pas servir de preuve
+d'identité, et il ne détecte pas non plus qu'on lui donne les cotes du mauvais modèle. La vérification
+visuelle reste la seule preuve — c'est écrit, testé, et cela évite de publier un chiffre faux.
+
+### 14.2 Ce qui a débloqué trois souris : la coque, pas la photo
+
+Le catalogue traite depuis la 13e passe quatre variantes « large » de la **même coque A9**
+(`shell_id` = `atk_a9_large` : `atk_a9_plus`, `atk_a9_ultimate`, `atk_a9_air`, `atk_a9_nb` — 125 mm,
+mêmes boutons, même bosse « Mid ») : leurs dimensions et leur bosse sont déjà partagées, et deux d'entre
+elles ne peuvent pas occuper deux places du même résultat. Or **une seule** portait une hauteur de
+boutons : celle du propriétaire (`atk_a9_plus`, valeur « Mid » du cahier des charges). Les trois autres
+restaient « inconnue » — une incohérence : la coque est déclarée identique, mais une propriété de cette
+coque était connue pour un seul de ses membres.
+
+Règle appliquée (la même que pour la prise de l'ATK F1 V2, §11.8) : **une propriété de coque se partage
+entre les entrées d'une même coque**. Les trois variantes reçoivent donc `button_height = "Mid"`, avec
+une **source datée dédiée** qui déclare le champ et dit d'où vient la valeur (le cahier des charges du
+propriétaire, relevé sur l'ATK Dragonfly A9 Plus 2.0, même coque). Aucune valeur n'est inventée : elle
+vient de la seule entrée dont la hauteur de boutons était établie.
+
+**Deux limites assumées, écrites dans le code et dans les tests :**
+
+1. la **A9 Mini** (118,4 × 61,2 × 38,6 mm) n'est **pas** de cette coque : elle garde `Inconnu` — une
+   « Mini » est une coque réduite, pas la même pièce ;
+2. la **VXE X3** partage la coque de l'ATK X1 V2 Ultra Max, mais rien n'est propagé : la bosse de l'X1 est
+   **contestée** par une source tierce (« Back - minimal » chez EloShapes contre « Mid » du propriétaire)
+   et rien ne prouve que la X3 (gamme VXE, switchs Omron, puce Broadcom) reprend les boutons de l'X1.
+   Exception nommée dans le test d'invariant.
+
+### 14.3 Effet mesuré (moteur inchangé — seule la donnée change)
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Souris sans hauteur de boutons | 25 sur 36 | **22 sur 36** |
+| Sorties ATK A9 Ultimate (stats 18 522) | 2 601 (alternative 1 602, économie 99) | **2 929** (alternative 1 866, économie 163) |
+| Sorties ATK A9 NB Ultra | 174 | 234 |
+| Sorties ATK A9 Plus 2.0 (souris du propriétaire) | 681 | 645 (sa jumelle moins chère prend les 36 places « économie ») |
+| Sorties Scyrox V8 / V8S | 1 091 | 911 |
+| Profils où deux places montrent la même coque (stats) | 683 | **607** |
+| Profils sans aucun résultat (stats) | 252 | 252 |
+| Match idéal « partiel » (QA, 27 170 profils) | 8 661 | **7 600** |
+| Replis de coque (QA) | 1 410 | 1 194 |
+| Résultats à trois places (QA) | 6 523 (24,01 %) | **6 583 (24,23 %)** |
+| Problèmes détectés (QA) | 0 | **0** |
+
+Aucun canari n'a bougé : Palm 180 × 90 reste Phantom 35/40, V6 30, Z1 30, A9 Plus 25, X1 20 — les cinq
+tests de flux et les seize tests de barème passent sans réécriture.
+
+### 14.4 La vraie raison de quatre « jamais recommandées » : leur propre coque les devance
+
+Après cette passe, neuf souris ne sortent toujours jamais de la grille. La 26e passe a mesuré **pourquoi**,
+souris par souris, avec une statistique nouvelle du générateur de rapport : à chaque profil où une souris
+est notée sans être affichée, on regarde si **une variante de sa propre coque** est classée devant elle.
+Résultat : **quatre des neuf** sont devancées **100 % du temps** par leur jumelle de coque.
+
+| Souris jamais recommandée | Sa jumelle de coque (même `shell_id`) | Prix | Poids | Profils notés | Profils où la jumelle est devant |
+|---|---|---|---:|---:|---:|---:|
+| ATK A9 Air | ATK A9 Ultimate | 59,95 € contre **41,95 €** | 47 g contre 53 g | 11 172 | **11 172 (100 %)** |
+| ATK Blazing Sky U2 Mini | ATK U2 V2 Mini | 77,95 € contre **59,95 €** | 38 g contre 39 g | 5 544 | **5 544 (100 %)** |
+| Pulsar X2 CrazyLight Medium | Pulsar X2A v3 Medium | 149,99 € contre **119,99 €** | 39 g contre 56 g | 4 830 | **4 830 (100 %)** |
+| Pulsar X2H CrazyLight Mini | Pulsar X2H v3 Mini | 149,99 € contre **119,99 €** | 37 g contre 51 g | 3 990 | **3 990 (100 %)** |
+
+Ces quatre paires ont exactement **les mêmes données de score** (mêmes dimensions, même bosse, mêmes
+boutons, mêmes compatibilités de prise) : elles ne diffèrent que par le **poids** et le **prix**, et dans
+tous les modes, à score égal, le départage finit par le prix. La version allégée (Air, CrazyLight) est donc
+**mathématiquement** condamnée : elle ne peut pas être recommandée tant que sa jumelle moins chère est au
+catalogue. Ce n'est ni un bug, ni une donnée manquante — c'est mesuré, écrit, et verrouillé par un test
+(`tests/test_data.py::test_light_versions_can_never_pass_their_cheaper_twin`, les quatre paires y sont vérifiées).
+
+> **Fait à trancher par le propriétaire** (aucune modification faite) : le **poids n'entre pas dans le
+> score**. Les versions allégées sont donc toujours perdantes à forme identique. Si tu veux qu'elles
+> puissent sortir, il faut décider d'une place du poids dans le classement (par exemple un départage par
+> poids en « Peu importe le prix », ou un affichage « −9 g » sur la ligne du match idéal). Rien n'a été
+> changé : le moteur ne bouge que sur ta demande explicite.
+
+### 14.5 Preuves
+
+- `pytest -q` : **356 tests** — dont deux nouveaux : « les quatre variantes de la coque A9 partagent la
+  hauteur de boutons du propriétaire, sourcée » et « **aucune coque ne mélange deux hauteurs de boutons** »
+  (invariant nouveau, avec son exception nommée pour la VXE X3), la preuve de domination des quatre
+  versions allégées, et la mise à jour datée de la règle « une seule donnée manquante » (une souris sans
+  aucun manque est classée **complète**, plus « partielle »).
+- `tools/qa_flow_matrix.py` (grille complète, 27 170 profils) : **0 problème**, 2 561 profils sans
+  résultat (inchangé), 7 600 matchs idéaux partiels, 1 194 replis, 6 583 résultats à trois places.
+- `tools/recommendation_stats.py` et `tools/compare_profiles.py` régénérés (jamais édités à la main).
+- Campagne d'images : 23 fichiers, `tools/image_corpus_check.py` (doublons signalés), 12 vues testées,
+  `data/mouse_db.json` inchangé sur ce point — **aucune valeur issue d'une photo**.

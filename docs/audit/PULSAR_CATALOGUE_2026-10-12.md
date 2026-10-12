@@ -164,15 +164,15 @@ lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026
 | ATK U2 V2 Mini (`atk_u2_v2_mini`) | hauteur des boutons · prise palm |
 | ATK ZERO (`atk_zero`) | hauteur des boutons |
 | ATK Duckbill (`atk_duckbill`) | hauteur des boutons |
-| ATK A9 Ultimate (`atk_a9_ultimate`) | hauteur des boutons |
-| ATK A9 Air (`atk_a9_air`) | hauteur des boutons |
+| ATK A9 Ultimate (`atk_a9_ultimate`) | **complète** |
+| ATK A9 Air (`atk_a9_air`) | **complète** |
 | ATK A9 Mini (`atk_a9_mini`) | hauteur des boutons |
 | VXE Dragonfly V3 / V3 Pro (`vxe_v3`) | hauteur des boutons |
 | VXE Dragonfly R1 / R1 Pro (`vxe_r1`) | hauteur des boutons |
 | VXE MAD R / MAD R Major (`vxe_mad_r`) | hauteur des boutons · prise fingertip |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo (`vxe_x3`) | hauteur des boutons · position de la bosse |
 | ATK Blazing Sky U2 Mini (`atk_u2_mini`) | hauteur des boutons · prise palm |
-| ATK Dragonfly A9 NB Ultra (`atk_a9_nb`) | hauteur des boutons |
+| ATK Dragonfly A9 NB Ultra (`atk_a9_nb`) | **complète** |
 | ATK Blazing Sky F1 V2 (`atk_f1_v2`) | **complète** |
 | ATK Blazing Sky U2 / U2 Plus / U2 Ultimate (`atk_u2`) | hauteur des boutons · prise fingertip |
 | Pulsar X2 v3 Mini (`pulsar_x2_v3_mini`) | prise palm |

@@ -136,3 +136,38 @@ ATK U2 (rapport 2,69 vs 3,16), ATK Y9 Ultimate (écart 6,7 %), ATK F1 V3 Ultimat
 **Prochaine étape utile** : chercher des vues **portant le nom imprimé** des souris à boutons « moyens »
 (A9 Plus, X1 V2 Ultra Max, Scyrox V6) — leur mesure étalonnerait la classe « Mid », aujourd'hui produite
 par aucune référence.
+
+## 14. Vingt-sixième passe (2026-10-12) : huit visuels de plus, toujours aucune valeur mesurable
+
+Huit images de plus ont été récupérées (galeries ATK, Reddit, revendeurs des A9, X1, Scyrox V6) : le
+corpus passe à **23 fichiers**. Deux faits mesurés en sortent :
+
+1. **Un doublon de plus** : `atk-blazing-sky-x1-v2-ultra-max-wireless-2.jpg` et
+   `atk-blazing-sky-zero-wireless-mouse-side-3.jpg` sont **les mêmes octets** (même empreinte SHA-256),
+   servis pour deux modèles différents — le contrôle `tools/image_corpus_check.py` les écarte.
+2. **Quatre vues passent le contrôle de perspective**, toutes donnent des valeurs **non tranchées** :
+
+| Image | Ce qu'elle montre (vérifié à l'œil) | Avant | Mesure | Classe |
+|---|---|---|---:|---|
+| `…zero-wireless-mouse-side-5.jpg` | coque blanche à nez pointu, **aucun nom imprimé** | gauche (« ATK » sur le flanc) | 43,7 % | Low (l'outil) — **non publiée** |
+| `…zero-wireless-mouse-side-4.jpg` | coque noire, **aucun nom imprimé** | droite | 48,3 % | aucune (bande grise) |
+| `…a9-plus-wireless-mouse-sid-2.jpg` | coque A9 blanche (logo en « V » sur le flanc), **aucun nom imprimé** | gauche | 47,3 % | aucune (bande grise) |
+| `…a9-plus-wireless-mouse-sid-3.jpg` | coque A9 blanche, **aucun nom imprimé** | droite | 47,3 % | aucune (bande grise) |
+
+Aucune ne porte le nom du modèle imprimé sur la coque : la règle de publication du §13.4 (identité
+visuelle **et** deux images distinctes concordantes) n'est donc remplie par personne. **Aucune valeur
+n'est écrite dans `data/mouse_db.json` à partir de ces images.**
+
+### 14.1 Une piste fermée par la mesure : le rapport de silhouette n'identifie pas un modèle
+
+Le contrôle de perspective compare le rapport longueur/hauteur de la silhouette à celui du modèle
+supposé. Vérification faite sur le catalogue entier : **plusieurs modèles ont des rapports quasi
+identiques** (3,05 à 3,13) — la silhouette mesurée (3,06–3,09) colle à au moins quatre modèles
+différents avec moins de 0,4 % d'écart. Conclusion écrite noir sur blanc : **la géométrie de la
+silhouette ne peut pas servir de preuve d'identité** et le contrôle de perspective ne peut pas non plus
+détecter qu'on lui a donné les cotes du mauvais modèle. Seule la vérification visuelle (nom imprimé,
+logo) fait foi — c'est la règle du §13.4, et elle reste.
+
+**Prochaine étape utile** (inchangée, précisée) : une vue **strictement de côté** et **portant le nom
+imprimé** d'une souris à boutons « moyens » (A9 Plus « A9 PLUS », X1 V2 « X1 ULTIMATE », Scyrox V6
+« V6 »). Aucune des douze vues testées ce jour ne remplit ces deux conditions.
