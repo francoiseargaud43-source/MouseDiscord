@@ -47,6 +47,8 @@ def _status_cell(s) -> str:
         return f"❌ exclue — {s.excluded_reason}"
     if s.is_pending:
         return f"⏳ à vérifier ({s.total}/{s.computable_max} pts partiels)"
+    if s.is_partial:
+        return f"✅ {s.total}/{MAX_SCORE} (boutons non documentés)"
     return f"✅ {s.total}/{MAX_SCORE}"
 
 

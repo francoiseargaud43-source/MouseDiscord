@@ -121,6 +121,14 @@ class Selection:
     reference_score: int | None        # meilleur score de référence du mode
 
 
+def _same_shell(first: MouseScore, second: MouseScore) -> bool:
+    """Deux souris de la même coque (mêmes variantes de couleur, de capteur ou de finition)."""
+    a, b = first.mouse, second.mouse
+    if a.id == b.id:
+        return True
+    return bool(a.shell_id) and a.shell_id == b.shell_id
+
+
 def _price_key(score: MouseScore) -> float:
     return score.mouse.price_eur if score.mouse.price_eur is not None else float("inf")
 

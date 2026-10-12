@@ -14,6 +14,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from cogs import finder_flow as flow
+from utils import selection
 from utils.models import THENAR_LABELS, BudgetMode, ClawVariant, Grip, Thenar
 from utils.session import SessionStore
 
@@ -314,17 +315,22 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
     alt = next(v for k, v in fields.items() if "alternative" in k)
-    assert "Scyrox V6" in ideal
-    assert "74,90 €" in ideal and "**75 %**" in ideal   # nom · prix · pourcentage, rien de plus
+    # Depuis l'ouverture du critère « hauteur des boutons » (2026-10-12), le classement réel du
+    # profil Palm 180 × 90 en Qualité/Prix place l'ATK GHOST Ultimate en tête (30/40, 68,95 €),
+    # suivie du Scyrox V6 (30/40) : deux coques différentes, jamais deux variantes de la même.
+    assert "ATK GHOST Ultimate" in ideal
+    assert "68,95 €" in ideal and "**75 %**" in ideal   # nom · poids · prix · pourcentage · forme
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
-    assert "Z1" in alt
+    assert "Scyrox V6" in alt
     assert guide.title == "📐 Vos repères de taille"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
     assert "30/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
+    # La donnée manquante est annoncée en clair, dans le bloc bas (jamais en haut du message).
+    assert "Hauteur des boutons non documentée" in guide_text
     assert "Pourquoi ce choix" in " ".join(f.name for f in guide.fields)
     # La souris choisie est reliée aux repères de taille, juste au-dessus.
-    assert any(f.name.startswith("🔎 Scyrox V6") and "en clair" in f.name for f in guide.fields)
+    assert any(f.name.startswith("🔎 ATK GHOST Ultimate") and "en clair" in f.name for f in guide.fields)
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in kwargs["embeds"])
     assert "ni une probabilité" in kwargs["embeds"][-1].footer.text
 
@@ -444,7 +450,8 @@ async def test_custom_budget_invalid_then_valid():
     good = make_interaction(store=store)
     await modal_budget(s.session_id, "50").on_submit(good)
     embeds = good.response.edit_message.call_args.kwargs["embeds"]
-    assert "A9 Plus" in fields_of(embeds[0])["🥇 Le match idéal"]
+    # Le mode choisit la tête de son classement ; on vérifie la mise en forme, pas une marque figée.
+    assert "**" in fields_of(embeds[0])["🥇 Le match idéal"]
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in embeds)
     assert store.lookup(s.session_id, 99)[1] != "ok"  # session supprimée après résultat
 
@@ -765,4 +772,21 @@ def test_result_hump_illustration_follows_the_winner(monkeypatch):
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     main = flow.results_embeds(session, flow.compute_selection(session))[0]
-    assert "T14_bosse_centrale" in main.image.url  # V6 (Palm) : bosse Mid → illustration T14
+    # Illustration liée à la bosse de la souris RÉELLEMENT retenue : ATK GHOST (bosse arrière) → T07.
+    assert "T07_bosse_arriere" in main.image.url
+
+
+@pytest.mark.asyncio
+async def test_two_slots_never_show_the_same_shell():
+    """2026-10-12 : le match idéal et l'alternative ne sont jamais deux variantes de la même coque.
+
+    « ATK GHOST Ultimate » puis « ATK GHOST Extreme » serait la même souris deux fois : le résultat
+    descend donc la liste jusqu'à une coque différente.
+    """
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0)
+    session.budget_mode = BudgetMode.QUALITE_PRIX
+    ideal, alternative, _ = flow.result_slots(flow.compute_selection(session))
+    assert ideal is not None and alternative is not None
+    assert not selection._same_shell(ideal, alternative)
+    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK GHOST Ultimate", "Scyrox V6")

@@ -145,12 +145,20 @@ def test_palm_180x90_excluded_mice(catalog):
     assert evaluate_mouse(catalog["atk_f1_ultimate"], HAND, Grip.PALM).is_excluded
 
 
-def test_palm_180x90_ranking_by_compatibility(catalog):
+def test_palm_180x90_ranking_keeps_the_owner_mice_on_top(catalog):
+    """Non-régression du barème : les quatre souris du propriétaire gardent leurs points.
+
+    Depuis l'ouverture du critère « hauteur des boutons » (2026-10-12), des souris notées sur des
+    données incomplètes peuvent les égaler — jamais les dépasser : leur total reste sur 40.
+    """
     scores = [evaluate_mouse(m, HAND, Grip.PALM) for m in catalog.values()]
+    totals = {s.mouse.id: s.total for s in scores if s.is_scored}
+    assert (totals["scyrox_v6"], totals["atk_z1_ultra"], totals["atk_a9_plus"], totals["atk_x1_ultra_max"]) == (30, 30, 25, 20)
     ranked = rank_by_compatibility(scores)
-    # Ex æquo à 30 : l'ordre du catalogue départage (V6 avant Z1)
-    assert [s.mouse.id for s in ranked][:4] == ["scyrox_v6", "atk_z1_ultra", "atk_a9_plus", "atk_x1_ultra_max"]
-    assert [s.total for s in ranked][:4] == [30, 30, 25, 20]
+    top = [s.total for s in ranked[:4]]
+    assert top == [30, 30, 30, 30], "les meilleurs totaux du profil Palm restent 30/40, jamais plus"
+    assert {s.mouse.id for s in ranked[:2]} == {"scyrox_v6", "atk_z1_ultra"}, "les souris du propriétaire restent en tête"
+    assert all(0 <= s.total <= MAX_SCORE for s in ranked)
 
 
 def test_compatibility_percent_rounding(catalog):
@@ -200,10 +208,24 @@ def test_unknown_grip_makes_candidate_pending_not_scored():
     assert s.breakdown.grip_pts == 0
 
 
-def test_unknown_buttons_make_candidate_pending():
+def test_unknown_buttons_alone_are_scored_as_partial():
+    """Hauteur des boutons inconnue SEULE : la souris est notée sur le reste (décision 2026-10-12).
+
+    Aucun point n'est inventé : le critère n'est pas noté, le total reste sur 40, et la souris est
+    marquée « partielle » pour que l'affichage le dise.
+    """
     s = evaluate_mouse(make_mouse(button_height="Inconnu"), HAND, Grip.PALM)
-    assert s.status == STATUS_PENDING
+    assert s.status == STATUS_SCORED and s.is_partial
     assert "hauteur des boutons non vérifiée" in s.missing
+    assert s.breakdown.button_pts == 0
+    assert s.computable_max == 35          # 40 moins les 5 points de boutons non notables
+
+
+def test_unknown_buttons_plus_another_gap_stay_pending():
+    """Dès qu'une DEUXIÈME donnée manque, la souris reste « à vérifier » : jamais classée."""
+    s = evaluate_mouse(make_mouse(button_height="Inconnu", hump_position="Inconnu"), HAND, Grip.PALM)
+    assert s.status == STATUS_PENDING
+    assert {"hauteur des boutons non vérifiée", "position de la bosse non vérifiée"} <= set(s.missing)
 
 
 def test_unknown_hump_is_pending_except_in_fingertip():

@@ -51,7 +51,13 @@ from utils.models import (
     HandMeasure,
     Thenar,
 )
-from utils.selection import QUALITE_PRIX_TOLERANCE_POINTS, TOLERANCE_BY_MODE, Selection, select
+from utils.selection import (
+    QUALITE_PRIX_TOLERANCE_POINTS,
+    TOLERANCE_BY_MODE,
+    Selection,
+    _same_shell,
+    select,
+)
 from utils.session import LOOKUP_FORBIDDEN, LOOKUP_OK, FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
 
@@ -348,6 +354,9 @@ def _match_summary(score: MouseScore) -> str:
             f"boutons {BUTTON_DISPLAY.get(mouse.button_height, mouse.button_height)} "
             + ("adaptés" if score.breakdown.button_pts > 0 else "moins adaptés")
         )
+    elif score.is_partial:
+        # Critère non documenté (2026-10-12) : la souris est notée sans lui, et on le dit.
+        weak.append("hauteur des boutons non documentée : ce critère n'est pas noté")
     sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
     sentence += f". À noter : {', '.join(weak[:1])}." if weak else "."
     return sentence[:1024]
@@ -427,6 +436,14 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
     if not ordered:
         return None, None, None
     ideal = ordered[0]
+    # Deux places du résultat ne montrent jamais la MÊME coque (2026-10-12) : proposer
+    # « ATK GHOST Ultimate » puis « ATK GHOST Extreme » n'apporte aucun choix — même forme, même
+    # prise, seules la finition et le prix changent. On écarte donc, pour l'alternative uniquement,
+    # les variantes de la coque déjà retenue ; si la zone n'offre rien d'autre, on reprend la liste
+    # complète (jamais moins de résultats qu'avant).
+    def not_same_shell(other: MouseScore) -> bool:
+        return not _same_shell(ideal, other)
+
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
     tolerance = TOLERANCE_BY_MODE.get(selection.mode, QUALITE_PRIX_TOLERANCE_POINTS)
     zone = [score for score in ordered[1:] if score.total >= reference - tolerance]
@@ -436,8 +453,9 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         return max(candidates, key=lambda score: (score.total, -_price_or_inf(score))) if candidates else None
 
     ideal_price = _price_or_inf(ideal)
-    cheaper = [score for score in zone if _price_or_inf(score) < ideal_price]
-    alternative = best_match(cheaper) or best_match(zone)
+    distinct_zone = [score for score in zone if not_same_shell(score)] or zone
+    cheaper = [score for score in distinct_zone if _price_or_inf(score) < ideal_price]
+    alternative = best_match(cheaper) or best_match(distinct_zone)
     ceiling = _price_or_inf(alternative) if alternative is not None else ideal_price
     economy_zone = [score for score in zone
                     if score is not alternative
@@ -580,6 +598,11 @@ def _dimensions_embed(session: FinderSession, ideal: MouseScore, explanation: st
             "souris retournée, à hauteur du capteur.\n\n"
             f"Score : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %** du maximum théorique\n"
             "(longueur, largeur de prise, compatibilité de prise, bosse, boutons)."
+            + (
+                "\n\n**Hauteur des boutons non documentée** pour cette souris : ce critère n'est pas "
+                "noté (aucun point inventé) ; elle est classée sur les critères disponibles."
+                if ideal.is_partial else ""
+            )
         ),
         color=COLOR,
     )

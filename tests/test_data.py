@@ -129,18 +129,23 @@ def test_new_models_have_no_invented_compatibility_or_price(mice):
         assert m.sources, f"{mid} : toute donnée doit citer une source"
 
 
-def test_new_models_are_pending_not_ranked_for_palm(mice):
-    """Sans la hauteur des boutons relevée, une souris reste « à vérifier » : jamais classée.
-
-    C'est la règle qui empêche de proposer une souris sur des données incomplètes — et la raison
-    pour laquelle peu de souris apparaissent tant que ce relevé n'est pas fait.
+def test_two_missing_criteria_still_block_a_mouse(mice):
+    """Règle du 2026-10-12 : UNE seule donnée manquante (hauteur des boutons) n'empêche plus le
+    classement ; dès qu'il en manque une DEUXIÈME, la souris reste « à vérifier », jamais classée.
     """
     hand = HandMeasure(180, 90)
     for mid in NEW_ATK_IDS:
-        s = evaluate_mouse(mice[mid], hand, Grip.PALM)
-        assert not s.is_scored, f"{mid} ne doit pas être classé sans compatibilité vérifiée"
-        if mice[mid].button_height == "Inconnu" and not s.is_excluded:
-            assert s.is_pending
+        mouse = mice[mid]
+        s = evaluate_mouse(mouse, hand, Grip.PALM)
+        gaps = 0
+        gaps += mouse.button_height == "Inconnu"
+        gaps += mouse.palm_grip_fit == "Inconnu"
+        gaps += mouse.hump_position == "Inconnu"
+        gaps += mouse.length_mm is None
+        if s.is_excluded or gaps >= 2:
+            assert not s.is_scored, f"{mid} ne doit pas être classé avec {gaps} données manquantes"
+        else:
+            assert s.is_scored and s.is_partial, mid
 
 
 def test_duckbill_length_is_not_filled_while_sources_conflict(mice):
@@ -384,3 +389,18 @@ def test_every_documented_component_is_sourced():
         for field in ("sensor", "polling_hz", "switches", "mcu"):
             if getattr(mouse, field):
                 assert any(field in source.fields for source in mouse.sources), (mouse.id, field)
+
+
+def test_partial_scoring_opens_the_choice_without_inventing_points(mice):
+    """Ouverture du critère « hauteur des boutons » (2026-10-12) : mesurée souris par souris.
+
+    Effets attendus : la Y9 (ergonomique main droite, palm Élevé publié par ATK) devient classable en
+    Palm, et les Pulsar Mini en Claw/Fingertip. Les souris qui gardent DEUX manques (les Xlite v4,
+    dont la position de la bosse n'est publiée nulle part) restent, elles, « à vérifier ».
+    """
+    palm = {m.id: evaluate_mouse(m, HandMeasure(180, 90), Grip.PALM) for m in mice.values()}
+    assert palm["atk_y9_ultimate"].is_scored, "la Y9 doit être classable en Palm"
+    assert palm["atk_y9_ultimate"].is_partial
+    assert palm["pulsar_xlite_v4_mini"].is_pending, "bosse + boutons inconnus : toujours bloquée"
+    claw = {m.id: evaluate_mouse(m, HandMeasure(150, 75), Grip.CLAW) for m in mice.values()}
+    assert sum(1 for s in claw.values() if s.is_scored) >= 13, "le profil Claw 150 × 75 doit s'ouvrir"

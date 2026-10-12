@@ -73,6 +73,15 @@ BUTTON_IDEAL = {
 BUTTON_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 BUTTON_MAX_POINTS = {Grip.PALM: 5, Grip.CLAW: 5, Grip.FINGERTIP: 10}
 
+# --- D bis. Critère non documenté : hauteur des boutons (décision du propriétaire, 2026-10-12) ----
+# Aucun fabricant ne publie la hauteur des boutons et aucune base ne la recense : quand c'est la SEULE
+# donnée absente, la souris est désormais NOTÉE sur les critères documentés (« score partiel ») au lieu
+# d'être écartée. Aucun point n'est inventé : le critère n'est pas noté, le total reste comparé au
+# barème complet (40) — donc la souris ne gagne jamais de point qu'elle n'a pas — et le bloc
+# d'explication le dit en clair. Toute autre donnée manquante (prise, bosse, longueur…) bloque encore.
+PARTIAL_SCORING_ALLOWED = True
+PARTIAL_MISSING_ALLOWED = frozenset({"hauteur des boutons non vérifiée"})
+
 # --- D. Ajustement thénar ↔ arrière marqué (reverse engineering Oblivity, 2026-10-11) ----
 # L'outil d'Oblivity ne donne AUCUN point au thénar : il s'en sert pour imposer une forme d'arrière
 # (« arrière étroit en pilule » pour un thénar petit OU moyen, aucune contrainte pour un thénar grand)
@@ -142,6 +151,11 @@ class MouseScore:
     @property
     def is_scored(self) -> bool:
         return self.status == STATUS_SCORED
+
+    @property
+    def is_partial(self) -> bool:
+        """Souris classée sur des critères incomplets (hauteur des boutons non documentée)."""
+        return self.status == STATUS_SCORED and bool(self.missing)
 
     @property
     def total(self) -> int:
@@ -340,7 +354,8 @@ def evaluate_mouse(
 
     breakdown = ScoreBreakdown(length_pts=length_pts, width_pts=width_pts, grip_pts=grip_pts,
                                hump_pts=hump_pts, button_pts=button_pts, thenar_pts=thenar_pts)
-    status = STATUS_PENDING if missing else STATUS_SCORED
+    blocking = [item for item in missing if item not in PARTIAL_MISSING_ALLOWED] if PARTIAL_SCORING_ALLOWED else missing
+    status = STATUS_SCORED if not blocking else STATUS_PENDING
     return _finish(mouse, grip, status, breakdown, details, missing, computable, width_source, width_used,
                    thenar_note=thenar_note)
 
