@@ -70,6 +70,26 @@ def _background_colour(img: Image.Image) -> tuple[int, int, int]:
     return corners[len(corners) // 2]
 
 
+def _mask_from_alpha(img: Image.Image, alpha_min: int = 40) -> tuple[dict[int, int], dict[int, int]] | None:
+    """Silhouette d'une image détourée (PNG transparent) : le fond est transparent, pas coloré.
+
+    C'est le cas des rendus produits détourés (Pulsar, ATK Store) : sans cette lecture, la
+    transparence devient du noir et la silhouette est fausse (erreur corrigée le 2026-10-12).
+    """
+    if img.mode not in ("RGBA", "LA"):
+        return None
+    alpha = img.convert("RGBA").getchannel("A")
+    w, h = alpha.size
+    top: dict[int, int] = {}
+    bottom: dict[int, int] = {}
+    for x in range(w):
+        column = [y for y in range(h) if alpha.getpixel((x, y)) > alpha_min]
+        if column:
+            top[x] = column[0]
+            bottom[x] = column[-1]
+    return (top, bottom) if top else None
+
+
 def _silhouette(img: Image.Image, tolerance: int = 28):
     """Boîte englobante et profil supérieur de la souris.
 
@@ -78,18 +98,22 @@ def _silhouette(img: Image.Image, tolerance: int = 28):
     le point le plus haut **du dessus** et le point le plus bas **de la base** — et non entre deux
     points du dessus, ce qui sous-estimerait la hauteur (erreur corrigée le 2026-10-12).
     """
-    bg = _background_colour(img)
-    w, h = img.size
-    pixels = img.load()
-    top: dict[int, int] = {}
-    bottom: dict[int, int] = {}
-    for x in range(w):
-        column = [y for y in range(h)
-                  if abs(pixels[x, y][0] - bg[0]) + abs(pixels[x, y][1] - bg[1])
-                  + abs(pixels[x, y][2] - bg[2]) > tolerance]
-        if column:
-            top[x] = column[0]
-            bottom[x] = column[-1]
+    from_alpha = _mask_from_alpha(img)
+    if from_alpha is not None:
+        top, bottom = from_alpha
+    else:
+        bg = _background_colour(img)
+        w, h = img.size
+        pixels = img.load()
+        top: dict[int, int] = {}
+        bottom: dict[int, int] = {}
+        for x in range(w):
+            column = [y for y in range(h)
+                      if abs(pixels[x, y][0] - bg[0]) + abs(pixels[x, y][1] - bg[1])
+                      + abs(pixels[x, y][2] - bg[2]) > tolerance]
+            if column:
+                top[x] = column[0]
+                bottom[x] = column[-1]
     if not top:
         raise ValueError("aucune souris détectée : le fond et la souris se confondent")
     xs = sorted(top)
@@ -107,7 +131,9 @@ def _silhouette(img: Image.Image, tolerance: int = 28):
 
 
 def measure(path: str | Path, length_mm: float, height_mm: float, front: str = "left") -> Measure:
-    img = Image.open(path).convert("RGB")
+    img = Image.open(path)
+    if img.mode not in ("RGBA", "LA"):
+        img = img.convert("RGB")
     x_min, x_max, y_min, y_max, height_px, profile = _silhouette(img)
     length_px = x_max - x_min + 1
 

@@ -82,3 +82,23 @@ def test_une_vue_en_perspective_est_refusee_sans_valeur(tmp_path):
     assert result.aspect_error > PERSPECTIVE_TOLERANCE
     assert result.klass is None
     assert "refusée" in result.verdict
+
+
+def test_image_detouree_sur_fond_transparent(tmp_path):
+    """Les rendus produits sont souvent détourés (PNG transparent) : la silhouette doit être lue.
+
+    Sans cette lecture, la transparence devient du noir et la mesure est fausse (bug corrigé le
+    2026-10-12 sur les rendus Pulsar).
+    """
+    img = Image.new("RGBA", (WIDTH_PX + 200, HEIGHT_PX + 200), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    top, base = 100, 100 + HEIGHT_PX
+    click_top = base - int(HEIGHT_PX * 0.40)
+    draw.polygon([(100, base), (100, click_top), (100 + int(WIDTH_PX * 0.4), click_top),
+                  (100 + int(WIDTH_PX * 0.55), top), (100 + WIDTH_PX, top + int(HEIGHT_PX * 0.45)),
+                  (100 + WIDTH_PX, base)], fill=(20, 20, 20, 255))
+    path = tmp_path / "detouree.png"
+    img.save(path)
+    result = measure(path, LENGTH_MM, HEIGHT_MM, front="left")
+    assert result.aspect_error < 0.03
+    assert result.klass == "Low"
