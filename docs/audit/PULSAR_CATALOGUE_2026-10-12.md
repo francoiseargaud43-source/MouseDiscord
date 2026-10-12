@@ -123,6 +123,14 @@ plus ; seule la famille X2 a une phrase exploitable (« la X2 a une implantation
 large »). C'est donc le relevé que le propriétaire est seul à pouvoir fournir — son outil Oblivity pose
 exactement cette question à chaque souris.
 
+**Mise à jour du 2026-10-12 (24e passe)** : la mesure a été tentée par l'agent sur des vues de profil
+officielles (`tools/measure_button_height.py`), pas seulement demandée au propriétaire. La méthode est
+validée (l'ATK Z1 V2, « High » connue, redonne 55 % quand l'orientation est bonne) mais **aucune valeur n'a
+pu être écrite** : deux photos du même modèle ATK ZERO donnent 43,0 % et 48,0 % (à cheval sur le seuil), et
+une souris « Mid » (ATK X1 V2 Ultra Max) se fait classer « Low » par une des deux lectures. Détail complet :
+`ROBUSTESSE_2026-10-12.md` §13. Ce qui débloquerait la publication : reconnaître la bande 43,3 – 55,1 %
+comme la classe « Mid » (question posée au propriétaire).
+
 Effet mesuré de l'ajout des dix Pulsar (souris réellement classables, donc proposables) :
 
 | Profil | Avant (26 souris) | Après (36 souris) | Résultat du match idéal |
