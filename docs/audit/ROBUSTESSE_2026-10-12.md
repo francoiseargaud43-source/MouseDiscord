@@ -1868,6 +1868,26 @@ champs n'entrent dans aucun barème) et il est désormais **mesuré**, pas suppo
 un prix réellement modifié → des écarts (et la souris modifiée apparaît dans les changements) ; deux
 catalogues différents → refus explicite.
 
+### 23.8 Une contradiction entre le message et le master prompt (signalée, non modifiée)
+
+Dernier constat de la relecture : le master prompt — document **contractuel** — montre dans ses deux
+exemples de résultat un prix suivi de « (prix non vérifié) », et son croquis de code l'ajoute dès que
+`price_status` n'est pas `verified`. Le message réel ne l'affiche **jamais** : le marqueur existe
+toujours dans le code (`_price_text(score, verified_hint=True)`) mais **aucun appelant ne l'active**
+depuis le retrait de l'onglet « Détails » (2026-10-11), et sa docstring renvoyait encore à cet onglet
+disparu.
+
+Mesure de l'enjeu, grille complète (27 170 profils) : **4 631 profils (17,04 %)** montrent au moins une
+souris à prix non vérifié — Scyrox V6 3 526 fois (74,90 € du cahier des charges ; la boutique du
+fabricant vend en dollars, jamais convertis) et ATK A9 Plus 2.0 1 105 fois (45,00 € du cahier des
+charges, relevé revendeur à 44,90 € conservé). Dans ces profils, le prix s'affiche **comme un prix
+vérifié**.
+
+**Ce qui a été fait** : la docstring dit maintenant la vérité (plus de renvoi à un onglet disparu), la
+règle reste écrite, et l'arbitrage est porté au propriétaire (`AUDIT.md` C34 et §8 point 14) — remettre
+le marqueur, ou retirer la règle du master prompt. Rien n'est modifié dans la ligne de prix sans sa
+réponse : c'est du texte visible, et ses décisions sur la concision du résultat sont explicites.
+
 ### 23.7 Preuves d'exécution (34e passe)
 
 | Contrôle | Résultat |

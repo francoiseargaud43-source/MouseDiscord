@@ -380,7 +380,15 @@ def _recap(session: FinderSession) -> str:
 
 
 def _price_text(score: MouseScore, *, verified_hint: bool = False) -> str:
-    """Prix lisible ; le statut « non vérifié » n'apparaît que dans l'onglet Détails."""
+    """Prix lisible. ``verified_hint`` ajoute « (prix non vérifié) » quand le prix n'est pas attesté.
+
+    **Ce marqueur n'est plus demandé par aucun appelant** depuis le retrait de l'onglet « Détails »
+    (2026-10-11, demande du propriétaire : résultat le plus concis possible) : le prix d'une souris
+    non vérifiée s'affiche donc aujourd'hui comme un prix vérifié. Le master prompt, lui, montre
+    « 74.90 € (prix non vérifié) » dans ses exemples de résultat — la contradiction est consignée
+    (`docs/audit/AUDIT.md` C34) et son arbitrage appartient au propriétaire. Ne pas supprimer ce
+    paramètre sans la réponse : c'est la trace de la règle écrite.
+    """
     mouse = score.mouse
     if mouse.price_eur is None:
         return "prix non renseigné"
