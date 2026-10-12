@@ -1,6 +1,6 @@
 {
-  "_lisez_moi": "Liens d'achat officiels vérifiés un par un le 2026-10-11 (docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md). Clés = identifiants de data/mouse_db.json. Les clés qui commencent par _ sont ignorées par le bot.",
-  "_affiliation": "atk.store : ?ref=aze ; scyrox.com : ?bg_ref=Q0rHhhBRNv. ?country=FR est ajouté pour forcer les prix en euros (sans lui, atk.store sert des dollars).",
+  "_lisez_moi": "Liens d'achat officiels vérifiés un par un le 2026-10-11, affiliation complétée le 2026-10-12 (docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md et docs/audit/LIENS_AFFILIES_2026-10-12.md). Clés = identifiants de data/mouse_db.json. Les clés qui commencent par _ sont ignorées par le bot.",
+  "_affiliation": "atk.store : ?ref=aze ; scyrox.com : ?bg_ref=Q0rHhhBRNv ; eu.pulsar.gg : ?ref=AZE (paramètre fourni par le propriétaire le 2026-10-12). ?country=FR est ajouté pour forcer les prix en euros (sans lui, atk.store sert des dollars).",
   "_sans_lien": "Depuis le 2026-10-11, chaque souris vendue du catalogue a son lien (A9 NB ajouté en dernier, lien fourni par le propriétaire). Principe conservé : un lien qui n'a pas été fourni n'est jamais inventé, la souris reste absente de ce fichier et le bot affiche « Liens à venir ».",
   "scyrox_v8": "https://scyrox.com/products/scyrox-v8?bg_ref=Q0rHhhBRNv",
   "scyrox_v6": "https://scyrox.com/products/scyrox-v6?bg_ref=Q0rHhhBRNv",
@@ -28,14 +28,14 @@
   "atk_u2_mini": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse?country=FR&ref=aze",
   "atk_f1_v2": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse?country=FR&ref=aze",
   "atk_u2": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-series-wireless-mouse?country=FR&ref=aze",
-  "pulsar_x2_v3_mini": "https://eu.pulsar.gg/products/x2-v3-mini-gaming-mouse",
-  "pulsar_x2h_v3_mini": "https://eu.pulsar.gg/products/x2h-v3-mini-gaming-mouse",
-  "pulsar_x2a_v3_medium": "https://eu.pulsar.gg/products/x2a-v3-gaming-mouse",
-  "pulsar_x2_crazylight_medium": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse",
-  "pulsar_xlite_v4_mini": "https://eu.pulsar.gg/products/xlite-v4-mini-gaming-mouse",
-  "pulsar_xlite_v4_medium": "https://eu.pulsar.gg/products/xlite-v4-gaming-mouse",
-  "pulsar_x2_crazylight_mini": "https://eu.pulsar.gg/products/x2-crazylight-gaming-mouse",
-  "pulsar_x2h_crazylight_mini": "https://eu.pulsar.gg/products/x2h-crazylight-gaming-mouse",
-  "pulsar_xlite_crazylight_medium": "https://eu.pulsar.gg/products/xlite-crazylight-medium-gaming-mouse",
-  "pulsar_xlite_v4_large": "https://eu.pulsar.gg/products/xlite-v4-large-gaming-mouse"
+  "pulsar_x2_v3_mini": "https://eu.pulsar.gg/products/x2-v3-mini-gaming-mouse?ref=AZE",
+  "pulsar_x2h_v3_mini": "https://eu.pulsar.gg/products/x2h-v3-mini-gaming-mouse?ref=AZE",
+  "pulsar_x2a_v3_medium": "https://eu.pulsar.gg/products/x2a-v3-gaming-mouse?ref=AZE",
+  "pulsar_x2_crazylight_medium": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse?ref=AZE",
+  "pulsar_xlite_v4_mini": "https://eu.pulsar.gg/products/xlite-v4-mini-gaming-mouse?ref=AZE",
+  "pulsar_xlite_v4_medium": "https://eu.pulsar.gg/products/xlite-v4-gaming-mouse?ref=AZE",
+  "pulsar_x2_crazylight_mini": "https://eu.pulsar.gg/products/x2-crazylight-gaming-mouse?ref=AZE",
+  "pulsar_x2h_crazylight_mini": "https://eu.pulsar.gg/products/x2h-crazylight-gaming-mouse?ref=AZE",
+  "pulsar_xlite_crazylight_medium": "https://eu.pulsar.gg/products/xlite-crazylight-medium-gaming-mouse?ref=AZE",
+  "pulsar_xlite_v4_large": "https://eu.pulsar.gg/products/xlite-v4-large-gaming-mouse?ref=AZE"
 }

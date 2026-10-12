@@ -160,8 +160,9 @@ def test_commercial_links_are_official_and_verified():
     Détail de la vérification : docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md.
     Aucun lien d'exemple ne doit subsister, et une souris dont le lien n'a pas été fourni reste
     sans lien : le résultat affiche alors « Liens à venir », jamais un lien inventé.
-    Les six Pulsar ajoutées le 2026-10-12 mènent à la fiche officielle du modèle sur la boutique
-    européenne (prix affiché en euros, donc en EUR — jamais de conversion).
+    Les dix Pulsar ajoutées le 2026-10-12 mènent à la fiche officielle du modèle sur la boutique
+    européenne (prix affiché en euros, donc en EUR — jamais de conversion) et portent le paramètre
+    d'affiliation fourni par le propriétaire le 2026-10-12 (`?ref=AZE`).
     """
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
     assert links, "les liens d'achat vérifiés doivent être livrés"
@@ -175,6 +176,10 @@ def test_commercial_links_are_official_and_verified():
     assert all(
         url.startswith("https://eu.pulsar.gg/products/")
         for key, url in links.items() if key.startswith("pulsar_")
+    )
+    # Affiliation Pulsar fournie par le propriétaire le 2026-10-12 : le paramètre fait partie du lien.
+    assert all(
+        "ref=AZE" in url for key, url in links.items() if key.startswith("pulsar_")
     )
     assert len([key for key in links if key.startswith("pulsar_")]) == len(PULSAR_IDS)
 

@@ -100,3 +100,17 @@ Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
   chaque lien est une URL atk.store/scyrox.com, qu'aucun lien d'exemple ne subsiste, que `country=FR`
   est présent sur toutes les pages atk.store (prix en euros) et que l'A9 NB — dernier lien fourni —
   est bien présent.
+
+## 6. Addendum du 2026-10-12 : affiliation des dix liens Pulsar
+
+Les dix Pulsar (X2 v3 Mini, X2H v3 Mini, X2A v3, X2 CrazyLight Mini et Medium, X2H CrazyLight Mini,
+Xlite CrazyLight Medium, Xlite v4 Mini, Medium et Large) ont reçu le lien de leur fiche officielle
+`eu.pulsar.gg` le 2026-10-12 (prix en euros, jamais de conversion). Seul manquait le paramètre
+d'affiliation : **le propriétaire l'a fourni le 2026-10-12**, il est ajouté tel quel (`?ref=AZE`).
+
+- `data/commercial_links.json` : les dix URL Pulsar se terminent par `?ref=AZE` ; la clé `_affiliation`
+  documente désormais les trois boutiques (atk.store `?ref=aze`, scyrox.com `?bg_ref=…`, Pulsar `?ref=AZE`).
+- Test verrouillé : `tests/test_data.py::test_commercial_links_are_official_and_verified` exige le
+  paramètre sur chaque lien `pulsar_*` (comme `country=FR` l'est pour atk.store).
+- État complet, ligne par ligne : `docs/audit/LIENS_AFFILIES_2026-10-12.md` — **36 souris, 36 liens,
+  36 affiliés** ; plus aucun lien à compléter.
