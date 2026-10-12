@@ -254,6 +254,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Coque ATK F1 (shell_id « atk_f1 ») — hauteur de boutons « Low » héritée de l'ATK F1 V2, mesurée sur vue de profil officielle (43,3 %, référence de la classe « bas ») : un seul moule, une seule hauteur de boutons",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/audit/MESURE_BOUTONS_2026-10-12.md",
+        "fields": [
+          "button_height"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -390,7 +398,7 @@
     "fit_rationale": "Coque ergonomique asymétrique. Boutons hauts. Le choix absolu pour le Palm Grip.",
     "weight_g": 54.0,
     "polling_hz": 8000,
-    "notes": "122.5 × 66.8 × 42.4 mm : ATK (collection Z1), article ATK 2024 et Meckeys. Ne pas confondre avec la Z1 originale (119.57 × 60.99 × 36.26 mm selon ATK, dimensions identiques à la Fierce X : non ajoutée, à vérifier). Bosse « Mid-Front » du cahier des charges, à confirmer. Prix officiel EUR constaté le 2026-10-11 : Z1 V2 « à partir de » 59,95 €. Capteur PAW3950 Ultra, switchs optiques et MCU Nordic 54L15 (fiches ATK Store Z1 series / Maxesport). Les premières générations de la coque étaient en Nordic 52840.",
+    "notes": "122.5 × 66.8 × 42.4 mm : ATK (collection Z1), article ATK 2024 et Meckeys. Ne pas confondre avec la Z1 originale (119.57 × 60.99 × 36.26 mm selon ATK, dimensions identiques à la Fierce X : non ajoutée, à vérifier). Bosse « Mid-Front » du cahier des charges, à confirmer. Prix officiel EUR constaté le 2026-10-11 : Z1 V2 « à partir de » 59,95 €. Capteur PAW3950 Ultra, switchs optiques et MCU Nordic 54L15 (fiches ATK Store Z1 series / Maxesport). Les premières générations de la coque étaient en Nordic 52840. Hauteur des boutons : classe « High » du cahier des charges, CONFIRMÉE par la mesure du 2026-10-12 sur une vue de profil officielle (55,1 %) — c'est la référence de la classe « hauts » de l'outil de mesure (protocole : docs/audit/MESURE_BOUTONS_2026-10-12.md §3).",
     "sources": [
       {
         "label": "ATK Store — collection Z1 Series",
@@ -460,6 +468,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Mesure d'étalonnage du 2026-10-12 — vue de profil officielle : hauteur d'appui des boutons 55,1 % → classe « High » (référence de la classe « hauts » de tools/measure_button_height.py), recoupée par le rendu « Z1 ULTIMATE » (55,0 %)",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/audit/MESURE_BOUTONS_2026-10-12.md",
+        "fields": [
+          "button_height"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Ergonomic",
@@ -491,7 +507,7 @@
     "fit_rationale": "Rapport qualité/prix imbattable pour les budgets serrés. Forme 'patate' universelle.",
     "weight_g": 57.0,
     "polling_hz": 1000,
-    "notes": "Largeur 63.5 mm (cahier des charges) contre 64.0 mm chez EloShapes : écart de 0.5 mm, dans la tolérance de concordance (0.5 mm) ; valeur propriétaire conservée. Polling 1000 Hz documenté (EloShapes) : pas de bonus haut de gamme. Prix officiel EUR constaté le 2026-10-11 : série A9 « à partir de » 18,95 € (A9 Plus 2.0 : 44,90 € chez Maxesport). Capteur annoncé PAW3950 chez Caseking, « PAW3395 / PAW3950 Ultra » selon les versions chez Maxesport : valeur retenue la plus prudente (PAW3950). Switchs Huano Transparent Blue, MCU NearLink/HiSilicon, fréquence 1 000 Hz.",
+    "notes": "Largeur 63.5 mm (cahier des charges) contre 64.0 mm chez EloShapes : écart de 0.5 mm, dans la tolérance de concordance (0.5 mm) ; valeur propriétaire conservée. Polling 1000 Hz documenté (EloShapes) : pas de bonus haut de gamme. Prix officiel EUR constaté le 2026-10-11 : série A9 « à partir de » 18,95 € (A9 Plus 2.0 : 44,90 € chez Maxesport). Capteur annoncé PAW3950 chez Caseking, « PAW3395 / PAW3950 Ultra » selon les versions chez Maxesport : valeur retenue la plus prudente (PAW3950). Switchs Huano Transparent Blue, MCU NearLink/HiSilicon, fréquence 1 000 Hz. Hauteur des boutons : classe « Mid » du cahier des charges, CONFIRMÉE par la mesure du 2026-10-12 sur une vue de profil officielle (47,3 %) — c'est la référence de la classe « moyens » de l'outil de mesure (protocole : docs/audit/MESURE_BOUTONS_2026-10-12.md §3).",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Plus / A9 Pro",
@@ -548,6 +564,14 @@
           "sensor"
         ],
         "date_checked": "2026-10-11"
+      },
+      {
+        "label": "Mesure d'étalonnage du 2026-10-12 — vue de profil officielle : hauteur d'appui des boutons 47,3 % → classe « Mid » (référence de la classe « moyens » de tools/measure_button_height.py), deux rendus officiels distincts, tous deux à 47,3 %",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/audit/MESURE_BOUTONS_2026-10-12.md",
+        "fields": [
+          "button_height"
+        ],
+        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -2425,7 +2449,7 @@
     "fit_status": "owner_spec",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Même coque que l'ATK F1 V3 Ultimate déjà au catalogue (shell_id « atk_f1 » : 118,2 × 62,4 × 38,8 mm, bosse « Mid », boutons bas) ; génération précédente, un peu plus lourde (39 g contre 37 g). Compatibilités de prise renseignées le 2026-10-12 par héritage de cette coque (verdicts du cahier des charges) : sans elles la souris restait « à vérifier » sur tous les profils — décision documentée dans docs/audit/ROBUSTESSE_2026-10-12.md §11.8. Switchs optiques ATK Custom (FE) — Omron optiques sur la version Extreme — et MCU Nordic 54L15. Fiche ATK (2026-10-12) : « Grip Style: Claw / Palm », « Best for Hand Size: Small-to-Medium Hands », modèles Ultra Max 2.0 (54 ± 2 g, PAW3395 Ultra), Ultimate 2.0 (39 ± 2 g, PAW3950 Ultra) et Extreme 2.0 (38 ± 2 g, Omron optiques).",
+    "notes": "Même coque que l'ATK F1 V3 Ultimate déjà au catalogue (shell_id « atk_f1 » : 118,2 × 62,4 × 38,8 mm, bosse « Mid », boutons bas) ; génération précédente, un peu plus lourde (39 g contre 37 g). Compatibilités de prise renseignées le 2026-10-12 par héritage de cette coque (verdicts du cahier des charges) : sans elles la souris restait « à vérifier » sur tous les profils — décision documentée dans docs/audit/ROBUSTESSE_2026-10-12.md §11.8. Switchs optiques ATK Custom (FE) — Omron optiques sur la version Extreme — et MCU Nordic 54L15. Fiche ATK (2026-10-12) : « Grip Style: Claw / Palm », « Best for Hand Size: Small-to-Medium Hands », modèles Ultra Max 2.0 (54 ± 2 g, PAW3395 Ultra), Ultimate 2.0 (39 ± 2 g, PAW3950 Ultra) et Extreme 2.0 (38 ± 2 g, Omron optiques). Hauteur des boutons : classe « Low » du cahier des charges, CONFIRMÉE par la mesure du 2026-10-12 sur une vue de profil officielle (43,3 %) — c'est la référence de la classe « bas » de l'outil de mesure (protocole : docs/audit/MESURE_BOUTONS_2026-10-12.md §3).",
     "id": "atk_f1_v2",
     "brand": "ATK",
     "model": "Blazing Sky F1 V2",
@@ -2504,6 +2528,14 @@
         "fields": [
           "price_eur",
           "price_note"
+        ],
+        "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Mesure d'étalonnage du 2026-10-12 — vue de profil officielle : hauteur d'appui des boutons 43,3 % → classe « Low » (référence de la classe « bas » de tools/measure_button_height.py), recoupée par l'ATK ZERO (43,3 % et 43,7 %, deux rendus distincts)",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/audit/MESURE_BOUTONS_2026-10-12.md",
+        "fields": [
+          "button_height"
         ],
         "date_checked": "2026-10-12"
       }

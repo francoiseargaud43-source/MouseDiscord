@@ -254,6 +254,41 @@ def test_zero_button_height_measured_on_two_official_views(mice):
     assert not score.is_pending
 
 
+def test_les_trois_references_d_etalonnage_viennent_de_mesures_sourcees(mice):
+    """Les trois références de `tools/measure_button_height.py` sont des mesures datées et tracées.
+
+    L'outil classe une souris par la référence la plus proche : si une mesure publiée et la constante de
+    l'outil divergent, tout l'étalonnage se décale en silence. Ce test relie les deux bouts — la souris
+    du catalogue, sa classe, sa source datée et la constante de l'outil — et vérifie que la provenance
+    est écrite là où le catalogue la cherche (``sources[].fields`` contient ``button_height``).
+    """
+    import sys
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    import measure_button_height as outil
+
+    attendu = {                     # souris : (classe, rapport d'étalonnage, mesure publiée)
+        "atk_f1_v2": ("Low", 0.433, "43,3 %"),
+        "atk_a9_plus": ("Mid", 0.473, "47,3 %"),
+        "atk_z1_ultra": ("High", 0.551, "55,1 %"),
+    }
+    references = {klass: ratio for _, klass, ratio in outil.CALIBRATION_REFERENCES}
+    assert set(references) == {"Low", "Mid", "High"}, references
+    for ident, (klass, ratio, mesure) in attendu.items():
+        mouse = mice[ident]
+        assert mouse.button_height == klass, ident
+        assert references[klass] == pytest.approx(ratio, abs=0.0005), ident
+        sources = [s for s in mouse.sources if "button_height" in s.fields]
+        assert len(sources) == 1, f"{ident} : une seule source doit porter la hauteur des boutons"
+        assert sources[0].date_checked == "2026-10-12", ident
+        assert mesure in sources[0].label, sources[0].label
+        assert "MESURE_BOUTONS" in sources[0].url, sources[0].url
+        assert f"« {klass} »" in mouse.notes and mesure in mouse.notes, ident
+    # Une seule coque « atk_f1 » : la F1 V3 Ultimate hérite de la même hauteur de boutons, tracée.
+    heritee = [s for s in mice["atk_f1_ultimate"].sources if "button_height" in s.fields]
+    assert len(heritee) == 1 and heritee[0].date_checked == "2026-10-12", heritee
+
+
 def test_no_shell_mixes_two_button_heights(mice):
     """Invariant de coque : deux souris de la MÊME coque ne peuvent pas annoncer deux hauteurs de
     boutons différentes — une coque est une seule pièce de plastique.

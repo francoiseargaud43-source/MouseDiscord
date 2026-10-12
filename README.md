@@ -400,7 +400,9 @@ elles sont figées par `tests/test_matcher.py` et ne doivent jamais bouger sans 
 | Scyrox V8 / V8S, ATK F1 V3 | exclues | grip Palm « Faible » |
 
 **Réponse réelle du bot pour ce profil** : en *Rapport Qualité/Prix*, match idéal **ATK Phantom Ultimate**
-(35/40 — 88 %, 91,95 €) et alternative **ATK Z1 V2 Ultra** (30/40 — 75 %, 59,95 €) ; le gagnant dépend du mode
+(35/40 — 88 %, 91,95 €), alternative **ATK Z1 V2 Ultra** (30/40 — 75 %, 59,95 €) et, en troisième ligne,
+**ATK A9 Mini** (30/40 — 75 %, 59,95 €) sous le titre « ➕ L'autre option » — au même prix que l'alternative,
+elle n'est pas une économie et ne s'annonce donc pas comme telle ; le gagnant dépend du mode
 (en *Économique*, la Z1 V2 Ultra passe devant, parce qu'elle est la moins chère de la fenêtre). Ce résultat est
 vérifié par `tests/test_flow.py` ; le classement des cinq modes, pour les trois profils de référence, est dans
 la matrice ci-dessous — c'est elle qui fait foi, pas ce paragraphe.

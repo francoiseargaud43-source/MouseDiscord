@@ -853,10 +853,15 @@ async def test_two_slots_never_show_the_same_shell():
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
-    ideal, alternative, _ = flow.result_slots(flow.compute_selection(session))
+    ideal, alternative, troisieme = flow.result_slots(flow.compute_selection(session))
     assert ideal is not None and alternative is not None
     assert not selection._same_shell(ideal, alternative)
     assert (ideal.mouse.label, alternative.mouse.label) == ("ATK Phantom Ultimate", "ATK Z1 V2 Ultra")
+    # Troisième place (décision du 2026-10-12) : elle est remplie, d'une TROISIÈME coque, et son titre
+    # dit la vérité — l'ATK A9 Mini est au même prix que l'alternative (59,95 €), donc « L'autre option ».
+    assert troisieme is not None and troisieme.mouse.label == "ATK A9 Mini"
+    assert not selection._same_shell(ideal, troisieme) and not selection._same_shell(alternative, troisieme)
+    assert flow.third_slot_title(troisieme, ideal, alternative) == "➕ L'autre option"
 
 
 @pytest.mark.asyncio
