@@ -262,7 +262,7 @@ résultat ne peut rester muet.
 Deux manques restaient par rapport à l'outil de référence (Oblivity) :
 
 1. **« Mouse Design » (symétrique / ergonomique)** — la donnée n'existait pas. Elle a été levée pour les
-   **26 souris** (puis étendue aux 6 Pulsar ajoutées le 2026-10-12, soit 32) et inscrite dans
+   **26 souris** (puis étendue aux 10 Pulsar ajoutées le 2026-10-12, soit 36) et inscrite dans
    `data/mouse_db.json` (champ `shape`, `Symmetrical` ou `Ergonomic`), chacune
    avec la source qui l'atteste (fiche ATK/VXE, EloShapes, Maxesport, test indépendant…). `utils/catalog.py`
    refuse désormais une forme renseignée sans source listant `shape` : aucune forme n'est devinée.
@@ -276,27 +276,30 @@ Deux manques restaient par rapport à l'outil de référence (Oblivity) :
 
 `_steps_total` et `STEP_NUMBERS` portent la numérotation : Palm 1 → 4, Claw 1 → 5, Fingertip 1 → 3.
 
-## 13. Six souris Pulsar ajoutées au catalogue (2026-10-12, 9ᵉ passe)
+## 13. Dix souris Pulsar ajoutées au catalogue (2026-10-12, 9ᵉ passe)
 
 Le propriétaire a demandé de récupérer **toutes les souris disponibles** sur `https://eu.pulsar.gg/collections/mice`
 (prix, tailles, composants, forme), et de ne pas se contenter de reproposer toujours les mêmes.
 
 1. **Relevé du catalogue Pulsar EU** (≈ 41 modèles/tailles hors éditions de couleur, 59,99 € à 199,99 € TTC) :
    `docs/audit/PULSAR_CATALOGUE_2026-10-12.md`.
-2. **Six fiches entièrement sourcées** sur la fiche officielle du modèle (dimensions, poids, capteur XS-1, fréquence
+2. **Dix fiches entièrement sourcées** sur la fiche officielle du modèle (dimensions, poids, capteur XS-1, fréquence
    publiée 1 000 Hz, switchs optiques, forme, recommandations de prise du fabricant) : `pulsar_x2_v3_mini`,
-   `pulsar_x2h_v3_mini`, `pulsar_x2a_v3_medium`, `pulsar_x2_crazylight_medium`, `pulsar_xlite_v4_mini`,
-   `pulsar_xlite_v4_medium`. Le **MCU reste vide** (Pulsar ne le publie pas) et la fréquence retenue est la valeur
+   `pulsar_x2h_v3_mini`, `pulsar_x2a_v3_medium`, `pulsar_x2_crazylight_medium`, `pulsar_x2_crazylight_mini`,
+   `pulsar_x2h_crazylight_mini`, `pulsar_xlite_crazylight_medium`, `pulsar_xlite_v4_mini`,
+   `pulsar_xlite_v4_medium`, `pulsar_xlite_v4_large`. Le **MCU reste vide** (Pulsar ne le publie pas) et la fréquence retenue est la valeur
    **publiée** (1 000 Hz) : les 8 000 Hz exigent le dongle 8K vendu séparément.
 3. **Provenance des compatibilités de prise** : nouveau statut `manufacturer_guide` (`utils/models.py`) pour les
    valeurs reprises d'une recommandation **écrite** du fabricant (« Recommended for Claw / Fingertip Grip »). Une
    prise non recommandée reste « Inconnu » : aucun point inventé, et `tests/test_catalog_lookup.py` refuse désormais
    toute valeur non « Inconnu » sans provenance ni justification.
-4. **Effet mesuré** : le profil Claw 150 × 75 mm passe de 3 à 6 souris classables (la Pulsar X2 v3 Mini atteint
-   **40/40**) et le profil Fingertip 200 × 100 mm fait apparaître la Pulsar X2 v3 Mini en alternative du Scyrox V6.
+4. **Effet mesuré** : le profil Claw 150 × 75 mm passe de 3 à 7 souris classables et le match idéal devient une
+   Pulsar (X2 v3 Mini **40/40**, puis X2 CrazyLight Mini 40/40) ; Claw 180 × 100 mm : 4 → 10 classables
+   (X2A v3 puis X2 CrazyLight Medium, 40/40 chacune) ; Fingertip 200 × 100 mm : la Pulsar X2 v3 Mini rejoint
+   le Scyrox V6 en tête (40/40 ex æquo).
    Le profil Palm 180 × 90 mm est **inchangé** (Scyrox V6, ATK Z1 V2 Ultra, A9 Plus, X1 Ultra Max).
-5. **Cause profonde du « toujours les mêmes »** : sur les 32 souris, seules les souris dont les **cinq** données
+5. **Cause profonde du « toujours les mêmes »** : sur les 36 souris, seules les souris dont les **cinq** données
    (longueur vérifiée, largeur, compatibilité de prise, bosse, hauteur des boutons) sont connues peuvent être
    classées ; les autres restent « à vérifier » et ne sont jamais affichées. Il manque donc, pour la plupart des
    modèles, **la hauteur des boutons** et les **compatibilités de prise** : ce sont les deux relevés à compléter
-   en priorité (voir `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` §4).
+   en priorité (liste à compléter : `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` §5).

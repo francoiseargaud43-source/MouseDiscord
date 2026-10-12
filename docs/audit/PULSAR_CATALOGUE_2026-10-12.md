@@ -76,7 +76,7 @@ Prix relevés, aucune différence technique annoncée par le fabricant :
 
 Méthode : `https://eu.pulsar.gg/products/<handle>` (section « Technical Specifications » de la fiche du
 modèle). Les prix sont ceux de la collection « Mice » et de la fiche, **TTC en euros** — jamais convertis.
-Les six modèles ci-dessous sont entrés dans `data/mouse_db.json` ; les autres modèles de la collection
+Les dix modèles ci-dessous sont entrés dans `data/mouse_db.json` ; les autres modèles de la collection
 restent à relever (une fiche par modèle, le relevé n'est pas devinable).
 
 | Modèle | Dimensions | Poids | Capteur | Fréquence publiée | Forme / bosse | Prises recommandées par le fabricant |
@@ -87,10 +87,14 @@ restent à relever (une fiche par modèle, le relevé n'est pas devinable).
 | X2 CrazyLight Medium | 120,4 × 63 × 38 mm | 39 g (±1) patins « dot », 41 g (±1) patins classiques | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | Symétrique, bosse qui culmine au milieu | Claw, Fingertip |
 | Xlite v4 Mini | 115,6 × 63,4 × 40,7 mm | 52 g (±1) | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | **Ergonomique main droite** | Palm |
 | Xlite v4 Medium | 122 × 66 × 43 mm | 54 g (±1) | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | **Ergonomique main droite** | Palm |
+| X2 CrazyLight Mini | 115,6 × 61 × 36,6 mm | ±35 g patins « dot », ±37 g patins classiques | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | Symétrique, « low hump, wide waist » | Claw, Fingertip |
+| X2H CrazyLight Mini | 115,6 × 62 × 38 mm | 37 g ±1 patins « dot », 39 g ±1 patins classiques | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | Symétrique, « high hump, narrow waist » | Claw, claw relâché |
+| Xlite CrazyLight Medium | 122 × 66 × 40,7 mm | ±44 g patins « dot », ±46 g patins classiques | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | **Ergonomique main droite** | Palm |
+| Xlite v4 Large | 126,6 × 69,5 × 44,5 mm | 58 g (±1) | Pulsar XS-1 | 1 000 Hz (8 000 Hz via dongle 8K séparé) | **Ergonomique main droite** | Palm |
 
 Points communs publiés : capteur XS-1 (32 000 dpi, 750 IPS, 50 g), processeur 32 bits ARM, switchs **optiques**
-Pulsar (100 millions de clics), encodeur Pulsar Blue ; **MCU non publié** par le fabricant. Prix : 119,99 €
-(X2 v3 Mini, X2H v3 Mini, X2A v3, Xlite v4 Mini, Xlite v4 Medium), 149,99 € (X2 CrazyLight Medium).
+Pulsar (100 millions de clics), encodeur Pulsar Blue ; **MCU non publié** par le fabricant. Prix : 119,99 € (X2 v3 Mini, X2H v3 Mini, X2A v3, Xlite v4 Mini, Xlite v4 Medium, Xlite v4 Large),
+149,99 € (X2 CrazyLight Medium, X2 CrazyLight Mini, X2H CrazyLight Mini), 149,90 € (Xlite CrazyLight Medium).
 
 Arbitrages documentés (aucune valeur devinée) :
 
@@ -104,25 +108,80 @@ Arbitrages documentés (aucune valeur devinée) :
 - **Compatibilités de prise** : « Élevé » uniquement là où le fabricant l'écrit (voir tableau) ; les autres
   prises restent « Inconnu ». Nouveau statut `manufacturer_guide` dans `utils/models.py`.
 
-## 5. Blocage à lever : deux relevés manquants (propriétaire)
+## 5. Blocage à lever : la hauteur des boutons (recherche du 2026-10-12)
 
-Sur les 32 souris du catalogue, seules celles dont les **cinq** données sont connues sont classées et donc
-proposées :
+Pour être **classée puis proposée**, une souris doit avoir ses **cinq** données : longueur vérifiée, largeur
+de prise, compatibilité avec la prise de l'utilisateur, position de la bosse et **hauteur des boutons**. Une
+seule manque et la souris reste « à vérifier » : elle n'est **jamais** affichée (ni en match idéal, ni en
+alternative, ni en « économie »).
 
-1. longueur vérifiée, 2. largeur, 3. **compatibilité de prise**, 4. **bosse**, 5. **hauteur des boutons**.
+Recherche menée le 2026-10-12 sur les sources publiées : **aucune base ne publie la hauteur des boutons**
+d'une souris. Les guides spécialisés l'écrivent explicitement (« do not search for a universal button-height
+number ») : c'est un critère **qualitatif**, jugé souris par souris. Les fiches Pulsar ne la publient pas non
+plus ; seule la famille X2 a une phrase exploitable (« la X2 a une implantation de boutons plus basse et plus
+large »). C'est donc le relevé que le propriétaire est seul à pouvoir fournir — son outil Oblivity pose
+exactement cette question à chaque souris.
 
-Or `button_height` n'est renseigné que sur 7 souris et les compatibilités de prise sur 6 : **la plupart des
-souris restent « à vérifier » et ne sont jamais affichées** — c'est la cause réelle du « on me repropose
-toujours les mêmes ». Effet mesuré avant/après l'ajout des six Pulsar :
+Effet mesuré de l'ajout des dix Pulsar (souris réellement classables, donc proposables) :
 
-| Profil | Souris classables | Résultat |
-|---|---|---|
-| Palm 180 × 90 mm | 4 → **4** (inchangé) | Scyrox V6 30/40, ATK Z1 V2 Ultra 30/40 |
-| Claw 150 × 75 mm | 3 → **6** | Pulsar X2 v3 Mini **40/40**, puis ATK F1 V3 Ultimate 30/40 |
-| Fingertip 200 × 100 mm | 4 → **7** | Scyrox V6 40/40, puis Pulsar X2 v3 Mini 40/40 |
+| Profil | Avant (26 souris) | Après (36 souris) | Résultat du match idéal |
+|---|---|---|---|
+| Palm 180 × 90 mm | 4 | **4** (inchangé) | Scyrox V6 30/40, ATK Z1 V2 Ultra 30/40 |
+| Claw 150 × 75 mm | 3 | **7** | **Pulsar X2 v3 Mini 40/40**, puis Pulsar X2 CrazyLight Mini 40/40 |
+| Claw 180 × 100 mm | 4 | **10** | **Pulsar X2A v3 40/40**, puis Pulsar X2 CrazyLight Medium 40/40 |
+| Fingertip 200 × 100 mm | 4 | **8** | Scyrox V6 40/40, puis **Pulsar X2 v3 Mini 40/40** |
 
-Le profil Palm ne bouge pas : les souris ergonomiques main droite qui lui correspondent (Xlite v4) attendent
-la **position de leur bosse** et la **hauteur de leurs boutons**, relevés que seul le propriétaire peut fournir
-(son outil Oblivity pose exactement ces questions). Les 20 souris ATK/VXE attendent, elles, leurs
-**compatibilités de prise** et la **hauteur des boutons**.
+Le profil Palm ne bouge pas encore : les souris qui lui correspondent (Xlite v4 et Xlite CrazyLight) attendent
+la bosse et la hauteur des boutons. **Liste à compléter** (générée depuis le catalogue) :
 
+| Souris | Ce qui manque pour qu'elle puisse être proposée |
+|---|---|
+| Scyrox V8 / V8S (`scyrox_v8`) | **complète** |
+| Scyrox V6 (`scyrox_v6`) | **complète** |
+| ATK F1 V3 Ultimate (`atk_f1_ultimate`) | **complète** |
+| ATK X1 V2 Ultra Max (`atk_x1_ultra_max`) | **complète** |
+| ATK Z1 V2 Ultra (`atk_z1_ultra`) | **complète** |
+| ATK A9 Plus 2.0 (`atk_a9_plus`) | **complète** |
+| ATK Phantom Ultimate (`atk_phantom_ultimate`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK GHOST Ultimate (`atk_ghost_ultimate`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK GHOST Extreme (`atk_ghost_extreme`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK Y9 Ultimate (`atk_y9_ultimate`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK Fierce X (`atk_fierce_x`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK U2 V2 Ultimate (`atk_u2_v2_ultimate`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK U2 V2 Mini (`atk_u2_v2_mini`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK ZERO (`atk_zero`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK Duckbill (`atk_duckbill`) | hauteur des boutons · prise palm · prise claw · prise fingertip · longueur |
+| ATK A9 Ultimate (`atk_a9_ultimate`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK A9 Air (`atk_a9_air`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK A9 Mini (`atk_a9_mini`) | hauteur des boutons · prise palm · prise claw · prise fingertip · position de la bosse |
+| VXE Dragonfly V3 / V3 Pro (`vxe_v3`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| VXE Dragonfly R1 / R1 Pro (`vxe_r1`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| VXE MAD R / MAD R Major (`vxe_mad_r`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| VXE Dragonfly X3 / X3 Pro / X3 Turbo (`vxe_x3`) | hauteur des boutons · prise palm · prise claw · prise fingertip · position de la bosse |
+| ATK Blazing Sky U2 Mini (`atk_u2_mini`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK Dragonfly A9 NB Ultra (`atk_a9_nb`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| ATK Blazing Sky F1 V2 (`atk_f1_v2`) | prise palm · prise claw · prise fingertip |
+| ATK Blazing Sky U2 / U2 Plus / U2 Ultimate (`atk_u2`) | hauteur des boutons · prise palm · prise claw · prise fingertip |
+| Pulsar X2 v3 Mini (`pulsar_x2_v3_mini`) | prise palm |
+| Pulsar X2H v3 Mini (`pulsar_x2h_v3_mini`) | hauteur des boutons · prise palm · prise fingertip |
+| Pulsar X2A v3 (`pulsar_x2a_v3_medium`) | prise palm |
+| Pulsar X2 CrazyLight Medium (`pulsar_x2_crazylight_medium`) | prise palm |
+| Pulsar Xlite v4 Mini (`pulsar_xlite_v4_mini`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
+| Pulsar Xlite v4 Medium (`pulsar_xlite_v4_medium`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
+| Pulsar X2 CrazyLight Mini (`pulsar_x2_crazylight_mini`) | prise palm |
+| Pulsar X2H CrazyLight Mini (`pulsar_x2h_crazylight_mini`) | hauteur des boutons · prise palm · prise fingertip |
+| Pulsar Xlite CrazyLight Medium (`pulsar_xlite_crazylight_medium`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
+| Pulsar Xlite v4 Large (`pulsar_xlite_v4_large`) | hauteur des boutons · prise claw · prise fingertip · position de la bosse |
+
+## 6. Points à trancher (jamais devinés)
+
+1. **Xlite CrazyLight Mini** (handle `xlite-crazylight-gaming-mouse`, 149,99 €) : la boutique la classe sous
+   `Shape/Symmetrical` alors que **toute la famille Xlite est ergonomique main droite**. Forme à trancher
+   avant toute entrée au catalogue : elle n'a donc **pas** été ajoutée.
+2. **Polling** : les fiches Pulsar annoncent « 1 000 Hz/1 ms » et « jusqu'à 8 000 Hz avec le dongle 8K vendu
+   séparément ». Le catalogue retient **1 000 Hz** (valeur publiée) ; les souris ATK/Scyrox, livrées avec leur
+   dongle 8K, gardent 8 000 Hz. À confirmer par le propriétaire si l'on veut homogénéiser.
+3. **MCU Pulsar** non publié : laissé vide (`mcu` = 0 dans le départage), jamais deviné.
+4. **Éditions de couleur** (T1, PRX, Bruce Lee, Demon Slayer, BlueArchive…) : mêmes coques et mêmes
+   spécifications annoncées, seuls le coloris et le prix changent — une entrée par modèle a été retenue,
+   les éditions restent citées dans le relevé §2.

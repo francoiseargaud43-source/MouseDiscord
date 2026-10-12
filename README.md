@@ -354,8 +354,8 @@ Le pourcentage n'est jamais présenté comme une probabilité.
 - `pending` : aucune exclusion, mais grip, bosse, boutons ou longueur `Inconnu` / en conflit. Le score partiel est affiché, jamais classé.
 - `scored` : toutes les données présentes.
 
-**Forme de coque** : `shape` (`Symmetrical` / `Ergonomic`) est renseignée pour les **32 souris** (26 le 2026-10-11,
-plus 6 Pulsar le 2026-10-12), chacune sourcée (fiche ATK/VXE/Pulsar, EloShapes, test indépendant) — jamais devinée. Elle sert au bloc « ⛰️ La bosse et la forme » :
+**Forme de coque** : `shape` (`Symmetrical` / `Ergonomic`) est renseignée pour les **36 souris** (26 le 2026-10-11,
+plus 10 Pulsar le 2026-10-12), chacune sourcée (fiche ATK/VXE/Pulsar, EloShapes, test indépendant) — jamais devinée. Elle sert au bloc « ⛰️ La bosse et la forme » :
 une forme symétrique convient aux trois prises, une ergonomique épouse un peu mieux l'arche de la main en Palm.
 En Claw, la **variante déclarée** précise la bosse attendue (relâchée → arrière marquée, agressive → médiane,
 pincée → arrière à flancs plats) : conseil d'affichage uniquement, aucun point ni classement ne change.

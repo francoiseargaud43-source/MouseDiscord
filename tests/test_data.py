@@ -27,8 +27,13 @@ STORE_2026_10_11_IDS = [
 # switchs, forme, recommandations de prise) — voir docs/audit/PULSAR_CATALOGUE_2026-10-12.md.
 PULSAR_IDS = [
     "pulsar_x2_v3_mini", "pulsar_x2h_v3_mini", "pulsar_x2a_v3_medium", "pulsar_x2_crazylight_medium",
-    "pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium",
+    "pulsar_x2_crazylight_mini", "pulsar_x2h_crazylight_mini",
+    "pulsar_xlite_crazylight_medium", "pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium",
+    "pulsar_xlite_v4_large",
 ]
+# Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
+# boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
+# droite : forme à trancher, jamais devinée (docs/audit/PULSAR_CATALOGUE_2026-10-12.md §6).
 
 
 @pytest.fixture(scope="module")

@@ -45,6 +45,10 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | Pulsar X2 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (dans la plage) | 60.0 mm (estimée, écart 0.4) | Inconnu | Mid | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 60.4 mm (estimée, écart 0.8) | Élevé | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Medium | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.4) | Élevé | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2 CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 58.0 mm (estimée, écart 0.0) | Inconnu | Mid | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2H CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 59.0 mm (estimée, écart 0.0) | Inconnu | Rear | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.4) | Élevé | Inconnu | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (écart 2.8 mm) | 66.5 mm (estimée, écart 6.9) | Élevé | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil P, budget ≤ 75 € pour le mode budget)**
 
@@ -95,6 +99,10 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Pulsar X2 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (écart 4.5 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Mid | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 60.4 mm (estimée, écart 2.0) | Inconnu | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Medium | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 122.0 mm (écart 6.1 mm) | 63.0 mm (estimée, écart 4.6) | Inconnu | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2 CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | Mid | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2H CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 59.0 mm (estimée, écart 0.6) | Élevé | Rear | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (écart 6.1 mm) | 63.0 mm (estimée, écart 4.6) | Inconnu | Inconnu | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (écart 10.7 mm) | 66.5 mm (estimée, écart 8.1) | Inconnu | Inconnu | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil C, budget ≤ 75 € pour le mode budget)**
 
@@ -145,6 +153,10 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | Pulsar X2 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.4 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Élevé | ignorée (Fingertip) | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Mini | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 60.4 mm (estimée, écart 1.2) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Medium | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2 CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Low | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X2H CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
+| Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (dans la plage) | 66.5 mm (estimée, écart 7.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil F, budget ≤ 75 € pour le mode budget)**
 
