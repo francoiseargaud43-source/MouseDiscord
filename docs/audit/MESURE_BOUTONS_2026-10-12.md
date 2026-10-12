@@ -39,13 +39,16 @@ trouvée à la vingt-neuvième passe — détail et preuves au §16) :
 | Référence | Classe connue | Mesure | Recoupement indépendant |
 |---|---|---|---|
 | ATK Blazing Sky F1 V2 | bas | **43,3 %** | ATK ZERO : 43,3 % et 43,7 % (deux rendus distincts) |
-| ATK A9 Plus | moyens | **47,3 %** | deux rendus officiels distincts, tous deux à 47,3 % |
+| ATK A9 Ultimate (coque « A9 large ») | moyens | **47,3 %** | deux rendus officiels distincts de la page A9 Ultimate, tous deux à 47,3 % |
 | ATK Z1 V2 | hauts | **55,1 %** | rendu « Z1 ULTIMATE » : 55,0 % |
 
 Identité des deux premières références : l'image de la « Z1 » porte « Z1 ULTIMATE » imprimé (55,0 %,
 molette à droite) et l'image « F1 » retenue porte « F1 ULTIMATE » imprimé (42 %, molette à droite) —
 vérifié à l'œil au §13, car **aucun nom de fichier ne prouve un modèle**. L'identité de la référence
-« moyens » est vérifiée au §16 (sérigraphie « A9 » / « DRAGONFLY » lisible sur les deux rendus).
+« moyens » est établie au §16 : les deux rendus viennent de la **page officielle de l'ATK Dragonfly A9
+Ultimate** (leurs noms de fichiers CDN y sont, avec la légende « A9 Ultimate … side view » publiée par
+ATK) et portent la sérigraphie « DRAGONFLY » + logo ATK. La coque « A9 large » est partagée par l'A9
+Ultimate, l'A9 Plus, l'A9 Air et l'A9 NB — un seul moule, une seule hauteur de boutons.
 
 Règle de classement (marge d'un point) : la frontière entre deux classes est posée **à mi-chemin de
 leurs deux références** — 45,3 % entre « bas » et « moyens », 51,2 % entre « moyens » et « hauts » — et
@@ -158,8 +161,8 @@ corpus passe à **23 fichiers**. Deux faits mesurés en sortent :
 |---|---|---|---:|---|
 | `…zero-wireless-mouse-side-5.jpg` | coque blanche à nez pointu, **aucun nom imprimé** | gauche (« ATK » sur le flanc) | 43,7 % | Low (l'outil) — **non publiée** |
 | `…zero-wireless-mouse-side-4.jpg` | coque noire, **aucun nom imprimé** | droite | 48,3 % | aucune (bande grise) |
-| `…a9-plus-wireless-mouse-sid-2.jpg` | coque A9 blanche (logo en « V » sur le flanc), **aucun nom imprimé** | gauche | 47,3 % | aucune (bande grise) |
-| `…a9-plus-wireless-mouse-sid-3.jpg` | coque A9 blanche, **aucun nom imprimé** | droite | 47,3 % | aucune (bande grise) |
+| `…a9-plus-wireless-mouse-sid-2.jpg` | coque A9 blanche (logo en « V » sur le flanc), **aucun nom de modèle imprimé** (série seule) | gauche | 47,3 % | aucune (bande grise) |
+| `…a9-plus-wireless-mouse-sid-3.jpg` | coque A9 blanche, **aucun nom de modèle imprimé** (série seule) | droite | 47,3 % | aucune (bande grise) |
 
 Aucune ne porte le nom du modèle imprimé sur la coque : la règle de publication du §13.4 (identité
 visuelle **et** deux images distinctes concordantes) n'est donc remplie par personne. **Aucune valeur
@@ -263,7 +266,7 @@ tous les départages. Elle est désormais **complète** et sort sur 933 profils.
 
 ## 16. Vingt-neuvième passe (2026-10-12) : la référence « moyens » est trouvée, la V3 entre au catalogue
 
-### 16.1 La troisième référence : l'ATK A9 Plus (« boutons moyens »)
+### 16.1 La troisième référence : la coque ATK A9 « large » (« boutons moyens »)
 
 Le blocage de la passe précédente était net : entre 43,3 % (référence « bas ») et 55,1 % (référence
 « hauts »), l'outil refusait de trancher — faute d'une souris de classe « moyens » **dont une vue
@@ -271,14 +274,20 @@ exploitable existe**. Le catalogue en contient six (A9 Plus/Ultimate/Air/NB, X1 
 la campagne a commencé par la famille A9, dont **deux rendus officiels distincts** sont exploitables
 (fichiers différents, empreintes SHA1 différentes).
 
-| Rendu (fiche ATK A9 Plus) | Avant de l'image | Rapport mesuré | Écart de perspective | Mesure | Classe |
+| Rendu (page officielle ATK A9 Ultimate) | Avant de l'image | Rapport mesuré | Écart de perspective | Mesure | Classe |
 |---|---|---|---:|---:|---:|
 | `…atk-dragonfly-a9-plus-wireless-mouse-sid-2.jpg` | gauche | 3,07 contre 3,12 | 1,6 % | **47,3 %** | Mid |
 | `…atk-dragonfly-a9-plus-wireless-mouse-sid-3.jpg` | droite | 3,16 contre 3,12 | 1,0 % | **47,3 %** | Mid |
 
-Les deux vues donnent **47,3 %**, à 0,0 point l'une de l'autre. Identité vérifiée à l'œil : la première
-porte « DRAGONFLY » sérigraphié sur le bouton et le logo « ATK », la seconde porte « **A9** » imprimé sur
-la coque (le nom de fichier, lui, ne prouve rien — §13.1). Les deux orientations ont été vérifiées à
+Les deux vues donnent **47,3 %**, à 0,0 point l'une de l'autre. **Identité établie en deux temps** :
+1) à l'œil, les deux rendus portent la sérigraphie de la série — « DRAGONFLY » sur le bouton et le logo
+« ATK » sur le flanc — mais **aucun nom de modèle** ;
+2) par la **page officielle du fabricant** (relevée le 2026-10-12) : les deux fichiers y figurent, avec la
+légende publiée par ATK « *ATK Dragonfly A9 Ultimate Lightweight Wireless Mouse side view, white with
+black accents and branding* ». Les rendus de l'**A9 Mini** sont, eux, des fichiers distincts de la même
+page (`A9MINI*.jpg`) — le doute « Mini ou coque large ? » est donc tranché : **coque A9 « large »**.
+La coque est partagée par l'A9 Ultimate, l'A9 Plus, l'A9 Air et l'A9 NB (un seul moule), tous « Mid » au
+cahier des charges : la mesure vaut pour la coque entière. Les deux orientations ont été vérifiées à
 l'œil (molette à l'avant) : mesurée à l'envers, la première donne 48,3 % — c'est le piège du `--front`.
 
 Commande reproductible :
@@ -334,8 +343,8 @@ V3 contre les souris de classe connue :
 |---|---:|---:|---:|
 | ZERO (bas) | 43,3 % | 3,36 % | **+3,36 pt** (la V3 est plus haute) |
 | ZERO 2ᵉ vue (bas) | 43,8 % | 2,91 % | +2,91 pt |
-| A9 Plus (moyens) | 47,3 % | 2,72 % | −2,59 pt (la V3 est plus basse) |
-| A9 Plus 2ᵉ vue (moyens) | 47,3 % | 2,58 % | −2,44 pt |
+| A9 Ultimate, coque large (moyens) | 47,3 % | 2,72 % | −2,59 pt (la V3 est plus basse) |
+| A9 Ultimate 2ᵉ vue (moyens) | 47,3 % | 2,58 % | −2,44 pt |
 | Z1 Ultimate (hauts) | 55,1 % | 8,98 % | −8,98 pt |
 
 Décision : **`vxe_v3.button_height = "Mid"`**, classe donnée par le critère étalonné, sourcée (fiche VXE du
@@ -429,3 +438,16 @@ avec sa commande, pour la prochaine passe ou pour l'arbitrage du propriétaire.
   modèles (X1, ZERO) — écartés, aucun n'entre dans le corpus.
 MD
 .venv/bin/python -m pytest tests/test_doc_references.py -q 2>&1 | tail -2
+
+### 16.6 Pistes ouvertes pour la suite de la campagne (mesurées, pas supposées)
+
+| Souris à mesurer | Ce qui a été tenté (2026-10-12) | Résultat | Piste |
+|---|---|---|---|
+| **ATK A9 Mini** (2 466 profils en attente) | recherche d'images « ATK Dragonfly A9 Mini side view » | l'index d'images renvoie les **rendus de l'A9 Ultimate** (dont deux déjà mesurés) ; le nom de fichier ne prouve rien | les rendus officiels de l'A9 Mini existent sur la page ATK de l'A9 Ultimate — fichiers `A9MINI*.jpg` (relevés le 2026-10-12) — mais l'index ne les expose pas : **aucun téléchargement direct possible** sur cette plateforme, la piste passe par le propriétaire (glisser l'image dans `image-search/`) |
+| **VXE Dragonfly R1 / R1 Pro** (2 776 profils) | recherche « VXE Dragonfly R1 SE side view » → 5 fichiers officiels vxe.com | **5 vues 3/4** (aucune vue de profil stricte : rapport 0,98 contre 3,19 attendu) | demander une **vue de profil** au fabricant ou au propriétaire |
+| **ATK Blazing Sky U2** (vue unique) | recensement des vues de la page U2 V2 Superlight | 5 fichiers : une seule vue de profil stricte, les autres sont plongée / dessus / 3-4 | deuxième vue à trouver (§17.1) |
+
+**Rappel de méthode** : une image ne se télécharge pas directement depuis ce poste de travail (le CDN
+Shopify refuse la connexion sécurisée) ; seul l'outil de recherche d'images fournit des fichiers, et il
+ne renvoie que ce que son index connaît. Toute image glissée par le propriétaire dans `image-search/`
+est mesurable en une commande.

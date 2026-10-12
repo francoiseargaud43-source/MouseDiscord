@@ -54,11 +54,12 @@ PERSPECTIVE_TOLERANCE = 0.06
 # d'attaque des boutons, sur des rendus officiels dont l'identité a été vérifiée :
 #   - « bas »   : ATK F1 V2 (43,3 %) — valeur d'étalonnage d'origine, recoupée par l'ATK ZERO
 #                 (deux rendus : 43,3 % et 43,7 %) ;
-#   - « moyens » : ATK A9 Plus (47,3 %) — deux rendus officiels distincts, tous deux à 47,3 % ;
+#   - « moyens » : ATK A9 Ultimate — coque A9 « large » partagée avec l'A9 Plus / Air / NB (47,3 %)
+#                 — deux rendus officiels distincts de la page A9 Ultimate, tous deux à 47,3 % ;
 #   - « hauts » : ATK Z1 V2 (55,1 %), recoupé par le rendu « Z1 ULTIMATE » (55,0 %).
 CALIBRATION_REFERENCES = (
     ("ATK F1 V2 (boutons bas)", "Low", 0.433),
-    ("ATK A9 Plus (boutons moyens)", "Mid", 0.473),
+    ("ATK A9 Ultimate, coque A9 large (boutons moyens)", "Mid", 0.473),
     ("ATK Z1 V2 (boutons hauts)", "High", 0.551),
 )
 # Marge d'incertitude : une mesure à moins de cette distance d'une frontière entre deux classes reste

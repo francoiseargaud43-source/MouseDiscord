@@ -269,7 +269,7 @@ def test_les_trois_references_d_etalonnage_viennent_de_mesures_sourcees(mice):
 
     attendu = {                     # souris : (classe, rapport d'étalonnage, mesure publiée)
         "atk_f1_v2": ("Low", 0.433, "43,3 %"),
-        "atk_a9_plus": ("Mid", 0.473, "47,3 %"),
+        "atk_a9_ultimate": ("Mid", 0.473, "47,3 %"),   # la souris des deux rendus mesurés
         "atk_z1_ultra": ("High", 0.551, "55,1 %"),
     }
     references = {klass: ratio for _, klass, ratio in outil.CALIBRATION_REFERENCES}
@@ -282,8 +282,11 @@ def test_les_trois_references_d_etalonnage_viennent_de_mesures_sourcees(mice):
         assert len(sources) == 1, f"{ident} : une seule source doit porter la hauteur des boutons"
         assert sources[0].date_checked == "2026-10-12", ident
         assert mesure in sources[0].label, sources[0].label
-        assert "MESURE_BOUTONS" in sources[0].url, sources[0].url
+        # La source pointe la page officielle de la souris (le rendu mesuré) ou le protocole ; la note
+        # donne toujours la mesure et renvoie au document.
+        assert "atk.store" in sources[0].url or "MESURE_BOUTONS" in sources[0].url, sources[0].url
         assert f"« {klass} »" in mouse.notes and mesure in mouse.notes, ident
+        assert "MESURE_BOUTONS" in mouse.notes, ident
     # Une seule coque « atk_f1 » : la F1 V3 Ultimate hérite de la même hauteur de boutons, tracée.
     heritee = [s for s in mice["atk_f1_ultimate"].sources if "button_height" in s.fields]
     assert len(heritee) == 1 and heritee[0].date_checked == "2026-10-12", heritee

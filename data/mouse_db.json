@@ -564,14 +564,6 @@
           "sensor"
         ],
         "date_checked": "2026-10-11"
-      },
-      {
-        "label": "Mesure d'étalonnage du 2026-10-12 — vue de profil officielle : hauteur d'appui des boutons 47,3 % → classe « Mid » (référence de la classe « moyens » de tools/measure_button_height.py), deux rendus officiels distincts, tous deux à 47,3 %",
-        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/audit/MESURE_BOUTONS_2026-10-12.md",
-        "fields": [
-          "button_height"
-        ],
-        "date_checked": "2026-10-12"
       }
     ],
     "shape": "Symmetrical",
@@ -1564,7 +1556,7 @@
     "weight_g": 53.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air. Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons.",
+    "notes": "Largeur 64.0 mm (EloShapes) contre 63.5 mm (ATK) : écart 0.5 mm, dans la tolérance de concordance. ATK présente l'A9 Ultimate comme « Medium-to-large hands » ; grip non vérifié. Switchs optiques ATK SwiftLight et MCU Nordic 54L15 (fiches InputArena / Back2Gaming), comme l'A9 Air. Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » au cahier des charges, CONFIRMÉE par la mesure du 2026-10-12 sur deux rendus de profil officiels de cette souris (47,3 %, page A9 Ultimate) — c'est la référence de la classe « moyens » de l'outil de mesure (docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
     "sources": [
       {
         "label": "EloShapes — ATK A9 Ultimate",
@@ -1639,8 +1631,8 @@
         "date_checked": "2026-10-12"
       },
       {
-        "label": "Coque ATK A9 pleine taille (shell_id « atk_a9_large ») — hauteur des boutons du propriétaire, relevée sur l'ATK Dragonfly A9 Plus 2.0 (même coque) : « Mid »",
-        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/blob/arena/87fafd0d-mousediscord/docs/MASTER_PROMPT_AZEMOUSE.md",
+        "label": "Coque ATK A9 pleine taille (shell_id « atk_a9_large ») — hauteur des boutons « Mid » du cahier des charges (propriétaire), MESURÉE le 2026-10-12 sur deux rendus de profil officiels de cette souris (47,3 %, fichiers 1500_d0e69246… et 33ffae02… de la page A9 Ultimate) : référence de la classe « moyens » de tools/measure_button_height.py ; un seul moule, donc la même hauteur pour A9 Plus / Air / NB",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse",
         "fields": [
           "button_height"
         ],
@@ -1676,7 +1668,7 @@
     "weight_g": 47.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master. Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons.",
+    "notes": "Même taille que l'A9 Ultimate selon EloShapes (comparaison directe). Poids différent (47 g) : seule la géométrie est partagée. Capteur non vérifié. Prix officiel EUR constaté le 2026-10-11 : famille A9 « à partir de » 41,95 € ; pas de prix distinct pour l'A9 Air (Maxesport : 89,90 €). A9 Air : PAW3950 Ultra, switchs optiques SwiftLight et MCU Nordic 54L15 (test Back2Gaming). L'A9 Air+ passe au PAW3955 Master. Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque). Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » héritée de la coque « A9 large » (mesurée à 47,3 % sur l'ATK Dragonfly A9 Ultimate — docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
     "sources": [
       {
         "label": "EloShapes — comparaison A9 Air / A9 Ultimate",
@@ -2339,7 +2331,7 @@
     "fit_status": "manufacturer_guide",
     "price_status": "verified",
     "conflicts": {},
-    "notes": "Mêmes dimensions que l'ATK Dragonfly A9 Plus 2.0 déjà au catalogue (125,0 × 63,5 × 40,0) : coque A9 pleine taille, bosse « Mid » héritée de cette fiche. Version à station de charge 2-en-1, 56 g. Éditeur : « Claw / Fingertip / Palm ». Le distributeur Standesk insiste sur claw / relaxed claw / fingertip. Switchs optiques ATK Custom (FE) et puce maison BK Custom Esports (fiche ATK Store A9 NB). Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque). Coque partagée enregistrée le 2026-10-12 (shell_id = atk_a9_large, comme A9 Plus 2.0, A9 Ultimate et A9 Air) : deux entrées de la même coque ne sont plus proposées ensemble. Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons.",
+    "notes": "Mêmes dimensions que l'ATK Dragonfly A9 Plus 2.0 déjà au catalogue (125,0 × 63,5 × 40,0) : coque A9 pleine taille, bosse « Mid » héritée de cette fiche. Version à station de charge 2-en-1, 56 g. Éditeur : « Claw / Fingertip / Palm ». Le distributeur Standesk insiste sur claw / relaxed claw / fingertip. Switchs optiques ATK Custom (FE) et puce maison BK Custom Esports (fiche ATK Store A9 NB). Fabricant : série A9, « comfortably accommodating claw, palm, and fingertip grips » (même coque). Coque partagée enregistrée le 2026-10-12 (shell_id = atk_a9_large, comme A9 Plus 2.0, A9 Ultimate et A9 Air) : deux entrées de la même coque ne sont plus proposées ensemble. Hauteur des boutons (2026-10-12) : héritée de la coque « atk_a9_large », identique à celle de l'ATK Dragonfly A9 Plus 2.0 du propriétaire (« Mid ») — mêmes 125 mm de long, même coque A9 pleine taille, mêmes boutons. Hauteur des boutons : « Mid » héritée de la coque « A9 large » (mesurée à 47,3 % sur l'ATK Dragonfly A9 Ultimate — docs/audit/MESURE_BOUTONS_2026-10-12.md §16).",
     "id": "atk_a9_nb",
     "brand": "ATK",
     "model": "Dragonfly A9 NB Ultra",
