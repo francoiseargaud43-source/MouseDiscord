@@ -47,6 +47,8 @@ def _positive_or_none(value: Any, name: str, mouse_id: str) -> float | None:
 
 
 def parse_mouse(raw: Mapping[str, Any], index: int) -> Mouse:
+    if not isinstance(raw, Mapping):
+        raise CatalogError(f"entrée #{index} : objet attendu, {type(raw).__name__} reçu")
     mouse_id = str(raw.get("id", f"#{index}"))
     missing = [k for k in REQUIRED_KEYS if k not in raw]
     if missing:
@@ -75,19 +77,40 @@ def parse_mouse(raw: Mapping[str, Any], index: int) -> Mouse:
     if fit_status not in FIT_STATUSES:
         raise CatalogError(f"{mouse_id} : fit_status invalide ({fit_status!r})")
 
+    # Champs de texte : un nombre ou un objet à la place d'une chaîne ferait échouer l'affichage
+    # bien plus tard (au moment du résultat) ; ici l'erreur est immédiate et lisible.
+    for name in ("brand", "model", "fit_rationale", "category", "family", "notes", "price_note",
+                 "switches", "mcu"):
+        if name in raw and not isinstance(raw[name], str):
+            raise CatalogError(f"{mouse_id} : {name} doit être du texte")
+    for name in ("sensor", "shell_id"):
+        if raw.get(name) is not None and not isinstance(raw[name], str):
+            raise CatalogError(f"{mouse_id} : {name} doit être du texte ou null")
+    raw_sources = raw.get("sources", [])
+    if not isinstance(raw_sources, list):
+        raise CatalogError(f"{mouse_id} : sources doit être une liste")
+    try:
+        sources = tuple(Source.from_dict(s) for s in raw_sources)
+    except (KeyError, TypeError, AttributeError) as exc:
+        raise CatalogError(f"{mouse_id} : source mal formée ({exc!r})") from None
+
     length = _positive_or_none(raw.get("length_mm"), "length_mm", mouse_id)
-    conflicts = dict(raw.get("conflicts", {}))
+    raw_conflicts = raw.get("conflicts", {})
+    if not isinstance(raw_conflicts, Mapping):
+        raise CatalogError(f"{mouse_id} : conflicts doit être un objet")
+    conflicts = dict(raw_conflicts)
     if length is None and "length_mm" not in conflicts and raw.get("notes", "") == "":
         raise CatalogError(f"{mouse_id} : length_mm null sans conflit documenté ni note")
     for key, conflict in conflicts.items():
+        if not isinstance(conflict, Mapping):
+            raise CatalogError(f"{mouse_id} : conflit « {key} » mal formé (objet attendu)")
         values = conflict.get("values", [])
-        if len(values) < 2 or not conflict.get("sources"):
+        if not isinstance(values, list) or len(values) < 2 or not conflict.get("sources"):
             raise CatalogError(f"{mouse_id} : conflit « {key} » sans au moins 2 valeurs et leurs sources")
     width = _positive_or_none(raw["width_max_mm"], "width_max_mm", mouse_id)
     if width is None:
         raise CatalogError(f"{mouse_id} : width_max_mm est obligatoire")
 
-    sources = tuple(Source.from_dict(s) for s in raw.get("sources", []))
     if dimension_status in {"verified", "single_source"} and not sources:
         raise CatalogError(f"{mouse_id} : dimensions déclarées vérifiées sans source")
     # Une forme renseignée doit citer la source qui l'atteste (jamais de forme devinée).
@@ -140,6 +163,9 @@ def load_commercial_links(path: Path) -> dict[str, str]:
             raw = json.load(fh)
     except FileNotFoundError:
         log.warning("Fichier de liens introuvable : %s", path)
+        return {}
+    if not isinstance(raw, dict):
+        log.warning("Fichier de liens illisible (objet attendu) : %s", path)
         return {}
     links: dict[str, str] = {}
     for mouse_id, url in raw.items():

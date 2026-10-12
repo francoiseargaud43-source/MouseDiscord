@@ -1,4 +1,6 @@
 """Sessions de parcours : isolation par identifiant unique et vérification du propriétaire."""
+import pytest
+
 from utils.session import LOOKUP_FORBIDDEN, LOOKUP_INACTIVE, LOOKUP_OK, SessionStore
 
 
@@ -110,3 +112,11 @@ def test_start_purges_expired_sessions_of_others():
     clock.now = 100
     store.start(2)
     assert len(store) == 1  # la session de l'utilisateur 1 n'est plus conservée
+
+
+# --- Chasse aux bugs du 2026-10-12 : un délai de vie nul ou négatif est refusé ---
+@pytest.mark.parametrize("ttl", [0, -1, -1800])
+def test_a_non_positive_ttl_is_refused(ttl):
+    """Un TTL nul ferait expirer chaque parcours aussitôt (« ce parcours a expiré » à chaque clic)."""
+    with pytest.raises(ValueError, match="ttl_seconds"):
+        SessionStore(ttl_seconds=ttl)

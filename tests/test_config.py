@@ -49,3 +49,40 @@ def test_integer_parsing_accepts_valid_values(monkeypatch):
     assert config._env_int("FINDER_CHANNEL_ID", 0) == 123456789
     monkeypatch.delenv("FINDER_CHANNEL_ID")
     assert config._env_int("FINDER_CHANNEL_ID", 0) == 0
+
+
+# --- Chasse aux bugs du 2026-10-12 : une valeur qui casse le parcours est refusée au démarrage ---
+def _run_config_expect_failure(extra_env: dict[str, str]):
+    env = {k: v for k, v in os.environ.items()
+           if k not in {"DISCORD_TOKEN", "FINDER_CHANNEL_ID", "SESSION_TTL_SECONDS"}}
+    env.update(extra_env)
+    code = f"import sys; sys.path.insert(0, {str(ROOT)!r}); import config"
+    return subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=env,
+                          capture_output=True, text=True)
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "-1800"])
+def test_a_non_positive_session_ttl_is_refused_with_a_clear_message(value):
+    """Un TTL nul ferait répondre « ce parcours a expiré » à chaque clic : la cause est dite."""
+    proc = _run_config_expect_failure({"DISCORD_TOKEN": "T", "SESSION_TTL_SECONDS": value})
+    assert proc.returncode != 0
+    assert "SESSION_TTL_SECONDS doit être supérieur à 0" in proc.stderr
+
+
+def test_a_negative_finder_channel_id_is_refused():
+    proc = _run_config_expect_failure({"DISCORD_TOKEN": "T", "FINDER_CHANNEL_ID": "-12"})
+    assert proc.returncode != 0
+    assert "FINDER_CHANNEL_ID doit être un identifiant positif" in proc.stderr
+
+
+def test_the_bot_turns_a_broken_configuration_into_a_clear_message():
+    """bot.py doit quitter proprement (message lisible), pas dérouler une trace technique."""
+    env = {k: v for k, v in os.environ.items()
+           if k not in {"DISCORD_TOKEN", "FINDER_CHANNEL_ID", "SESSION_TTL_SECONDS"}}
+    env.update({"DISCORD_TOKEN": "T", "SESSION_TTL_SECONDS": "0"})
+    proc = subprocess.run([sys.executable, str(ROOT / "bot.py")], cwd=ROOT, env=env,
+                          capture_output=True, text=True)
+    assert proc.returncode == 1
+    assert "Configuration invalide" in proc.stderr
+    assert "SESSION_TTL_SECONDS doit être supérieur à 0" in proc.stderr
+    assert "Traceback" not in proc.stderr

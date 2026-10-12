@@ -40,6 +40,7 @@ Le résultat tient en **deux embeds** : la recommandation, puis les repères de 
 from __future__ import annotations
 
 import logging
+from typing import Sequence
 
 import discord
 
@@ -207,7 +208,8 @@ BUDGET_RECAP_LABELS = {mode: label for mode, label, _ in BUDGET_OPTIONS}
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-async def _send_ephemeral(interaction: discord.Interaction, content: str, *,
+async def _send_ephemeral(interaction: discord.Interaction, content: str | None = None, *,
+                          embed: discord.Embed | None = None,
                           view: discord.ui.View | None = None) -> None:
     """Envoie un message éphémère, en tenant compte de l'état de la réponse.
 
@@ -215,9 +217,9 @@ async def _send_ephemeral(interaction: discord.Interaction, content: str, *,
     """
     try:
         if interaction.response.is_done():
-            await interaction.followup.send(content, ephemeral=True, view=view)
+            await interaction.followup.send(content, embed=embed, ephemeral=True, view=view)
         else:
-            await interaction.response.send_message(content, ephemeral=True, view=view)
+            await interaction.response.send_message(content, embed=embed, ephemeral=True, view=view)
     except (discord.HTTPException, discord.ClientException) as exc:
         log.warning("Impossible de répondre à l'interaction (expirée ?) : %s", exc)
 
@@ -242,7 +244,8 @@ async def _current_session(interaction: discord.Interaction) -> FinderSession | 
     session, status = interaction.client.sessions.current(interaction.user.id)
     if status == LOOKUP_OK and session is not None:
         return session
-    await _send_ephemeral(interaction, _expired_text(), view=StartView())
+    # Raison affichée (le délai réel, jamais un texte vague) ET reprise immédiate dans le message.
+    await _send_ephemeral(interaction, _expired_text(), embed=expired_embed(), view=StartView())
     return None
 
 
@@ -426,7 +429,8 @@ def _match_summary(score: MouseScore) -> str:
     elif score.is_partial:
         # Critère non documenté (2026-10-12) : la souris est notée sans lui, et on le dit.
         weak.append("hauteur des boutons non documentée : ce critère n'est pas noté")
-    sentence = ", ".join(good[:3]).capitalize() if good else "Géométrie proche de votre profil"
+    sentence = ", ".join(good[:3]) if good else "géométrie proche de votre profil"
+    sentence = sentence[0].upper() + sentence[1:]       # première lettre — SANS écraser « Palm Grip »
     sentence += f". À noter : {', '.join(weak[:1])}." if weak else "."
     return sentence[:1024]
 
@@ -525,12 +529,25 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
     distinct_zone = [score for score in zone if not_same_shell(score)] or zone
     cheaper = [score for score in distinct_zone if _price_or_inf(score) < ideal_price]
     alternative = best_match(cheaper) or best_match(distinct_zone)
-    ceiling = _price_or_inf(alternative) if alternative is not None else ideal_price
-    economy_zone = [score for score in zone
-                    if score is not alternative
-                    and _price_or_inf(score) < ideal_price
-                    and _price_or_inf(score) < ceiling]
-    economy = min(economy_zone, key=_price_or_inf) if economy_zone else None
+
+    # (3) L'économie : la moins chère de la zone de compatibilité, d'une AUTRE coque si possible, et
+    # strictement moins chère que les deux souris déjà montrées. Mesure du 2026-10-12 : cette place
+    # n'est remplie que dans 0,1 % des profils, parce que la zone de tolérance du mode (±2 points sur
+    # 40) est étroite et que l'alternative, elle, prend déjà la meilleure des souris moins chères.
+    # Ce n'est donc pas un bug de calcul mais un effet de seuil : élargir la zone est une décision du
+    # propriétaire (voir docs/audit/ROBUSTESSE_2026-10-12.md §5).
+    shown_ids = {ideal.mouse.id}
+    if alternative is not None:
+        shown_ids.add(alternative.mouse.id)
+    candidates = [score for score in sorted(zone, key=lambda s: (_price_or_inf(s), -s.total))
+                  if score.mouse.id not in shown_ids]
+    other_shell = [score for score in candidates if not_same_shell(score)] or candidates
+
+    # Elle doit être moins chère que TOUT ce qui est déjà à l'écran : une souris plus chère que le
+    # match idéal ne serait pas « l'économie », et une souris au même prix que l'alternative
+    # n'apporterait aucun choix.
+    ceiling = min(ideal_price, _price_or_inf(alternative) if alternative is not None else ideal_price)
+    economy = next((score for score in other_shell if _price_or_inf(score) < ceiling), None)
     return ideal, alternative, economy
 
 
@@ -831,9 +848,15 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
 
 
 def expired_embed() -> discord.Embed:
+    """Embed orange du message d'expiration (seule exception à la charte) ; la reprise est dessous."""
+    minutes = max(1, round(SESSION_TTL_SECONDS / 60))
     return discord.Embed(
         title="⏱️ Session expirée",
-        description="Cliquez sur **Start Mouse Shape Finder** dans le salon pour recommencer.",
+        description=(
+            f"Plus de {minutes} min sans réponse : pour votre confidentialité, les réponses ne sont "
+            "pas conservées.\n\n"
+            "Le bouton **ci-dessous** relance le questionnaire ici même, sans rien chercher dans le salon."
+        ),
         color=COLOR_EXPIRED,
     )
 
@@ -843,9 +866,10 @@ def expired_embed() -> discord.Embed:
 # ---------------------------------------------------------------------------
 def compute_selection(session: FinderSession) -> Selection:
     """Lecture à chaud du catalogue (les données ne sont jamais mises en cache)."""
+    if session.grip is None or not session.has_measures:
+        raise ValueError("Parcours incomplet : la prise et les mesures de la main sont nécessaires.")
     mice = load_catalog(MOUSE_DB_PATH)
     hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
-    assert session.grip is not None
     scores = [
         evaluate_mouse(mouse, hand, session.grip, session.budget_mode, session.max_budget_eur,
                        thenar=session.thenar)
@@ -928,10 +952,14 @@ class StartView(FinderView):
     )
     async def start(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
         # Nouveau parcours : il remplace le précédent du même membre (un seul parcours vivant).
-        interaction.client.sessions.start(interaction.user.id)
-        await interaction.response.send_message(
-            embed=grip_step_embed(), view=GripView(), ephemeral=True
-        )
+        session = interaction.client.sessions.start(interaction.user.id)
+        step_embed, step_view = step_for(session)
+        try:
+            await interaction.response.send_message(embed=step_embed, view=step_view, ephemeral=True)
+        except discord.InteractionResponded:
+            # Double appui (fréquent sur mobile) : la première réponse est déjà partie et le parcours
+            # est ouvert. Aucune erreur affichée, aucune seconde session créée.
+            return
 
 
 # ---------------------------------------------------------------------------
@@ -1189,12 +1217,17 @@ async def _show_results(interaction: discord.Interaction, session: FinderSession
         return
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
     embeds = results_embeds(session, selection)
+    # Les boutons d'achat suivent EXACTEMENT les souris affichées (match idéal, alternative,
+    # économie). Avant, ils suivaient les deux premiers du classement interne — qui ne sont pas
+    # toujours les souris montrées : le membre voyait une souris sans bouton, et un bouton pour une
+    # souris absente du message.
+    displayed = [score for score in result_slots(selection) if score is not None]
     # Minimisation : le parcours est TERMINÉ (ses réponses sont retirées du fichier d'état) ; il
     # reste quelques minutes en mémoire pour qu'un clic rejoué par Discord reçoive le même résultat
     # au lieu du message « ce parcours n'est plus actif ».
     interaction.client.sessions.finish(session.session_id)
     # Les deux blocs sont toujours affichés : la recommandation, puis l'explication plus bas.
-    await _show_private(interaction, embeds=embeds, view=ResultsView(selection.ranked, links))
+    await _show_private(interaction, embeds=embeds, view=ResultsView(displayed, links))
 
 
 def persistent_views() -> tuple[discord.ui.BaseView, ...]:
@@ -1217,10 +1250,16 @@ class ResultsView(discord.ui.View):
     panneau du salon. Conséquence : plus aucun bouton du résultat ne peut rester muet.
     """
 
-    def __init__(self, ranked: tuple[MouseScore, ...] | list[MouseScore], links: dict[str, str]) -> None:
+    def __init__(self, displayed: Sequence[MouseScore], links: dict[str, str]) -> None:
+        """``displayed`` : les souris MONTREÉES dans le message, dans l'ordre (match idéal,
+        alternative, économie). Un bouton par souris affichée — jamais pour une souris absente."""
         super().__init__(timeout=None)
         purchases = 0
-        for score in ranked[:2]:
+        seen: set[str] = set()
+        for score in displayed:
+            if score.mouse.id in seen:
+                continue
+            seen.add(score.mouse.id)
             url = links.get(score.mouse.id)
             if url:
                 self.add_item(

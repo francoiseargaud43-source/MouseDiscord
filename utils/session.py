@@ -127,6 +127,10 @@ class SessionStore:
         path: Path | str | None = None,
         finished_grace_seconds: float = FINISHED_GRACE_SECONDS,
     ) -> None:
+        if ttl_seconds <= 0:
+            # Sinon chaque parcours expirerait aussitôt : le membre lirait « ce parcours a expiré »
+            # à chaque clic, ce qui ressemble exactement à la panne signalée le 2026-10-12.
+            raise ValueError("ttl_seconds doit être supérieur à 0.")
         self._ttl = float(ttl_seconds)
         self._clock = clock
         self._grace = float(finished_grace_seconds)

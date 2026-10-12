@@ -1161,7 +1161,11 @@ d'erreur — donc toute erreur ailleurs restait silencieuse. Analyse complète, 
 bot.py
 config.py
 cogs/finder_flow.py
+cogs/mouse_finder.py
 utils/session.py
+utils/catalog.py
+utils/assets.py
+utils/validation.py
 .env.example
 docs/audit/ROBUSTESSE_2026-10-12.md        (facultatif : documentation)
 docs/audit/AUDIT_CONFIDENTIALITE.md        (facultatif : documentation)

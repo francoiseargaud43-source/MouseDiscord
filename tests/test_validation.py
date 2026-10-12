@@ -41,3 +41,22 @@ def test_budget_rejects_nonsense():
         parse_budget("0")
     with pytest.raises(InputError):
         parse_budget("gratuit")
+
+
+# --- Chasse aux bugs du 2026-10-12 : espaces insécables/fines et unité en majuscules ---
+@pytest.mark.parametrize("raw", ["1\u202f800", "1\u2009800", "1\u00a0800", "1800", "1 800"])
+def test_budget_accepts_every_french_space(raw):
+    """La barre d'espace française des claviers mobiles est une espace fine (U+202F) : « 1 800 € »
+    doit s'accepter, pas produire « n'est pas un nombre valide »."""
+    assert parse_budget(raw) == 1800.0
+
+
+@pytest.mark.parametrize("raw", ["180 mm", "180 MM", "180mm", "180 Mm"])
+def test_measure_unit_is_case_insensitive(raw):
+    assert parse_number(raw, "Longueur", (100, 260), "mm") == 180.0
+
+
+def test_non_latin_digits_get_the_clear_message_not_a_crash():
+    """Un chiffre non latin doit produire une InputError lisible, jamais une exception technique."""
+    with pytest.raises(InputError, match="n'est pas un nombre valide"):
+        parse_number("\u0661\u0668\u0660", "Longueur", (100, 260), "mm")

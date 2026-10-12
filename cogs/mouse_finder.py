@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from pathlib import Path
 
 import discord
@@ -32,8 +33,13 @@ def load_state(path: Path) -> dict | None:
 
 
 def save_state(path: Path, channel_id: int, message_id: int) -> None:
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(json.dumps({"channel_id": channel_id, "message_id": message_id}), encoding="utf-8")
+    """Écriture atomique (fichier temporaire puis renommage) : jamais de fichier à moitié écrit,
+    ce qui publierait un second message d'accueil au redémarrage suivant."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f"{path.name}.tmp")
+    temporary.write_text(json.dumps({"channel_id": channel_id, "message_id": message_id}), encoding="utf-8")
+    os.replace(temporary, path)
 
 
 class MouseFinderCog(commands.Cog, name="Mouse Finder"):

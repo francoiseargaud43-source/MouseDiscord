@@ -92,6 +92,9 @@ def load_image_urls(path: Path, base_url: str | None = None) -> dict[str, str | 
     except (json.JSONDecodeError, OSError) as exc:
         log.warning("Configuration d'images illisible (%s) : %s", path, exc)
         raw = {}
+    if not isinstance(raw, dict):
+        log.warning("Configuration d'images illisible (objet attendu) : %s", path)
+        raw = {}
     resolver = base_url if base_url is not None else default_base_url()
     urls: dict[str, str | None] = {}
     for key in IMAGE_KEYS:

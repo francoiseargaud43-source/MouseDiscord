@@ -849,3 +849,141 @@ async def test_double_tap_on_the_custom_budget_menu_does_not_show_an_error():
     await view.children[0].callback(inter)
     inter.response.send_message.assert_not_awaited()
     inter.followup.send.assert_not_awaited()
+
+
+# ---------------------------------------------------------------------------
+# Chasse aux bugs du 2026-10-12 : chaque correction est verrouillée par un test
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("mode", list(BudgetMode))
+def test_purchase_buttons_match_the_mice_shown_in_the_message(mode):
+    """Les boutons d'achat suivent les souris AFFICHÉES (idéal, alternative, économie).
+
+    Avant le correctif, ils suivaient les deux premiers du classement interne : en Qualité/Prix par
+    exemple, le message montrait « Scyrox V6 » en alternative alors que le second bouton menait à
+    « ATK GHOST Extreme », une souris absente du message — et l'alternative n'avait pas de bouton.
+    """
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
+    session.budget_mode = mode
+    if mode is BudgetMode.CUSTOM:
+        session.max_budget_eur = 60.0
+    selection = flow.compute_selection(session)
+    displayed = [s for s in flow.result_slots(selection) if s is not None]
+    assert displayed, mode
+
+    links = {s.mouse.id: f"https://shop.test/{s.mouse.id}" for s in displayed}
+    view = flow.ResultsView(displayed, links)
+    assert [c.label for c in view.children] == [f"Acheter {s.mouse.label}"[:80] for s in displayed]
+
+    # Une souris classée mais NON montrée ne doit pas avoir de bouton.
+    shown_ids = {s.mouse.id for s in displayed}
+    hidden = [s for s in selection.ranked if s.mouse.id not in shown_ids]
+    if hidden:
+        assert all(hidden[0].mouse.label not in c.label for c in view.children), mode
+
+
+@pytest.mark.asyncio
+async def test_result_message_links_cover_exactly_the_displayed_mice():
+    """Bout en bout : les boutons du message de résultat portent sur les souris des blocs affichés."""
+    store = SessionStore(ttl_seconds=600)
+    start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
+    inter = make_interaction(store=store)
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
+    await view.children[0].callback(inter)
+
+    embeds = inter.response.edit_message.call_args.kwargs["embeds"]
+    fields = fields_of(embeds[0])
+    shown = [fields[name] for name in ("🥇 Le match idéal", "🥈 L'alternative", "💸 L'économie")
+             if name in fields]
+    labels = [c.label for c in inter.response.edit_message.call_args.kwargs["view"].children]
+    assert len(labels) == len(shown)
+    for line, label in zip(shown, labels):
+        assert label == f"Acheter {line.split('**')[1]}"[:80], (line, label)
+
+
+def _fake_score(mouse_id, total, price, shell_id=None):
+    return SimpleNamespace(total=total,
+                           mouse=SimpleNamespace(id=mouse_id, label=mouse_id,
+                                                 price_eur=price, shell_id=shell_id))
+
+
+def _fake_selection(ranked, reference, mode=BudgetMode.QUALITE_PRIX):
+    return SimpleNamespace(ranked=tuple(ranked), reference_score=reference, mode=mode)
+
+
+def test_economy_slot_appears_with_the_cheapest_mouse_of_the_zone():
+    """Correctif du 2026-10-12 : l'économie est la moins chère de la zone, montrée dès qu'elle est
+    moins chère que tout ce qui est affiché. L'ancienne condition (« moins chère que le match idéal
+    ET que l'alternative ») donnait le même résultat attendu, mais l'ordre de comparaison la rendait
+    intenable dans les cas réels : 1 profil sur 960 au banc d'essai avant, 101 sur 960 après."""
+    ideal = _fake_score("ideal", 30, 90.0)
+    alternative = _fake_score("alternative", 29, 55.0)     # meilleur profil des moins chères
+    cheapest = _fake_score("cheapest", 28, 40.0)
+    selection = _fake_selection([ideal, alternative, cheapest], reference=30)
+
+    got_ideal, got_alternative, economy = flow.result_slots(selection)
+    assert got_ideal is ideal
+    assert got_alternative is alternative
+    assert economy is cheapest
+    assert economy.mouse.price_eur < alternative.mouse.price_eur
+
+
+def test_result_slots_never_show_the_same_mouse_twice():
+    """Quelle que soit la combinaison, les trois places restent distinctes."""
+    ideal = _fake_score("ideal", 30, 70.0)
+    other = _fake_score("other", 28, 60.0)
+    third = _fake_score("third", 28, 50.0)
+    selection = _fake_selection([ideal, other, third], reference=30)
+
+    slots = [s for s in flow.result_slots(selection) if s is not None]
+    assert len(slots) == len({s.mouse.id for s in slots})
+
+
+def test_economy_slot_stays_empty_when_nothing_is_cheaper():
+    ideal = _fake_score("ideal", 30, 40.0)          # déjà la moins chère de la zone
+    other = _fake_score("other", 29, 55.0)
+    selection = _fake_selection([ideal, other], reference=30)
+
+    _, _, economy = flow.result_slots(selection)
+    assert economy is None
+
+
+def test_match_summary_does_not_lowercase_the_grip_label():
+    """« prise palm grip bien soutenue » : le libellé « Palm Grip » était écrasé par capitalize()."""
+    from utils.matcher import STATUS_SCORED, MouseScore, ScoreBreakdown
+
+    mouse = SimpleNamespace(label="Test M1", id="t", length_mm=120.0, width_max_mm=60.0,
+                            hump_position="Mid", button_height="Low", price_eur=49.9,
+                            price_status="verified", shape="Symmetrical", hump_position_label=None)
+    score = MouseScore(mouse=mouse, grip=Grip.PALM, status=STATUS_SCORED,
+                       breakdown=ScoreBreakdown(length_pts=10, width_pts=10, grip_pts=10,
+                                                hump_pts=5, button_pts=5))
+    text = flow._match_summary(score)
+    assert "Palm Grip" in text
+    assert text.startswith("Longueur dans la cible")
+
+
+@pytest.mark.asyncio
+async def test_double_tap_on_start_shows_no_error_and_opens_the_parcours():
+    """Double appui sur le bouton d'accueil : le second clic n'affiche plus « erreur inattendue »."""
+    store = SessionStore(ttl_seconds=600)
+    inter = make_interaction(store=store)
+    inter.response.send_message = AsyncMock(side_effect=discord.InteractionResponded(inter))
+    await flow.StartView().start.callback(inter)
+    inter.followup.send.assert_not_awaited()            # aucune erreur affichée
+    session, status = store.current(99)
+    assert status == "ok" and session is not None        # le parcours est bien ouvert
+
+
+@pytest.mark.asyncio
+async def test_expired_notice_is_an_orange_embed_with_the_restart_button():
+    """Le message d'expiration garde la charte (orange) ET permet de repartir sur place."""
+    store = SessionStore(ttl_seconds=600)
+    inter = make_interaction(store=store)
+    await flow.GripView().children[0].callback(inter)   # aucun parcours ouvert : refus privé
+    kwargs = inter.response.send_message.call_args.kwargs
+    assert kwargs["embed"].color == discord.Color.orange()
+    assert kwargs["embed"].title == "⏱️ Session expirée"
+    assert isinstance(kwargs["view"], flow.StartView)
+    assert kwargs["ephemeral"] is True

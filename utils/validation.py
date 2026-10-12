@@ -7,7 +7,10 @@ LENGTH_BOUNDS_MM = (100.0, 260.0)
 WIDTH_BOUNDS_MM = (50.0, 130.0)
 BUDGET_BOUNDS_EUR = (10.0, 5000.0)
 
-_NUMBER_RE = re.compile(r"\d{1,5}(?:\.\d{1,2})?")
+# Chiffres ASCII uniquement : un chiffre non latin (ex. « ١٨٠ ») serait refusé par ``float`` juste
+# après, avec une erreur technique au lieu du message clair destiné au membre.
+_NUMBER_RE = re.compile(r"[0-9]{1,5}(?:\.[0-9]{1,2})?")
+_MM_SUFFIX_RE = re.compile(r"(?i)mm$")
 
 
 class InputError(ValueError):
@@ -17,8 +20,11 @@ class InputError(ValueError):
 def parse_number(raw: str | None, label: str, bounds: tuple[float, float], unit: str) -> float:
     if raw is None or not raw.strip():
         raise InputError(f"{label} : la valeur est obligatoire.")
-    text = raw.strip().replace("\u00a0", "").replace(" ", "").replace(",", ".")
-    text = text.replace("€", "").replace("mm", "")
+    # Tous les espaces sont ignorés, y compris l'espace fine insécable et l'espace fine que les
+    # claviers français insèrent (« 1 800 € » doit s'accepter comme « 1800 € »), ainsi que le suffixe
+    # d'unité, quelle que soit sa casse (« 180 mm », « 180 MM »).
+    text = "".join(raw.split()).replace("€", "").replace(",", ".")
+    text = _MM_SUFFIX_RE.sub("", text)
     if not _NUMBER_RE.fullmatch(text):
         raise InputError(f"{label} : « {raw.strip()} » n'est pas un nombre valide (ex : 180 ou 180,5).")
     value = float(text)

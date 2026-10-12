@@ -62,10 +62,21 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!").strip() or "!"
 # Salon cible de !setup_finder (ID numérique). 0 = salon où la commande est tapée.
 FINDER_CHANNEL_ID = _env_int("FINDER_CHANNEL_ID", 0)
+if FINDER_CHANNEL_ID < 0:
+    raise ConfigError(
+        f"FINDER_CHANNEL_ID doit être un identifiant positif (valeur actuelle : {FINDER_CHANNEL_ID})."
+    )
 # Rend le salon en lecture seule pour @everyone lors du setup.
 LOCK_FINDER_CHANNEL = _env_bool("LOCK_FINDER_CHANNEL", True)
 # Durée de vie d'une session utilisateur en mémoire (secondes).
 SESSION_TTL_SECONDS = _env_int("SESSION_TTL_SECONDS", 1800)
+if SESSION_TTL_SECONDS <= 0:
+    # Une valeur nulle ou négative ferait expirer chaque parcours aussitôt : le membre verrait
+    # « ce parcours a expiré » à chaque clic. On refuse la configuration au démarrage, clairement.
+    raise ConfigError(
+        f"SESSION_TTL_SECONDS doit être supérieur à 0 (valeur actuelle : {SESSION_TTL_SECONDS}). "
+        f"Corrigez-la dans le fichier {ENV_FILE}."
+    )
 # Conservation des parcours en cours dans state/sessions.json (true par défaut : un redémarrage du
 # bot ne fait plus perdre un questionnaire commencé). false = tout en mémoire.
 SESSION_PERSIST = _env_bool("SESSION_PERSIST", True)

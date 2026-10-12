@@ -19,14 +19,20 @@ from pathlib import Path
 import discord
 from discord.ext import commands, tasks
 
-from config import (
-    COMMAND_PREFIX,
-    DISCORD_TOKEN,
-    SESSION_PERSIST,
-    SESSION_STATE_PATH,
-    SESSION_TTL_SECONDS,
-)
 from utils.session import SessionStore
+
+try:
+    from config import (
+        COMMAND_PREFIX,
+        DISCORD_TOKEN,
+        SESSION_PERSIST,
+        SESSION_STATE_PATH,
+        SESSION_TTL_SECONDS,
+    )
+except ValueError as exc:                       # ConfigError : variable d'environnement invalide
+    logging.basicConfig(level=logging.ERROR, format="%(levelname)s : %(message)s")
+    logging.getLogger("mouse_discord").error("Configuration invalide — %s", exc)
+    sys.exit(1)
 
 log = logging.getLogger("mouse_discord")
 

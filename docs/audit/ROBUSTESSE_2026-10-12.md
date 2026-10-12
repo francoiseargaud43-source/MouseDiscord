@@ -142,3 +142,45 @@ Nouveaux tests de robustesse (tous dans `tests/test_privacy.py`) :
 - `state/sessions.json` contient, quelques minutes au plus, les réponses d'un parcours **en cours**
   (prise, mesures, budget) sous forme de valeurs numériques et d'énumérations : aucune donnée libre,
   aucun message. Voir `docs/audit/AUDIT_CONFIDENTIALITE.md`.
+
+
+---
+
+## 6. Deuxième vague de chasse aux bugs (2026-10-12, après « je suis persuadé qu'il y en a »)
+
+Neuf défauts réels trouvés dans le code, corrigés et verrouillés par un test. **Le moteur de scoring
+n'a pas été touché** (27 170 profils repassés au banc d'essai : 0 problème, 0 exception, limites
+Discord respectées).
+
+| # | Défaut | Ce que le membre voyait | Correctif |
+|---|---|---|---|
+| 1 | **Les boutons d'achat ne suivaient pas les souris affichées** : ils prenaient les deux premiers du classement interne, pas le match idéal, l'alternative et l'économie réellement écrits dans le message. | En Qualité/Prix (main 180 × 90), le message montrait « Scyrox V6 » en alternative, mais le second bouton menait à « ATK GHOST Extreme » — une souris absente du message — et l'alternative n'avait **aucun** bouton. Idem en Économique, Haut de gamme et Peu importe le prix. | `ResultsView` reçoit désormais **exactement** les souris montrées (`result_slots`), dans l'ordre, un bouton par souris. |
+| 2 | **`capitalize()` écrasait les majuscules du résumé** : « prise Palm Grip bien soutenue » devenait « prise palm grip bien soutenue ». | Libellés dégradés dans le bloc « en clair ». | Seule la première lettre est mise en majuscule. |
+| 3 | **Message d'expiration en texte brut** : la charte prévoit un embed orange pour l'expiration. | Message sans identité visuelle, alors que tout le reste est bordeaux. | `expired_embed()` (orange) est désormais joint au message, avec le bouton de reprise dans le même message. |
+| 4 | **Saisies refusées injustement** : l'espace fine insécable (U+202F) et l'espace fine que posent les claviers français (« 1 800 € ») n'étaient pas reconnues ; « 180 MM » non plus. Et un chiffre non latin provoquait une exception technique au lieu d'un message. | « n'est pas un nombre valide » sur une saisie correcte. | Tous les espaces sont ignorés, le suffixe d'unité est reconnu quelle que soit sa casse, les chiffres non latins reçoivent le message clair. |
+| 5 | **Double appui sur le bouton d'accueil** : la seconde réponse levait `InteractionResponded`, captée comme « erreur inattendue ». | Message d'alerte alors que le parcours venait de s'ouvrir. | Le double appui est absorbé en silence : une seule étape à l'écran, aucun message d'erreur. |
+| 6 | **Fichiers de données abîmés = plantage** : une liste d'entrées non-objet, un champ texte remplacé par un nombre, une source incomplète, un `conflicts` mal formé, un `commercial_links.json` ou un `images.json` qui n'est pas un objet. | « Une erreur inattendue est survenue » au moment du résultat, sans explication. | `CatalogError` avec message précis (ou fichier ignoré proprement) dans `utils/catalog.py` et `utils/assets.py` ; 9 nouveaux tests dans `tests/test_catalog_hardening.py`. |
+| 7 | **Configuration dangereuse acceptée** : `SESSION_TTL_SECONDS=0` (ou négatif) faisait expirer chaque parcours aussitôt — le symptôme exact du signalement — et un `FINDER_CHANNEL_ID` négatif passait inaperçu. | « Ce parcours a expiré » à chaque clic. | Refus au démarrage avec le nom de la variable et la valeur fautive ; `bot.py` affiche une ligne claire au lieu d'une trace technique. |
+| 8 | **État du message d'accueil écrit sans précaution** (`state/finder_message.json`) : une coupure en pleine écriture publiait un second message au redémarrage. | Deux panneaux d'accueil dans le salon. | Écriture atomique (fichier temporaire puis renommage), comme pour `state/sessions.json`. |
+| 9 | **`assert` de production** dans le calcul (`compute_selection`) : supprimé par `python -O`, il ne protégeait rien. | Aucun (défensif). | Vérification explicite qui lève une erreur claire, captée et journalisée. |
+
+### Ce qui a été vérifié sans rien changer
+
+- **Deux places ne montrent jamais la même souris** (et jamais la même coque quand la zone offre un
+  autre choix) : vérifié sur les 27 170 profils par le banc d'essai.
+- **Limites Discord** : au pire 8 embeds (limite 10) et 2 582 caractères tout compris (limite 6 000)
+  pour un message de résultat.
+- **Aucun envoi public** : contrôle statique `tools/privacy_scan.py` → 0 violation ; les messages
+  d'erreur destinés au membre restent éphémères.
+
+### Point ouvert (décision du propriétaire)
+
+**La troisième place (« 💸 L'économie ») n'apparaît que dans 0,1 % des profils** (1 sur 960 au banc
+d'essai). Vérification faite : ce n'est pas un bug de calcul, mais un effet de seuil — la zone de
+compatibilité du mode est étroite (±2 points sur 40) et l'alternative prend déjà la meilleure des
+souris moins chères ; il reste donc rarement une souris encore moins chère **et** toujours dans la
+zone. Deux options, à trancher par le propriétaire (cela changerait une règle de présentation) :
+
+1. laisser ainsi : la place apparaît quand elle existe vraiment ;
+2. élargir la zone de la seule ligne « économie » (par exemple jusqu'à 5 points sous le meilleur
+   score), avec une mention du type « un peu moins compatible, mais moins chère ».
