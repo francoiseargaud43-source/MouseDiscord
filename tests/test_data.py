@@ -420,7 +420,6 @@ def test_partial_scoring_opens_the_choice_without_inventing_points(mice):
 # explicite (elles ne sortent aujourd'hui jamais ensemble, mais le champ doit être tranché).
 SAME_SHELL_PAIRS_PENDING_SOURCE = (
     ("atk_u2", "atk_u2_v2_ultimate"),
-    ("pulsar_x2a_v3_medium", "pulsar_x2_crazylight_medium"),
 )
 
 
@@ -452,6 +451,14 @@ def test_shells_documented_in_the_catalogue_notes_are_registered_in_shell_id(mic
         "atk_u2_mini": "atk_u2_mini",       # une seule fiche ATK « U2 Mini », dimensions identiques
         "atk_u2_v2_mini": "atk_u2_mini",
         "vxe_x3": "atk_x1",                 # « coque de la famille X1 »
+        # Pulsar X2 taille Medium (2026-10-12) : la fiche officielle de la X2A v3 la classe dans la série
+        # « X2 » (étiquettes « Series/X2 », « X2 », taille « Medium ») ; les deux entrées Medium publient
+        # les mêmes dimensions au dixième de millimètre (120,4 × 63 × 38), la même bosse (Mid), les mêmes
+        # boutons (Low) et la même forme (Symétrique) — exactement la règle déjà appliquée aux deux Minis
+        # (« pulsar_x2_mini »). C'était le dernier cas où deux entrées de la même coque pouvaient occuper
+        # deux places du même résultat.
+        "pulsar_x2a_v3_medium": "pulsar_x2_medium",
+        "pulsar_x2_crazylight_medium": "pulsar_x2_medium",
     }
     for identifiant, coque in attendus.items():
         assert mice[identifiant].shell_id == coque, identifiant

@@ -9,6 +9,7 @@ Ce n'est PAS un rendu officiel de Discord : la mise en page réelle dépend du c
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -314,10 +315,22 @@ def build_prix_libre() -> Image.Image:
     return canvas
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    """Rend les aperçus PNG des écrans (documents versionnés dans docs/).
+
+    ``--help`` et ``--sortie-dossier`` ont été ajoutés le 2026-10-12 : sans argument, le script
+    réécrivait directement les trois aperçus versionnés, sans confirmation. Comportement par défaut
+    inchangé.
+    """
+    parser = argparse.ArgumentParser(description="Rend les aperçus PNG des écrans du bot.")
+    parser.add_argument("--sortie-dossier", default=str(ROOT / "docs"),
+                        help="dossier où écrire les aperçus (défaut : docs/)")
+    args = parser.parse_args(argv)
+    dossier = Path(args.sortie_dossier)
+    dossier.mkdir(parents=True, exist_ok=True)
     for nom, image in (("apercu_parcours.png", build_parcours()), ("apercu_resultat.png", build_resultat()),
                        ("apercu_prix_libre.png", build_prix_libre())):
-        chemin = ROOT / "docs" / nom
+        chemin = dossier / nom
         image.save(chemin, optimize=True)
         print(f"Écrit : {chemin} ({image.width}×{image.height}, {chemin.stat().st_size // 1024} Ko)")
     return 0

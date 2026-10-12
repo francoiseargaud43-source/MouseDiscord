@@ -402,13 +402,18 @@ def _match_summary(score: MouseScore) -> str:
     elif score.breakdown.length_pts > 0:
         weak.append("longueur à quelques millimètres de la cible")
     else:
-        weak.append("longueur en léger retrait")
+        # Le sens de l'écart (trop long / trop court) n'est pas porté par le score : la phrase
+        # reste donc neutre. Avant, elle affirmait « en léger retrait » même pour une souris plus
+        # longue que la cible (correctif du 2026-10-12).
+        weak.append("longueur un peu hors de la cible")
     if score.breakdown.width_pts == WIDTH_PTS_IN_RANGE:
         good.append("largeur de prise dans la cible")
     elif score.breakdown.width_pts > 0:
         weak.append("largeur de prise proche de la cible")
     else:
-        weak.append("largeur de prise un peu large")
+        # Idem : « un peu large » était faux pour une souris PLUS ÉTROITE que la cible, cas réel
+        # dès qu'une grande main cherche une souris fine (mesuré au banc d'essai).
+        weak.append("largeur de prise un peu hors de la cible")
     if score.breakdown.grip_pts > 0:
         good.append(f"prise {score.grip.label} bien soutenue")
     if score.breakdown.thenar_pts > 0:
@@ -541,13 +546,18 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         shown_ids.add(alternative.mouse.id)
     candidates = [score for score in sorted(zone, key=lambda s: (_price_or_inf(s), -s.total))
                   if score.mouse.id not in shown_ids]
-    other_shell = [score for score in candidates if not_same_shell(score)] or candidates
 
     # Elle doit être moins chère que TOUT ce qui est déjà à l'écran : une souris plus chère que le
     # match idéal ne serait pas « l'économie », et une souris au même prix que l'alternative
     # n'apporterait aucun choix.
     ceiling = min(ideal_price, _price_or_inf(alternative) if alternative is not None else ideal_price)
-    economy = next((score for score in other_shell if _price_or_inf(score) < ceiling), None)
+    below = [score for score in candidates if _price_or_inf(score) < ceiling]
+    # « d'une AUTRE coque si possible » : la préférence s'applique PARMI les souris sous le plafond,
+    # jamais au prix de la place elle-même. Correctif du 2026-10-12 : en filtrant d'abord sur la
+    # coque, la place disparaissait dès que la moins chère d'une autre coque dépassait le plafond
+    # (mesure sur 1 029 profils : 2 profils au lieu de 4) — l'inverse de la règle annoncée.
+    different_shell = [score for score in below if not_same_shell(score)]
+    economy = (different_shell or below)[0] if (different_shell or below) else None
     return ideal, alternative, economy
 
 

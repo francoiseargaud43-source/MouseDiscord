@@ -11,6 +11,9 @@ from utils.matcher import evaluate_mouse
 from utils.models import BudgetMode, Grip, HandMeasure, Mouse
 from utils.selection import (
     ECONOMIQUE_TOLERANCE_POINTS,
+    MCU_TIERS,
+    PERFORMANCE_SENSORS,
+    SENSOR_TIERS,
     HAUT_DE_GAMME_TOLERANCE_POINTS,
     PEU_IMPORTE_PRIX_TOLERANCE_POINTS,
     QUALITE_PRIX_TOLERANCE_POINTS,
@@ -228,3 +231,64 @@ def test_top_choice_is_always_within_tolerance_of_reference(mode):
     sel = select(scores, mode)
     assert sel.ranked
     assert sel.ranked[0].total >= sel.reference_score - TOLERANCE_BY_MODE[mode]
+
+
+# ---------------------------------------------------------------------------
+# Canaris du classement des COMPOSANTS documentés (2026-10-12)
+#
+# ``components_index`` rend 0 pour toute valeur qu'il ne connaît pas : une valeur écrite
+# autrement dans le catalogue (faute de frappe, espace, suffixe) ferait donc disparaître un
+# départage SANS erreur, sans test rouge et sans trace dans le résultat. Ces canaris figent la
+# liste exacte des valeurs du catalogue et leur rang : toute nouvelle valeur doit être tranchée
+# explicitement, avec sa raison.
+# ---------------------------------------------------------------------------
+SENSORS_SANS_RANG_ASSUME = {
+    "PAW3315": "capteur d'entrée de gamme (VXE X3) : aucune classe publique comparable",
+    "Xhero AI / PAW3395 SE": "variante « SE » du PAW3395 (VXE V3) : rang de la version SE non publié, jamais deviné",
+}
+MCUS_SANS_RANG_ASSUME = {
+    "": "aucun MCU publié sur la fiche (ATK U2, Pulsar X2 / X2H / Xlite : le fabricant ne le donne pas)",
+    "Broadcom CX52850SE": "puce Broadcom des VXE X3 : aucun comparatif public de génération",
+    "Puce BK Custom Esports": "puce maison de l'ATK A9 NB Ultra : aucun comparatif public",
+    "Puce NearLink / HiSilicon": "radio NearLink (ATK A9 Plus / A9 Ultimate) : aucun comparatif public",
+}
+# Capteurs classés « haut de gamme » (rang ≥ 3) mais absents de PERFORMANCE_SENSORS, qui décide du
+# mode Haut de Gamme : incohérence DOCUMENTÉE, mesurée sans effet (1 309 profils → 0 recommandation
+# modifiée). Aucune valeur n'est ajoutée ici sans mesure.
+SENSORS_HORS_PERFORMANCE_SENSORS = {
+    "Pulsar XS-1": "capteur maison Pulsar (32 000 dpi / 750 IPS publiés, classe PAW3950) : "
+                    "hors PERFORMANCE_SENSORS — incohérence sans effet mesuré (voir ROBUSTESSE §8)",
+}
+
+
+def _catalogue():
+    from utils.catalog import load_catalog
+    from config import MOUSE_DB_PATH
+    return load_catalog(MOUSE_DB_PATH)
+
+
+def test_every_catalogue_sensor_and_mcu_value_is_ranked_or_explicitly_unranked():
+    mice = _catalogue()
+    sensors = {m.sensor for m in mice if m.sensor}
+    mcus = {m.mcu for m in mice if m.mcu is not None}
+    assert sensors - set(SENSOR_TIERS) == set(SENSORS_SANS_RANG_ASSUME), (
+        "capteurs sans rang : trancher dans SENSOR_TIERS (avec source) ou justifier dans "
+        "SENSORS_SANS_RANG_ASSUME")
+    assert mcus - set(MCU_TIERS) == set(MCUS_SANS_RANG_ASSUME), (
+        "MCU sans rang : trancher dans MCU_TIERS (avec source) ou justifier dans MCUS_SANS_RANG_ASSUME")
+
+
+def test_every_ranked_high_end_sensor_is_either_in_performance_sensors_or_justified():
+    sensors = {m.sensor for m in _catalogue()}
+    hors = {value for value, rang in SENSOR_TIERS.items()
+            if rang >= 3 and value not in PERFORMANCE_SENSORS} & sensors
+    assert hors == set(SENSORS_HORS_PERFORMANCE_SENSORS), (
+        "capteur haut de gamme absent de PERFORMANCE_SENSORS : l'ajouter (avec source) ou le "
+        "justifier dans SENSORS_HORS_PERFORMANCE_SENSORS")
+
+
+def test_every_catalogue_switch_string_is_recognised():
+    """Une chaîne de switchs non reconnue vaut 0 : toutes celles du catalogue doivent être lues."""
+    from utils.selection import _switch_tier
+    sans_rang = sorted({m.switches for m in _catalogue() if m.switches and _switch_tier(m.switches) == 0})
+    assert sans_rang == [], f"switchs non reconnus par _switch_tier : {sans_rang}"

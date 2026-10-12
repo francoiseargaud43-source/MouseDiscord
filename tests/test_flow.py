@@ -934,9 +934,16 @@ def _fake_selection(ranked, reference, mode=BudgetMode.QUALITE_PRIX):
 
 def test_economy_slot_appears_with_the_cheapest_mouse_of_the_zone():
     """Correctif du 2026-10-12 : l'économie est la moins chère de la zone, montrée dès qu'elle est
-    moins chère que tout ce qui est affiché. L'ancienne condition (« moins chère que le match idéal
-    ET que l'alternative ») donnait le même résultat attendu, mais l'ordre de comparaison la rendait
-    intenable dans les cas réels : 1 profil sur 960 au banc d'essai avant, 101 sur 960 après."""
+    moins chère que tout ce qui est affiché (« moins chère que le match idéal ET que l'alternative »).
+
+    Mesure honnête du 2026-10-12 (grille 1 029 profils, tous modes) : la place est remplie dans
+    **4 profils sur 1 029 (0,39 %)** avec cette règle, et **2 sur 1 029 (0,19 %)** avant le correctif
+    « autre coque » du même jour. Une version antérieure de ce commentaire annonçait « 101 sur 960 » :
+    c'était faux (le chiffre ne se reproduisait avec aucune des deux règles) et il faisait croire que
+    la troisième place sortait souvent — elle est au contraire structurellement rare, parce qu'il faut
+    une souris d'une AUTRE coque, à ≤ 2 points du meilleur score (5 en Économique) et strictement
+    moins chère que les deux souris déjà affichées. Chiffres suivis dans
+    docs/audit/ROBUSTESSE_2026-10-12.md §8 ; élargir la zone est une décision du propriétaire."""
     ideal = _fake_score("ideal", 30, 90.0)
     alternative = _fake_score("alternative", 29, 55.0)     # meilleur profil des moins chères
     cheapest = _fake_score("cheapest", 28, 40.0)
@@ -946,6 +953,28 @@ def test_economy_slot_appears_with_the_cheapest_mouse_of_the_zone():
     assert got_ideal is ideal
     assert got_alternative is alternative
     assert economy is cheapest
+    assert economy.mouse.price_eur < alternative.mouse.price_eur
+
+
+def test_economy_slot_is_not_cancelled_by_the_different_shell_preference():
+    """« D'une autre coque SI POSSIBLE » : la préférence ne doit jamais supprimer la place.
+
+    Avant le correctif du 2026-10-12, le filtrage « autre coque » avait lieu AVANT le plafond de
+    prix : dès que la moins chère de l'autre coque était plus chère que l'alternative, la place
+    disparaissait alors qu'une souris moins chère de la même coque que l'idéal restait disponible
+    (mesure : 2 profils sur 1 029 au lieu de 4).
+    """
+    ideal = _fake_score("ideal", 30, 90.0, shell_id="coque_1")
+    alternative = _fake_score("alternative", 29, 55.0, shell_id="coque_2")
+    # Même coque que le match idéal, et moins chère que TOUT ce qui est affiché : la place économie.
+    meme_coque = _fake_score("meme_coque", 28, 40.0, shell_id="coque_1")
+    # Autre coque, mais plus chère que l'alternative : elle ne peut pas être l'économie.
+    autre_coque = _fake_score("autre_coque", 28, 60.0, shell_id="coque_3")
+    selection = _fake_selection([ideal, alternative, autre_coque, meme_coque], reference=30)
+
+    got_ideal, got_alternative, economy = flow.result_slots(selection)
+    assert got_ideal is ideal and got_alternative is alternative
+    assert economy is meme_coque, "la place doit rester affichée, même d'une coque déjà montrée"
     assert economy.mouse.price_eur < alternative.mouse.price_eur
 
 
@@ -982,6 +1011,24 @@ def test_match_summary_does_not_lowercase_the_grip_label():
     text = flow._match_summary(score)
     assert "Palm Grip" in text
     assert text.startswith("Longueur dans la cible")
+
+
+def test_match_summary_never_claims_a_direction_the_score_does_not_carry():
+    """« largeur de prise un peu large » était faux pour une souris PLUS ÉTROITE que la cible.
+
+    Le score ne porte pas le sens de l'écart (trop large / trop étroit, trop long / trop court) :
+    la phrase de bilan doit donc rester neutre (correctif du 2026-10-12).
+    """
+    from utils.matcher import STATUS_SCORED, MouseScore, ScoreBreakdown
+
+    mouse = SimpleNamespace(label="Test M2", id="t2", length_mm=110.0, width_max_mm=52.0,
+                            hump_position="Inconnu", button_height="Inconnu", price_eur=30.0,
+                            price_status="verified", shape="Symmetrical")
+    score = MouseScore(mouse=mouse, grip=Grip.CLAW, status=STATUS_SCORED,
+                       breakdown=ScoreBreakdown(length_pts=10, width_pts=0, grip_pts=10))
+    text = flow._match_summary(score)
+    assert "largeur de prise un peu hors de la cible" in text
+    assert "un peu large" not in text and "retrait" not in text
 
 
 @pytest.mark.asyncio

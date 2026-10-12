@@ -8,6 +8,7 @@ Le script n'introduit aucune donnée : il applique le moteur (utils/matcher.py) 
 """
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -99,8 +100,28 @@ def build() -> str:
     return "\n".join(out) + "\n"
 
 
-if __name__ == "__main__":
-    target = ROOT / "docs" / "audit" / "matrice_profils.md"
+DEFAULT_TARGET = ROOT / "docs" / "audit" / "matrice_profils.md"
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Régénère la matrice des profils (document de traçabilité du moteur).
+
+    ``--help`` et ``--sortie`` ont été ajoutés le 2026-10-12 : sans argument, le script réécrivait
+    directement ``docs/audit/matrice_profils.md`` — un fichier versionné — sans confirmation.
+    Le comportement par défaut est inchangé.
+    """
+    parser = argparse.ArgumentParser(
+        description="Régénère la matrice des profils (moteur de sélection) et l'écrit dans un fichier.",
+    )
+    parser.add_argument("--sortie", default=str(DEFAULT_TARGET),
+                        help="fichier Markdown à écrire (défaut : docs/audit/matrice_profils.md)")
+    args = parser.parse_args(argv)
+    target = Path(args.sortie)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(build(), encoding="utf-8")
     print(f"Écrit : {target}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,231 +1,304 @@
-"""Étude statistique des recommandations : quelle souris sort, combien de fois, et pourquoi les autres
-ne sortent jamais.
+"""Étude statistique des recommandations : combien de fois chaque souris sort, pour toutes les mains.
 
-But (demande du propriétaire, 2026-10-12) : passer TOUTES les formes de main plausibles, toutes les
-prises (Palm, les trois variantes de Claw, Fingertip), toutes les tailles de thénar et les six modes
-du questionnaire, puis compter combien de fois chaque souris du catalogue est recommandée — match
-idéal, alternative, économie — et expliquer les souris qui ne sortent jamais (écartées ? en attente ?
-coque en double ?).
+Usage (depuis la racine du dépôt) :
+    python tools/recommendation_stats.py                 # grille complète (~2 min)
+    python tools/recommendation_stats.py --rapide        # grille resserrée (contrôle rapide)
+    python tools/recommendation_stats.py --sortie chemin.md
 
-L'outil ne modifie AUCUNE donnée : il lit le catalogue et le moteur, il écrit un rapport Markdown.
+Le script n'introduit AUCUNE donnée : il applique le moteur (utils/matcher.py), la sélection
+(utils/selection.py) et exactement la même mise en places que l'écran de résultat
+(cogs.finder_flow.result_slots) — donc il mesure ce que le membre voit vraiment.
 
-Usage :
-    .venv/bin/python tools/recommendation_stats.py                 # rapport complet (~2 min)
-    .venv/bin/python tools/recommendation_stats.py --rapide        # grille réduite
-    .venv/bin/python tools/recommendation_stats.py --sortie docs/audit/XXX.md
+Domaine balayé (bornes réellement acceptées par le questionnaire, utils/validation.py) :
+longueur de main de 140 à 240 mm, largeur de 60 à 125 mm, les trois prises, les trois tailles de
+thénar (sautées en Fingertip, comme dans le parcours), les cinq modes, et cinq budgets personnalisés.
+
+Sortie : docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md
 """
 from __future__ import annotations
 
 import argparse
+import itertools
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from cogs.finder_flow import compute_selection, result_slots  # noqa: E402
 from config import MOUSE_DB_PATH  # noqa: E402
+from cogs.finder_flow import compute_selection, result_slots  # noqa: E402
 from utils.catalog import load_catalog  # noqa: E402
-from utils.models import BUDGET_LABELS, BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
+from utils.matcher import evaluate_mouse  # noqa: E402
+from utils.models import THENAR_LABELS, BudgetMode, ClawVariant, Grip, HandMeasure, Thenar  # noqa: E402
 from utils.selection import _same_shell  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
 
-# --- Grille de mains ---------------------------------------------------------
-# Bornes larges autour des mains adultes réelles (la longueur va du poignet au bout du majeur,
-# la largeur est mesurée sans le pouce) : 140 à 230 mm et 60 à 120 mm, par pas de 5 mm.
-LENGTHS_FULL = [float(v) for v in range(140, 235, 5)]
-WIDTHS_FULL = [float(v) for v in range(60, 125, 5)]
-LENGTHS_FAST = [160.0, 180.0, 200.0, 215.0]
-WIDTHS_FAST = [70.0, 85.0, 100.0, 115.0]
-
-CUSTOM_BUDGETS = [10.0, 25.0, 45.0, 60.0, 90.0, 150.0]
-MODES: list[BudgetMode | None] = [None, *BudgetMode]
-CLAW_VARIANTS = list(ClawVariant)
+# --- Vitesse : on ne relit le catalogue qu'une fois ; chaque profil est évalué par le moteur réel.
+LENGTHS_FULL = tuple(range(140, 245, 5))       # 140 → 240 mm
+WIDTHS_FULL = tuple(range(60, 130, 5))         #  60 → 125 mm
+LENGTHS_FAST = (160, 175, 190, 205)
+WIDTHS_FAST = (75, 90, 105)
+BUDGETS_FULL = (25.0, 45.0, 60.0, 90.0, 150.0)
+BUDGETS_FAST = (60.0,)
+MODES = (BudgetMode.ECONOMIQUE, BudgetMode.QUALITE_PRIX, BudgetMode.HAUT_DE_GAMME,
+         BudgetMode.PEU_IMPORTE_PRIX, BudgetMode.CUSTOM)
+BUDGET_LABELS = {
+    BudgetMode.ECONOMIQUE: "Économique",
+    BudgetMode.QUALITE_PRIX: "Qualité/Prix",
+    BudgetMode.HAUT_DE_GAMME: "Haut de gamme",
+    BudgetMode.PEU_IMPORTE_PRIX: "Peu importe le prix",
+    BudgetMode.CUSTOM: "Budget personnalisé",
+}
 
 
 def profiles(fast: bool):
-    """Génère chaque combinaison (main, prise, thénar, mode) une seule fois."""
+    """Tous les profils du domaine : (prise, thénar, longueur, largeur, mode, budget)."""
     lengths = LENGTHS_FAST if fast else LENGTHS_FULL
     widths = WIDTHS_FAST if fast else WIDTHS_FULL
-    for length in lengths:
-        for width in widths:
-            for mode in MODES:
-                budgets = CUSTOM_BUDGETS if mode is BudgetMode.CUSTOM else [None]
-                for budget in budgets:
-                    # Palm : thénar posé. Claw : les trois variantes (elles ne changent pas le score,
-                    # le banc les parcourt pour le prouver). Fingertip : ni variante ni thénar.
-                    for grip, variant, thenars in (
-                        (Grip.PALM, None, [None, *Thenar]),
-                        (Grip.CLAW, None, [None, *Thenar]),
-                        (Grip.FINGERTIP, None, [None]),
-                    ):
-                        for thenar in thenars:
-                            session = FinderSession(user_id=7)
-                            session.grip = grip
-                            session.claw_variant = variant
-                            session.thenar = thenar
-                            session.hand_length_mm = length
-                            session.hand_width_mm = width
-                            session.budget_mode = mode
-                            session.max_budget_eur = budget
-                            yield session
-                    # variantes de Claw : mêmes profils, pour vérifier qu'aucune ne change le résultat
-                    for variant in CLAW_VARIANTS:
-                        for thenar in (None, *Thenar):
-                            session = FinderSession(user_id=7)
-                            session.grip = Grip.CLAW
-                            session.claw_variant = variant
-                            session.thenar = thenar
-                            session.hand_length_mm = length
-                            session.hand_width_mm = width
-                            session.budget_mode = mode
-                            session.max_budget_eur = budget
-                            yield session
+    budgets = BUDGETS_FAST if fast else BUDGETS_FULL
+    for grip, length, width, thenar in itertools.product(Grip, lengths, widths, Thenar):
+        if grip is Grip.FINGERTIP and thenar is not Thenar.MOYENNE:
+            continue                        # le parcours ne pose pas la question en Fingertip
+        combos = [(mode, None) for mode in MODES if mode is not BudgetMode.CUSTOM]
+        combos += [(BudgetMode.CUSTOM, budget) for budget in budgets]
+        for mode, budget in combos:
+            yield grip, thenar, float(length), float(width), mode, budget
 
 
-def run(fast: bool):
+def make_session(grip, thenar, length, width, mode, budget) -> FinderSession:
+    session = FinderSession(user_id=1)
+    session.grip = grip
+    session.thenar = None if grip is Grip.FINGERTIP else thenar
+    session.claw_variant = ClawVariant.RELACHEE if grip is Grip.CLAW else None
+    session.hand_length_mm = length
+    session.hand_width_mm = width
+    session.budget_mode = mode
+    session.max_budget_eur = budget
+    return session
+
+
+def run(fast: bool = False):
+    """Passe toute la grille et renvoie les comptages + l'état d'éligibilité de chaque souris."""
     mice = load_catalog(MOUSE_DB_PATH)
-    roles: dict[str, Counter] = {m.id: Counter() for m in mice}
-    statuses: dict[str, Counter] = {m.id: Counter() for m in mice}
-    by_mode: dict[str, Counter] = {m.id: Counter() for m in mice}
-    by_grip: dict[str, Counter] = {m.id: Counter() for m in mice}
-    total_profiles = 0
-    empty_profiles = 0
-
-    for session in profiles(fast):
-        total_profiles += 1
-        try:
-            selection = compute_selection(session)
-        except Exception as exc:  # noqa: BLE001 — l'étude doit signaler, pas s'arrêter
-            print(f"EXCEPTION {session.grip} {session.hand_length_mm}x{session.hand_width_mm} "
-                  f"{session.budget_mode} : {type(exc).__name__} {exc}")
-            continue
-
+    counter = {mouse.id: Counter() for mouse in mice}          # ideal / alternative / economie
+    by_mode: dict[str, Counter] = defaultdict(Counter)
+    by_grip: dict[str, Counter] = defaultdict(Counter)
+    by_thenar: dict[str, Counter] = defaultdict(Counter)
+    statuses = {mouse.id: Counter() for mouse in mice}         # scored / pending / excluded
+    scores_seen: dict[str, list[int]] = defaultdict(list)      # points obtenus quand la souris est notée
+    in_zone: Counter = Counter()                              # présent dans la zone de tolérance du mode
+    same_shell_pairs: Counter = Counter()                     # deux places, une seule coque (repli documenté)
+    empty_causes: Counter = Counter()
+    total = 0
+    empty = 0
+    empty_with_unusable = 0
+    same_shell_profiles = 0
+    for grip, thenar, length, width, mode, budget in profiles(fast):
+        session = make_session(grip, thenar, length, width, mode, budget)
+        selection = compute_selection(session)
+        total += 1
         for score in selection.ranked:
-            statuses[score.mouse.id]["scored"] += 1
+            scores_seen[score.mouse.id].append(score.total)
+            in_zone[score.mouse.id] += 1
         for score in selection.pending:
             statuses[score.mouse.id]["pending"] += 1
-
         ideal, alternative, economy = result_slots(selection)
         if ideal is None:
-            empty_profiles += 1
-        for role, score in (("ideal", ideal), ("alternative", alternative), ("economy", economy)):
+            empty += 1
+            if selection.pending:
+                empty_with_unusable += 1
+            # Pourquoi ce profil est vide : on sépare « aucune souris ne convient à cette main »
+            # de « les souris qui conviennent coûtent plus cher que le budget demandé ». Un profil
+            # en budget personnalisé n'a plus AUCUNE souris classable dès que le filtre de prix a
+            # écarté tout le monde : sans cette seconde évaluation (hors budget), les deux causes
+            # seraient confondues dans le rapport.
+            sans_budget = [evaluate_mouse(m, HandMeasure(length, width), grip) for m in mice]
+            classables = [s for s in sans_budget if s.is_scored]
+            if not classables:
+                empty_causes["aucune souris ne convient à cette main et à cette prise"] += 1
+            elif budget is not None and all(s.mouse.price_eur is None or s.mouse.price_eur > budget
+                                            for s in classables):
+                empty_causes["budget inférieur à la souris qui convient la moins chère"] += 1
+            else:
+                empty_causes["autre cause (exclusion de prise, de longueur ou de largeur)"] += 1
+        else:
+            places = [s for s in (ideal, alternative, economy) if s is not None]
+            for premier, second in itertools.combinations(places, 2):
+                if _same_shell(premier, second):
+                    same_shell_profiles += 1
+                    same_shell_pairs[tuple(sorted((premier.mouse.id, second.mouse.id)))] += 1
+                    break
+        for role, score in (("ideal", ideal), ("alternative", alternative), ("economie", economy)):
             if score is None:
                 continue
-            roles[score.mouse.id][role] += 1
-            roles[score.mouse.id]["total"] += 1
-            if session.budget_mode is not None:
-                by_mode[score.mouse.id][session.budget_mode.value] += 1
-            by_grip[score.mouse.id][session.grip.value] += 1
-
+            counter[score.mouse.id][role] += 1
+            counter[score.mouse.id]["total"] += 1
+            by_mode[mode.value][score.mouse.id] += 1
+            by_grip[grip.value][score.mouse.id] += 1
+            key = "—" if session.thenar is None else session.thenar.value
+            by_thenar[key][score.mouse.id] += 1
+        shown = {s.mouse.id for s in (ideal, alternative, economy) if s is not None}
+        evaluated = {s.mouse.id: s for s in (*selection.ranked, *selection.pending)}
+        for mouse in mice:
+            score = evaluated.get(mouse.id)
+            if score is None:
+                statuses[mouse.id]["excluded"] += 1
+            elif score.is_pending:
+                pass                                  # déjà compté en « en attente » ci-dessus
+            elif mouse.id not in shown:
+                statuses[mouse.id]["scored-not-shown"] += 1
     return {
-        "mice": mice,
-        "roles": roles,
-        "statuses": statuses,
-        "by_mode": by_mode,
-        "by_grip": by_grip,
-        "total_profiles": total_profiles,
-        "empty_profiles": empty_profiles,
+        "mice": mice, "counter": counter, "by_mode": by_mode, "by_grip": by_grip, "by_thenar": by_thenar,
+        "statuses": statuses, "scores": scores_seen, "in_zone": in_zone,
+        "total": total, "empty": empty, "fast": fast,
+        "empty_causes": empty_causes, "empty_with_unusable": empty_with_unusable,
+        "same_shell_profiles": same_shell_profiles, "same_shell_pairs": same_shell_pairs,
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--rapide", action="store_true", help="grille réduite")
-    parser.add_argument("--sortie", default=str(ROOT / "docs" / "audit" /
-                                               "STATISTIQUES_RECOMMANDATIONS_2026-10-12.md"))
-    args = parser.parse_args()
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Statistiques de recommandation sur toute la grille de mains.")
+    parser.add_argument("--rapide", action="store_true", help="grille resserrée (contrôle rapide)")
+    parser.add_argument("--sortie", default=str(ROOT / "docs" / "audit" / "STATISTIQUES_RECOMMANDATIONS_2026-10-12.md"),
+                        help="fichier Markdown à écrire")
+    args = parser.parse_args(argv)
 
-    data = run(args.rapide)
+    data = run(fast=args.rapide)
     mice = data["mice"]
-    roles = data["roles"]
-    statuses = data["statuses"]
-    by_mode, by_grip = data["by_mode"], data["by_grip"]
-    total = data["total_profiles"]
-
-    ranked = sorted(mice, key=lambda m: (-roles[m.id]["total"], -roles[m.id]["ideal"], m.label))
-    never = [m for m in ranked if roles[m.id]["total"] == 0]
-
-    class _Carrier:                      # petit adaptateur pour réutiliser _same_shell
-        def __init__(self, mouse):
-            self.mouse = mouse
+    counter = data["counter"]
+    total = data["total"]
+    ranked = sorted(mice, key=lambda m: (-counter[m.id]["total"], m.label))
+    never = [m for m in ranked if counter[m.id]["total"] == 0]
 
     lines: list[str] = []
     add = lines.append
     add("# Statistiques de recommandation — 2026-10-12\n")
-    add(f"Grille : **{total:,} profils** (toutes les combinaisons de longueur, largeur, prise, "
-        "variante de Claw, thénar, mode et budget personnalisé).\n".replace(",", " "))
-    add("Une « recommandation » = une souris affichée dans le message de résultat, à l'une des trois "
-        "places : match idéal, alternative, économie.\n")
-    add("| Souris | Idéal | Alternative | Économie | Total | Part des profils |")
+    add(f"Grille : **{total:,} profils** (longueurs 140–240 mm, largeurs 60–125 mm, trois prises, "
+        "trois thénars (sauté en Fingertip), cinq modes et cinq budgets personnalisés).\n".replace(",", " "))
+    add("Une « recommandation » = une souris affichée dans le résultat, à l'une des trois places "
+        "(match idéal, alternative, économie). Comptage fait avec le moteur et la sélection réels, "
+        "sans aucune donnée ajoutée pour l'étude.\n")
+
+    add("## Résultats vides et repli de coque (2026-10-12)\n")
+    empty = data["empty"]
+    add(f"- **Profils sans aucun résultat : {empty}** sur {total} ({100 * empty / total:.1f} %).")
+    for cause, nombre in data["empty_causes"].most_common():
+        add(f"  - {cause} : {nombre}")
+    add(f"  - dont profils où au moins une souris est « à vérifier » faute d'une donnée publiée "
+        f"(compatibilité de prise) : **{data['empty_with_unusable']}**")
+    add(f"- **Profils où DEUX places montrent la même coque : {data['same_shell_profiles']}** "
+        f"({100 * data['same_shell_profiles'] / total:.1f} %).")
+    add("  C'est le repli documenté de `result_slots()` : quand la zone de tolérance du mode ne contient "
+        "que des variantes de la coque retenue, la deuxième place reprend la même coque plutôt que de "
+        "disparaître. Les paires concernées, par fréquence :")
+    for (premier, second), nombre in data["same_shell_pairs"].most_common(6):
+        add(f"  - `{premier}` + `{second}` : {nombre} profils")
+    add("  Élargir la recherche à une autre coque (au-delà de la zone du mode) est une décision du "
+        "propriétaire : elle changerait la deuxième place de ces profils.\n")
+    add("## Nombre de fois où chaque souris est recommandée\n")
+    add("| Souris | Idéal | Alternative | Économie | Total | % des profils |")
     add("|---|---:|---:|---:|---:|---:|")
     for mouse in ranked:
-        counter = roles[mouse.id]
-        share = 100 * counter["total"] / total if total else 0
-        add(f"| {mouse.label} | {counter['ideal']} | {counter['alternative']} | {counter['economy']} "
-            f"| {counter['total']} | {share:.1f} % |")
+        c = counter[mouse.id]
+        share = f"{100 * c['total'] / total:.1f} %" if total else "—"
+        add(f"| {mouse.label} | {c['ideal']} | {c['alternative']} | {c['economie']} | {c['total']} | {share} |")
 
     add("\n## Souris jamais recommandées\n")
     if not never:
-        add("Aucune : chaque souris du catalogue sort au moins une fois sur cette grille.")
+        add("Aucune : toutes les souris du catalogue sortent au moins une fois.")
     else:
+        add(f"**{len(never)} souris sur {len(mice)}** ne sortent jamais sur cette grille :\n")
         for mouse in never:
             add(f"- **{mouse.label}** (`{mouse.id}`)")
-    add("\n## Pourquoi certaines ne sortent jamais\n")
-    add("| Souris | Écartée | En attente | Classée | Motif principal (donnée manquante, écart, "
-        "coque en double) |")
-    add("|---|---:|---:|---:|---|")
-    for mouse in never:
-        motives = []
-        if mouse.button_height == "Inconnu":
-            motives.append("hauteur des boutons non documentée")
-        if mouse.hump_position == "Inconnu":
-            motives.append("bosse non documentée")
-        if mouse.fit_status == "unverified" or all(
-                getattr(mouse, field) == "Inconnu"
-                for field in ("palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit")):
-            motives.append("aucune compatibilité de prise publiée")
-        if mouse.price_eur is None:
-            motives.append("prix absent (modes à prix)")
-        twins = [other.label for other in mice
-                 if other.id != mouse.id and _same_shell(_Carrier(other), _Carrier(mouse))]
-        if twins:
-            motives.append(f"même coque que {', '.join(twins)}")
-        counter = statuses[mouse.id]
-        excluded = total - counter["scored"] - counter["pending"]
-        add(f"| {mouse.label} | {100 * excluded / total:.0f} % | "
-            f"{100 * counter['pending'] / total:.0f} % | {100 * counter['scored'] / total:.0f} % | "
-            f"{' · '.join(motives) or 'à examiner'} |")
+        add("\n### Pourquoi elles ne sortent pas\n")
+        add("| Souris | Notée | En attente (donnée manquante) | Écartée | Motif principal |")
+        add("|---|---:|---:|---:|---|")
+        for mouse in never:
+            st = data["statuses"][mouse.id]
+            scored = st["scored-not-shown"]
+            pending = st["pending"]
+            excluded = st["excluded"]
+            motifs = []
+            if mouse.price_eur is None:
+                motifs.append("aucun prix EUR (les modes à prix l'écartent d'office)")
+            missing = []
+            for field, label in ((mouse.hump_position, "position de la bosse"),
+                                 (mouse.button_height, "hauteur des boutons")):
+                if field == "Inconnu":
+                    missing.append(label)
+            if mouse.fit_status != "verified":
+                missing.append("compatibilité de prise (statut non vérifié)")
+            if missing:
+                motifs.append("donnée absente : " + ", ".join(missing))
+            if not motifs and scored == 0:
+                motifs.append("toujours classée mais jamais dans les places (scores insuffisants)")
+            if not motifs and scored > 0:
+                motifs.append("classée et éligible : jamais retenue (classement dominé)")
+            add(f"| {mouse.label} | {scored} | {pending} | {excluded} | {' · '.join(motifs) or '—'} |")
 
     add("\n## Par mode (nombre de sorties)\n")
-    modes = [mode for mode in MODES if mode is not None]
-    add("| Souris | " + " | ".join(BUDGET_LABELS[mode] for mode in modes) + " |")
-    add("|---" * (len(modes) + 1) + "|")
+    add("| Souris | " + " | ".join(BUDGET_LABELS[mode] for mode in MODES) + " |")
+    add("|---" * (len(MODES) + 1) + "|")
     for mouse in ranked:
-        add(f"| {mouse.label} | " + " | ".join(str(by_mode[mouse.id][mode.value]) for mode in modes) + " |")
+        add(f"| {mouse.label} | " + " | ".join(str(data['by_mode'][mode.value][mouse.id]) for mode in MODES) + " |")
 
     add("\n## Par prise (nombre de sorties)\n")
     add("| Souris | Palm | Claw | Fingertip |")
     add("|---|---:|---:|---:|")
     for mouse in ranked:
-        add(f"| {mouse.label} | {by_grip[mouse.id]['palm']} | {by_grip[mouse.id]['claw']} "
-            f"| {by_grip[mouse.id]['fingertip']} |")
+        add(f"| {mouse.label} | {data['by_grip']['palm'][mouse.id]} | {data['by_grip']['claw'][mouse.id]} "
+            f"| {data['by_grip']['fingertip'][mouse.id]} |")
+
+    add("\n## Par taille de thénar (nombre de sorties)\n")
+    add("Le thénar n'est pas posé en Fingertip : la colonne « — » compte ces profils.\n")
+    add("| Souris | " + " | ".join(THENAR_LABELS[t] for t in Thenar) + " | — (Fingertip) |")
+    add("|---" * (len(Thenar) + 2) + "|")
+    for mouse in ranked:
+        cellules = " | ".join(str(data["by_thenar"][t.value][mouse.id]) for t in Thenar)
+        add(f"| {mouse.label} | {cellules} | {data['by_thenar']['—'][mouse.id]} |")
+
+    add("\n## Points obtenus quand la souris est classée\n")
+    add("| Souris | Score moyen | Meilleur | Pire | Fois classée dans la zone |")
+    add("|---|---:|---:|---:|---:|")
+    for mouse in ranked:
+        values = data["scores"].get(mouse.id, [])
+        if not values:
+            add(f"| {mouse.label} | — | — | — | 0 |")
+            continue
+        add(f"| {mouse.label} | {sum(values) / len(values):.1f}/40 | {max(values)}/40 | {min(values)}/40 "
+            f"| {data['in_zone'][mouse.id]} |")
 
     output = Path(args.sortie)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    # --- Plan d'action : ce qui manque, souris par souris. Calculé depuis le catalogue (aucune
+    # valeur inventée) : ces trois familles de données sont les seules causes d'inéligibilité.
+    add("\n## Ce qui manque, souris par souris (à trouver, jamais à inventer)\n")
+    sans_prise = [m for m in ranked if m.fit_status == "unverified"]
+    sans_bosse = [m for m in ranked if m.hump_position == "Inconnu"]
+    sans_boutons = [m for m in ranked if m.button_height == "Inconnu"]
+    add(f"- **Sans aucune compatibilité de prise publiée ({len(sans_prise)} souris)** : jamais "
+        "classables, donc jamais proposées, quel que soit le profil. Seule une publication du "
+        "fabricant (ou une source tierce explicitement autorisée) peut les faire entrer.")
+    for mouse in sans_prise:
+        prix = f"{mouse.price_eur:.2f} €".replace(".", ",") if mouse.price_eur else "prix inconnu"
+        add(f"  - {mouse.label} (`{mouse.id}`) — {prix}")
+    add(f"- **Sans position de bosse publiée ({len(sans_bosse)} souris)** : « à vérifier » dès que la "
+        "prise utilise la bosse (Palm et Claw) ; sortent seulement en Fingertip.")
+    for mouse in sans_bosse:
+        add(f"  - {mouse.label} (`{mouse.id}`)")
+    add(f"- **Sans hauteur de boutons documentée ({len(sans_boutons)} souris)** : classées "
+        "partiellement, donc désavantagées au classement (le critère manquant ne peut pas leur "
+        "rapporter les points que les autres gagnent).")
+    add("\nCompléter ces trois familles est la seule façon de faire sortir les souris listées plus "
+        "haut ; aucune valeur ne peut être devinée (règle du propriétaire : jamais d'invention).\n")
 
+    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Profils passés : {total}")
-    print(f"Profils sans aucun résultat : {data['empty_profiles']}")
+    print(f"Profils sans aucun résultat : {data['empty']}")
     print(f"Souris jamais recommandées : {len(never)}")
     for mouse in never:
         print(f"  · {mouse.label} ({mouse.id})")
-    top = ranked[:5]
-    print("Les plus recommandées :")
-    for mouse in top:
-        print(f"  · {mouse.label} : {roles[mouse.id]['total']} sorties "
-              f"({100 * roles[mouse.id]['total'] / total:.1f} % des profils)")
     print(f"Rapport écrit : {output}")
     return 0
 

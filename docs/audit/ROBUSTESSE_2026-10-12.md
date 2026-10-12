@@ -175,8 +175,9 @@ Discord respectées).
 
 ### Point ouvert (décision du propriétaire)
 
-**La troisième place (« 💸 L'économie ») n'apparaît que dans 0,1 % des profils** (1 sur 960 au banc
-d'essai). Vérification faite : ce n'est pas un bug de calcul, mais un effet de seuil — la zone de
+**La troisième place (« 💸 L'économie ») n'apparaît que dans 0,18 % des profils** (49 sur 27 170 au
+banc d'essai complet, 0,19 % sur la grille 1 029 ; §8.2 corrige au passage un défaut de la règle, ce
+qui la porte à 0,39 %). Vérification faite : ce n'est pas un bug de calcul, mais un effet de seuil — la zone de
 compatibilité du mode est étroite (±2 points sur 40) et l'alternative prend déjà la meilleure des
 souris moins chères ; il reste donc rarement une souris encore moins chère **et** toujours dans la
 zone. Deux options, à trancher par le propriétaire (cela changerait une règle de présentation) :
@@ -239,3 +240,136 @@ des vues d'autres souris. Aucune valeur n'a donc été inventée.
 3. **Souris jamais recommandées** : le tableau complet (57 057 profils, 5 modes, toutes les tailles
    de main) est dans `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`, avec le motif exact
    souris par souris.
+
+
+---
+
+## 8. Quatrième vague (13e passe, suite) : le banc d'essai regarde le CONTENU du message
+
+Les vagues précédentes vérifiaient que le résultat **ne plante pas** et qu'il respecte les règles de
+sélection. Cette vague-ci vérifie ce que le membre **lit réellement**.
+
+### 8.1 Ce que le banc d'essai contrôle désormais
+
+`tools/qa_flow_matrix.py` lit le texte des embeds et les boutons produits, et vérifie pour chaque
+profil (27 170 profils × 5 modes × toutes les tailles de main, toutes les prises, tous les thénars) :
+
+- chaque souris affichée porte son **nom**, son **prix** (au format français, virgule décimale), son
+  **score** (« 25/40 ») et son **pourcentage** ;
+- le pourcentage affiché est bien `score / 40` du maximum théorique, jamais du maximum « du moment » ;
+- les **repères de taille** affichés (longueur, largeur de prise) sont ceux de la souris montrée ;
+- la **justification du choix** (« pourquoi ce choix ? ») est présente et non vide ;
+- **aucune souris « en attente »** (donnée manquante) ni écartée (prise « Faible ») n'est affichée ;
+- aucune souris n'est proposée **au-dessus du budget** en budget personnalisé ;
+- les places affichées restent **dans la zone de tolérance du mode** ;
+- les **boutons d'achat** correspondent exactement aux souris affichées : un bouton par souris
+  affichée qui a un lien, jamais de bouton pour une souris absente du message ;
+- deux places ne montrent jamais la même souris, ni la même coque quand une autre coque est
+  disponible dans la zone.
+
+Résultat : **27 170 profils contrôlés, 0 problème**, et la répartition des places devient mesurable :
+
+| Places remplies | Profils | Part |
+|---:|---:|---:|
+| 0 (message « Aucun match classable ») | 4 082 | 15,0 % |
+| 1 | 5 889 | 21,7 % |
+| 2 | 17 150 | 63,1 % |
+| 3 | 49 | 0,18 % |
+
+### 8.2 Défaut 13 — la troisième place était supprimée par sa propre préférence de coque
+
+`result_slots()` annonce « l'économie : la moins chère de la zone, **d'une autre coque si possible** ».
+Le code filtrait **d'abord** sur la coque, **ensuite** sur le prix : dès que la moins chère d'une autre
+coque dépassait le plafond de prix, la place disparaissait — alors qu'une souris moins chère restait
+disponible. Mesure sur la grille 1 029 profils : **2 profils** avec la place, **4** avec la règle
+annoncée. Correction : la préférence de coque s'applique **parmi les souris déjà sous le plafond**,
+jamais au prix de la place elle-même. Test dédié (échoue sans le correctif, passe avec).
+
+### 8.3 Défaut 14 — une mesure fausse annoncée dans le test de l'économie
+
+Le test affirmait « 1 profil sur 960 avant, **101 sur 960 après** » le correctif de la 2e vague — soit
+10,5 % des profils. La mesure ne se reproduit avec **aucune** des deux règles : 4 sur 1 029 pour
+l'ancienne, 2 sur 1 029 pour la nouvelle. Le chiffre est remplacé par les valeurs mesurées et
+reproductibles, avec la méthode (grille, modes, budget).
+
+### 8.4 Défaut 15 — la phrase de bilan affirmait un sens que le score ne porte pas
+
+Le résumé disait « largeur de prise **un peu large** » et « longueur **en léger retrait** » pour toute
+souris à 0 point sur le critère — y compris quand la souris est **plus étroite** ou **plus longue** que
+la cible (cas réel : grande main et souris fine). Le score ne porte pas le sens de l'écart : les deux
+phrases deviennent neutres (« un peu hors de la cible »), et un test interdit le retour des anciennes.
+
+### 8.5 Canaris de barème : plus aucun rang « 0 » silencieux
+
+`components_index()` (départage du mode « Peu importe le prix ») rend **0** pour toute valeur qu'il ne
+connaît pas : une faute de frappe dans le catalogue faisait donc disparaître un départage **sans
+erreur, sans test rouge et sans trace**. Quatre tests figent désormais la liste :
+
+- capteurs et MCU du catalogue : chacun a un rang **ou** une justification écrite (`PAW3315`,
+  `Xhero AI / PAW3395 SE`, MCU Broadcom / BK Custom / NearLink, MCU non publié des Pulsar) ;
+- capteur haut de gamme absent de `PERFORMANCE_SENSORS` : `Pulsar XS-1`, justifié (incohérence
+  mesurée, **0 recommandation modifiée** sur 1 309 profils) ;
+- toutes les chaînes de switchs du catalogue sont reconnues (14 libellés distincts).
+
+Preuve que les canaris mordent : chaque table vidée d'une valeur fait échouer le test correspondant
+(vérifié pour les trois).
+
+### 8.6 Cause racine des messages vides et des souris jamais recommandées (mesurée)
+
+- Les **4 082 profils sans résultat** sont **tous** en budget personnalisé, et toujours pour la même
+  raison : le budget demandé est inférieur à la souris classable la moins chère. Sur la grille 1 029,
+  **56 profils vides sur 56** contiennent au moins une souris « à vérifier » faute de compatibilité de
+  prise publiée.
+- **11 souris sur 36** n'ont **aucune** compatibilité de prise publiée par le fabricant : elles ne
+  peuvent donc jamais être classées — `atk_duckbill`, `atk_f1_v2`, `atk_fierce_x`,
+  `atk_phantom_ultimate`, `atk_u2_v2_mini`, `atk_u2_v2_ultimate`, `atk_zero`, `vxe_mad_r`, `vxe_r1`,
+  `vxe_v3`, `vxe_x3`.
+- Conséquence concrète : **trois des quatre souris les moins chères** (VXE R1 13,95 €, VXE V3
+  13,95 €, VXE X3 27,95 €) sont inutilisables. En Fingertip sous 30 €, il ne reste **aucune** souris
+  possible : le membre reçoit « Aucun match classable ».
+- C'est la même cause qui explique la majorité des **21 souris jamais recommandées** du rapport
+  statistique. Aucune donnée n'a été inventée pour combler ces trous.
+
+### 8.7 Le vrai motif pour lequel « ce sont toujours les mêmes souris » (mesuré)
+
+Le banc d'essai compte désormais, sans le compter comme une faute, les profils où **deux places du
+résultat montrent la même coque** : **4 555 profils sur 27 170 (16,8 %)**. C'est le repli documenté de
+`result_slots()` — quand la zone de tolérance du mode ne contient que des variantes de la coque
+retenue, la deuxième place reprend la même coque au lieu de disparaître. Les familles concernées sur
+la grille de contrôle :
+
+| Paire affichée ensemble | Profils (grille 1 029) |
+|---|---:|
+| `pulsar_x2_v3_mini` + `pulsar_x2_crazylight_mini` | 77 |
+| `atk_a9_ultimate` + `atk_a9_plus` | 33 |
+| `pulsar_x2a_v3_medium` + `pulsar_x2_crazylight_medium` | 15 |
+| `atk_a9_nb` + `atk_a9_plus` | 14 + 11 |
+| `atk_ghost_ultimate` + `atk_ghost_extreme` | 2 |
+
+Autrement dit : dans près d'un résultat sur six, le membre voit **deux fois la même forme** à deux
+prix différents (par exemple A9 Plus 2.0 à 45 € puis A9 NB Ultra à 72,95 €). Ce n'est pas un défaut de
+calcul, c'est la conséquence de deux règles qui se rencontrent :
+
+1. la zone de tolérance du mode est étroite (±2 points sur 40, ±5 en Économique) ;
+2. la famille A9 (trois entrées, une seule coque) et la famille X2 (deux entrées Mini, deux Medium)
+   occupent les meilleurs scores sur une grande partie des mains.
+
+Trois sorties possibles, **chacune mesurable** (à trancher par le propriétaire) :
+
+1. **Laisser ainsi** (repli actuel) : 16,8 % des résultats montrent deux fois la même forme.
+2. **Chercher une autre coque un peu plus loin** pour la 2ᵉ place seulement (par exemple jusqu'à
+   5 points sous le meilleur score, au lieu des 2 du mode) : la 2ᵉ place devient une forme
+   réellement différente, légèrement moins compatible, et la phrase de tolérance du mode est ajustée
+   en conséquence.
+3. **Ne pas afficher la 2ᵉ place** quand elle reprend la même coque (1 seule place proposée) : c'est
+   la seule option qui ne change aucun classement, mais elle enlève un choix.
+
+### 8.8 Décision demandée au propriétaire (trois choix)
+
+1. **Troisième place** — la place n'apparaît que si une souris d'une autre coque est à la fois dans la
+   zone du mode **et** strictement moins chère que les deux affichées. Taux mesurés si l'on élargit la
+   zone **de la seule ligne économie** : ±2 pts (aujourd'hui) **0,4 %**, ±5 pts **6,3 %**,
+   ±10 pts **23,6 %** des profils. Rien ne change pour le match idéal ni pour l'alternative.
+2. **Souris sans prise publiée** — autoriser une source tierce (EloShapes, test écrit) pour les 11
+   souris ci-dessus, ou les laisser hors service. Sans source, elles resteront invisibles ; avec une
+   source tierce, il faut ajouter une provenance explicite dans le catalogue (`fit_status`).
