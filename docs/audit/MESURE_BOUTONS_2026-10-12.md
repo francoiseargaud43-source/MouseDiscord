@@ -356,10 +356,76 @@ grille entière : 27 170 profils du banc de parcours et la grille statistique de
 
 ### 16.5 La règle de campagne qui suit, pour les 20 souris restantes
 
-1. Chercher une vue strictement de profil, **identité prouvée à l'œil** (sérigraphie du modèle) ;
-2. mesurer ; classe lue par l'outil (trois références, marge d'un point) ;
-3. **publier** si deux vues concordantes existent (règle §15.3), ou si la classe est ferme et que la
-   lecture « hauteur totale » va dans le même sens ;
-4. **documenter sans publier** quand les deux lectures divergent — c'est le cas de la V3 pour la lecture
-   « hauteur totale », et c'est écrit au §16.3 ;
-5. ne jamais publier une valeur sans commande reproductible.
+Deux **indicateurs mesurés** sur la même vue doivent désigner la même classe :
+
+1. le **point de mesure** (hauteur du dessus à 5 % de la longueur depuis l'avant) comparé aux trois
+   références étalonnées — c'est la mesure de l'outil, marge d'un point sur les frontières ;
+2. le **profil avant complet** (0 à 20 % de la longueur), point par point, comparé aux mêmes souris de
+   référence : l'écart moyen doit être le plus petit avec une souris de la classe annoncée.
+
+Si les deux indicateurs désignent la même classe → **publier** (avec la vue, la commande et le fait qu'il
+n'y a qu'une vue quand c'est le cas). S'ils divergent → **documenter sans publier** : la mesure est
+publiable en tant que mesure, pas en tant que classe. Ne jamais publier une valeur sans commande
+reproductible, et jamais sans que l'identité du modèle soit lisible sur l'image.
+
+Pourquoi deux indicateurs : le point de mesure ne lit qu'une colonne de pixels et peut être décalé par
+un rendu légèrement différent ; le profil avant lit vingt points et décrit la forme réelle des boutons.
+Un rendu qui passe le contrôle de perspective peut tromper l'un, difficilement les deux.
+
+### 16.6 Contre-épreuve : la « hauteur totale » n'est PAS le critère (deux mesures le montrent)
+
+Dans les quinze souris de classe connue du cahier des charges, la classe suit **parfaitement** la hauteur
+totale (`bas` ≤ 38,8 mm, `moyens` = 40,0 mm, `hauts` = 42,4 mm). On pourrait en conclure que la hauteur
+de la souris suffit à deviner la classe. Deux mesures faites le 2026-10-12 **cassent cette coïncidence** :
+
+| Souris | Hauteur totale | Hauteur d'appui mesurée | Classe suggérée par la hauteur | Classe mesurée |
+|---|---:|---:|---|---|
+| VXE Dragonfly V3 | 38,2 mm | 46,7 % (17,8 mm) | « bas » (≤ 38,8 mm) | **Mid** (§16.3) |
+| ATK U2 Ultimate (rendu de la fiche U2 V2) | 39,1 mm | 53,2 % (20,8 mm) | « bas » ou « moyens » | indécise (§17) |
+
+Deux souris de 38 à 39 mm mesurent donc **plus haut** que ce que leur hauteur suggère : la corrélation
+observée sur les quinze souris connues est une **coïncidence d'échantillon** (les souris « bas » du
+catalogue sont aussi les plus plates), pas le critère. Ce qui reste vrai : la hauteur totale est un
+**indice** utile pour trier les cas, jamais une preuve — et c'est la mesure des images qui tranche, comme
+la règle l'exige.
+
+## 17. Contre-épreuves mesurées le 2026-10-12 : ce qui n'est PAS publié, et pourquoi
+
+### 17.1 ATK U2 Ultimate (rendu officiel de la fiche U2 V2 Superlight)
+
+Vue strictement de profil, **« U2 ULTIMATE » imprimé en doré sur la coque** (identité prouvée à l'œil),
+molette à droite, rapport longueur/hauteur à 1,7 % de la cote officielle (accepté). Mesure :
+
+```
+.venv/bin/python tools/measure_button_height.py "image-search/atk-blazing-sky-u2-superlight-mouse-side-4.jpg" \
+    --length-mm 123.7 --height-mm 39.1 --front right
+# rapport 3,11 vs 3,16 (écart 1,7 %) · hauteur d'appui 20,8 mm = 53,2 % → au-dessus de la frontière
+# « moyens/hauts » (51,2 %), à 2,0 points de cette frontière et 1,9 point de la référence « hauts » (55,1 %)
+```
+
+Les deux indicateurs **divergent** :
+
+| Indicateur | Valeur | Référence la plus proche |
+|---|---|---|
+| Point de mesure (5 %) | 53,2 % | **Z1 (hauts, 55,1 %)** — 1,9 point |
+| Profil avant 0–20 % | écart moyen | **A9 (moyens)** 4,00 % · Z1 (hauts) 4,47 % · ZERO (bas) 7,46 % |
+
+Le point de mesure dit « hauts », le profil complet dit « moyens » (l'avant de l'U2 monte moins vite que
+celui du Z1 après les boutons : 80,7 % de la hauteur à 20 % de la longueur, contre 87,2 % pour le Z1).
+**Aucune classe n'est publiée** : la règle du §16.5 l'interdit, et publier « High » à tort ferait perdre
+10 points à cette souris sur une prise **Fingertip** (idéal = Low ou Mid). La valeur reste documentée ici,
+avec sa commande, pour la prochaine passe ou pour l'arbitrage du propriétaire.
+
+### 17.2 Ce que la même campagne a écarté aujourd'hui
+
+- **X1 V2 Ultra Max** (`image-search/x1-ultimate-atk-mouse-side-view-printed--*`) : quatre fichiers, tous
+  refusés (fond non uniforme / vues en perspective : la mesure sort à 100 % de la hauteur, l'outil ne
+  produit rien). Aucune valeur.
+- **R1 Pro Max** (`image-search/vxe-dragonfly-v3-pro-max-white-side-view-1.jpg`) : profil strict en
+  studio, mais fond **dégradé avec ombre portée** : la boîte englobante attrape l'ombre (rapport 1,36
+  contre 3,19) → refusé. Aucune valeur. (Le fichier porte « VXE R1 PRO MAX » imprimé : il est identifié,
+  mais inexploitable en l'état.)
+- **U2 / U2 V2** (pages boutique) : les autres rendus reçus sont des vues de trois quarts ou d'autres
+  modèles (X1, ZERO) — écartés, aucun n'entre dans le corpus.
+MD
+.venv/bin/python -m pytest tests/test_doc_references.py -q 2>&1 | tail -2
