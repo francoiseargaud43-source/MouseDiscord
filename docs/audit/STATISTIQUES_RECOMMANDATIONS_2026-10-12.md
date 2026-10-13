@@ -1,5 +1,7 @@
 # Statistiques de recommandation — 2026-10-12
 
+Rapport **régénéré le 2026-10-13** sur le catalogue `data/mouse_db.json` du même jour : chaque régénération remplace les chiffres ci-dessous, la date du titre reste celle de la définition de la grille.
+
 Grille : **18 522 profils** (longueurs 140–240 mm  largeurs 60–125 mm  trois prises  trois thénars (sauté en Fingertip)  cinq modes et cinq budgets personnalisés).
 
 Une « recommandation » = une souris affichée dans le résultat, à l'une des trois places (match idéal, alternative, troisième place — intitulée « 💸 L'économie » quand elle est moins chère que les deux autres, « ➕ L'autre option » sinon). Comptage fait avec le moteur et la sélection réels, sans aucune donnée ajoutée pour l'étude.

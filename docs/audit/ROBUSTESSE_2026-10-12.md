@@ -409,12 +409,12 @@ zone ne contient rien d'autre. **Piste fermée**, pas « en attente d'explicatio
   fiche A9 Ultimate, prix normal 72,95 €) et bosse « Center » → **Mid** ; dimensions passées en
   **vérifié** (EloShapes donne exactement 118,4 × 61,2 × 38,6 · 39 g, et son lien « où acheter » pointe
   la variante ATK 47852235718874 identifiée dès le 2026-10-11 dans
-  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §6.8).
+  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §3, point 8).
   Précision honnête : EloShapes annonce un capteur **PAW3950 Ultra** là où la fiche InputGear FR annonce
   un **PAW3955** — divergence signalée dans la fiche, valeur d'origine conservée, rien de tranché.
 - **ATK U2 V2 Mini** : prix corrigé de 77,95 € à **59,95 €** (variante « U2 V2 Mini / White », boutique
   ATK, pays France). La correction était demandée par
-  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §6.6 : l'ancienne valeur venait de l'U2 Mini,
+  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §3, point 6 : l'ancienne valeur venait de l'U2 Mini,
   qui n'est pas la V2.
 
 ### 9.3 Effet mesuré (même grille de 18 522 profils, `tools/recommendation_stats.py`)
@@ -2089,6 +2089,13 @@ sont identiques.
 - **Chasse aux références mortes** (analyse syntaxique de tout le code) : seuls `NAVY` et `SPARK`
   ressortent — des constantes de la palette des illustrations, utilisées par le rendu d'aperçu. **Faux
   positifs, rien à nettoyer.**
+- **Chasse aux renvois morts dans la documentation** : **deux** renvois de ce document citaient « §6.6 »
+  et « §6.8 » d'un fichier qui n'a pas ces sections (les faits visés étaient les **points 6 et 8 du §3**
+  de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`) — corrigés. Un **test** vérifie désormais les **72
+  renvois** du dépôt (`tests/test_doc_references.py::test_les_renvois_de_section_pointent_sur_une_section_existante`) :
+  un renvoi qui pointe dans le vide fait échouer la suite.
+- **Hygiène des données** (contrôle rejoué) : aucune source en double, aucune date invalide ou future,
+  toutes les URL en HTTPS, cotes identiques pour une même `shell_id` — **0 problème**.
 - **Audit structurel des liens** : **36 liens pour 36 souris**, tous en HTTPS, **aucun orphelin** (ni
   souris sans lien, ni lien sans souris), 24 ATK / 10 Pulsar / 2 Scyrox.
 - **Domination de l'A9 Air** : l'A9 Air et l'A9 Ultimate sont au **même prix** (59,95 €) ; le test de

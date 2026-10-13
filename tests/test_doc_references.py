@@ -139,3 +139,61 @@ def test_no_document_announces_the_retired_button_rule():
             if phrase in text:
                 offenders.append(f"{path.relative_to(ROOT)} : « {phrase} »")
     assert offenders == [], "formulations de la règle boutons périmée : " + " ; ".join(offenders)
+
+
+# ---------------------------------------------------------------------------
+# Renvois « fichier + §numéro » : la section visée doit exister (37e passe)
+# ---------------------------------------------------------------------------
+# Bug réel trouvé le 2026-10-13 : deux renvois de `ROBUSTESSE_2026-10-12.md` citaient « §6.6 » et
+# « §6.8 » d'un document qui n'a ni 6.6 ni 6.8 (les faits visés étaient les points 6 et 8 du §3).
+# Un renvoi mort ne casse rien à l'exécution : il envoie seulement le lecteur dans le vide. Le test
+# ci-dessous vérifie que CHAQUE citation « <fichier>.md §N » (ou « §N de <fichier>.md ») désigne une
+# section qui existe vraiment dans le fichier visé.
+CITATION_PATTERNS = (
+    # `docs/audit/X.md` §24.4
+    (re.compile(r"`([A-Za-z0-9_./-]+\.md)`\s*§\s*(\d+(?:\.\d+)?)"), (1, 2)),
+    # §24.4 de `X.md` / §7 du fichier `X.md`
+    (re.compile(r"§\s*(\d+(?:\.\d+)?)\s*(?:du|de|des|d'|d’|—|-|:)?\s*`?([A-Za-z0-9_./-]+\.md)"), (2, 1)),
+    # X.md §24.4 (sans guillemets)
+    (re.compile(r"([A-Za-z0-9_./-]+\.md)\s*§\s*(\d+(?:\.\d+)?)"), (1, 2)),
+)
+
+_CITATION_FILES = sorted(
+    {
+        str(p.relative_to(ROOT))
+        for motif in ("*.md", "docs/**/*.md", "tests/*.py", "tools/*.py", "utils/*.py", "cogs/*.py")
+        for p in ROOT.glob(motif)
+        # Ce fichier-ci cite volontairement un renvoi mort (« AUDIT.md, §3.3 ») comme contre-exemple.
+        if p.name != "test_doc_references.py"
+    }
+)
+
+_DOC_INDEX = {
+    p.name: p
+    for p in list(ROOT.glob("*.md")) + list(ROOT.glob("docs/**/*.md"))
+}
+
+
+def _sections_of(nom: str) -> set[str]:
+    """Numéros de titre du document (ex. {« 24 », « 24.4 », « 12.19 »})."""
+    sections = set()
+    for ligne in _DOC_INDEX[nom].read_text(encoding="utf-8").splitlines():
+        trouve = re.match(r"^#{1,4}\s+(\d+(?:\.\d+)?)[.\s]", ligne)
+        if trouve:
+            sections.add(trouve.group(1))
+    return sections
+
+
+@pytest.mark.parametrize("rel", _CITATION_FILES)
+def test_les_renvois_de_section_pointent_sur_une_section_existante(rel):
+    texte = _read(rel)
+    morts = []
+    for motif, (groupe_nom, groupe_num) in CITATION_PATTERNS:
+        for trouve in motif.finditer(texte):
+            nom = trouve.group(groupe_nom).rsplit("/", 1)[-1]
+            if nom not in _DOC_INDEX:
+                continue        # fichier cité absent du dépôt : l'autre test s'en charge
+            numero = trouve.group(groupe_num)
+            if numero not in _sections_of(nom):
+                morts.append(f"{nom} §{numero} (« {trouve.group(0)[:60]} »)")
+    assert morts == [], f"renvois de section introuvables dans {rel} : {sorted(set(morts))}"

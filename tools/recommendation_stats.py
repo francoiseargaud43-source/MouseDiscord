@@ -21,6 +21,7 @@ import argparse
 import itertools
 import sys
 from collections import Counter, defaultdict
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -214,6 +215,9 @@ def main(argv: list[str] | None = None) -> int:
     lines: list[str] = []
     add = lines.append
     add("# Statistiques de recommandation — 2026-10-12\n")
+    add(f"Rapport **régénéré le {date.today().isoformat()}** sur le catalogue `data/mouse_db.json` du même "
+        "jour : chaque régénération remplace les chiffres ci-dessous, la date du titre reste celle de la "
+        "définition de la grille.\n")
     add(f"Grille : **{total:,} profils** (longueurs 140–240 mm, largeurs 60–125 mm, trois prises, "
         "trois thénars (sauté en Fingertip), cinq modes et cinq budgets personnalisés).\n".replace(",", " "))
     add("Une « recommandation » = une souris affichée dans le résultat, à l'une des trois places "

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -64,8 +65,8 @@ def build(custom_max_eur: float = CUSTOM_MAX_EUR) -> str:
     mice = load_catalog(MOUSE_DB_PATH)
     out: list[str] = []
     out.append("# Matrices de comparaison par profil\n")
-    out.append("_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json`. "
-               "Ne pas modifier à la main : relancer le script._\n")
+    out.append(f"_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le "
+               f"**{date.today().isoformat()}**. Ne pas modifier à la main : relancer le script._\n")
     out.append("**Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; "
                "« ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.\n")
     out.append(f"Budget personnalisé de comparaison : {custom_max_eur:g} € (il ne s'applique QU'À la ligne « Budget » "
