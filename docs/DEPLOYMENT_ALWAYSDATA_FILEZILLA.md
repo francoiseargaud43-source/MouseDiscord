@@ -2032,7 +2032,9 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    atteste le partage de coque (`shell_id`). **Aucune cote, aucun prix, aucun verdict de prise, aucune
    note ne change** (empreinte des valeurs identique avant/après) et **rien ne change à l'écran**.
    **Aucun envoi obligatoire** ni redémarrage : envoyez le fichier seulement si vous voulez les deux
-   côtés identiques au caractère près.
+   côtés identiques au caractère près. Depuis, deux libellés de la coque `atk_x1` ont été reformulés
+   (C57, §26.25 : ils affirmaient plus que ce que l'audit établit) — même fichier, même conclusion :
+   **aucun envoi obligatoire**.
 6. **Deux fichiers abîmés ne bloquent plus le parcours** (C54 et C55, §26.23) : un
    `data/commercial_links.json` **tronqué** (ou un dossier à sa place) faisait échouer le résultat
    entier — « une erreur inattendue » au lieu des trois souris, et « refaites l'action » sans issue ;
@@ -2052,13 +2054,13 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
 **Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **629**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **630**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 629 passed
+.venv/bin/python -m pytest -q                      # attendu : 630 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

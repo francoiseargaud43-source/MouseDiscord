@@ -408,7 +408,7 @@
         "date_checked": "2026-10-10"
       },
       {
-        "label": "ATK Store — collection X1 Series — cotes publiées 127 × 64 × 40 mm : celles de la coque X1 (la fiche VXE Dragonfly X3 publie les mêmes cotes au dixième de millimètre) — un seul moule, coque « atk_x1 »",
+        "label": "ATK Store — collection X1 Series — cotes publiées 127 × 64 × 40 mm, celles de la coque de la famille X1 (la fiche VXE Dragonfly X3 publie les mêmes cotes au dixième de millimètre) ; ni la bosse ni la hauteur de boutons ne sont propagées à la X3, faute de source (constat n° 12 de docs/audit/AUDIT.md)",
         "url": "https://www.atk.store/collections/atk-x1-series-esports-wireless-mouse",
         "fields": [
           "height_mm",
@@ -2542,7 +2542,7 @@
     "price_note": "Prix EUR officiel constaté le 2026-10-11 : 27.95 € (série VXE Dragonfly X3 « à partir de », prix normal 31.95 €). Prix « à partir de » : variante la moins chère en stock.",
     "sources": [
       {
-        "label": "ATK Store — VXE Dragonfly X3 Series — cotes publiées 127 × 64 × 40 mm, celles de l'ATK Blazing Sky X1 V2 Ultra Max du catalogue : coque de la famille X1, un seul moule (coque « atk_x1 »)",
+        "label": "ATK Store — VXE Dragonfly X3 Series — cotes publiées 127 × 64 × 40 mm, celles de l'ATK Blazing Sky X1 V2 Ultra Max du catalogue : coque de la famille X1 (deux entrées d'une même coque ne sont pas proposées ensemble) ; ni la bosse ni la hauteur de boutons de l'X1 ne lui sont propagées, faute de source (constat n° 12 de docs/audit/AUDIT.md)",
         "url": "https://www.atk.store/products/vxe-dragonfly-x3-series-lightweight-wireless-mouse",
         "fields": [
           "height_mm",

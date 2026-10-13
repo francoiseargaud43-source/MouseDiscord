@@ -325,6 +325,35 @@ def test_no_shell_mixes_two_button_heights(mice):
     assert incoherentes == {}, f"coques avec deux hauteurs de boutons : {incoherentes}"
 
 
+def test_aucune_coque_ne_melange_deux_bosses(mice):
+    """Invariant de coque, jumeau de celui des hauteurs de boutons : la bosse appartient au moule.
+
+    Deux entrées de la même coque ne peuvent pas annoncer deux positions de bosse — et une entrée ne
+    peut pas laisser la bosse « Inconnu » quand sa jumelle la publie : le membre lirait deux conseils
+    différents pour la même pièce de plastique, et l'une des deux serait partiellement notée sans
+    raison. Le contrôle des hauteurs de boutons existait (`test_no_shell_mixes_two_button_heights`),
+    pas celui de la bosse — trou comblé le 2026-10-13 (38e passe, suite) : le catalogue est conforme,
+    mais rien ne l'aurait signalé si une valeur avait dérivé.
+
+    Exception documentée, la même que pour les boutons : la VXE X3 (gamme VXE, switchs Omron, puce
+    Broadcom) partage les cotes de l'ATK X1 V2 Ultra Max ; ni sa bosse ni sa hauteur de boutons ne lui
+    sont propagées tant qu'aucune source ne les publie — la bosse de l'X1 est elle-même contestée par
+    une source tierce (« Back - minimal » chez EloShapes contre « Mid » du propriétaire), et rien ne
+    prouve encore que la X3 reprend la même pièce de plastique (« constat n° 12 » de
+    `docs/audit/AUDIT.md`).
+    """
+    exceptions = {"vxe_x3"}
+    par_coque: dict[str, set] = {}
+    for mouse in mice.values():
+        if not mouse.shell_id or mouse.id in exceptions:
+            continue
+        par_coque.setdefault(mouse.shell_id, set()).add(mouse.hump_position)
+    # Garde-fou du test lui-même : sans coques enregistrées, le contrôle ne prouve rien.
+    assert len(par_coque) >= 8, f"trop peu de coques enregistrées : {sorted(par_coque)}"
+    incoherentes = {coque: valeurs for coque, valeurs in par_coque.items() if len(valeurs) > 1}
+    assert incoherentes == {}, f"coques avec deux bosses : {incoherentes}"
+
+
 def test_bosse_des_xlite_et_prix_de_l_a9_mini_sont_sources(mice):
     """Données ajoutées le 2026-10-12 : bosse des Pulsar Xlite (EloShapes) et prix de l'ATK A9 Mini.
 

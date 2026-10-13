@@ -3075,3 +3075,39 @@ bouton, et l'administrateur lit la raison exacte dans les journaux
 (`Lien ignoré pour <souris> : URL invalide`). Aucun autre comportement ne change : le lien écarté n'est
 jamais remplacé ni raccourci — une adresse tronquée mènerait ailleurs, ce que le projet s'interdit.
 `pytest -q` : **629 passed** · `pyflakes` : 0.
+
+### 26.25 Une traçabilité qui affirmait plus que l'audit, et un invariant de bosse non vérifié (C57)
+
+**a) Deux libellés disaient « un seul moule » là où l'audit dit « rien ne le prouve encore ».** La passe
+précédente (§26.22) a fait déclarer le partage de coque par une source, sur chaque entrée concernée. Pour
+la paire `atk_x1` (ATK X1 V2 Ultra Max ↔ VXE Dragonfly X3), le libellé écrit alors concluait « un seul
+moule » — alors que le **constat n° 12** de `docs/audit/AUDIT.md` dit exactement le contraire : la X3
+partage les **cotes** (127 × 64 × 40 mm) mais ni sa bosse ni sa hauteur de boutons ne lui sont propagées,
+parce que la bosse de l'X1 est elle-même contestée (« Back - minimal » chez EloShapes contre « Mid » du
+propriétaire) et que **rien ne prouve encore que la X3 reprend la même pièce de plastique**. Les deux
+libellés sont réécrits pour dire ce que le catalogue dit réellement (« coque de la famille X1 », deux
+entrées jamais proposées ensemble, valeurs non propagées, renvoi au constat n° 12).
+
+Pourquoi c'est signalé alors qu'aucun membre ne le voit : un libellé de source **est** l'enregistrement de
+traçabilité. Un test peut vérifier qu'un fait est **déclaré** ; aucun test ne peut vérifier qu'une
+déclaration est **vraie**. Une affirmation plus forte que ce que la source établit est donc un faux
+témoignage silencieux — la seule façon de le trouver est de confronter les deux documents, ce qui est
+fait ici. Les valeurs du catalogue, elles, n'ont pas changé (la X3 reste « à vérifier », jamais
+recommandée).
+
+**b) La bosse d'une coque n'était surveillée par aucun test.** L'invariant « deux entrées d'une même coque
+ne peuvent pas annoncer deux hauteurs de boutons » existait (`test_no_shell_mixes_two_button_heights`) ;
+son jumeau pour la **position de la bosse** n'existait pas. Le catalogue est conforme aujourd'hui (les
+sept coques partagées hors exception sont alignées), mais rien n'aurait signalé une dérive — ni deux
+bosses différentes, ni une jumelle laissée « Inconnu » alors que l'autre publie sa bosse (cas qui, lui,
+produit un score partiel injustifié et deux conseils différents pour la même pièce de plastique).
+`tests/test_data.py::test_aucune_coque_ne_melange_deux_bosses` comble le trou, avec la même exception
+documentée que les boutons (VXE X3) et un garde-fou d'inventaire (au moins huit coques examinées).
+
+| Contrôle | Résultat |
+|---|---|
+| Catalogue, 8 coques partagées | **conforme** : aucune divergence de bosse hors l'exception documentée |
+| Mutation A — une jumelle de la coque A9 annonce « Rear » | **1 échec** · restauré → 1 passed |
+| Mutation B — une jumelle Pulsar laisse sa bosse « Inconnu » | **1 échec** · restauré → 1 passed |
+| `tests/test_data.py` | **93 passed** (+1 cas) |
+| `pytest -q` · `pyflakes` · `tools/privacy_scan.py` | **630 passed** · 0 · 0 violation |
