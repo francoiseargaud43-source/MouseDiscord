@@ -1589,7 +1589,7 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 | La **VXE X3** partage la coque de l'ATK X1 V2 Ultra Max sans hériter de sa bosse ni de ses boutons. | Exception **nommée et testée** depuis le 2026-10-12 : la bosse de l'X1 est contestée par une source tierce, et rien ne prouve que la X3 (gamme VXE, switchs Omron, puce Broadcom) reprenne les siens. |
 | `grip_width_mm` reste `null` pour les 36 souris : la confiance « élevée » n'est donc atteignable par personne (la largeur de prise est estimée « coque − 3 mm »). | La mesure de la largeur de prise exige une photo retournée, calibrée : c'est une **campagne** à part entière, pas un correctif d'audit. Déjà documenté (`docs/audit/MESURE_BOUTONS_2026-10-12.md`). |
 | Un salon verrouillé (`LOCK_FINDER_CHANNEL=true`) : les réponses **éphémères** d'interaction ne dépendent pas du droit « Envoyer des messages », mais un repli par `followup` en dépendrait. | Déjà écrit noir sur blanc dans le guide de déploiement §8.3 (« à confirmer lors de votre test manuel »). Rien à corriger dans le code : le repli est journalisé, jamais silencieux. |
-| **Trois fichiers suivis dans un dossier ignoré** (`image-search/eloshapes-atk-f1-v3-mouse-top-view-shape-1|2|3`) et un résidu `image.png` à la racine (premier commit, listé « à ne pas envoyer sur le serveur »). | Suppression interdite sans inventaire complet validé par le propriétaire (règle du projet). **Signalé**, rien supprimé. |
+| **Trois fichiers suivis dans un dossier ignoré** (`image-search/eloshapes-atk-f1-v3-mouse-top-view-shape-1|2|3`) et un résidu `image.png` à la racine (premier commit, listé « à ne pas envoyer sur le serveur »). | **Résolu le 2026-10-13** : inventaire complet du dépôt, puis retrait des quatre fichiers — §26.7. |
 
 ### 21.4 Preuves d'exécution (2026-10-12, 32e passe)
 
@@ -2410,11 +2410,49 @@ conception), et un prix ou un poids **géant mais fini** (`1e9`) — donnée abs
 poids réel est déjà encadré par un test de données (20–120 g). Seul effet d'affichage possible :
 « 1e+09 g ». Aucune souris livrée n'est dans ce cas.
 
-### 26.7 Preuves d'exécution (38e passe)
+### 26.7 Mise au propre du dépôt : inventaire complet, résidus retirés (2026-10-13)
+
+Le 2026-10-12 (§21.3), deux résidus étaient **signalés** sans être supprimés : la règle du projet interdit
+toute suppression avant un inventaire complet. L'inventaire a été fait le 2026-10-13 sur les fichiers
+suivis du dépôt ; voici ce qui est sorti, ce qui reste, et pourquoi.
+
+**Retiré — 4 fichiers suivis (1,4 Mo) et 2 aperçus non suivis :**
+
+| Fichier | Nature | Pourquoi il part |
+|---|---|---|
+| `image.png` (racine, 423 Ko, 1568 × 500) | **brouillon** de bannière (« AzeMouse ✦ by aze129 », composition illustrée) | jamais livré ni affiché : la bannière publiée est `T08_azemouse_banniere.png`, une composition photo plus récente ; aucun code, aucun test, aucun document ne l'utilisait. Récupérable tel quel : `git show 9b8e4be:image.png > image.png` (423 002 octets, vérifié) |
+| `image-search/eloshapes-atk-f1-v3-mouse-top-view-shape-1.png`, `-2.jpg`, `-3.png` (1 Mo) | rendus EloShapes de l'ATK F1 V3 | **suivis dans un dossier ignoré** (`image-search/`), donc incohérence de dépôt ; les largeurs mesurées sur ces vues sont écrites et sourcées dans `MESURES_LARGEUR_2026-10-11.md`, et `image-search/` reste le dossier où déposer une image à mesurer |
+| `image-search/_apercu_haut2.png`, `_apercu_pip.png` | aperçus produits par un banc de mesure | jamais suivis par Git : documents de travail d'une passe |
+
+**Conservé — et pourquoi** (le reste de l'inventaire : **146 fichiers suivis** après l'opération) :
+
+- `ImageUse/` — **copie à l'octet près** des 15 illustrations livrées (`assets/illustrations/`, empreintes
+  MD5 identiques 15/15). Doublon en apparence, mais c'est la **source nommée** par le master prompt
+  (§39 et §126) et par `REPORTE_DESIGN.md` : la retirer rendrait ces renvois faux.
+- `ImageAct/` (7 captures de l'interface d'origine), `ImageEx/` (9 références de design), `Reverse/`
+  (10 sorties datées de l'outil Oblivity, citées par `utils/matcher.py` et `utils/models.py`) : matériaux
+  nommés par la documentation et par le code.
+- **Aucun code mort** : un balayage AST de `utils/*.py`, `cogs/*.py`, `bot.py` et `config.py` ne trouve
+  ni fonction, ni classe, ni constante jamais référencée — 0 candidat.
+- Les **15 outils** de `tools/` sont tous cités par le README, un document ou un test ; les **26 fichiers
+  de tests** sont tous exécutés (`pytest.ini` : `testpaths = tests`) ; les **27 documents** du dossier
+  `docs/` sont tous atteignables depuis le README.
+- Deux documents n'étaient atteignables depuis nulle part (`LISTE_LIENS_SPONSORISES_2026-10-11.md` et
+  `audit/ELOSHAPES_2026-10-12.md`) : ils sont désormais listés dans le README, section « Structure du
+  dépôt » — un document qu'on ne peut pas trouver ne sert à personne.
+- Caches locaux (`.pytest_cache/`, `__pycache__/`) supprimés : ils ne sont jamais suivis par Git.
+
+**Ce qui n'est jamais envoyé sur le serveur** : `docs/`, `tests/`, `ImageAct/`, `ImageEx/`, `ImageUse/`,
+`Reverse/`, `pytest.ini`, `requirements-dev.txt` — soit **≈ 10 Mo** mesurés le 2026-10-13 (guide de
+déploiement §2.3, chiffre corrigé à cette date).
+
+### 26.8 Preuves d'exécution (38e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **527 passed** (488 avant la passe : 17 tests de code et de validation, 22 cas de fichiers hostiles) |
+| `pytest -q` | **527 passed** (488 avant la passe : 39 tests ajoutés — code, validation, fichiers hostiles) |
+| Inventaire du dépôt (balayage AST + citations) | 0 code mort, 0 outil orphelin, 2 documents orphelins désormais listés ; 4 fichiers retirés (1,4 Mo) |
+| `tools/render_preview.py` — les trois aperçus régénérés après la passe | **identiques à l'octet près** aux PNG livrés (MD5) : la passe n'a rien changé de **visible** |
 | Catalogue attaqué (279 combinaisons) | 0 affichage cassé après correction (3 cas d'erreur et 8 cas de charabia avant) |
 | `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
 | Mesure des limites Discord (27 170 profils) | **0 violation** (tableau §26.1) |

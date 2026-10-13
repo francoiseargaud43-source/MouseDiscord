@@ -1002,7 +1002,7 @@ service, qui continuerait d'exécuter l'ancien code (piège classique, voir §5.
 | `tools/` | Oui (recommandé) | `check_deployment.py` contrôle la nouvelle variable `IMAGES_BASE_URL` |
 | `data/` | **Non** | Inchangé par cette mise à jour ; le transférer écraserait vos liens d'achat |
 | `README.md`, `requirements.txt` | Non (facultatif) | Documentation ; dépendances inchangées |
-| `docs/`, `tests/`, `ImageAct/`, `ImageEx/`, `ImageUse/`, `image.png`, `pytest.ini`, `requirements-dev.txt` | **Non** | Utiles au développement seulement (≈ 7 Mo inutiles sur le serveur) |
+| `docs/`, `tests/`, `ImageAct/`, `ImageEx/`, `ImageUse/`, `Reverse/`, `pytest.ini`, `requirements-dev.txt` | **Non** | Utiles au développement seulement (**≈ 10 Mo** mesurés le 2026-10-13, inutiles sur le serveur) |
 | `.env`, `.venv/`, `state/`, `__pycache__/`, `bot.log` | **Jamais** | Secrets, environnement Python et mémoire du panneau, propres au serveur |
 
 4. Conflits de fichiers : **Écraser**, en cochant « Toujours utiliser cette action » (jamais « Synchroniser les répertoires »).

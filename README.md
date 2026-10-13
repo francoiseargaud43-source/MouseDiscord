@@ -460,7 +460,10 @@ MouseDiscord/
 ├── docs/
 │   ├── DEPLOYMENT_ALWAYSDATA_FILEZILLA.md  # Guide de mise en ligne (Alwaysdata, FileZilla, illustrations)
 │   ├── REPORTE_DESIGN.md     # Charte AzeMouse : assets, mapping image -> écran, hébergement
-│   └── audit/                # Audit, catalogue ATK, matrices, rapports
+│   ├── LISTE_LIENS_SPONSORISES_2026-10-11.md  # Les liens d'affiliation, un par un (relevé initial)
+│   ├── VERIFICATION_LIENS_SPONSORISES_2026-10-11.md  # Relecture page par page des liens et des prix
+│   └── audit/                # Audit, catalogue ATK, matrices, statistiques, campagne EloShapes
+│                             #   (dont ELOSHAPES_2026-10-12.md)
 ├── state/                    # Message publié par !setup_finder (ignoré par Git)
 ├── tests/                    # pytest
 ├── requirements.txt
