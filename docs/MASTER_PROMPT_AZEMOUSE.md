@@ -362,7 +362,8 @@ largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inve
   économie). La contrainte s'applique au **choix de la souris** dans `result_slots` (`sous_plafond`),
   jamais au score : le match idéal n'est jamais retouché. Repli documenté et compté par le banc d'essai :
   quand le plafond ne laisse aucun candidat (grande main à budget serré), la place reste remplie — jamais
-  de trou — et le pourcentage peut alors remonter (84 profils sur 27 170, 0,31 %).
+  de trou — et le pourcentage peut alors remonter (**70 profils sur 27 170, 0,26 %** au banc d'essai du
+  2026-10-13 ; 84 profils, 0,31 % au moment de la décision — le chiffre suit les prix du catalogue).
 - **Prix non vérifié affiché** : une souris dont le prix n'est pas attesté (`price_status != "verified"`)
   affiche « (prix non vérifié) » à côté de son prix, dans les trois places **et** dans la petite ligne de
   prix du mode « Peu importe le prix » (seul endroit où le prix apparaît dans ce mode). Deux souris sont
@@ -853,16 +854,20 @@ Aucun autre fichier ne lit `thenar` pour calculer.
 - **Ordre des pourcentages** : ~~non garanti~~ **tranché le 2026-10-13 (35e passe)** — l'ordre est
   **garanti** (idéal ≥ alternative ≥ économie), la contrainte porte sur le choix de la souris et jamais
   sur le score (§7.7). Mesure avant/après : 2 046 → **84 profils** (0,31 %) où le plafond ne laisse aucun
-  candidat, la place restant alors remplie (jamais de trou) ; le match idéal ne change jamais.
+  candidat, la place restant alors remplie (jamais de trou) ; le match idéal ne change jamais. Valeur
+  **recourante** (elle bouge avec les prix) : **70 profils (0,26 %)** au banc d'essai du 2026-10-13 après
+  la remise des prix (37e passe) — c'est `tools/qa_flow_matrix.py` qui fait foi, pas ce chiffre.
 - **Marqueur « prix non vérifié »** : ~~absent du résultat~~ **tranché le 2026-10-13 (35e passe)** — le
   marqueur est affiché à côté du prix des souris non attestées (Scyrox V6, ATK A9 Plus 2.0), dans les
-  trois places et dans la petite ligne du mode « Peu importe le prix » : **16,09 % des profils**.
+  trois places et dans la petite ligne du mode « Peu importe le prix » : **16,09 % des profils**
+  (mesure de la 35e passe ; le chiffre suit le prix des souris concernées, le banc d'essai le vérifie souris par souris).
 - **Pied de message** : ~~renvoi mort vers « Comment lire ce résultat »~~ **corrigé le 2026-10-13**, avec
   l'autorisation du propriétaire : le renvoi pointe vers « 🧭 Pourquoi ce choix ? », et seulement quand ce
   bloc est affiché (C27 de `docs/audit/AUDIT.md`).
 - **Score partiel des 2e et 3e places** : ~~pourcentage calculé sans le critère des boutons, sans que rien
   ne le dise~~ **tranché le 2026-10-13 (35e passe)** — marqueur discret « · boutons non documentés » à la
-  fin de la ligne (`PARTIAL_HINT`). Il l'annonçait sur **8 187 places** (30,1 %) sans le dire : le biais
+  fin de la ligne (`PARTIAL_HINT`). Il l'annonçait sur **8 187 places** (30,1 %, mesure de la 35e passe)
+  sans le dire : le biais
   était toujours défavorable à la souris, jamais au membre (aucune souris survendue).
 - **Thème Discord clair** : tester la lisibilité (embed bordeaux sur fond clair reste OK, mais vérifier).
 
