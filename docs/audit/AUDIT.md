@@ -66,6 +66,7 @@ Gravité : **H** élevée (résultat ou sécurité des données faux/trompeur), 
 | C32 | Catalogue — provenance | L'ATK Y9 Ultimate listait **deux fois la même source** (libellé, URL et date rigoureusement identiques) : la même lecture était comptée pour deux attestations, et tout audit de provenance gonflait d'une unité. | M | **Corrigé le 2026-10-12 (34e passe)** : fusion en une seule source déclarant les deux champs (`claw_grip_fit`, `price_eur`). `tests/test_data.py::test_aucune_source_n_est_enregistree_deux_fois_dans_une_entree` interdit le retour du doublon ; deux lectures d'une même page à des dates ou libellés différents restent deux sources légitimes. |
 | C33 | Catalogue — statut de cotes | Trois entrées annonçaient `dimension_status = "single_source"` (« une seule source, tierce ») alors que leurs propres sources réunissaient déjà les conditions de `"verified"` : la fiche du fabricant atteste les cotes de l'ATK Duckbill (trois sources de cotes), de l'ATK A9 Air et de la VXE X3. Le sens « statut fort sans preuve » était testé ; le sens inverse ne l'était pas. | M | **Corrigé le 2026-10-12 (34e passe)** : `verified` pour les trois (règle écrite du README : « deux sources concordantes, ou la boutique officielle du fabricant »). Aucun score ne change — seul le statut `conflicting` bloque une souris — et la grille complète le prouve : **0 profil sur 27 170** modifié (nouvel outil `tools/db_effect.py`). `tests/test_data.py::test_le_statut_des_cotes_ne_reste_pas_sous_estime` contrôle la règle **dans les deux sens**. |
 | C34 | Message — prix non vérifié | Le marqueur « (prix non vérifié) » prévu par le master prompt (ses exemples de résultat montrent « 74.90 € (prix non vérifié) » et son croquis de code l'ajoute quand `price_status != "verified"`) **n'apparaissait plus dans aucun message** : il ne vivait que derrière un paramètre `verified_hint` qu'aucun appelant n'activait depuis le retrait de l'onglet « Détails » (2026-10-11). Le prix d'une souris non attestée s'affichait donc exactement comme un prix attesté. | M | **Corrigé le 2026-10-13 (35e passe, décision du propriétaire : « remettre le marqueur »)** : les trois places l'affichent, ainsi que la petite ligne de prix du mode « Peu importe le prix ». Effet mesuré : **4 373 places sur 27 170 profils (16,09 %)** portent le marqueur (contre 0 %) ; Scyrox V6 et ATK A9 Plus 2.0 sont les deux souris concernées. La plus longue ligne portant le marqueur mesure 79 caractères (la plus longue ligne de place du catalogue : 87). `test_a_prix_non_verifie_le_message_le_dit` et le banc d'essai le verrouillent. |
+| C35 | Message — score partiel des places 2 et 3 | Une souris dont la **hauteur des boutons n'est pas documentée** est notée sur les critères disponibles (décision du 2026-10-12, `PARTIAL_SCORING_ALLOWED`) : son pourcentage est donc **sous-estimé** (le critère manquant ne peut que rapporter des points, jamais en retirer). Le message l'explique en clair… mais **seulement quand cette souris est le match idéal** (`ideal.is_partial` dans le bloc « 📐 Vos repères de taille »). En 2ᵉ ou 3ᵉ place, le pourcentage s'affiche sans aucune note : **8 187 places sur 27 170 profils (30,1 %)** — 2ᵉ place 3 832, 3ᵉ place 4 355 — réparties sur **7 304 profils** (un profil peut montrer les deux places). Le biais est toujours **défavorable** à la souris concernée (jamais de prix ni de score gonflé) : le membre peut écarter une souris potentiellement meilleure, il n'en achète jamais une survendue. | M | **Signalé le 2026-10-13 (35e passe), non modifié** : la ligne de place est un format verrouillé par le master prompt (« Nom · poids · prix · pourcentage · forme », le plus concis possible) — y ajouter une mention est une décision de texte visible, donc du propriétaire (point 15). |
 
 ## 3. Audit du muscle thénar
 
@@ -133,6 +134,8 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
    compter dans le classement.
 9. **Libellé** « sur 100 » ou « sur 40 » ?
 10. **Tolérances de sélection** : valider 5 / 2 / 2 / 2 pts.
+11. **Vérifications Discord** : à faire par le propriétaire (§9).
+
 12. **Coque `atk_x1` — VXE X3** : la X3 partage les **cotes** de l'ATK X1 V2 Ultra Max (`shell_id`,
     même 127 × 64 × 40 mm) mais ni sa bosse ni sa hauteur de boutons ne lui sont propagées : la bosse de
     l'X1 est elle-même contestée par une source tierce (« Back - minimal » chez EloShapes contre « Mid »
@@ -151,7 +154,13 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     **remis** dans la ligne de prix (décision : « remettre le marqueur dans la ligne de prix »), pour les
     trois places et pour la petite ligne de prix du mode « Peu importe le prix ». **16,09 % des profils**
     (4 373 places) l'affichent désormais, contre 0 % auparavant.
-11. **Vérifications Discord** : à faire par le propriétaire (§9).
+15. **Score partiel en 2ᵉ et 3ᵉ place** : une souris dont la hauteur des boutons n'est pas documentée est
+    notée sur les critères disponibles, ce qui **sous-estime** son pourcentage. Le message l'explique quand
+    cette souris est le match idéal, mais **pas** quand elle occupe la 2ᵉ ou la 3ᵉ place : **8 187 places**
+    sur 27 170 profils (2ᵉ 3 832 · 3ᵉ 4 355). Le biais est toujours défavorable à la souris concernée.
+    **Question au propriétaire** : ajouter la même note pour ces deux places (marqueur discret sur la ligne
+    ou phrase sous les lignes, au choix), ou garder le format actuel — la ligne de place est un format
+    verrouillé par le master prompt, donc la décision lui revient (C35).
 
 ## 9. Vérifications Discord
 
