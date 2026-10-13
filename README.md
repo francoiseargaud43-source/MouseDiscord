@@ -126,6 +126,11 @@ Pour lancer les tests : `pip install -r requirements-dev.txt`.
 | `SESSION_TTL_SECONDS` | non | `1800` | Durée d'inactivité avant expiration d'un parcours |
 | `SESSION_PERSIST` | non | `true` | Conserve les parcours en cours dans `state/sessions.json` (`false` = mémoire seulement) |
 
+Les deux variables booléennes acceptent `true`/`false` (aussi `1`/`0`, `yes`/`no`, `on`/`off`,
+`oui`/`non`, `vrai`/`faux`) : **toute autre valeur empêche le démarrage**, avec la liste des
+orthographes acceptées dans le message. Une faute de frappe dans le `.env` ne passe donc jamais
+inaperçue — avant, elle désactivait la fonction en silence (corrigé le 2026-10-13).
+
 ---
 
 ## Lancer le bot

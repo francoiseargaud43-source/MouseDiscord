@@ -102,7 +102,13 @@ class FinderSession:
     def from_state(cls, raw: dict[str, Any], last_seen: float) -> "FinderSession | None":
         """Reconstruit une session enregistrée ; ``None`` si l'enregistrement est inutilisable."""
         try:
-            session = cls(user_id=int(raw["user_id"]), session_id=str(raw["session_id"]))
+            identifiant = str(raw["session_id"])
+            # L'identifiant est réécrit tel quel dans le fichier (``ensure_ascii=False``) : un
+            # demi-caractère (``"\ud800"``, fichier bricolé) ne pourrait jamais être encodé, et ferait
+            # échouer l'enregistrement de TOUS les parcours. Refusé ici : ``UnicodeEncodeError`` est
+            # un ``ValueError``, attrapé juste en dessous.
+            identifiant.encode("utf-8")
+            session = cls(user_id=int(raw["user_id"]), session_id=identifiant)
             if raw.get("grip"):
                 session.grip = Grip(raw["grip"])
             if raw.get("thenar"):
@@ -253,7 +259,9 @@ class SessionStore:
             temporary = self._path.with_name(f"{self._path.name}.tmp")
             temporary.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
             os.replace(temporary, self._path)
-        except OSError as exc:            # disque plein, droits, dossier absent…
+        except (OSError, ValueError) as exc:   # disque plein, droits… et contenu non écrivable
+            # ``ValueError`` : un contenu impossible à écrire en UTF-8 (voir ``from_state``) ne doit
+            # pas casser la réponse du membre — perte d'enregistrement, jamais d'interaction en échec.
             log.warning("Parcours non enregistrés dans %s : %s", self._path, exc)
 
     def _load(self) -> None:
@@ -262,7 +270,11 @@ class SessionStore:
             raw = json.loads(self._path.read_text(encoding="utf-8"))
         except FileNotFoundError:
             return
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, ValueError) as exc:
+            # ``ValueError`` couvre le JSON invalide (``JSONDecodeError``) **et** les octets non UTF-8
+            # (``UnicodeDecodeError``) : un fichier tronqué en plein caractère — transfert interrompu,
+            # disque plein, copie partielle — faisait remonter l'exception depuis la construction du
+            # bot, donc **le bot ne démarrait plus** (trouvé le 2026-10-13, même famille que C45).
             log.warning("Fichier de sessions illisible (%s) : %s", self._path, exc)
             return
         if not isinstance(raw, dict) or raw.get("version") != STATE_VERSION:

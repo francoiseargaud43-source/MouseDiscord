@@ -183,6 +183,54 @@ def test_ce_qui_est_lisible_est_recupere_sans_gagner_de_vie(tmp_path, nom):
     assert store.purge_expired() == 1                     # donc elle expire normalement
 
 
+def test_un_fichier_tronque_en_plein_caractere_ne_bloque_pas_le_demarrage(tmp_path):
+    """Trouvé le 2026-10-13 : seuls le JSON invalide et l'absence de fichier étaient prévus.
+
+    Des **octets non UTF-8** (transfert FileZilla interrompu, disque plein, copie partielle) faisaient
+    remonter ``UnicodeDecodeError`` depuis la construction du magasin — donc depuis la construction du
+    bot : **le bot ne démarrait plus**, alors que la promesse de ce fichier est « jamais une
+    exception ». Même famille que C45 (commande d'installation).
+    """
+    chemin = tmp_path / "sessions.json"
+    chemin.write_bytes(b'{"version": 1, "sessions": [{"session_id": "a", "user_id": 1, "note": "\xc3')
+    store = SessionStore(ttl_seconds=1800, path=chemin)          # ne lève pas
+    assert len(store) == 0
+    session = store.start(user_id=1)                             # un parcours neuf fonctionne…
+    assert store.lookup(session.session_id, 1)[1] == LOOKUP_OK
+    assert "version" in chemin.read_text(encoding="utf-8")       # …et le fichier repart proprement
+
+
+def test_un_identifiant_impossible_a_reecrire_est_refuse(tmp_path):
+    """Un demi-caractère (``"\\ud800"``) ne peut pas être réencodé : il est refusé au chargement.
+
+    L'identifiant est réécrit **tel quel** dans le fichier (``ensure_ascii=False``) : un tel contenu
+    faisait échouer l'enregistrement à chaque réponse, donc tout parcours devenait impossible à
+    terminer tant que le fichier restait en place.
+    """
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text('{"version": 1, "sessions": [{"session_id": "\\ud800", "user_id": 1, '
+                      '"age_seconds": 1, "grip": "palm"}]}', encoding="utf-8")
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+    assert len(store) == 0                                       # la session bricolée est écartée
+    session = store.start(user_id=2)
+    assert store.lookup(session.session_id, 2)[1] == LOOKUP_OK   # et le parcours neuf est utilisable
+
+
+def test_un_etat_impossible_a_ecrire_ne_casse_pas_le_parcours(tmp_path):
+    """``save()`` promet « ne lève jamais » : un contenu non écrivable ne doit pas casser une réponse.
+
+    La garantie est dans la docstring, elle est maintenant vraie dans le code : l'enregistrement est
+    perdu (avec un avertissement dans les journaux), pas l'interaction du membre.
+    """
+    chemin = tmp_path / "sessions.json"
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+    session = store.start(user_id=1)
+    session.session_id = "\ud800"                        # contenu impossible à écrire en UTF-8
+    store.save()                                         # ne lève pas (l'avertissement est tracé)…
+    remplacante = store.start(user_id=2)                 # …et le magasin reste utilisable
+    assert store.lookup(remplacante.session_id, 2)[1] == LOOKUP_OK
+
+
 def test_un_age_negatif_ne_rend_pas_la_session_immortelle():
     """Horloge reculée de 5 s : la session repart « vue à l'instant » et expire après le délai."""
     import json

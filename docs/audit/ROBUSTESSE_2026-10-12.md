@@ -2646,3 +2646,98 @@ Preuves (les trois tests échouent sur l'ancien code — vérifié par mutation)
 **Ce qui n'a pas changé** : aucun texte affiché au membre, aucun score, aucune donnée, aucun prix,
 aucun lien. La commande `!setup_finder` publie et met à jour exactement comme avant — elle ne se bloque
 plus, et ne laisse plus croire à un échec lorsqu'elle a publié le message.
+
+### 26.16 Un fichier d'état tronqué empêchait le bot de démarrer (C46)
+
+Dernier tour de la même chasse, sur le fichier le plus sensible du bot : `state/sessions.json`.
+Son en-tête de tests promettait déjà qu'« un fichier hostile ne doit JAMAIS empêcher le bot de
+démarrer : soit il est ignoré, soit ce qui est lisible est récupéré — jamais une exception ». Mesure
+faite : cette promesse avait un trou, et le trou était le plus grave des trois.
+
+| Contenu du fichier | Avant | Attendu |
+|---|---|---|
+| absent | ignoré | identique |
+| JSON invalide, format inconnu, entrées absurdes | ignoré | identique |
+| dossier à la place du fichier | ignoré (`IsADirectoryError` est un `OSError`) | identique |
+| **tronqué en plein caractère** (octets non UTF-8) | **`UnicodeDecodeError` remontait** | ignoré |
+| **identifiant en demi-caractère** (`"\ud800"`, fichier bricolé) | chargé, puis **chaque enregistrement échouait** | entrée refusée |
+
+Conséquences, dans l'ordre de gravité :
+
+1. `SessionStore(...)` est construit **au démarrage du bot** (`MouseBot.__init__`). Un
+   `UnicodeDecodeError` y faisait donc échouer le lancement : trace dans les journaux, bot arrêté,
+   tâche planifiée qui relance… et le membre ne voit plus rien fonctionner. C'est exactement la panne
+   « il faut recommencer à zéro » que ce fichier devait rendre impossible. Un fichier tronqué en plein
+   caractère n'est pas exotique : transfert FileZilla interrompu, disque plein, copie partielle.
+2. Un identifiant contenant un demi-caractère était chargé tel quel, puis réécrit **tel quel** dans le
+   fichier (`ensure_ascii=False`) : l'encodage échouait, `_save` ne protégeait que les erreurs disque,
+   et l'exception remontait à **chaque réponse** — le parcours devenait impossible à continuer, à
+   chaque clic, tant que le fichier restait en place (et il était restauré au redémarrage suivant).
+   La docstring de `save()` promettait pourtant « ne lève jamais ».
+
+Correction (`utils/session.py`) :
+
+- `_load` attrape `(OSError, ValueError)` : `ValueError` couvre le JSON invalide **et** les octets non
+  UTF-8 (`UnicodeDecodeError`). Le fichier est ignoré, avec un avertissement qui le nomme ;
+- `from_state` refuse un identifiant qui ne peut pas être réencodé en UTF-8 (``identifiant.encode``, un
+  `UnicodeEncodeError` étant un `ValueError`) : une session bricolée n'entre plus dans la mémoire ;
+- `_save` attrape `(OSError, ValueError)` : un contenu impossible à écrire fait perdre
+  l'enregistrement (avertissement tracé), **jamais** l'interaction du membre — la promesse
+  « ne lève jamais » est maintenant vraie dans le code.
+
+Preuves (les trois tests échouent sur l'ancien code — vérifié par mutation) :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_session.py::test_un_fichier_tronque_en_plein_caractere_ne_bloque_pas_le_demarrage` | le magasin s'ouvre vide, un parcours neuf marche et le fichier repart proprement |
+| `tests/test_session.py::test_un_identifiant_impossible_a_reecrire_est_refuse` | session bricolée écartée, parcours neuf utilisable |
+| `tests/test_session.py::test_un_etat_impossible_a_ecrire_ne_casse_pas_le_parcours` | `save()` ne lève pas, le magasin reste utilisable |
+| `pytest -q` | **544 passed** (541 avant cette correction : 3 tests ajoutés) |
+| `pyflakes` · `tools/privacy_scan.py` | 0 avertissement · 0 violation |
+
+**Ce qui n'a pas changé** : aucun texte affiché, aucun score, aucun seuil, aucune donnée, aucun prix,
+aucun lien, et aucun comportement normal du fichier d'état (les sessions lisibles sont toujours
+récupérées, un âge négatif ramené à zéro, un parcours terminé jamais écrit sur le disque).
+
+### 26.17 Une faute de frappe dans le `.env` désactivait une fonction en silence (C47)
+
+Dernier point de la passe, sur la configuration : `config.py` refusait déjà clairement un **entier**
+invalide (`SESSION_TTL_SECONDS=trente` → message + arrêt), mais traitait les **booléens** autrement.
+La règle était : « tout ce qui n'est pas reconnu comme vrai vaut faux ».
+
+| Valeur écrite dans le `.env` | Avant | Attendu |
+|---|---|---|
+| `true`, `1`, `yes`, `on`, `oui` | vrai | identique |
+| `false`, `0`, `no`, `off`, `non` | faux | identique |
+| **`ture`** (faute de frappe sur `true`) | **faux, en silence** | refusé, avec la liste des orthographes |
+| **`faux!`**, `peut-être`, `indifférent` | **faux, en silence** | refusé, avec la liste des orthographes |
+
+Conséquence concrète : `SESSION_PERSIST=ture` désactivait la **conservation des parcours en cours** —
+les questionnaires commencés disparaissaient à chaque redémarrage — alors que l'administrateur venait
+d'écrire dans son `.env` qu'il voulait l'inverse. Rien n'était journalisé, rien ne le signalait : le
+même défaut que partout ailleurs dans cette passe (une divergence silencieuse entre ce qui est écrit
+et ce qui s'exécute), cette fois dans la configuration du serveur.
+
+Correction (`config.py`) : deux listes explicites — `_ENV_VRAI` (`1`, `true`, `yes`, `on`, `oui`,
+`vrai`) et `_ENV_FAUX` (`0`, `false`, `no`, `off`, `non`, `faux`) — et **toute autre valeur lève une
+`ConfigError`** qui nomme la variable, la valeur écrite, les orthographes acceptées et le fichier à
+corriger. `bot.py` traduit déjà cette erreur en message lisible sans trace technique (il l'attrape
+depuis le 2026-10-12), et un `.env` vide garde la valeur par défaut.
+
+Documentation alignée : `README.md` (variables d'environnement), `.env.example` (là où la valeur est
+écrite) et ce paragraphe.
+
+Preuves (les deux tests échouent sur l'ancien comportement — vérifié par mutation) :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_config.py` — orthographes acceptées | 6 vraies (`1`, `true`, `TRUE`, ` on `, `oui`, `vrai`) et 6 fausses (`0`, `false`, `False`, `off`, `non`, `faux`) |
+| `tests/test_config.py::test_une_valeur_booléenne_inconnue_est_refusee` | `SESSION_PERSIST=ture` → `ConfigError` qui nomme la variable |
+| `tests/test_config.py::test_une_valeur_booléenne_inconnue_bloque_le_demarrage_avec_un_message_lisible` | démarrage arrêté, message « doit valoir vrai ou faux », « Corrigez-la dans le fichier » |
+| `pytest -q` | **558 passed** (544 avant cette correction : 14 cas de test ajoutés) |
+| `pyflakes` · `tools/privacy_scan.py` | 0 avertissement · 0 violation |
+
+**Ce qui n'a pas changé** : aucun comportement du bot, aucun texte affiché au membre, aucun score,
+aucune donnée, aucun prix, aucun lien. Un `.env` correct (les 6 variables du guide, écrites
+`true`/`false`) démarre exactement comme avant ; seul un `.env` avec une valeur inconnue change de
+comportement — il s'arrête en le disant, au lieu de deviner.

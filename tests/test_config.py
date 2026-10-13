@@ -75,6 +75,39 @@ def test_a_negative_finder_channel_id_is_refused():
     assert "FINDER_CHANNEL_ID doit être un identifiant positif" in proc.stderr
 
 
+# --- Chasse aux micro-bugs du 2026-10-13 : une faute de frappe ne doit pas désactiver en silence ---
+@pytest.mark.parametrize("valeur", ["1", "true", "TRUE", " on ", "oui", "vrai"])
+def test_les_orthographes_vraies_sont_acceptees(monkeypatch, valeur):
+    monkeypatch.setenv("LOCK_FINDER_CHANNEL", valeur)
+    assert config._env_bool("LOCK_FINDER_CHANNEL", False) is True
+
+
+@pytest.mark.parametrize("valeur", ["0", "false", "False", "off", "non", "faux"])
+def test_les_orthographes_fausses_sont_acceptees(monkeypatch, valeur):
+    monkeypatch.setenv("LOCK_FINDER_CHANNEL", valeur)
+    assert config._env_bool("LOCK_FINDER_CHANNEL", True) is False
+
+
+def test_une_valeur_booléenne_inconnue_est_refusee(monkeypatch):
+    """Trouvé le 2026-10-13 : `SESSION_PERSIST=ture` (faute de frappe) valait « faux » **en silence**.
+
+    La conservation des parcours était donc désactivée sans un mot, alors que le fichier `.env` du
+    serveur annonçait le contraire. Un entier illisible était déjà refusé clairement ; une valeur
+    booléenne inconnue l'est maintenant aussi, avec la liste des orthographes acceptées.
+    """
+    monkeypatch.setenv("SESSION_PERSIST", "ture")
+    with pytest.raises(config.ConfigError, match="SESSION_PERSIST doit valoir vrai ou faux"):
+        config._env_bool("SESSION_PERSIST", True)
+
+
+def test_une_valeur_booléenne_inconnue_bloque_le_demarrage_avec_un_message_lisible():
+    """Le démarrage s'arrête et le message dit quoi corriger (bot.py le traduit sans trace technique)."""
+    proc = _run_config_expect_failure({"DISCORD_TOKEN": "T", "SESSION_PERSIST": "peut-être"})
+    assert proc.returncode != 0
+    assert "SESSION_PERSIST doit valoir vrai ou faux" in proc.stderr
+    assert "Corrigez-la dans le fichier" in proc.stderr
+
+
 def test_the_bot_turns_a_broken_configuration_into_a_clear_message():
     """bot.py doit quitter proprement (message lisible), pas dérouler une trace technique."""
     env = {k: v for k, v in os.environ.items()

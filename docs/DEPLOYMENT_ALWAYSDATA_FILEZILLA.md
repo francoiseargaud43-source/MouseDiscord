@@ -1941,22 +1941,30 @@ d'habitude — **jamais `bot.py` à la main** : la tâche planifiée s'en charge
 
 ### 12.22 Mise à jour du 2026-10-13 (13e) : les numéros d'étapes n'ont plus qu'une seule source
 
-Cinq défauts trouvés en relisant le parcours, les outils et la commande d'installation, **aucun visible
-par un membre** : le numéro de l'étape de variante de Claw venait d'une deuxième table (`variant` au lieu
-de `claw_variant`, §26.9), le **total** des étapes était écrit en clair au lieu de se lire dans la même
-table (§26.11), l'aperçu livré `docs/apercu_prix_libre.png` annonçait « Étape 5/5 » au-dessus d'un titre
-« Étape 4/4 » (§26.12), importer l'outil d'aperçu changeait la résolution des images du bot dans le même
-processus (§26.13), et un **fichier d'état illisible** (dossier à la place du fichier, octets non UTF-8)
-faisait répondre « ⚠️ Erreur inattendue » à `!setup_finder` au lieu de publier le message (§26.15).
-Les numéros d'étapes, les titres affichés et les légendes d'aperçu ont maintenant **une seule source**,
-et la commande d'installation traite un état abîmé comme un état absent — comme le fait déjà le fichier
-des parcours.
+Six défauts trouvés en relisant le parcours, les outils, la commande d'installation et la configuration,
+**aucun visible par un membre** : le numéro de l'étape de variante de Claw venait d'une deuxième table
+(`variant` au lieu de `claw_variant`, §26.9), le **total** des étapes était écrit en clair au lieu de se
+lire dans la même table (§26.11), l'aperçu livré `docs/apercu_prix_libre.png` annonçait « Étape 5/5 »
+au-dessus d'un titre « Étape 4/4 » (§26.12), importer l'outil d'aperçu changeait la résolution des images
+du bot dans le même processus (§26.13), un **fichier d'état illisible** (dossier à la place du fichier,
+octets non UTF-8) faisait répondre « ⚠️ Erreur inattendue » à `!setup_finder` au lieu de publier le
+message (§26.15), et un **fichier de parcours tronqué en plein caractère** empêchait carrément le **bot
+de démarrer** (§26.16). Les numéros d'étapes, les titres affichés et les légendes d'aperçu ont maintenant
+**une seule source**, et les fichiers d'état abîmés sont traités comme absents — comme le fait déjà le
+fichier des parcours pour ses propres contenus illisibles.
 
-**1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py`, `cogs/mouse_finder.py`,
-`tools/render_preview.py`, `tests/test_flow.py`, `tests/test_setup_command.py` et
-`docs/apercu_prix_libre.png`. Facultatifs au sens strict : **aucun texte affiché dans Discord ne change**
-(les trois aperçus régénérés le prouvent : deux sont identiques à l'octet près, le troisième ne change
-que sur sa propre légende). Envoyez-les pour que le serveur corresponde au dépôt.
+**À lire avant de mettre à jour** : une valeur **booléenne inconnue** dans le `.env` (par exemple
+`SESSION_PERSIST=ture`, faute de frappe) n'est plus interprétée comme « faux » en silence : le bot
+**refuse de démarrer** et le message indique les orthographes acceptées (`true`/`false`, et
+`1`/`0`, `yes`/`no`, `on`/`off`, `oui`/`non`, `vrai`/`faux`). Avant d'envoyer les fichiers, un coup
+d'œil au `.env` : `LOCK_FINDER_CHANNEL` et `SESSION_PERSIST` doivent valoir `true` ou `false` (§26.17).
+
+**1. Fichiers à envoyer (facultatifs)** — `config.py`, `utils/session.py`, `cogs/finder_flow.py`,
+`cogs/mouse_finder.py`, `tools/render_preview.py`, `tests/test_flow.py`, `tests/test_session.py`,
+`tests/test_setup_command.py`, `tests/test_config.py`, `.env.example` et `docs/apercu_prix_libre.png`.
+Facultatifs au sens strict : **aucun texte affiché dans Discord ne change** (les trois aperçus régénérés
+le prouvent : deux sont identiques à l'octet près, le troisième ne change que sur sa propre légende).
+Envoyez-les pour que le serveur corresponde au dépôt.
 
 **2. Rien à ajouter au `.env`** — aucune nouvelle variable.
 
@@ -1964,7 +1972,7 @@ que sur sa propre légende). Envoyez-les pour que le serveur corresponde au dép
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 541 passed
+.venv/bin/python -m pytest -q                      # attendu : 558 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

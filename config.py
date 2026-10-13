@@ -38,11 +38,28 @@ class ConfigError(ValueError):
     """Variable d'environnement invalide ; le message indique la variable à corriger."""
 
 
+# Orthographes reconnues pour un booléen de configuration. Tout le reste est REFUSÉ au démarrage :
+# avant le 2026-10-13, tout ce qui n'était pas reconnu comme « vrai » valait « faux », donc une faute
+# de frappe (`SESSION_PERSIST=ture`) désactivait la conservation des parcours **en silence**.
+_ENV_VRAI = frozenset({"1", "true", "yes", "on", "oui", "vrai"})
+_ENV_FAUX = frozenset({"0", "false", "no", "off", "non", "faux"})
+
+
 def _env_bool(name: str, default: bool) -> bool:
+    """Booléen de configuration ; une valeur inconnue est refusée avec la liste des orthographes."""
     raw = os.getenv(name)
     if raw is None or raw.strip() == "":
         return default
-    return raw.strip().lower() in {"1", "true", "yes", "on", "oui"}
+    valeur = raw.strip().lower()
+    if valeur in _ENV_VRAI:
+        return True
+    if valeur in _ENV_FAUX:
+        return False
+    raise ConfigError(
+        f"{name} doit valoir vrai ou faux (valeur actuelle : {raw!r}). "
+        f"Orthographes acceptées : {', '.join(sorted(_ENV_VRAI | _ENV_FAUX))}. "
+        f"Corrigez-la dans le fichier {ENV_FILE}."
+    )
 
 
 def _env_int(name: str, default: int) -> int:
