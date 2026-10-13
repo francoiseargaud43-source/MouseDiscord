@@ -1295,7 +1295,10 @@ pkill -f "bot.py"                 # la tâche planifiée relance le bot au proch
 1. **Troisième place (économie) enfin utile** : elle avait la même fenêtre que le reste (±2 points sur 40) et
    n'apparaissait donc que dans **0,3 %** des profils (80 sur 23 569). Elle a désormais **sa propre fenêtre
    de ±5 points**, et doit rester **strictement moins chère** que les deux souris affichées : elle apparaît
-   dans **22,63 %** des profils (6 148 sur 23 569) — mesure par `tools/flow_effect.py`, avant/après.
+   dans **26,1 %** des profils qui ont au moins une place (6 148 sur 23 569), soit **22,63 %** des
+   27 170 profils de la grille complète — mesure par `tools/flow_effect.py`, avant/après. *(Pourcentages
+   explicités le 2026-10-13 : cette phrase annonçait « 22,63 % » à côté d'un décompte sur 23 569 — voir
+   `ROBUSTESSE_2026-10-12.md` §26.18.)*
 2. **Moins de « deux fois la même souris »** : quand la zone du mode ne contient que des variantes de la
    même coque, l'alternative cherche une **autre forme** jusqu'à 5 points plus bas, **jamais plus chère**
    que le match idéal. Les profils à deux places de même coque passent de **4 040 à 2 097**.
@@ -1705,7 +1708,8 @@ changements **visibles**, donc à déployer ensemble :
 1. **L'ordre des pourcentages est garanti** : une place n'affiche plus un meilleur pourcentage que la place
    du dessus (idéal ≥ alternative ≥ économie). La contrainte s'applique au **choix de la souris**, jamais au
    score : **le match idéal ne change sur aucun profil**. Mesure avant/après sur 24 609 profils : 2 046 →
-   **84 profils** (0,31 %) où l'ordre n'est pas garanti — ce sont les profils où le plafond ne laisse **aucun**
+   **84 profils** (0,34 % de ces 24 609 ; 0,31 % si l'on rapporte les mêmes 84 profils aux 27 170 de la
+   grille entière — dénominateurs explicités le 2026-10-13, §26.18) où l'ordre n'est pas garanti — ce sont les profils où le plafond ne laisse **aucun**
    candidat (grande main, budget serré) ; la place reste alors remplie (jamais de trou dans le résultat).
    Deuxième place changée sur 1 615 profils, troisième sur 1 976 ; aucune place perdue ni gagnée.
 2. **« (prix non vérifié) » revient à côté du prix** des souris dont le prix n'est pas attesté (Scyrox V6
@@ -1958,6 +1962,9 @@ fichier des parcours pour ses propres contenus illisibles.
 **refuse de démarrer** et le message indique les orthographes acceptées (`true`/`false`, et
 `1`/`0`, `yes`/`no`, `on`/`off`, `oui`/`non`, `vrai`/`faux`). Avant d'envoyer les fichiers, un coup
 d'œil au `.env` : `LOCK_FINDER_CHANNEL` et `SESSION_PERSIST` doivent valoir `true` ou `false` (§26.17).
+
+**Aucun envoi pour la correction documentaire C48** (pourcentages rapportés au bon ensemble, §26.18 de
+`ROBUSTESSE_2026-10-12.md`) : elle ne touche que les documents, pas le serveur.
 
 **1. Fichiers à envoyer (facultatifs)** — `config.py`, `utils/session.py`, `cogs/finder_flow.py`,
 `cogs/mouse_finder.py`, `tools/render_preview.py`, `tests/test_flow.py`, `tests/test_session.py`,

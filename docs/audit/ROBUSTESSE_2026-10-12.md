@@ -509,7 +509,7 @@ Mesure (`.venv/bin/python tools/qa_flow_matrix.py` puis `tools/flow_effect.py`, 
 | Alternative changée | — | 6 939 |
 | Résultats à 1 place | 7 187 | 3 236 |
 | Résultats à 2 places | 16 302 | 14 185 |
-| Résultats à **3 places** | 80 (0,3 %) | **6 148 (22,63 %)** |
+| Résultats à **3 places** | 80 (0,3 %) | **6 148 (26,1 %)** |
 | Deux places sur la même coque | 4 040 | **2 097** |
 | Économies perdues | — | **0** |
 | Pire baisse de score de l'alternative | — | **5 points** (cas de l'élargissement) |
@@ -517,6 +517,14 @@ Mesure (`.venv/bin/python tools/qa_flow_matrix.py` puis `tools/flow_effect.py`, 
 Le banc d'essai de bout en bout se termine avec **0 problème** ; il compte de son côté 2 052 profils à
 deux places de même coque (sa définition ne retient que la paire « match idéal + une autre place »,
 là où `flow_effect.py` compte toutes les paires).
+
+**Les pourcentages de ce tableau portent sur les 23 569 profils qui ont au moins une place** (la grille
+de cette campagne : les 3 601 profils sans aucune place ne peuvent pas en avoir trois). Les mêmes
+6 148 profils rapportés aux **27 170** profils de la grille complète font **22,63 %** — c'est ce second
+chiffre que citent §8.8 et §11.4 (le nombre de profils à trois places ne change pas d'un dénominateur à
+l'autre, seul le pourcentage change : 80 → 6 148 vaut **0,3 % → 26,1 %** sur 23 569 et **0,29 % →
+22,63 %** sur 27 170). Correction du 2026-10-13 : le tableau annonçait « 22,63 % » sous un en-tête à
+23 569 — un pourcentage juste, mais rapporté au mauvais ensemble (voir §26.18).
 
 Exemple de changement d'alternative par élargissement : `palm/185x60`, thénar petit, budget 45 € —
 ATK A9 Plus 2.0 (25/40) → ATK Blazing Sky U2 (20/40), une autre forme, moins chère, dans la fenêtre de
@@ -1942,12 +1950,15 @@ peut donc pas remonter quand les points ne remontent pas. Le contrôle du banc d
 exactement le nombre affiché — vérifié sur la grille complète : **84 violations en points = 84 en
 pourcentages**, aucune divergence (un second plafond serait une ligne de code de plus pour la même règle).
 
-**Le repli restant (84 profils, 0,31 %)** est documenté et vérifié, pas toléré en silence : quand le plafond
+**Le repli restant (84 profils sur les 24 609 qui ont au moins une place, soit 0,34 %)** est documenté et
+vérifié, pas toléré en silence : quand le plafond
 ne laisse **aucun** candidat — grande main à budget serré, où la fenêtre ne contient plus une seule souris
 sous le score de la place du dessus —, la place reste **remplie** (règle du 2026-10-12 : jamais de trou dans
 le résultat) et le pourcentage peut alors remonter. Exemple mesuré : main 225 × 85, mode Économique, match
 idéal ATK U2 V2 Ultimate (10/40) — la seule souris abordable restante est mieux notée (20/40). Le banc
 d'essai **compte** ces profils (« ordre non garanti : 84 ») et le test `test_le_pourcentage_ne_remonte_…`
+les interdit par ailleurs sur les 27 170 profils de sa grille (mêmes 84 profils, donc 0,31 % là où le
+dénominateur est la grille entière : le chiffre de référence du banc d'essai, §25.1)
 vérifie pour chacun qu'aucune souris du classement ne passait sous le plafond.
 
 ### 24.2 Le marqueur « (prix non vérifié) » revient dans la ligne de prix (décision : « remettre »)
@@ -2741,3 +2752,59 @@ Preuves (les deux tests échouent sur l'ancien comportement — vérifié par mu
 aucune donnée, aucun prix, aucun lien. Un `.env` correct (les 6 variables du guide, écrites
 `true`/`false`) démarre exactement comme avant ; seul un `.env` avec une valeur inconnue change de
 comportement — il s'arrête en le disant, au lieu de deviner.
+
+### 26.18 Un pourcentage juste, mais rapporté au mauvais ensemble (C48)
+
+Dernier défaut de la passe, et le seul qui ne touche **ni le bot ni un message** : il est dans le
+**dossier de preuve**. Deux passages de l'audit annonçaient un pourcentage exact — pour un **autre**
+dénominateur que celui écrit juste à côté.
+
+| Passage | Ce qui était écrit | Le même rapport |
+|---|---|---|
+| §10 de ce document (tableau du 2026-10-12) | « Résultats à 3 places … **6 148 (22,63 %)** », sous un en-tête à **23 569** profils | 6 148 ÷ 23 569 = **26,1 %** ; 22,63 % = 6 148 ÷ **27 170** |
+| §24 de ce document et §12.18 du guide de déploiement | « **84 profils** (0,31 %) », la même phrase citant **24 609** profils | 84 ÷ 24 609 = **0,34 %** ; 0,31 % = 84 ÷ **27 170** |
+
+Les deux pourcentages étaient donc **mesurés** — sur l'autre grille (27 170, la grille complète) — et
+reposés à côté d'un décompte exprimé sur la grille « profils qui ont au moins une place » (23 569, puis
+24 609). Le comptage, lui, ne change pas d'une grille à l'autre : un profil **sans aucune place** ne peut
+ni en avoir trois, ni violer l'ordre des pourcentages. C'est exactement ce qui rend l'erreur invisible à
+la relecture : chaque nombre pris seul est vrai, et il faut refaire la division pour voir que les deux
+nombres d'une même phrase ne parlent pas du même ensemble.
+
+Aucun effet sur le bot : aucun score, aucun seuil, aucun texte affiché au membre, aucun prix, aucun lien.
+L'effet est sur le **lecteur du dossier** — le propriétaire, qui décide sur ces chiffres, et qui trouve un
+autre résultat s'il recompte le rapport affiché.
+
+**Correction** : les dénominateurs sont écrits partout, et les deux grilles sont données quand les deux
+chiffres coexistent (les comptages cités — 6 148 profils à trois places, 84 profils hors ordre — sont
+inchangés) :
+
+- §10 : la ligne passe à **26,1 %**, et une note sous le tableau nomme les deux ensembles
+  (26,1 % des 23 569, 22,63 % des 27 170) ;
+- §24, §12.18 : « 84 profils, **0,34 %** des 24 609 (0,31 % des 27 170) » ;
+- le constat n° 13 de `docs/audit/AUDIT.md` §2 et `docs/MASTER_PROMPT_AZEMOUSE.md` : même précision, le chiffre de référence
+  du banc d'essai (0,31 % sur 27 170) restant cité comme tel.
+
+**Balayage complet** (fait avant de corriger, pour ne pas s'arrêter au premier cas) : 22 formes « N sur M »
+dans les documents, 5 lignes portant à la fois un ensemble et un pourcentage, 1 seule incohérence (le
+§12.12 du guide) ; les cellules de tableau à dénominateur implicite ont été recalculées une par une
+(§7, §10, §11.4, §24, §25, `CATALOGUE_ATK`, statistiques) — aucune autre erreur. Deux pourcentages au
+dixième (« 0,3 % » pour 0,34 %, « 3,7 % » pour 3,69 %) sont des arrondis, pas des erreurs.
+
+**Nouveau contrôle** : `tests/test_doc_coherence.py` (4 cas) vérifie que tout pourcentage d'une ligne qui
+cite un « N sur M » correspond au rapport, à 0,05 point près (l'arrondi au dixième passe), en lisant
+l'ensemble sur la ligne du pourcentage ou sur celle qui précède. Deux limites sont écrites dans le test
+plutôt que cachées : il ne juge pas un dénominateur implicite (cellule de tableau, « N profils sur les
+24 609 »), et l'élargissement du motif a été **essayé puis écarté** parce qu'il laissait passer le défaut
+même qu'il devait attraper (un couple juste sur la ligne voisine excusait le mauvais).
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_doc_coherence.py` | **4 passed** ; remettre l'ancienne phrase du §12.12 → **1 failed** (vérifié par mutation) |
+| 6 148 ÷ 23 569 · 6 148 ÷ 27 170 | **26,09 %** · **22,63 %** |
+| 84 ÷ 24 609 · 84 ÷ 27 170 | **0,34 %** · **0,31 %** |
+| `pytest -q` | **563 passed** (558 avant cette correction : 4 cas ajoutés dans `tests/test_doc_coherence.py`, plus 1 cas de contrôle des renvois) |
+| `pyflakes` · `tools/privacy_scan.py` | 0 avertissement · 0 violation |
+
+**Ce qui n'a pas changé** : aucun fichier du bot, aucun message, aucun score. Le guide de déploiement ne
+demande donc **aucun envoi** pour cette correction — elle concerne les documents, pas le serveur.
