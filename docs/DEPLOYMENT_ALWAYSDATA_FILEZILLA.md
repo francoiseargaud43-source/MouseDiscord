@@ -2068,16 +2068,27 @@ attendus de ces blocs, eux, sont vérifiables à tout moment et ont été **rejo
 travail) et `tools/qa_flow_matrix.py --rapide` → **0 problème détecté**. Aucun de ces quatre blocs n'avait
 besoin d'être corrigé.
 
-**Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
+9. **Le message « sans candidat » n'accuse plus le catalogue** (C59, §26.27) : sur un profil sans candidat
+   — **4 082 profils sur 27 170** (15,0 %) — la carte « Aucun match classable » disait « aucune souris ne
+   peut être classée avec les données vérifiées pour ces critères ». Dans les trois situations réelles
+   (mesures hors de la plage des 36 souris, budget trop serré, gamme sans candidat), des souris **sont**
+   classables et le catalogue n'est pour rien : le membre attendait une correction de données au lieu
+   d'essayer une autre gamme. Le texte nomme maintenant ce qu'il a fourni (« Aucune souris ne peut être
+   retenue avec ces critères. ») suivi du même conseil. **Envoyez `cogs/finder_flow.py`**, puis redémarrez
+   comme d'habitude — **jamais `bot.py` à la main** : la tâche planifiée s'en charge, sinon
+   `pkill -f "bot.py"`.
+
+**Fichiers à envoyer** : `utils/session.py` (point 4) et **`cogs/finder_flow.py`** (point 9) — ce sont les
+deux fichiers du bot touchés ici — et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **673**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **675**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 673 passed
+.venv/bin/python -m pytest -q                      # attendu : 675 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```
