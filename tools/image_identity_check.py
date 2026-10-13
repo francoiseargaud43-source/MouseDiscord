@@ -140,7 +140,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
-    resultat = compare(Path(args.reference), Path(args.candidate), args.ref_front, args.cand_front)
+    # Fichier absent ou illisible : message clair plutôt qu'une trace `FileNotFoundError`
+    # (trouvé le 2026-10-13, chasse aux micro-bugs).
+    for etiquette, chemin in (("référence", args.reference), ("candidate", args.candidate)):
+        if not Path(chemin).is_file():
+            parser.error(f"image introuvable ({etiquette}) : {chemin}")
+    try:
+        resultat = compare(Path(args.reference), Path(args.candidate), args.ref_front, args.cand_front)
+    except (OSError, ValueError) as exc:
+        parser.error(f"image illisible : {exc}")
     if args.json:
         print(json.dumps(resultat.__dict__, ensure_ascii=False, indent=2))
         return 0

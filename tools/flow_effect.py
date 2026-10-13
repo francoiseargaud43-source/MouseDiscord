@@ -67,7 +67,15 @@ def main() -> int:
     parser.add_argument("--rapide", action="store_true", help="grille réduite")
     args = parser.parse_args()
 
-    ancien = charger_ancienne_version(args.avant)
+    try:
+        ancien = charger_ancienne_version(args.avant)
+    except subprocess.CalledProcessError:
+        # Référence inconnue : `git show` échoue. Le dire en une ligne plutôt que de laisser
+        # remonter un `CalledProcessError` brut (trouvé le 2026-10-13, chasse aux micro-bugs).
+        parser.error(
+            f"référence introuvable dans ce dépôt : {args.avant!r} "
+            "(attendu : un commit, une branche ou HEAD)"
+        )
     reference = args.avant
     if reference == "HEAD":
         reference = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,

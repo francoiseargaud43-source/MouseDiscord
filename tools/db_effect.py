@@ -40,7 +40,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import qa_flow_matrix as banc  # noqa: E402  (grille et profil de référence du banc d'essai)
 import cogs.finder_flow as flux  # noqa: E402
-from utils.catalog import load_catalog  # noqa: E402
+from utils.catalog import CatalogError, load_catalog  # noqa: E402
 from utils.matcher import compatibility_percent  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 
@@ -198,7 +198,15 @@ def main() -> int:
                            help="simulation de retrait : autorise un catalogue APRÈS réduit (sous-ensemble)")
     options = analyseur.parse_args()
 
-    rapport = comparer(options.avant, options.apres, options.grille, retrait=options.retrait)
+    # Fichier absent ou illisible : le dire en une ligne plutôt que de laisser remonter un
+    # FileNotFoundError brut (trouvé le 2026-10-13, chasse aux micro-bugs).
+    for etiquette, chemin in (("AVANT", options.avant), ("APRÈS", options.apres)):
+        if not Path(chemin).is_file():
+            analyseur.error(f"catalogue introuvable ({etiquette}) : {chemin}")
+    try:
+        rapport = comparer(options.avant, options.apres, options.grille, retrait=options.retrait)
+    except (CatalogError, ValueError, OSError) as exc:
+        analyseur.error(f"catalogue illisible ou incohérent : {exc}")
     print(f"Grille « {options.grille} » — profils comparés : {rapport.profils}")
     if rapport.retirees:
         detail = ", ".join(f"{identifiant} {n}" for identifiant, n in

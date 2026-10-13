@@ -101,3 +101,22 @@ def test_profil_normalise_est_borne_et_ordonne(tmp_path):
     assert len(profil) == iic.PROFILE_POINTS
     assert all(0.0 <= h <= 1.0 for h in profil)
     assert max(profil) > 0.9        # la bosse est bien la hauteur maximale
+
+# --- Chasse aux micro-bugs du 2026-10-13 : une image absente ou illisible se dit en une ligne ---
+def test_une_image_absente_est_signalee_sans_trace(tmp_path, capsys):
+    """Avant : `FileNotFoundError` brut (trace). Après : message lisible, code de sortie 2."""
+    reference = _profil_png(tmp_path / "ref.png", [(0.1, 0.5), (0.5, 0.9), (0.9, 0.5)])
+    with pytest.raises(SystemExit) as sortie:
+        iic.main(["--reference", str(reference), "--candidate", str(tmp_path / "absent.png")])
+    assert sortie.value.code == 2
+    assert "image introuvable (candidate)" in capsys.readouterr().err
+
+
+def test_un_fichier_qui_n_est_pas_une_image_est_signale(tmp_path, capsys):
+    """Un fichier texte à la place d'une image ne doit pas remonter une trace de la bibliothèque."""
+    faux = tmp_path / "texte.png"
+    faux.write_text("ceci n'est pas une image", encoding="utf-8")
+    with pytest.raises(SystemExit) as sortie:
+        iic.main(["--reference", str(faux), "--candidate", str(faux)])
+    assert sortie.value.code == 2
+    assert "image illisible" in capsys.readouterr().err

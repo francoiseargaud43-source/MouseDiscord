@@ -92,3 +92,24 @@ def test_l_outil_refuse_deux_catalogues_qui_ne_lisent_pas_les_memes_souris(tmp_p
     incomplet.write_text(json.dumps(entrees, ensure_ascii=False, indent=2), encoding="utf-8")
     with pytest.raises(ValueError, match="mêmes souris"):
         db_effect.comparer(avant, incomplet, "mini")
+
+# --- Chasse aux micro-bugs du 2026-10-13 : un mauvais chemin doit se dire en une ligne ---
+def test_un_catalogue_absent_est_signale_sans_trace(tmp_path, monkeypatch, capsys):
+    """Avant : `FileNotFoundError` brut. Après : message lisible, code de sortie 2 (erreur d'usage)."""
+    monkeypatch.setattr(sys, "argv", ["db_effect.py", "--avant", str(tmp_path / "absent.json"),
+                                      "--grille", "mini"])
+    with pytest.raises(SystemExit) as sortie:
+        db_effect.main()
+    assert sortie.value.code == 2
+    assert "catalogue introuvable (AVANT)" in capsys.readouterr().err
+
+
+def test_un_catalogue_illisible_est_signale_sans_trace(tmp_path, monkeypatch, capsys):
+    """Un fichier qui n'est pas du JSON ne doit pas remonter `JSONDecodeError` brut non plus."""
+    faux = tmp_path / "pas_du_json.json"
+    faux.write_text("ceci n'est pas un catalogue", encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["db_effect.py", "--avant", str(faux), "--grille", "mini"])
+    with pytest.raises(SystemExit) as sortie:
+        db_effect.main()
+    assert sortie.value.code == 2
+    assert "illisible ou incohérent" in capsys.readouterr().err

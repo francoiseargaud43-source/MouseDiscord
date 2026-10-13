@@ -2446,11 +2446,30 @@ suivis du dépôt ; voici ce qui est sorti, ce qui reste, et pourquoi.
 `Reverse/`, `pytest.ini`, `requirements-dev.txt` — soit **≈ 10 Mo** mesurés le 2026-10-13 (guide de
 déploiement §2.3, chiffre corrigé à cette date).
 
-### 26.8 Preuves d'exécution (38e passe)
+### 26.8 Trois outils de mesure disaient leur erreur en une trace brute
+
+Les outils de `tools/` servent au propriétaire (dépouillement, mesures, comparaisons). Trois d'entre eux
+remontaient une **trace Python** au lieu d'une phrase quand on leur donnait un mauvais chemin — le genre
+de message qui laisse croire à une panne de l'outil plutôt qu'à un chemin à corriger :
+
+| Outil | Ce qui arrivait | Ce qui arrive maintenant |
+|---|---|---|
+| `tools/db_effect.py` (catalogue absent, ou fichier qui n'est pas du JSON) | `FileNotFoundError` · `JSONDecodeError` bruts | `catalogue introuvable (AVANT) : …` · `catalogue illisible ou incohérent : …` |
+| `tools/image_identity_check.py` (image absente ou illisible) | `FileNotFoundError` · `UnidentifiedImageError` bruts | `image introuvable (référence) : …` · `image illisible : …` |
+| `tools/flow_effect.py` (référence Git inconnue) | `CalledProcessError` brut | `référence introuvable dans ce dépôt : '…' (attendu : un commit, une branche ou HEAD)` |
+
+Les trois sortent désormais en **code 2** (erreur d'usage), comme `image_corpus_check.py` qui disait
+déjà « dossier introuvable » (vérifié : il reste propre même quand `image-search/` n'existe pas, cas
+possible depuis le nettoyage du §26.7). Aucune mesure, aucun chiffre publié n'est touché par ce
+changement : seul le message d'erreur change. Verrouillé par `tests/test_db_effect.py`,
+`tests/test_image_identity_check.py` et `tests/test_flow_effect.py` (nouveau).
+
+### 26.9 Preuves d'exécution (38e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **527 passed** (488 avant la passe : 39 tests ajoutés — code, validation, fichiers hostiles) |
+| `pytest -q` | **534 passed** (488 avant la passe : 46 tests ajoutés — code, validation, fichiers hostiles, outils) |
+| Outils à mauvais chemin (3 cas) | messages lisibles, code 2 — plus aucune trace Python |
 | Inventaire du dépôt (balayage AST + citations) | 0 code mort, 0 outil orphelin, 2 documents orphelins désormais listés ; 4 fichiers retirés (1,4 Mo) |
 | `tools/render_preview.py` — les trois aperçus régénérés après la passe | **identiques à l'octet près** aux PNG livrés (MD5) : la passe n'a rien changé de **visible** |
 | Catalogue attaqué (279 combinaisons) | 0 affichage cassé après correction (3 cas d'erreur et 8 cas de charabia avant) |

@@ -509,6 +509,7 @@ python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOM
   2026-10-12, invisible à la compilation), aucun `print` dans le bot (il ne laisserait aucune trace dans
   `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré.
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
+- `tests/test_flow_effect.py` : le mesureur d'effet du parcours recharge la version antérieure du code (`git show`) et refuse une référence inconnue avec un message lisible, sans trace Python.
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
   ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**
   (`--retrait`, catalogue après = sous-ensemble) est mesurée — places occupées par les souris sorties et
