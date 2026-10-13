@@ -46,6 +46,7 @@ from check_links import (  # noqa: E402
 DOC = ROOT / "docs" / "VERIFICATION_LIENS_SPONSORISES_2026-10-11.md"
 LIENS = json.loads((ROOT / "data" / "commercial_links.json").read_text(encoding="utf-8"))
 CATALOGUE = {m["id"]: m for m in json.loads((ROOT / "data" / "mouse_db.json").read_text(encoding="utf-8"))}
+LISTE = ROOT / "docs" / "LISTE_LIENS_SPONSORISES_2026-10-11.md"
 
 
 def _lignes_du_tableau() -> dict[str, list[str]]:
@@ -283,3 +284,27 @@ def test_le_resume_ne_cache_pas_les_fiches_injoignables(capsys):
     sortie = capsys.readouterr().out
     assert "1 lien(s) contrôlé(s) · 0 écart(s) · 1 fiche(s) inaccessible(s)." in sortie
     assert "le contrôle n'a pas eu lieu" in sortie
+
+
+def _pages_de_la_liste_de_travail() -> dict[str, str]:
+    """Colonne « page produit » de la liste de travail : {identifiant de souris: handle de la page}."""
+    pages: dict[str, str] = {}
+    for ligne in LISTE.read_text(encoding="utf-8").splitlines():
+        trouve = re.match(r"^\| \d+ \| `([a-z0-9_]+)` \| [^|]* \| (https://\S+) \|", ligne)
+        if trouve:
+            pages[trouve.group(1)] = trouve.group(2).split("?")[0].rsplit("/products/", 1)[-1]
+    return pages
+
+
+def test_la_liste_de_travail_envoie_sur_la_page_que_le_bouton_ouvre():
+    """Défaut trouvé le 2026-10-13 (49e passe) : la liste qui sert à **fabriquer** les liens donnait
+    encore l'ancienne page pour deux souris — le U2 V2 Ultimate sur la page « série U2 », le U2 V2 Mini
+    sur la page « U2 Mini » — alors que les liens installés ouvrent la page **U2 V2** depuis la
+    correction du §6.6. Les deux documents d'audit étaient à jour, la liste de travail non."""
+    pages = _pages_de_la_liste_de_travail()
+    assert len(pages) == 26          # les 26 souris du relevé du 2026-10-11 ; les Pulsar sont ailleurs
+    for identifiant, handle in sorted(pages.items()):
+        assert identifiant in LIENS, f"{identifiant} : la liste nomme une souris sans lien installé"
+        assert f"/products/{handle}" in LIENS[identifiant], (
+            f"{identifiant} : la liste envoie sur « {handle} », le bouton ouvre "
+            f"{LIENS[identifiant].split('?')[0]}")

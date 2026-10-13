@@ -1495,7 +1495,7 @@
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59,95 € (ATK Blazing Sky U2 V2, variante « U2 V2 Mini / White », prix normal 72,95 €, affiché en euros pays France). L'ancienne valeur (77,95 €) venait du produit « U2 Mini », qui n'est pas la V2 : correction demandée par docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md §6.6.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59,95 € (ATK Blazing Sky U2 V2, variante « U2 V2 Mini / White », prix normal 72,95 €, affiché en euros pays France). L'ancienne valeur (77,95 €) venait du produit « U2 Mini », qui n'est pas la V2 : correction demandée par docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md §3 (point 6).",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Mini) ; mains petites-moyennes. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du ATK U2 V2 Mini, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : fingertip : Okay. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",

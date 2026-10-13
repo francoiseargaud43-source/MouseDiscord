@@ -185,9 +185,8 @@ def _sections_of(nom: str) -> set[str]:
     return sections
 
 
-@pytest.mark.parametrize("rel", _CITATION_FILES)
-def test_les_renvois_de_section_pointent_sur_une_section_existante(rel):
-    texte = _read(rel)
+def _renvois_morts(texte: str) -> list[str]:
+    """Les renvois « un document .md + un numéro de section », quand la section n'existe pas."""
     morts = []
     for motif, (groupe_nom, groupe_num) in CITATION_PATTERNS:
         for trouve in motif.finditer(texte):
@@ -197,7 +196,30 @@ def test_les_renvois_de_section_pointent_sur_une_section_existante(rel):
             numero = trouve.group(groupe_num)
             if numero not in _sections_of(nom):
                 morts.append(f"{nom} §{numero} (« {trouve.group(0)[:60]} »)")
+    return morts
+
+
+@pytest.mark.parametrize("rel", _CITATION_FILES)
+def test_les_renvois_de_section_pointent_sur_une_section_existante(rel):
+    morts = _renvois_morts(_read(rel))
     assert morts == [], f"renvois de section introuvables dans {rel} : {sorted(set(morts))}"
+
+
+def test_les_donnees_du_catalogue_ne_citent_pas_de_section_morte():
+    """Le catalogue et les liens renvoient à leurs preuves écrites (« docs/… §3 (point 6) »).
+
+    Défaut trouvé le 2026-10-13 (49e passe) : la note de prix du U2 V2 Mini renvoyait au §6.6 de
+    `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`, une section qui n'a jamais existé — la réponse est au
+    §3 (point 6). Les documents étaient relus par un test, les données non : un renvoi mort y dormait.
+    """
+    morts = []
+    fichiers = sorted(ROOT.glob("data/*.json"))
+    assert fichiers, "aucun fichier de données trouvé : le test ne contrôlerait rien"
+    for fichier in fichiers:
+        texte = fichier.read_text(encoding="utf-8")
+        json.loads(texte)           # une donnée illisible est un autre problème, dit ailleurs
+        morts += [f"{fichier.name} → {mort}" for mort in _renvois_morts(texte)]
+    assert morts == [], f"renvois de section introuvables dans data/ : {morts}"
 
 
 def test_le_readme_cite_tous_les_fichiers_de_tests_et_tous_les_outils():

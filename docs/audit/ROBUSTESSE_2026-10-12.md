@@ -3438,3 +3438,59 @@ Le tri des noms publiés (boutique ⇄ cahier des charges) avait été fait dans
 Restent volontairement en l'état les **journaux datés** (`docs/audit/…`, `RECHERCHE_PRIX_EUR_…`,
 `REPORTE_DESIGN.md`, `docs/audit/matrice_profils.md`) et les **libellés de sources** de
 `data/mouse_db.json`, qui doivent reproduire le titre exact du revendeur.
+
+## 26.33 49e passe — la liste de travail envoyait sur l'ancienne page de deux souris (2026-10-13)
+
+### 26.33.1 Le défaut
+
+La relecture des liens (47e passe) avait recâblé deux souris sur la page **U2 V2** — c'est la fiche que
+leur bouton ouvre depuis la correction du §3 (point 6) de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` —
+l'inventaire du §8.1 la relit lien par lien :
+
+| Souris | Page corrigée | Ancienne page |
+|---|---|---|
+| `atk_u2_v2_ultimate` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `atk-blazing-sky-u2-series-wireless-mouse` |
+| `atk_u2_v2_mini` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse` |
+
+Les deux documents d'audit portent la bonne page (`VERIFICATION` §8.1, `LIENS_AFFILIES_2026-10-12.md` :
+comparaison automatique, **0 écart**). Mais `docs/LISTE_LIENS_SPONSORISES_2026-10-11.md` — la liste qui sert
+à **fabriquer** les liens, la première qu'on ouvre pour ajouter une souris au fichier des liens — donnait
+encore l'ancienne page pour ces deux-là. Conséquence concrète : un lecteur qui reconstruisait le lien du
+**U2 V2 Mini** à partir d'elle envoyait le membre sur la fiche du **U2 Mini** — un autre modèle, **77,95 €**
+au lieu des **59,95 €** publiés.
+
+**Pourquoi personne ne l'avait vu** : seul le tableau §8.1 était relu par un test
+(`tests/test_liens_achat.py`), et il l'était dans les deux sens contre `data/commercial_links.json`. La
+liste de travail, elle, n'était vérifiée que par relecture humaine — la même relecture qui avait corrigé les
+liens sans repasser sur elle.
+
+### 26.33.2 La correction
+
+- Les lignes **12 à 15** de la liste sont recâblées sur les pages réellement installées, chacune disant sa
+  variante figée (`47201864974554` pour la V2 Ultimate, `47204034150618` pour la V2 Mini) et le risque de
+  confusion : « la page « U2 Mini » est le modèle **non-V2** », « le U2 V2, lui, a sa page dédiée ».
+- Un test relit désormais la colonne « page produit » de la liste contre `data/commercial_links.json`
+  (comparaison des **identifiants de fiche**, paramètres d'affiliation ignorés) : **26 lignes** exactement —
+  si le tableau change de forme au point de ne plus être lu, le test le dit au lieu de passer à vide. Les
+  dix Pulsar ne sont pas dans ce tableau (ils sont dans `docs/audit/LIENS_AFFILIES_2026-10-12.md`, lui aussi
+  relu).
+- **Mutation** : remettre l'ancienne page sur la ligne 12 → **1 échec**.
+
+**Mesure** : 706 tests verts (un test de plus), `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du
+bot n'est touché : la liste de travail et un test.
+
+### 26.33.3 Trouvé en chemin : une note de prix justifiée par une section qui n'existe pas
+
+En relisant les renvois du document, la note de prix du **U2 V2 Mini** est apparue suspecte : elle justifie sa
+correction par « `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` **§6.6** ». Ce document n'a pas de §6.6 —
+son §6 est l'addendum d'affiliation Pulsar, sans sous-section ; la réponse est au **§3 (point 6)** (« la
+variante Mini s'affiche à 59,95 € sur la page FR, alors que la base porte 77,95 € »).
+
+Pourquoi le défaut avait dormi : `tests/test_doc_references.py` relit les renvois « document + §numéro » de
+tous les documents, tests, outils et modules — **pas des fichiers de `data/`**. Un renvoi mort y était donc
+invisible. Corrigé, et le contrôle couvre désormais `data/*.json` avec la même règle, un test dédié qui refuse
+de passer à vide (aucun fichier trouvé = échec, pas succès silencieux) — et une mutation le prouve.
+
+**Mesure finale de la passe** : 707 tests verts, `pyflakes` 0, `privacy_scan` 0 violation. Fichiers à envoyer
+sur le serveur : **`data/mouse_db.json`** (la note corrigée ; le fichier est relu à chaque interaction, aucun
+redémarrage). Rien d'autre.

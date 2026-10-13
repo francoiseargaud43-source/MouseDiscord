@@ -22,10 +22,10 @@ susceptibles d'être recommandées (12) ; priorité **2** = le reste du catalogu
 | 9 | `atk_ghost_extreme` | GHOST Extreme | https://www.atk.store/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse | 1 | Variante de la page GHOST |
 | 10 | `atk_y9_ultimate` | Y9 Ultimate | https://www.atk.store/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse | 1 | — |
 | 11 | `atk_fierce_x` | Fierce X | https://www.atk.store/products/atk-fierce-x-lightweight-wireless-gaming-mouse | 1 | — |
-| 12 | `atk_u2_v2_ultimate` | U2 V2 Ultimate | https://www.atk.store/products/atk-blazing-sky-u2-series-wireless-mouse | 1 | Série U2 / U2 Plus / U2 Ultimate |
-| 13 | `atk_u2` | Blazing Sky U2 / U2 Plus / U2 Ultimate | https://www.atk.store/products/atk-blazing-sky-u2-series-wireless-mouse | 1 | Même page que U2 V2 Ultimate |
-| 14 | `atk_u2_v2_mini` | U2 V2 Mini | https://www.atk.store/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse | 2 | Le store ne sépare pas U2 Mini / U2 V2 Mini |
-| 15 | `atk_u2_mini` | U2 Mini | https://www.atk.store/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse | 2 | Même page que U2 V2 Mini |
+| 12 | `atk_u2_v2_ultimate` | U2 V2 Ultimate | https://www.atk.store/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse | 1 | Page U2 V2 — variante figée `47201864974554` ; la page « série U2 » ne vend pas la V2 |
+| 13 | `atk_u2` | Blazing Sky U2 / U2 Plus / U2 Ultimate | https://www.atk.store/products/atk-blazing-sky-u2-series-wireless-mouse | 1 | Page de la série U2 — le U2 V2, lui, a sa page dédiée (n° 12) |
+| 14 | `atk_u2_v2_mini` | U2 V2 Mini | https://www.atk.store/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse | 2 | Page U2 V2 — variante figée `47204034150618` (« U2 V2 Mini / White ») ; la page « U2 Mini » est le modèle **non-V2** (n° 15) |
+| 15 | `atk_u2_mini` | U2 Mini | https://www.atk.store/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse | 2 | Page du U2 Mini (non-V2), 77,95 € — ne pas confondre avec la page U2 V2 (n° 14) |
 | 16 | `atk_a9_ultimate` | A9 Ultimate | https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse | 2 | Même page que A9 Air et A9 Mini |
 | 17 | `atk_a9_air` | A9 Air | https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse | 2 | Variante « Air » de la page A9 Ultimate |
 | 18 | `atk_a9_mini` | A9 Mini | https://www.atk.store/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse | 2 | Variante « Mini » de la page A9 Ultimate |

@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.26).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.27).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 705 passed
+.venv/bin/python -m pytest -q                      # attendu : 706 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2188,6 +2188,31 @@ Le banc d'essai **compte** désormais ces places (fonction testée) et les affic
 qui fait foi, plus aucun document ne cite un chiffre figé sans le dater. **Aucun envoi** : ni `cogs/`, ni
 `utils/`, ni `data/`, ni `assets/`. Le compteur ci-dessus passe de 704 à **705** tests (le compteur du banc
 d'essai a son propre test).
+
+---
+
+### 12.27 Mise à jour du 2026-10-13 (18e) : la liste des liens recâblée, une note de prix corrigée
+
+Deux petits défauts, aucun effet sur un score : le bot n'est pas modifié (ni `cogs/`, ni `utils/`, ni le
+moteur).
+
+Ce qui était faux : `docs/LISTE_LIENS_SPONSORISES_2026-10-11.md` — la liste qui sert à fabriquer un lien
+d'achat — envoyait encore sur l'**ancienne page** deux souris corrigées la veille : le U2 V2 Ultimate (page
+« série U2 ») et le **U2 V2 Mini** (page « U2 Mini »). Un lien reconstruit à partir d'elle aurait envoyé le
+membre sur le U2 Mini, **77,95 €** au lieu des **59,95 €** publiés. Les deux documents d'audit, eux, portaient
+déjà la bonne page.
+
+Corrigé : lignes 12 à 15 de la liste recâblées sur les pages installées, variante figée nommée pour chaque,
+et un test qui relit cette colonne contre `data/commercial_links.json` (26 lignes, une mutation → 1 échec).
+Aucun prix, aucune cote, aucun lien du fichier installé ne change.
+
+Second défaut : la note de prix du **U2 V2 Mini** (dans `data/mouse_db.json`) justifiait sa correction par
+un renvoi à une section **qui n'existe pas** (`§6.6` d'un document qui n'en a pas) ; le renvoi est ramené au
+bon endroit, et un test relit désormais les renvois de section **des données** comme il le fait des
+documents. **Envoyez `data/mouse_db.json`** : ce fichier est relu à chaque interaction, il n'y a rien à
+redémarrer.
+
+Le compteur ci-dessus passe de 705 à **707** tests.
 
 ---
 

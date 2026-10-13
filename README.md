@@ -512,7 +512,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_privacy.py` : scénarios de confidentialité et de robustesse **P02–P18** (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage, clic rejoué, erreur inattendue, fichier d'état) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md` et `docs/audit/ROBUSTESSE_2026-10-12.md`.
 - `tests/test_bot_runtime.py` : comportements de `bot.py` mesurés le 2026-10-13 (couverture de `bot.py` : 67 % → **100 %**, lignes de script comprises) — purge périodique des parcours expirés (et son silence quand rien n'a expiré), erreur d'événement journalisée sans arrêter le bot, commande inconnue totalement muette, erreur de commande tracée sans rien publier, message de connexion, démarrage refusé sans jeton.
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
-- `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts, et **renvois « fichier + §numéro » valides** (aucune citation ne doit pointer vers une section qui n'existe pas).
+- `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts, et **renvois « fichier + §numéro » valides** (aucune citation ne doit pointer vers une section qui n'existe pas) — y compris dans les **données** (`data/*.json`), où une note de prix renvoyait à une section qui n'a jamais existé.
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
 - `tests/test_ai_bundle.py` : contenu du pack IA (`tools/build_ai_bundle.py`) — fichiers attendus, **aucun secret** (`.env`, `state/`, liens d'affiliation), liste des identifiants existants.
@@ -540,7 +540,9 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_liens_achat.py` : **les 36 liens d'achat ouverts un par un** — le tableau §8.1 de
   `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` est relu contre `data/commercial_links.json` (handle
   et variante figée) et `data/mouse_db.json` (prix publié), dans les deux sens ; une note qui annonce
-  « la variante que le bouton ouvre » exige un lien qui la fige ; et `tools/check_links.py` est essayé hors
+  « la variante que le bouton ouvre » exige un lien qui la fige ; la **liste de travail**
+  (`docs/LISTE_LIENS_SPONSORISES_2026-10-11.md`) doit envoyer sur la page que le bouton ouvre, pas sur
+  l'ancienne (deux lignes y renvoyaient encore le 2026-10-13) ; et `tools/check_links.py` est essayé hors
   réseau sur une fausse boutique (cohérent, variante disparue, prix changé, fiche en dollars, réseau
   bloqué) — c'est ce test qui a rattrapé le statut composé mal reconnu.
 
