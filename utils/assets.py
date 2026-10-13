@@ -96,7 +96,14 @@ def load_image_urls(path: Path, base_url: str | None = None) -> dict[str, str | 
     except FileNotFoundError:
         log.warning("Configuration d'images introuvable : %s", path)
         raw = {}
-    except (json.JSONDecodeError, OSError) as exc:
+    except (OSError, ValueError) as exc:
+        # ``ValueError`` couvre le JSON invalide (``JSONDecodeError``) **et** les octets non UTF-8
+        # (``UnicodeDecodeError``) : c'est la règle déjà écrite pour le fichier de sessions
+        # (``utils/session.py``) et pour l'état du `!setup_finder` (``cogs/mouse_finder.py``).
+        # Trouvé le 2026-10-13 (C55) : ce chargeur ne prévoyait que le JSON invalide, et il est appelé
+        # par **chaque** étape du parcours (bannière, illustrations) — un seul octet non UTF-8 dans
+        # `images.json` faisait donc échouer le parcours dès le premier message, avec « une erreur
+        # inattendue » à la place de l'étape 1. Ici : pas d'image, jamais d'erreur.
         log.warning("Configuration d'images illisible (%s) : %s", path, exc)
         raw = {}
     if not isinstance(raw, dict):

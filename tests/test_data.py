@@ -597,6 +597,22 @@ def test_links_file_skips_invalid_entries(tmp_path):
     assert load_commercial_links(f) == {"a": "https://shop.test/a"}
 
 
+def test_un_fichier_de_liens_illisible_est_ignore_comme_un_fichier_absent(tmp_path):
+    """Trouvé le 2026-10-13 (C54) : tronqué, illisible ou remplacé par un dossier, il faisait échouer
+    TOUT le résultat — le membre lisait « une erreur inattendue » au lieu de ses souris, et refaire
+    l'action ne pouvait pas aboutir. Même règle que pour un fichier absent : aucun lien, pas de panne.
+    """
+    tronque = tmp_path / "tronque.json"
+    tronque.write_text('{"atk_a9_ultimate": "https://www.atk.store/x"', encoding="utf-8")
+    assert load_commercial_links(tronque) == {}
+    octets = tmp_path / "octets.json"
+    octets.write_bytes(b'{"a": "https://shop.test/\xff\xfe"}')
+    assert load_commercial_links(octets) == {}
+    dossier = tmp_path / "dossier.json"
+    dossier.mkdir()
+    assert load_commercial_links(dossier) == {}
+
+
 def test_un_lien_avec_espace_ou_saut_de_ligne_est_ecarte(tmp_path):
     """Trouvé le 2026-10-13 (fichiers du serveur attaqués).
 

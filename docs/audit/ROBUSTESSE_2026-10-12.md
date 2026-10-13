@@ -2999,3 +2999,49 @@ Preuves (le verrou tombe sur les trois formes du défaut — vérifié par mutat
 | Mutation C — coque unique rattachée à une coque partagée sans preuve | **1 échec** · restauré → 1 passed |
 | `pytest -q` | **624 passed** |
 | `tools/privacy_scan.py` | 0 violation |
+
+### 26.23 Deux lectures de fichiers faisaient échouer tout le parcours (C54, C55)
+
+Le parcours lit cinq fichiers : le fichier de sessions, `mouse_db.json`, `data/commercial_links.json`,
+`assets/images.json` et l'état du `!setup_finder`. Trois d'entre eux étaient déjà tolérants — un fichier
+absent, tronqué, non UTF-8 ou remplacé par un dossier y vaut « rien à lire » (règle écrite deux fois dans
+le code : `utils/session.py` et `cogs/mouse_finder.py`, passes 44e bis et suivantes). Les deux autres ne
+l'étaient pas, et le défaut ne se voyait pas au même endroit selon le fichier :
+
+| Fichier | Ce qui se passait avant le 2026-10-13 | Ce que le membre recevait |
+|---|---|---|
+| `data/commercial_links.json` (C54) | un **fichier tronqué** (`JSONDecodeError`), un chemin qui est un **dossier** (`IsADirectoryError`), des droits refusés : l'exception remontait **après** le calcul, hors de la garde « catalogue illisible » — le chargeur ne prévoyait que le fichier absent et la mauvaise forme du JSON | « ⚠️ Une erreur inattendue est survenue. Rien n'est perdu : refaites l'action… » — alors que la recommandation était déjà calculée, et que « refaire l'action » ne pouvait pas aboutir tant que le fichier restait cassé |
+| `assets/images.json` (C55) | un **octet non UTF-8** (`UnicodeDecodeError`) : la garde du chargeur couvrait le JSON invalide et les erreurs d'E/S, mais pas le décodage du texte. Ce chargeur est appelé par **chaque** étape (bannière, illustrations) | « ⚠️ Une erreur inattendue est survenue » **dès le premier message** : le test ne pouvait pas démarrer du tout |
+
+Pourquoi ces deux fichiers peuvent réellement être abîmés : ils sont modifiés **à la main** (prix, liens,
+images) et transférés par FTP vers le serveur — un transfert interrompu, un fichier enregistré dans un
+autre encodage (Latin-1, UTF-16) ou un dossier téléversé à la place du fichier produisent exactement ces
+erreurs-là. Un fichier **absent** était déjà sans effet : c'est l'asymétrie, et non l'hypothèse, qui était
+le défaut.
+
+La correction est la règle de la maison, appliquée aux deux chargeurs : **`OSError` et `ValueError`**
+couvrent tout ce qu'un fichier peut subir (`ValueError` inclut `JSONDecodeError` **et**
+`UnicodeDecodeError`), l'erreur est journalisée, et le parcours continue. Concrètement :
+
+- liens d'achat illisibles → le résultat s'affiche **entier**, les boutons cèdent la place au rappel
+  désactivé « Liens à venir » (comportement qui existait déjà pour une souris sans lien) ;
+- images illisibles → les étapes et le résultat s'affichent **sans image** (comportement qui existait déjà
+  pour une clé d'image vide) ;
+- dans les deux cas, le journal du bot porte la cause exacte (`Fichier de liens illisible (… : Is a
+  directory)`, `Configuration d'images illisible (… : 'utf-8' codec can't decode byte 0xff…)`).
+
+Preuves — le défaut est reproduit avant correction, et la garde retirée refait tomber les verrous :
+
+| Contrôle | Avant correction | Après correction |
+|---|---|---|
+| `tests/test_flow.py::test_un_fichier_de_liens_casse_ne_prive_pas_le_membre_de_son_resultat` | `JSONDecodeError` non gérée (résultat jamais affiché) | résultat entier + « Liens à venir » |
+| `tests/test_data.py::test_un_fichier_de_liens_illisible_est_ignore_comme_un_fichier_absent` | tronqué / non UTF-8 / dossier : exception | `{}` dans les trois cas |
+| `tests/test_flow.py::test_un_fichier_d_images_illisible_ne_bloque_pas_la_premiere_etape` | `UnicodeDecodeError` : étape 1 inaccessible | étape 1 affichée, sans bannière |
+| `tests/test_catalog_hardening.py::test_un_fichier_d_images_illisible_n_empeche_pas_le_parcours` | non UTF-8 : exception | aucune image dans les trois cas |
+| Reproductions directes avant correction | `load_commercial_links` → `JSONDecodeError` / `IsADirectoryError` ; `load_image_urls` → `UnicodeDecodeError` | — |
+| Mutations (garde retirée, puis restaurée) | — | C54 : **2 échecs** → 2 passed ; C55 : **2 échecs** → 2 passed |
+
+**Ce qui n'a pas changé** : aucun calcul, aucune donnée, aucun texte affiché dans le cas normal — la
+sortie d'un parcours complet est identique (mêmes souris, mêmes pourcentages, mêmes prix). Seuls les
+chemins de panne changent. `pytest -q` : **628 passed** · `pyflakes` : 0 · `tools/privacy_scan.py` :
+0 violation.

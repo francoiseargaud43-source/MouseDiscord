@@ -2033,17 +2033,26 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    note ne change** (empreinte des valeurs identique avant/après) et **rien ne change à l'écran**.
    **Aucun envoi obligatoire** ni redémarrage : envoyez le fichier seulement si vous voulez les deux
    côtés identiques au caractère près.
+6. **Deux fichiers abîmés ne bloquent plus le parcours** (C54 et C55, §26.23) : un
+   `data/commercial_links.json` **tronqué** (ou un dossier à sa place) faisait échouer le résultat
+   entier — « une erreur inattendue » au lieu des trois souris, et « refaites l'action » sans issue ;
+   un `assets/images.json` en **octets non UTF-8** cassait le parcours **dès le premier message**. Ces
+   deux fichiers sont modifiés à la main et transférés par FTP : le cas se produit (transfert
+   interrompu, enregistrement dans un autre encodage). Désormais : le résultat s'affiche entier, les
+   boutons d'achat cèdent la place au rappel « Liens à venir », et les étapes s'affichent sans image.
+   **Envoyez `utils/catalog.py` et `utils/assets.py`** — c'est le seul changement du jour qui touche le
+   comportement du bot — puis redémarrez la tâche planifiée (`pkill -f "bot.py"`).
 
 **Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **624**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **628**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 624 passed
+.venv/bin/python -m pytest -q                      # attendu : 628 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

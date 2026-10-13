@@ -95,6 +95,24 @@ async def test_start_button_sends_ephemeral_step1_with_grip_select():
 
 
 @pytest.mark.asyncio
+async def test_un_fichier_d_images_illisible_ne_bloque_pas_la_premiere_etape(monkeypatch, tmp_path):
+    """C55 (2026-10-13) : `images.json` en octets non UTF-8 cassait le parcours dès le PREMIER message.
+
+    Le chargeur d'images est appelé par chaque étape (bannière, illustrations) et ne prévoyait que le
+    JSON invalide : `UnicodeDecodeError` remontait jusqu'au flux, le membre lisait « une erreur
+    inattendue » et **ne pouvait pas démarrer le test**. Désormais : pas d'image, étape affichée.
+    """
+    images = tmp_path / "images.json"
+    images.write_bytes(b'{"banner": "https://x.test/\xff\xfe.png"}')
+    monkeypatch.setattr(flow, "IMAGES_CONFIG_PATH", images)
+    inter = make_interaction()
+    await flow.StartView().start.callback(inter)
+    kwargs = inter.response.send_message.call_args.kwargs
+    assert isinstance(kwargs["view"], flow.GripView)
+    assert kwargs["embed"].title.startswith("Étape 1")
+
+
+@pytest.mark.asyncio
 async def test_grip_selection_edits_message_to_thenar_step():
     """En Palm : prise → thénar (étape 2/4). En Claw, la variante s'intercale (voir test dédié)."""
     store = SessionStore(ttl_seconds=600)
@@ -471,6 +489,35 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert any(f.name.startswith("🔎 ATK Phantom Ultimate") and "en clair" in f.name for f in guide.fields)
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in kwargs["embeds"])
     assert "ni une probabilité" in kwargs["embeds"][-1].footer.text
+
+
+@pytest.mark.asyncio
+async def test_un_fichier_de_liens_casse_ne_prive_pas_le_membre_de_son_resultat(monkeypatch, tmp_path):
+    """C54 (2026-10-13) : un `commercial_links.json` tronqué faisait échouer le résultat ENTIER.
+
+    Le chargeur lève alors `JSONDecodeError`, et il est appelé APRÈS le calcul, hors de la garde
+    « catalogue illisible » : le membre lisait « une erreur inattendue », et « refaites l'action » ne
+    pouvait pas aboutir tant que le fichier restait cassé. Désormais une lecture impossible est traitée
+    comme un fichier absent : les souris s'affichent, les boutons d'achat cèdent la place au rappel
+    « Liens à venir ».
+    """
+    liens = tmp_path / "commercial_links.json"
+    liens.write_text('{"atk_a9_ultimate": "https://www.atk.store/x"', encoding="utf-8")
+    monkeypatch.setattr(flow, "COMMERCIAL_LINKS_PATH", liens)
+    store = SessionStore(ttl_seconds=600)
+    start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
+    inter = make_interaction(store=store)
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
+    await view.children[0].callback(inter)
+    kwargs = inter.response.edit_message.call_args.kwargs
+    assert isinstance(kwargs["view"], flow.ResultsView)
+    assert len(kwargs["embeds"]) == 4                       # le résultat, entier
+    ideal = next(v for k, v in fields_of(kwargs["embeds"][0]).items() if "match idéal" in k)
+    assert "ATK Phantom Ultimate" in ideal                  # la recommandation est bien là
+    placeholders = [c for c in kwargs["view"].children if getattr(c, "disabled", False)]
+    assert len(placeholders) == 1 and placeholders[0].label == "Liens à venir"
+    assert not any(getattr(c, "url", None) for c in kwargs["view"].children)
 
 
 @pytest.mark.asyncio

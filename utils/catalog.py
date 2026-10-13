@@ -198,6 +198,15 @@ def load_commercial_links(path: Path) -> dict[str, str]:
     except FileNotFoundError:
         log.warning("Fichier de liens introuvable : %s", path)
         return {}
+    except (OSError, ValueError) as exc:
+        # Trouvé le 2026-10-13 : un fichier **tronqué** (JSON invalide), **illisible** (droits, octets
+        # non UTF-8) ou un chemin qui est un **dossier** remontait l'exception jusqu'au flux, APRÈS le
+        # calcul du résultat : le membre recevait « une erreur inattendue » au lieu de ses souris, et
+        # « refaites l'action » ne pouvait pas aboutir tant que le fichier restait cassé. Ce chargeur
+        # tolère déjà un fichier absent ou de forme inattendue — même règle pour les autres pannes de
+        # lecture : les boutons d'achat manquent (repli « Liens à venir »), la recommandation s'affiche.
+        log.warning("Fichier de liens illisible (%s) : %s", path, exc)
+        return {}
     if not isinstance(raw, dict):
         log.warning("Fichier de liens illisible (objet attendu) : %s", path)
         return {}

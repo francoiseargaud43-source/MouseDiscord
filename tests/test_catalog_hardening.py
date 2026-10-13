@@ -58,3 +58,26 @@ def test_a_links_file_that_is_not_an_object_is_ignored(tmp_path):
 def test_an_images_file_that_is_not_an_object_shows_no_image(tmp_path):
     path = _write(tmp_path, "images.json", ["T01.png"])
     assert set(load_image_urls(path).values()) == {None}
+
+
+def test_un_fichier_d_images_illisible_n_empeche_pas_le_parcours(tmp_path):
+    """C55 (2026-10-13) : tronqué, non UTF-8 ou remplacé par un dossier, il cassait la 1re étape.
+
+    `load_image_urls` est appelé par chaque étape (bannière, illustrations). Il ne prévoyait que le
+    JSON invalide : un octet non UTF-8 (`UnicodeDecodeError`) ou un dossier (`IsADirectoryError`)
+    remontait jusqu'au flux et le membre recevait « une erreur inattendue » au lieu de l'étape 1 —
+    le parcours était impossible à démarrer. Règle de la maison (fichier de sessions, état du
+    `!setup_finder`) : ``OSError`` et ``ValueError`` couvrent tout ce que le fichier peut subir.
+    """
+    # Contenu écrit tel quel : `_write` encode en JSON, ce qui donnerait une **chaîne** valide, pas
+    # un fichier tronqué — et le contrôle passerait par la mauvaise branche (forme inattendue au lieu
+    # de JSON invalide).
+    tronque = tmp_path / "tronque.json"
+    tronque.write_text('{"banner": "https://x.test/b.png"', encoding="utf-8")
+    assert set(load_image_urls(tronque).values()) == {None}
+    octets = tmp_path / "octets.json"
+    octets.write_bytes(b'{"banner": "https://x.test/\xff\xfe.png"}')
+    assert set(load_image_urls(octets).values()) == {None}
+    dossier = tmp_path / "dossier.json"
+    dossier.mkdir()
+    assert set(load_image_urls(dossier).values()) == {None}
