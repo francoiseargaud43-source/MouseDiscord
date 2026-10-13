@@ -3088,6 +3088,13 @@ propriétaire) et que **rien ne prouve encore que la X3 reprend la même pièce 
 libellés sont réécrits pour dire ce que le catalogue dit réellement (« coque de la famille X1 », deux
 entrées jamais proposées ensemble, valeurs non propagées, renvoi au constat n° 12).
 
+Pour que l'ensemble parle la même langue, les **six autres libellés** qui concluaient « un seul moule »
+(GHOST Ultimate, U2 Mini, les deux X2 Mini, les deux X2H Mini) ont été ramenés à la **règle écrite du
+catalogue** — « coque partagée (règle du catalogue : cotes publiées identiques, deux entrées jamais
+proposées ensemble) ». Les deux libellés qui gardent « un seul moule » (coque A9 pleine taille, coque F1)
+sont ceux où le catalogue **propage réellement des valeurs** entre jumelles (§14.2) : là, l'unicité du
+moule est la base même de la propagation.
+
 Pourquoi c'est signalé alors qu'aucun membre ne le voit : un libellé de source **est** l'enregistrement de
 traçabilité. Un test peut vérifier qu'un fait est **déclaré** ; aucun test ne peut vérifier qu'une
 déclaration est **vraie**. Une affirmation plus forte que ce que la source établit est donc un faux
