@@ -3623,6 +3623,87 @@ lectures du fichier des images entre deux parcours identiques, l'un avec une sou
 une souris dont la hauteur de boutons est « Inconnu » en Fingertip — **une lecture de moins**, et la
 mutation redevient détectable. Les quatorze mutations échouent désormais (14 × « 1 failed »).
 
+## 26.37 Complément de la 52e passe — un test qui ne vérifiait rien, et la garde qui l'aurait vu (2026-10-13)
+
+### 26.37.1 Le défaut
+
+La 52e passe a écrit douze tests pour prendre les décisions jamais prises. La relecture qui a suivi a posé une
+question plus générale : **chacun des tests de la suite prouve-t-il quelque chose ?** Un test qui appelle une
+fonction sans rien vérifier passe tant que rien ne lève : il ne tient aucune garantie, il gonfle le compteur et
+il rassure à tort.
+
+Relevé du 2026-10-13 (analyse syntaxique de tous les `tests/**/*.py` : fonction `test_*` sans `assert`, sans
+`pytest.raises` ni `warns`, sans méthode d'assertion de `unittest.mock`, sans `fail(`) : **un seul** test de la
+suite était dans ce cas — `tests/test_flow.py::test_send_ephemeral_ne_leve_jamais_sur_une_interaction_morte`,
+écrit pendant cette même 52e passe. Son nom annonçait la garantie (« ne lève jamais »), mais il ne vérifiait
+**ni** que la réponse partait en privé, **ni** que le repli `followup` prenait le relais quand l'interaction a
+déjà répondu, **ni** qu'une interaction morte laissait une trace. Une fonction devenue silencieuse, avalant
+l'exception sans rien envoyer, passait le test.
+
+### 26.37.2 Le test renforcé : cinq situations, dix-sept vérifications
+
+| Situation simulée | Ce qui est désormais vérifié |
+|---|---|
+| L'interaction répond encore | le message part par `response.send_message`, **en éphémère** (`ephemeral=True`) — la règle de confidentialité du projet — et avec le texte demandé |
+| Elle a déjà répondu (`is_done()`) | le repli `followup.send` prend le relais, éphémère lui aussi, et `response` n'est plus touché |
+| Les deux canaux sont morts (`ClientException`) | **rien n'est levé**, et le journal porte « Impossible de répondre à l'interaction » (niveau `WARNING`) — la seule trace que l'exploitant puisse exploiter |
+| Cas normal (les deux premiers) | le journal ne porte **pas** cette ligne : pas de bruit dans `~/admin/logs/jobs/` |
+| Le bon canal a bien été appelé **une seule fois** | `assert_awaited_once()` sur le canal utilisé, `await_count == 0` sur l'autre (pas de double envoi) |
+
+### 26.37.3 La garde : aucun test creux ne peut plus entrer
+
+`tests/test_code_hygiene.py` porte désormais le même relevé que ci-dessus (`_tests_sans_verification`, avec la
+liste des preuves acceptées `PREUVES`) et refuse tout `test_*` du dépôt qui ne vérifie rien. Sa contre-épreuve
+écrit un fichier de test **temporaire** contenant un vrai test et un test creux, et exige que le relevé ne
+signale que le creux — le contrôle se prouve donc lui-même, y compris le jour où il ne trouverait plus rien.
+
+Piège rencontré à l'écriture : les méthodes d'assertion de `unittest.mock` (`assert_awaited_once`,
+`assert_called_once_with`) ne sont **pas** compilées en `ast.Assert` — elles arrivent comme un simple appel
+d'attribut. Il faut donc deux motifs : `Assert` (majuscule, pour les `assert` du langage) et `assert`
+(minuscule, pour les méthodes) ; avec un seul des deux, le contrôle produisait soit 389 faux positifs, soit un
+angle mort.
+
+**Contre-épreuves** (mutation) : un test creux ajouté à `tests/test_validation.py` → **1 échec** du nouveau
+contrôle ; le repli `followup` de `_send_ephemeral` désactivé → **1 échec** ; la ligne de journal retirée →
+**1 échec**.
+
+## 26.38 53e passe — le fichier d'exemple ne disait pas ce que le bot acceptait (2026-10-13)
+
+### 26.38.1 Le défaut
+
+`.env.example` est la seule documentation des réglages : c'est le fichier que l'exploitant copie en `.env`
+avant de lancer le bot. Trois de ses lignes laissaient deviner.
+
+- `FINDER_CHANNEL_ID` n'expliquait pas la valeur **0** (« le salon où la commande est tapée ») : le message
+  d'erreur de `config.py` le dit **depuis la 49e passe**, le guide de déploiement aussi — mais pas le fichier
+  d'exemple. Qui le recopiait pour essayer sur un serveur de test n'avait que le mot « ID » à se mettre sous la
+  dent, et un identifiant faux fait répondre le bot « Réservé au salon dédié ».
+- `LOCK_FINDER_CHANNEL` (le salon passe en lecture seule pour `@everyone` au moment du `!setup_finder`) et
+  `SESSION_TTL_SECONDS` (durée de vie d'un parcours, en secondes) **n'avaient aucun commentaire** : leurs noms
+  anglais étaient la seule explication.
+
+### 26.38.2 La correction, et le verrou qui la tient
+
+Le fichier est réécrit : **chaque** variable porte son explication sur la ligne juste au-dessus, avec les mots
+de `config.py` (aucune description inventée). Un test de `tests/test_config.py` relit `config.py` par analyse
+syntaxique, relève **tous** les noms passés à `os.getenv` et aux aides `_env_int` / `_env_bool`, et exige pour
+chacun :
+
+1. une ligne `NOM=` dans `.env.example` ;
+2. un commentaire sur la ligne **juste au-dessus** (le fichier explique, il ne se contente pas de lister) ;
+3. la phrase « 0 = le salon où la commande est tapée » — le rappel dont l'absence était le défaut.
+
+Deux détails relevés pendant l'écriture, notés parce qu'ils disent la valeur du contrôle : le relevé doit
+accepter les **appels de fonction** (`_env_int("X")`) autant que les **appels de méthode** (`os.getenv("X")`),
+sinon il rate deux variables que l'exemple documentait déjà ; et c'est en resserrant le verrou (« commentaire
+sur la ligne juste au-dessus ») que le fichier a désigné les deux variables réellement muettes — le contrôle a
+donc servi **avant** d'être commité, ce qui est la meilleure preuve qu'il mesure quelque chose.
+
+**Contre-épreuves** (4 mutations, `1 failed` chacune) : une variable retirée de l'exemple ; le commentaire
+au-dessus d'une variable effacé ; le rappel « 0 = … » effacé ; `config.py` qui apprend une variable que
+l'exemple ignore.
+
 **Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
-côtés)**, **732 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
-(des tests et des documents seulement) : **rien à envoyer** sur le serveur.
+côtés)** — remesurées après ces trois tests —, **735 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation.
+Aucun fichier du bot n'est modifié (un fichier d'exemple, des tests et des documents) : **rien à envoyer** sur
+le serveur.

@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.30).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.32).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 732 passed
+.venv/bin/python -m pytest -q                      # attendu : 735 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2274,6 +2274,45 @@ Une **mutation a survécu** et a mené à une garantie réelle : la garde d'illu
 
 **Mesure** : **1 655 instructions et 508 branches, 0 manquante des deux côtés (100 %)**, **732** tests,
 14 mutations → 1 échec chacune. Le compteur ci-dessus passe de 715 à **732** tests.
+
+---
+
+### 12.31 Mise à jour du 2026-10-13 (22e) : le test qui ne vérifiait rien, et le fichier d'exemple qui se taisait
+
+Deux corrections de la même journée, invisibles pour les membres — elles ne changent aucun texte affiché :
+
+- **`tests/test_flow.py`** — un test de la suite ne prouvait rien : il appelait l'envoi privé et se contentait de
+  ne pas lever. Ni le caractère éphémère (`ephemeral=True`, la règle de confidentialité du projet), ni le repli
+  quand l'interaction a déjà répondu, ni la ligne de journal laissée quand l'interaction est morte n'étaient
+  vérifiés. Le test couvre maintenant cinq situations (dix-sept vérifications), et
+  `tests/test_code_hygiene.py` **refuse tout test du dépôt qui ne vérifie rien** (contre-épreuve incluse).
+- **`.env.example`** — le fichier que vous copiez en `.env` n'expliquait pas que `FINDER_CHANNEL_ID=0` veut dire
+  « le salon où la commande est tapée » (le message d'erreur le dit depuis la 49e passe, le fichier non), et deux
+  réglages n'avaient **aucun** commentaire. Chaque variable est maintenant expliquée sur la ligne juste
+  au-dessus ; un test relit `config.py` pour qu'aucune variable lue par le bot ne puisse disparaître de l'exemple.
+
+**Fichiers à envoyer** : **aucun** — un fichier d'exemple et des tests. **Redémarrage** : inutile.
+Le compteur du contrôle ci-dessus passe de 732 à **735** tests.
+
+**Mesure** : **1 655 instructions et 508 branches, 0 manquante des deux côtés (100 %)** (remesurées),
+**735** tests, `pyflakes` 0, `privacy_scan` 0 violation, 3 mutations → 1 échec chacune. Détail : §26.37 de
+`ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.32 Mise à jour du 2026-10-13 (23e) : le fichier d'exemple verrouillé sur `config.py`
+
+Suite du §12.31, même journée : le verrou posé sur `.env.example` a d'abord **servi** avant d'être commité —
+c'est en exigeant un commentaire sur la ligne juste au-dessus de chaque variable qu'il a désigné les deux
+réglages réellement muets (`LOCK_FINDER_CHANNEL`, `SESSION_TTL_SECONDS`), puis le fichier a été réécrit avec les
+mots de `config.py` (aucune description inventée). Le test exige aussi le rappel « 0 = le salon où la commande
+est tapée » : sans lui, la phrase n'existait que dans le message d'erreur.
+
+**Contre-épreuves** (4 mutations, `1 failed` chacune) : une variable retirée de l'exemple, un commentaire
+effacé, le rappel « 0 = … » effacé, et `config.py` qui apprend une variable que l'exemple ignore.
+
+**Fichiers à envoyer** : **aucun** (un fichier d'exemple et un test). Détail : §26.38 de
+`ROBUSTESSE_2026-10-12.md`.
 
 ---
 

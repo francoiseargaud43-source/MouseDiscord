@@ -514,13 +514,16 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
 - `tests/test_apercus.py` : **les trois aperçus PNG doivent être de la même date que les données qu'ils montrent** — chaque image porte dans ses métadonnées une empreinte du catalogue, des liens, des images et des modules qui composent le message ; un aperçu périmé (celui du mode « Peu importe le prix » montrait encore un ancien nom de modèle) est refusé avec la commande à relancer.
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts, et **renvois « fichier + §numéro » valides** (aucune citation ne doit pointer vers une section qui n'existe pas) — y compris dans les **données** (`data/*.json`), où une note de prix renvoyait à une section qui n'a jamais existé.
-- `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
+- `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement, et **`.env.example`** qui doit documenter toutes les variables lues par `config.py` (chacune expliquée sur la ligne juste au-dessus, dont le `FINDER_CHANNEL_ID=0` = « le salon où la commande est tapée »).
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
 - `tests/test_ai_bundle.py` : contenu du pack IA (`tools/build_ai_bundle.py`) — fichiers attendus, **aucun secret** (`.env`, `state/`, liens d'affiliation), liste des identifiants existants.
 - `tests/test_flow.py` : parcours complet 1/4 à 4/4 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), charte d'embeds, limites Discord des embeds, refus des détails internes (`pts`), thénar stocké mais sans effet sur le score, illustrations branchées, lien manquant → « Liens à venir ».
 - `tests/test_code_hygiene.py` : hygiène du code livré — aucun résidu de guillemets (le défaut trouvé le
   2026-10-12, invisible à la compilation), aucun `print` dans le bot (il ne laisserait aucune trace dans
-  `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré.
+  `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré. Depuis le 2026-10-13, il refuse
+  aussi **tout test du dépôt qui ne vérifie rien** (relevé par analyse syntaxique : `assert`, `raises`, méthode
+  d'assertion, `fail(`) — un test creux trouvé dans `tests/test_flow.py` a été renforcé, et la contre-épreuve
+  du contrôle s'écrit sur un fichier temporaire.
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
   ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**

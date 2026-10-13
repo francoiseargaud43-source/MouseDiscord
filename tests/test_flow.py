@@ -3,6 +3,7 @@ isolation des parcours et confidentialité (aucune publication dans le salon).
 """
 from __future__ import annotations
 
+import logging
 import re
 
 import discord
@@ -1772,14 +1773,48 @@ async def test_show_private_ne_leve_jamais_meme_si_le_repli_echoue():
 
 
 @pytest.mark.asyncio
-async def test_send_ephemeral_ne_leve_jamais_sur_une_interaction_morte():
-    """`_send_ephemeral` promet de ne jamais lever : la promesse était sans test."""
-    inter = make_interaction()
-    inter.response.send_message = AsyncMock(side_effect=discord.ClientException("expirée"))
-    await flow._send_ephemeral(inter, "⚠️ message")
-    inter.response.is_done = MagicMock(return_value=True)
-    inter.followup.send = AsyncMock(side_effect=discord.ClientException("expirée"))
-    await flow._send_ephemeral(inter, "⚠️ message")
+async def test_send_ephemeral_ne_leve_jamais_sur_une_interaction_morte(caplog):
+    """`_send_ephemeral` promet deux choses : choisir le bon canal, et **ne jamais lever**.
+
+    Le test ne vérifiait ni l'un ni l'autre de façon lisible (il se contentait d'appeler la fonction) :
+    il ne disait pas si le message partait en privé, ni par `response` ou par `followup`, ni ce qui se
+    passait quand l'interaction est morte. Les deux chemins sont désormais vérifiés, ainsi que la trace
+    laissée à l'exploitant — c'est le dernier filet avant « interaction échouée » côté Discord.
+    """
+    # 1. Interaction vivante : la réponse part par `response`, en privé.
+    vivante = make_interaction()
+    await flow._send_ephemeral(vivante, "⚠️ message")
+    vivante.response.send_message.assert_awaited_once()
+    assert vivante.response.send_message.call_args.kwargs["ephemeral"] is True
+    assert vivante.response.send_message.call_args.args[0] == "⚠️ message"
+    assert not vivante.followup.send.await_count
+    assert caplog.text == ""                      # rien à signaler : aucune trace pour rien
+
+    # 2. Réponse déjà envoyée : le message part par `followup`, toujours en privé.
+    apres_coup = make_interaction()
+    apres_coup.response.is_done = MagicMock(return_value=True)
+    await flow._send_ephemeral(apres_coup, "⚠️ message")
+    apres_coup.followup.send.assert_awaited_once()
+    assert apres_coup.followup.send.call_args.kwargs["ephemeral"] is True
+    assert not apres_coup.response.send_message.await_count
+
+    # 3. Interaction morte : la fonction ne lève pas, elle journalise — et ce, sur **chaque** canal.
+    morte = make_interaction()
+    morte.response.send_message = AsyncMock(side_effect=discord.ClientException("expirée"))
+    with caplog.at_level(logging.WARNING):
+        await flow._send_ephemeral(morte, "⚠️ message")
+    assert "Impossible de répondre à l'interaction" in caplog.text
+    morte.response.send_message.assert_awaited_once()
+
+    caplog.clear()
+    morte_apres_coup = make_interaction()
+    morte_apres_coup.response.is_done = MagicMock(return_value=True)
+    morte_apres_coup.followup.send = AsyncMock(side_effect=discord.ClientException("expirée"))
+    with caplog.at_level(logging.WARNING):
+        await flow._send_ephemeral(morte_apres_coup, "⚠️ message")
+    assert "Impossible de répondre à l'interaction" in caplog.text
+    morte_apres_coup.followup.send.assert_awaited_once()
+
 
 # ---------------------------------------------------------------------------
 # Suite de la passe de couverture (2026-10-13) : branches atteignables en vrai, jamais exercées
