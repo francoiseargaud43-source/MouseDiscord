@@ -2808,3 +2808,38 @@ même qu'il devait attraper (un couple juste sur la ligne voisine excusait le ma
 
 **Ce qui n'a pas changé** : aucun fichier du bot, aucun message, aucun score. Le guide de déploiement ne
 demande donc **aucun envoi** pour cette correction — elle concerne les documents, pas le serveur.
+
+### 26.19 Le README avait perdu la fin d'une phrase et douze fichiers (C49)
+
+Le README est l'**index** du dépôt : sa section « Tests » décrit la suite fichier par fichier, et son bloc
+de reproduction liste les outils. Deux défauts y avaient été introduits, tous deux invisibles à l'œil
+quand on cherche du code :
+
+1. **Une description coupée en deux.** À l'ajout du fichier `tests/test_flow_effect.py` (42e passe), sa
+   puce a été insérée **au milieu** de celle de `tests/test_db_effect.py` : la première finissait sur un
+   tiret (« … prouve dans les deux sens — ») et sa suite (« deux catalogues identiques ne produisent
+   aucun écart, … ») se retrouvait sous la puce du nouveau fichier. Le lecteur voyait donc une
+   description suspendue et une autre qui décrivait le mauvais outil.
+2. **Douze fichiers jamais cités** : 8 des 26 fichiers de tests et 4 des 14 outils (`render_preview.py`,
+   `measure_button_height.py`, `measure_grip_width.py`, `build_mouse_db.py`). Les tests de ces outils
+   existaient, la commande pour les lancer n'apparaissait nulle part — un outil qu'on ne nomme pas est un
+   outil qu'on n'utilise pas, et il redevenait invisible dès la première relecture.
+
+**Correction** : la phrase est recollée dans le bon ordre, les douze fichiers sont cités (les huit tests
+avec une phrase qui dit ce qu'ils verrouillent, les quatre outils dans le bloc de reproduction), et la
+garde `tests/test_doc_references.py::test_le_readme_cite_tous_les_fichiers_de_tests_et_tous_les_outils`
+empêche le retour du défaut : **tout** fichier de `tests/` et de `tools/` doit être cité, et une citation
+qui nomme un fichier absent est refusée.
+
+| Contrôle | Avant | Après |
+|---|---:|---:|
+| Fichiers de tests cités dans le README | 18 / 26 | **26 / 26** |
+| Outils cités dans le README | 10 / 14 | **14 / 14** |
+| Description de `tests/test_db_effect.py` | coupée en deux | **d'un seul tenant** |
+| `pytest -q` | 563 passed | **564 passed** (1 cas ajouté) |
+
+Preuve par mutation : remplacer une citation du README par un nom de fichier inexistant →
+`test_le_readme_cite_tous_les_fichiers_de_tests_et_tous_les_outils` **échoue** (vérifié) ; restauré → vert.
+
+**Ce qui n'a pas changé** : aucun fichier du bot, aucun message affiché, aucun score, aucune donnée. Comme
+pour C48, cette correction est **documentaire** : le guide de déploiement ne demande aucun envoi.

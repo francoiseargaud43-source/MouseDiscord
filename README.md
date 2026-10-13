@@ -496,6 +496,11 @@ python tools/db_effect.py --avant data/mouse_db.json --apres catalogue_reduit.js
 python tools/image_corpus_check.py  # doublons d'un corpus d'images (identité vérifiable avant mesure)
 python tools/image_identity_check.py --reference IMG --candidate IMG  # même coque ? (silhouettes)
 python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md
+python tools/render_preview.py       # régénère les trois aperçus livrés (docs/apercu_*.png)
+python tools/render_preview.py --sortie-dossier /tmp/apercus   # les rend sans toucher aux fichiers livrés
+python tools/measure_button_height.py IMG --length-mm 122.5 --height-mm 42.4   # classe de hauteur des boutons
+python tools/measure_grip_width.py IMG --length 118.2   # largeur au capteur (méthode Oblivity)
+python tools/build_mouse_db.py       # traçabilité du premier relevé — refuse d'écraser le catalogue réel
 ```
 
 - `tests/test_matcher.py` : plages cibles, points pour 180 × 90 mm en Palm (non-régression), bornes strictes, largeur mesurée vs estimée, statuts `scored` / `pending` / `excluded`, budget personnalisé.
@@ -514,11 +519,20 @@ python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOM
   2026-10-12, invisible à la compilation), aucun `print` dans le bot (il ne laisserait aucune trace dans
   `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré.
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
-- `tests/test_flow_effect.py` : le mesureur d'effet du parcours recharge la version antérieure du code (`git show`) et refuse une référence inconnue avec un message lisible, sans trace Python.
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
   ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**
-  (`--retrait`, catalogue après = sous-ensemble) est mesurée — places occupées par les souris sorties et
-  qui reprend leur place — tandis qu'un catalogue **enrichi** reste refusé dans tous les cas.
+  (`--retrait`, catalogue après = sous-ensemble) est mesurée — quelles places les souris sorties
+  occupaient, et laquelle des souris restantes reprend la place — tandis qu'un catalogue **enrichi** reste
+  refusé dans tous les cas.
+- `tests/test_flow_effect.py` : le mesureur d'effet du parcours recharge la version antérieure du code (`git show`) et refuse une référence inconnue avec un message lisible, sans trace Python.
+- `tests/test_catalog_hardening.py` : catalogue hostile (valeurs numériques, booléens, listes, dictionnaires, chaînes) refusé au chargement avec un message clair, jamais au milieu d'une réponse d'interaction.
+- `tests/test_build_mouse_db_guard.py` : garde-fou du générateur (`tools/build_mouse_db.py`) — il refuse d'écraser le catalogue réel et n'écrit qu'avec `--force`, en une seule fois.
+- `tests/test_doc_coherence.py` : chaque pourcentage des documents doit correspondre à l'ensemble cité (« N sur M ») — le contrôle qui a rattrapé C48, limites comprises.
+- `tests/test_image_corpus_check.py` : les groupes de doublons d'un corpus d'images (une même photo circulait sous huit noms de modèles) sont signalés, les fichiers non-image ignorés.
+- `tests/test_image_identity_check.py` : rattachement d'une image sans nom imprimé à une image nommée par sa silhouette (mise dans le même sens, deux verdicts bornés, refus de trancher).
+- `tests/test_measure_button_height.py` : mesure exacte sur une vue orthographique synthétique, classe estimée par les références étalonnées, et vue en perspective **refusée** (aucune valeur produite).
+- `tests/test_measure_grip_width.py` : largeur au capteur depuis une vue de dessus, précision et cas limites.
+- `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes) — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main

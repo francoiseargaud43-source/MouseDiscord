@@ -197,3 +197,22 @@ def test_les_renvois_de_section_pointent_sur_une_section_existante(rel):
             if numero not in _sections_of(nom):
                 morts.append(f"{nom} §{numero} (« {trouve.group(0)[:60]} »)")
     assert morts == [], f"renvois de section introuvables dans {rel} : {sorted(set(morts))}"
+
+
+def test_le_readme_cite_tous_les_fichiers_de_tests_et_tous_les_outils():
+    """Le README est l'index du dépôt : un fichier ajouté sans y être décrit redevient invisible.
+
+    Défaut trouvé le 2026-10-13 : huit fichiers de tests et quatre outils existaient sans être cités
+    dans le README, et la description de `tests/test_db_effect.py` avait été coupée en deux par le
+    « copier-coller » d'un fichier de test dans la liste (la fin de sa phrase servait de corps au
+    suivant). Ce contrôle tient les deux bouts : tout fichier de `tests/` et de `tools/` est cité, et
+    toute citation pointe sur un fichier qui existe (le contrôle des chemins cités le vérifie déjà).
+    """
+    texte = (ROOT / "README.md").read_text(encoding="utf-8")
+    cites = set(re.findall(r"(tests/test_[a-z_0-9]+\.py|tools/[a-z_0-9]+\.py)", texte))
+    attendus = {f"tests/{f.name}" for f in (ROOT / "tests").glob("test_*.py")}
+    attendus |= {f"tools/{f.name}" for f in (ROOT / "tools").glob("*.py")}
+    absents = sorted(attendus - cites)
+    assert absents == [], f"fichiers absents du README : {absents}"
+    morts = sorted(cites - attendus)
+    assert morts == [], f"le README cite des fichiers qui n'existent pas : {morts}"

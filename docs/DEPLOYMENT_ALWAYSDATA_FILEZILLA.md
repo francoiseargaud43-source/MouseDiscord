@@ -1994,6 +1994,36 @@ laisser croire à un échec alors que le message est bien publié).
 
 ---
 
+### 12.23 Mise à jour du 2026-10-13 (14e) : la documentation dit maintenant ce qu'elle mesure
+
+**Aucun fichier du serveur ne change** : cette mise à jour ne corrige que des **documents** (le dossier de
+preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous reste juste.
+
+1. **Un pourcentage juste, rapporté au mauvais ensemble** (C48, §26.18 du `ROBUSTESSE`) : deux passages
+   annonçaient un pourcentage exact pour un **autre** dénominateur que celui écrit à côté — « 6 148 sur
+   23 569 » présenté comme 22,63 % (c'est 26,1 % des 23 569, et 22,63 % des 27 170), et « 84 profils sur
+   24 609 » présenté comme 0,31 % (c'est 0,34 % des 24 609, et 0,31 % des 27 170). Les dénominateurs sont
+   maintenant nommés partout ; **aucun comptage n'a changé**. Nouveau contrôle
+   `tests/test_doc_coherence.py`, qui compare chaque pourcentage à l'ensemble cité sur sa ligne.
+2. **Le README avait perdu la fin d'une phrase et douze fichiers** (C49, §26.19) : la description de
+   `tests/test_db_effect.py` était coupée en deux par l'ajout d'un autre fichier, et 8 des 26 fichiers
+   de tests plus 4 des 14 outils n'étaient cités nulle part. Corrigé, et une garde
+   (`tests/test_doc_references.py`) refuse désormais un fichier de `tests/` ou de `tools/` absent du
+   README.
+
+**Rien à envoyer, rien à redémarrer.** La seule chose qui change pour vous est le compteur du contrôle
+ci-dessous : il passe de 558 (valeur du jour du §12.22) à **564**. Les compteurs des §12.16 à §12.22
+gardent la valeur du jour de leur mise à jour — seul celui-ci est courant.
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 564 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.
