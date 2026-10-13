@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.33).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.34).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 738 passed
+.venv/bin/python -m pytest -q                      # attendu : 740 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2325,12 +2325,35 @@ en « Peu importe le prix » — **704 de marge**, la coupe ne mord jamais avec 
 autres modes plafonnent à 169 (Qualité/Prix), 167 (Haut de gamme), 150 (Budget personnalisé) et 138
 (Économique).
 
-`tests/test_justification.py` rejoue la garantie en une seconde : grille resserrée (420 profils) **plus** lecture
+`tests/test_textes_des_cartes.py` rejoue la garantie en une seconde : grille resserrée (420 profils) **plus** lecture
 du message réel (le champ doit porter la phrase entière), et un pire cas construit indépendant de la grille
 (libellé le plus long du catalogue, meilleur score, zone la plus large). Quatre mutations sont détectées, dont
 une coupe rendue volontairement agressive : c'est le contrôle du message qui la voit.
 
 **Fichiers à envoyer** : **aucun** — un fichier de tests. Détail : §26.39 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.34 Mise à jour du 2026-10-13 (25e) : les quatre textes coupés des cartes, mesurés sur 18 522 profils
+
+Suite du §12.33, même journée : la mesure de la justification du choix a montré que `results_embeds` coupe
+**quatre** textes aux limites Discord (résumé du parcours, sommaire morphologique, ligne « en clair »,
+justification). Les trois autres n'avaient jamais été mesurés — et le contrôle de `tests/test_flow.py`, qui
+vérifie bien les plafonds, ne peut pas voir une coupe : il lit des textes **déjà coupés**, sur un seul profil.
+
+Mesure sur les **18 522 profils** (46 s) : ces textes font au plus **107** (résumé), **160** (sommaire),
+**211** (ligne « en clair ») et **320** (justification) caractères — aucune coupe ne mord. Les limites non
+coupées sont tout aussi loin : champ le plus long **320** (plafond mobile 700), description **435** (4 096),
+bloc **1 039** et message **2 780** (6 000), **six** blocs au plus (10).
+
+`tests/test_textes_des_cartes.py` (renommé : il ne couvre plus une seule coupe) vérifie désormais les quatre
+textes sur la grille resserrée (420 profils) **et relit le message réel** — le texte doit y être entier —,
+puis balaie les plafonds Discord et mobiles sur ces 420 profils au lieu d'un. Six mutations sont détectées,
+dont « sommaire coupé à 50 caractères », qui a survécu à la première version du test (la coupe interne se
+démasque par la **ponctuation finale** de la phrase).
+
+**Fichiers à envoyer** : **aucun** — un fichier de tests renommé et des documents. Détail : §26.40 de
+`ROBUSTESSE_2026-10-12.md`.
 
 ---
 

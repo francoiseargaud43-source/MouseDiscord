@@ -3737,7 +3737,7 @@ tableau dans les cinq modes.
 
 ### 26.39.3 Le verrou, deux fois plus rapide que la grille
 
-`tests/test_justification.py` (deux tests, ~1 s) rejoue la garantie sans attendre 44 secondes :
+`tests/test_textes_des_cartes.py` (deux tests, ~1 s) rejoue la garantie sans attendre 44 secondes :
 
 - **Grille resserrée** (celle du comparateur de données, 420 profils — elle atteint elle aussi 320) : la
   phrase la plus longue doit tenir dans **la moitié** de la limite (512), et le **message réellement produit**
@@ -3758,3 +3758,72 @@ performance passé à deux chiffres → **1 échec** (le verrou du pire cas).
 **Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
 côtés)**, **738 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
 (un fichier de tests et des documents) : **rien à envoyer** sur le serveur.
+
+## 26.40 55e passe — les trois autres coupes de texte, mesurées à leur tour (2026-10-13)
+
+### 26.40.1 Une famille, un seul membre mesuré
+
+La 54e passe (§26.39) a mesuré la coupe de la **justification du choix**. La relecture a montré que
+`results_embeds` en coupe **quatre**, toutes aux limites Discord :
+
+| Texte coupé | Où | Coupe | État avant cette passe |
+|---|---|---|---|
+| Résumé du parcours (« ✋ Palm Grip • 📏 175 × 82,5 mm », gamme comprise) | description de « 🎯 Votre recommandation » | `header[:4096]` | jamais mesuré |
+| **Sommaire morphologique** (« Longueur dans la cible, largeur de prise dans la cible… ») | fin de `_match_summary` | `sentence[:1024]` | jamais mesuré |
+| Ligne « en clair » (cotes · prix · sommaire) | champ « 🔎 … en clair » | `[:1024]` | jamais mesuré |
+| Justification du choix | champ « 🧭 Pourquoi ce choix ? » | `explanation[:1024]` | mesuré (§26.39) |
+
+`tests/test_flow.py` vérifie bien « champ ≤ 1 024, description ≤ 4 096, total ≤ 6 000 » — mais sur **un seul
+profil** (Claw 180 × 90) et sur des textes **déjà coupés** : il ne peut donc pas voir une coupe, seulement sa
+conséquence (un champ de 1 024 caractères pile lui paraîtrait normal). Un profil où la ligne « en clair » ou
+le résumé s'allonge passait inaperçu.
+
+### 26.40.2 La mesure, sur les 18 522 profils
+
+Même protocole que le §26.39 — la grille complète, `results_embeds` compris, en relevant aussi les limites
+qui, elles, ne sont pas coupées :
+
+| Mesure | Maximum observé | Limite | Marge |
+|---|---|---|---|
+| Résumé du parcours | **107 caractères** | 4 096 | 3 989 |
+| Sommaire morphologique | **160 caractères** | 1 024 | 864 |
+| Ligne « en clair » | **211 caractères** | 1 024 | 813 |
+| Justification du choix | **320 caractères** | 1 024 | 704 |
+| Champ le plus long du message | 320 | 1 024 (700 pour le mobile) | 380 |
+| Description la plus longue | 435 | 4 096 | 3 661 |
+| Bloc le plus long | 1 039 | 6 000 | 4 961 |
+| Message le plus long | 2 780 | 6 000 | 3 220 |
+| Blocs dans un message | 6 | 10 | 4 |
+
+**Aucune des quatre coupes ne mord, avec le catalogue du 2026-10-13** — et rien ne s'approche des limites
+non plus. Elles restent utiles comme garde-fous : la zone de tolérance, les libellés et la rédaction peuvent
+grandir.
+
+### 26.40.3 Le fichier de tests change de nom, et gagne deux tests
+
+Le fichier de la 54e passe couvrait une seule coupe : il devient `tests/test_textes_des_cartes.py` (renommé
+par `git mv` — aucune réécriture d'histoire) et passe de 2 à 4 tests :
+
+- **Les quatre textes, mesurés puis relus dans le message.** Pour chacun, le profil qui le rend le plus long
+  est retenu : il doit tenir dans la moitié de la limite (512), puis le **message réellement produit** doit
+  porter ce texte **entier** (description du bloc 1, champ « en clair », champ « Pourquoi ce choix ? »).
+- **Les limites Discord et la lecture mobile, sur toute la grille resserrée** (420 profils) : champs ≤ 700,
+  description ≤ 4 096, bloc ≤ 6 000, message ≤ 6 000, dix blocs au plus — le contrôle de `test_flow.py` reste
+  sur un seul profil.
+
+### 26.40.4 La coupe interne, seule difficulté
+
+La coupe de `_match_summary` est **interne** : l'appelant reçoit déjà le texte coupé, il ne peut donc pas le
+comparer à sa version entière. Deux angles la démasquent : sa **ponctuation finale** (coupée en plein mot, la
+phrase perd son point — « … largeur de prise dans la » à 50 caractères) et sa position dans la ligne
+« en clair », qui doit être portée entière par le message. Une première version du test ne vérifiait que la
+seconde ; la mutation « sommaire coupé à 50 caractères » **a survécu** et a mené au contrôle de ponctuation.
+
+**Contre-épreuves** (6 mutations, toutes détectées — `1 failed` chacune) : description coupée à 50 ;
+sommaire coupé à 50 (détecté après l'ajout du contrôle de ponctuation) ; ligne « en clair » coupée à 50 ;
+résumé du parcours allongé de 600 caractères ; ligne de place allongée de 800 (plafond mobile) ; et, de la
+passe précédente, phrase de justification allongée de 300 (2 échecs).
+
+**Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
+côtés)**, **740 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
+(un fichier de tests renommé, des tests et des documents) : **rien à envoyer** sur le serveur.

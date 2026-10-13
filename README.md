@@ -524,7 +524,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   aussi **tout test du dépôt qui ne vérifie rien** (relevé par analyse syntaxique : `assert`, `raises`, méthode
   d'assertion, `fail(`) — un test creux trouvé dans `tests/test_flow.py` a été renforcé, et la contre-épreuve
   du contrôle s'écrit sur un fichier temporaire.
-- `tests/test_justification.py` : **la justification du choix est mesurée, bornée et jamais coupée** — sur la
+- `tests/test_textes_des_cartes.py` : **les textes variables des cartes sont mesurés, bornés et jamais coupés** — la justification du choix comme le sommaire morphologique, la ligne « en clair » et le résumé du parcours, sur la
   grille resserrée (420 profils) comme sur un pire cas construit (libellé le plus long du catalogue, meilleur
   score, zone la plus large) ; la phrase connue la plus longue fait 320 caractères sur les 18 522 profils de la
   grille complète, la coupe de 1 024 n'a donc jamais mordu, et le message réel doit porter la phrase **entière**.
