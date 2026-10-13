@@ -114,14 +114,18 @@ def main(argv: list[str] | None = None) -> int:
                         help="position de mesure le long de la souris (0 = avant, 0,5 = milieu, 1 = arrière)")
     parser.add_argument("--json", action="store_true", help="sortie JSON (pour un script)")
     args = parser.parse_args(argv)
+    # Même convention que les autres outils (§26.8) : une phrase sur la sortie d'erreur et le code 2
+    # (erreur d'usage). Avant, cette branche écrivait sur la sortie standard en code 1 — un appelant
+    # qui teste le code de sortie ou lit la sortie d'erreur obtenait donc une réponse différente selon
+    # l'outil — et une image illisible passait à travers la garde (trace `PIL.UnidentifiedImageError`).
     if not args.image.is_file():
-        print(f"ERREUR : image introuvable : {args.image}")
-        return 1
+        parser.error(f"image introuvable : {args.image}")
     try:
         result = measure(args.image, args.length, args.at)
     except MeasurementError as exc:
-        print(f"ERREUR : {exc}")
-        return 1
+        parser.error(f"mesure impossible : {exc}")
+    except OSError as exc:                      # image illisible, dossier à la place du fichier…
+        parser.error(f"image illisible : {exc}")
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0

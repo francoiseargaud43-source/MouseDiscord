@@ -188,7 +188,7 @@ def _same_shell_par_id(par_id: dict, premier: tuple[str, int], second: tuple[str
     return a.id == b.id or bool(a.shell_id) and a.shell_id == b.shell_id
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     analyseur = argparse.ArgumentParser(description="Effet d'une modification de données sur les 3 places.")
     analyseur.add_argument("--avant", required=True, help="catalogue AVANT (JSON)")
     analyseur.add_argument("--apres", default=str(flux.MOUSE_DB_PATH), help="catalogue APRÈS (défaut : le dépôt)")
@@ -196,7 +196,7 @@ def main() -> int:
     analyseur.add_argument("--exemples", type=int, default=8, help="nombre d'exemples affichés")
     analyseur.add_argument("--retrait", action="store_true",
                            help="simulation de retrait : autorise un catalogue APRÈS réduit (sous-ensemble)")
-    options = analyseur.parse_args()
+    options = analyseur.parse_args(argv)
 
     # Fichier absent ou illisible : le dire en une ligne plutôt que de laisser remonter un
     # FileNotFoundError brut (trouvé le 2026-10-13, chasse aux micro-bugs).

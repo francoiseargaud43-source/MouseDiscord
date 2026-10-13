@@ -8,6 +8,7 @@ Code de sortie 1 s'il existe une ERREUR bloquante ; les ATTENTION n'empêchent p
 """
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -131,7 +132,13 @@ def check(root: Path, env: Mapping[str, str], python_version: tuple = tuple(sys.
     return results
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    # Un argument inconnu était **ignoré en silence** (le contrôle se lançait quand même) : quelqu'un
+    # qui écrivait `check_deployment.py --environnement autre.env` obtenait le diagnostic du dépôt et
+    # pouvait le lire de travers. `argparse` le refuse maintenant (code 2), et `--help` fonctionne.
+    analyseur = argparse.ArgumentParser(description="Diagnostic des prérequis d'hébergement du bot.")
+    analyseur.parse_args(argv)
+
     results = check(ROOT, os.environ)
     for level, message in results:
         print(f"[{level:9}] {message}")

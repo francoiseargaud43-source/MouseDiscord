@@ -32,6 +32,7 @@ Usage : ``python tools/privacy_scan.py`` (code de sortie 1 si une violation est 
 """
 from __future__ import annotations
 
+import argparse
 import ast
 import sys
 from dataclasses import dataclass
@@ -190,7 +191,13 @@ def scan_project(root: Path = ROOT) -> list[Finding]:
     return findings
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    # Même garde que `check_deployment.py` : un argument inconnu était ignoré et le contrôle se
+    # lançait quand même (le lecteur pouvait croire qu'il portait sur autre chose).
+    analyseur = argparse.ArgumentParser(
+        description="Contrôle statique : aucun envoi non éphémère, aucune fuite de secret.")
+    analyseur.parse_args(argv)
+
     findings = scan_project()
     for finding in findings:
         print(finding)

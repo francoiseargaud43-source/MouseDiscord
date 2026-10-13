@@ -2010,14 +2010,25 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    de tests plus 4 des 14 outils n'étaient cités nulle part. Corrigé, et une garde
    (`tests/test_doc_references.py`) refuse désormais un fichier de `tests/` ou de `tools/` absent du
    README.
+3. **Quatre outils répondaient mal à une erreur d'usage** (C50, §26.20) : `measure_button_height.py`
+   remontait une trace Python (`FileNotFoundError`, `PIL.UnidentifiedImageError`) en code 1 ;
+   `measure_grip_width.py` écrivait sa phrase sur la sortie standard en code 1 ; **`build_ai_bundle.py`
+   prenait un `--help` mal orthographié pour un nom de fichier et écrivait une archive de 73 Ko** ;
+   `check_deployment.py` et `privacy_scan.py` ignoraient tout argument en silence. Les six cas sortent
+   maintenant en code 2 avec une phrase, `--help` fonctionne partout, et
+   `tests/test_tools_usage_errors.py` vérifie ce contrat sur les quatorze outils. Ces outils-là servent
+   au dépouillement **sur le serveur** (SSH) autant qu'en local : envoyez `tools/` si vous voulez le même
+   comportement des deux côtés.
 
-**Rien à envoyer, rien à redémarrer.** La seule chose qui change pour vous est le compteur du contrôle
-ci-dessous : il passe de 558 (valeur du jour du §12.22) à **564**. Les compteurs des §12.16 à §12.22
-gardent la valeur du jour de leur mise à jour — seul celui-ci est courant.
+**À envoyer si vous le souhaitez** : `tools/` (les quatorze outils, dont quatre qui répondent maintenant
+correctement à une erreur d'usage). **Rien à redémarrer** : le bot n'exécute aucun de ces outils — ils
+servent au dépouillement et aux mesures, à la main. Le compteur du contrôle ci-dessous passe de 558
+(valeur du jour du §12.22) à **599**. Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur
+mise à jour — seul celui-ci est courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 564 passed
+.venv/bin/python -m pytest -q                      # attendu : 599 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

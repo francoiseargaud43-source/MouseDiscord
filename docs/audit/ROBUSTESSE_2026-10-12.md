@@ -2843,3 +2843,50 @@ Preuve par mutation : remplacer une citation du README par un nom de fichier ine
 
 **Ce qui n'a pas changé** : aucun fichier du bot, aucun message affiché, aucun score, aucune donnée. Comme
 pour C48, cette correction est **documentaire** : le guide de déploiement ne demande aucun envoi.
+
+### 26.20 Quatre outils de plus ne disaient pas leur erreur comme les autres (C50)
+
+Le §26.8 avait corrigé trois outils (phrase + code 2 au lieu d'une trace). En **balayant les quatorze
+points d'entrée** — chacun confronté à une entrée invalide, code de sortie et forme du message relevés —
+quatre de plus se comportaient autrement, pour la même faute de frappe dans un chemin :
+
+| Outil | Ce qui arrivait | Ce qui arrive maintenant |
+|---|---|---|
+| `measure_button_height.py` (image absente) | trace `FileNotFoundError`, code **1** | `image introuvable : …`, code **2** |
+| `measure_button_height.py` (image illisible) | trace `PIL.UnidentifiedImageError`, code **1** | `image illisible : …`, code **2** |
+| `measure_button_height.py` (fond uni : aucune souris) | trace `ValueError` | `mesure impossible : aucune souris détectée…`, code **2** |
+| `measure_grip_width.py` (image absente) | phrase mais sur la **sortie standard**, code **1** | phrase sur la sortie d'erreur, code **2** |
+| `measure_grip_width.py` (image illisible) | trace `PIL.UnidentifiedImageError` (la garde ne couvrait que le fichier absent) | `image illisible : …`, code **2** |
+| `build_ai_bundle.py` (option mal orthographiée) | **écrivait une archive** nommée d'après l'option et affichait « Écrit : --help » | option refusée, code **2** ; `--help` affiche l'aide |
+| `check_deployment.py`, `privacy_scan.py` (tout argument) | argument **ignoré en silence**, le contrôle se lançait quand même | argument refusé, code **2** ; `--help` affiche l'aide |
+
+Les cinq premiers sont des chemins à corriger : un message qui ressemble à une panne de l'outil fait
+perdre du temps, et deux comportements différents pour la même erreur obligent à se souvenir de quel
+outil on parle. Le sixième est plus gênant : `build_ai_bundle.py --help` **créait un fichier de 73 Ko**
+(une faute de frappe devient un fichier, pas un message), et `check_deployment.py --help` lançait le
+diagnostic complet — un lecteur pouvait croire qu'il portait sur autre chose que le dépôt.
+
+**Deux outils de plus ont reçu `main(argv=None)`** (`db_effect.py`, `flow_effect.py`, `qa_flow_matrix.py`
+avaient déjà l'habitude de lire `sys.argv` eux-mêmes) : sans cela, aucun test ne peut les appeler
+proprement, et c'est précisément pourquoi ces défauts avaient survécu à trois passes de relecture.
+
+**Le contrôle remplace la relecture** : `tests/test_tools_usage_errors.py` confronte **les quatorze**
+outils à une entrée invalide et vérifie le contrat — une phrase, sur la sortie d'erreur, code 2, jamais de
+trace Python — plus l'aide (`--help` ne doit **rien** écrire dans le dossier courant, vérifié dans un
+dossier temporaire vide) et l'invariant `main(argv=None)`. Le dossier `tools/` est relu à l'exécution :
+un outil ajouté sans `argv` fait échouer le contrôle, donc un nouvel outil ne peut plus passer à travers.
+
+Preuves (les cinq gardes retirées une à une font échouer le contrôle — vérifié par mutation) :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_tools_usage_errors.py` | **34 passed** (14 outils × option inconnue, 6 entrées invalides, aide, complétude) |
+| Mutations (5/5) | `measure_button_height` 1 échec · `measure_grip_width` 2 · `build_ai_bundle` 2 · `check_deployment` 2 · `privacy_scan` 2 ; restauré → 34 passed |
+| `tests/test_measure_grip_width.py` | son test de ligne de commande attendait `return 1` : mis à jour vers le contrat commun |
+| `pytest -q` | **599 passed** |
+| `pyflakes` · `tools/privacy_scan.py` · `tools/check_deployment.py` | 0 avertissement · 0 violation · **1 erreur attendue** (`.env` local), identique à avant |
+
+**Ce qui n'a pas changé** : aucun fichier du bot, aucun message affiché dans Discord, aucun score, aucune
+donnée, aucun prix, aucun lien. Le pack IA se construit à l'identique (75 230 octets, 11 fichiers,
+`pack_ia_mousediscord.zip`, comme avant la correction). Aucun résultat publié ne dépend de cette
+correction : elle ne touche que la façon dont les outils **répondent à une erreur d'usage**.

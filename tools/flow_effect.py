@@ -61,11 +61,11 @@ def meme_coque(places) -> bool:
     return False
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Effet d'une modification du parcours (avant/après)")
     parser.add_argument("--avant", default="HEAD", help="commit de référence pour l'ancienne version")
     parser.add_argument("--rapide", action="store_true", help="grille réduite")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     try:
         ancien = charger_ancienne_version(args.avant)

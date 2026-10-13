@@ -409,10 +409,10 @@ def run(fast: bool) -> int:
     return 1 if problems else 0
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Banc d'essai du parcours")
     parser.add_argument("--rapide", action="store_true", help="grille réduite")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     return run(args.rapide)
 
 

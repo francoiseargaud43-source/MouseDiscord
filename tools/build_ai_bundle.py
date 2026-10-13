@@ -9,6 +9,7 @@ Code de sortie 1 si un fichier attendu est absent du dépôt.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import zipfile
@@ -67,12 +68,26 @@ def build_bundle(output: Path = DEFAULT_OUTPUT, root: Path = ROOT) -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
-    argv = list(sys.argv[1:] if argv is None else argv)
+    analyseur = argparse.ArgumentParser(
+        description="Construit le pack IA (archive des documents à joindre à une conversation).",
+        epilog="Le dossier de destination doit déjà exister : l'outil ne le crée pas (une faute de "
+               "frappe dans un chemin ne doit pas fabriquer une arborescence).",
+    )
+    analyseur.add_argument("sortie", nargs="?", default=str(DEFAULT_OUTPUT),
+                           help=f"archive à écrire (défaut : {DEFAULT_OUTPUT.name})")
+    options = analyseur.parse_args(argv)
+
+    # Avant le 2026-10-13, le premier argument était pris pour le nom du fichier SANS contrôle :
+    # `build_ai_bundle.py --help` (ou toute option mal orthographiée) écrivait une archive de 73 Ko
+    # nommée `--help` dans le dossier courant, et affichait « Écrit : --help ». `argparse` refuse
+    # maintenant une option inconnue (code 2) et `--help` affiche l'aide sans rien écrire.
+    sortie = Path(options.sortie)
+    if not sortie.parent.is_dir():
+        analyseur.error(f"dossier de destination introuvable : {sortie.parent}")
     try:
-        output = build_bundle(Path(argv[0]) if argv else DEFAULT_OUTPUT)
+        output = build_bundle(sortie)
     except FileNotFoundError as exc:
-        print(f"ERREUR : {exc}")
-        return 1
+        analyseur.error(f"fichier du pack introuvable : {exc}")
     with zipfile.ZipFile(output) as archive:
         names = archive.namelist()
     print(f"Écrit : {output} ({output.stat().st_size // 1024} Ko, {len(names)} fichiers)")

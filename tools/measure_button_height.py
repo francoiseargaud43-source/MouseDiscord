@@ -209,7 +209,7 @@ def _classify(ratio: float) -> tuple[str | None, str]:
                           f"« {reference[1]} »")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Hauteur d'appui des boutons sur une vue de profil.")
     parser.add_argument("image")
     parser.add_argument("--length-mm", type=float, required=True)
@@ -217,9 +217,19 @@ def main() -> int:
     parser.add_argument("--front", choices=("left", "right"), default="left",
                         help="côté où se trouve l'avant de la souris sur l'image")
     parser.add_argument("--json", action="store_true")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    result = measure(args.image, args.length_mm, args.height_mm, args.front)
+    # Un chemin à corriger ne doit pas ressembler à une panne de l'outil : phrase + code 2, comme les
+    # trois outils corrigés le 2026-10-13 (§26.8). Le fichier absent était une trace `FileNotFoundError`
+    # (code 1) et un fichier qui n'est pas une image une trace `PIL.UnidentifiedImageError` (code 1).
+    if not Path(args.image).is_file():
+        parser.error(f"image introuvable : {args.image}")
+    try:
+        result = measure(args.image, args.length_mm, args.height_mm, args.front)
+    except OSError as exc:                      # image illisible, dossier à la place du fichier…
+        parser.error(f"image illisible : {exc}")
+    except ValueError as exc:                   # silhouette introuvable, fond confondu avec la souris…
+        parser.error(f"mesure impossible : {exc}")
     if args.json:
         print(json.dumps(result.__dict__, ensure_ascii=False, indent=2))
         return 0

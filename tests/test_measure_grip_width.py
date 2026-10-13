@@ -55,4 +55,10 @@ def test_command_line_returns_json(tmp_path, capsys):
     assert tool.main([str(image), "--length", "120", "--at", "0.5", "--json"]) == 0
     payload = capsys.readouterr().out
     assert '"largeur_au_point_demande_mm"' in payload and '"profil_mm"' in payload
-    assert tool.main([str(tmp_path / "absent.png"), "--length", "120"]) == 1
+    # Image absente : phrase sur la sortie d'erreur et code 2 (contrat commun des outils, §26.8 et
+    # §26.20). Ce test attendait `return 1` et une phrase sur la sortie standard — l'ancien
+    # comportement, corrigé le 2026-10-13.
+    with pytest.raises(SystemExit) as sortie:
+        tool.main([str(tmp_path / "absent.png"), "--length", "120"])
+    assert sortie.value.code == 2
+    assert "image introuvable" in capsys.readouterr().err
