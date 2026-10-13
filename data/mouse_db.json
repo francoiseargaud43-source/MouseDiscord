@@ -120,7 +120,7 @@
     "dimension_status": "owner_spec_unverified",
     "price_eur": 74.9,
     "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges, date de vérification inconnue.",
+    "price_note": "Prix EUR issu du cahier des charges du propriétaire (74,90 €, cahier non daté). Constat du 2026-10-13 : la boutique officielle Scyrox n'affiche aucun prix en euros (prix en dollars, et aucune conversion n'est faite) ; le seul prix public français retrouvé reste celui du revendeur Maxesport (74,90 € le 2026-10-11 pour la V8, son prix V6 n'étant pas publié ce jour-là). Le montant est donc conservé tel quel, et la fiche reste marquée « prix non vérifié » à l'affichage.",
     "fit_rationale": "Bosse centrale très polyvalente, parfaite pour le Relaxed Claw.",
     "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK. Poids 40 g, capteur PAW3950, 8 000 Hz, switchs optiques et MCU Nordic nRF52840 : fiches MaxGaming / EloShapes / MouseCompare (2026-10-11).",
     "sources": [
@@ -210,7 +210,7 @@
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (boutique ATK, pays France, modèle « Ultimate+ » (prix normal 81,95 € ; variante en précommande au moment du relevé)). L'ancienne valeur (70.00 €) venait du cahier des charges, sans relevé : elle est remplacée par le prix officiel daté.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (boutique ATK, pays France, modèle « Ultimate+ » (prix normal 81,95 € ; variante en précommande au moment du relevé)). L'ancienne valeur (70.00 €) venait du cahier des charges, sans relevé : elle est remplacée par le prix officiel daté. Vérification du 2026-10-13 : la variante « Ultimate+ / Black » est EN STOCK à 59,95 € (prix normal 82,95 €) — elle n'est plus en précommande comme au premier relevé.",
     "fit_rationale": "Arrière étroit empêchant les crampes de l'éminence thénar en Fingertip.",
     "notes": "Dimensions 118.2 × 62.4 × 38.8 : ATK (famille F1) et EloShapes (F1 V2 Ultimate). Génération V3 non mesurée séparément. EloShapes classe la bosse en « Back - minimal » alors que le cahier des charges indique « Mid » : conflit de forme signalé, valeur propriétaire conservée. Prix officiel EUR constaté le 2026-10-11 : série F1 V3 « à partir de » 59,95 € (Ultimate+ ; Extreme+ 91,95 €). Version retenue : Ultimate+ (37 ±3 g, PAW3955 Master, Nordic 54LM20, optiques ATK Custom, 8 000 Hz) ; l'Extreme+ est annoncée à 36 g avec switchs Omron optiques et Nordic 54H20. Fiche ATK (2026-10-12) : « Grip Style: Claw / Palm » et 37 ± 3 g, 118,2 × 62,4 × 38,8 mm — informations fabricant notées, les compatibilités de prise validées par le propriétaire (palm « Faible ») sont conservées telles quelles.",
     "sources": [
@@ -304,6 +304,23 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — F1 V3 Series, variante « Ultimate+ / Black » : 59,95 € en stock (prix normal 82,95 € ; plus en précommande depuis le relevé du 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?variant=48175399370970",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky F1 V3, variante « Ultimate+ / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 59,95 € — inchangé depuis le relevé du 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -344,9 +361,9 @@
     "fingertip_grip_fit": "Faible",
     "fit_status": "owner_spec",
     "dimension_status": "verified",
-    "price_eur": 40.95,
+    "price_eur": 41.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 40.95 € (boutique ATK, pays France, variante « Ultra Max 2.0 / Black », price data 4095 (prix normal 63,95 €)). L'ancienne valeur (75.00 €) venait du cahier des charges, sans relevé : elle est remplacée par le prix officiel daté.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 41,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre — prix normal 63,95 €). Le relevé du 2026-10-12 donnait 40,95 € pour la même variante : la promotion d'un euro a pris fin, le prix publié suit la boutique officielle à sa date de relevé. L'ancienne valeur du cahier des charges (75,00 €) était sans rapport avec le modèle.",
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
@@ -447,6 +464,14 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — X1 V2 Series, variante « Ultra Max 2.0 / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 41,95 €, prix normal 63,95 €) — c'est la variante que le bouton d'achat ouvre",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?variant=47058382782682",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -567,6 +592,15 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky Z1 V2, modèle « Ultimate » (prix EUR affiché en France, relevé du 2026-10-13 : 59,95 € (prix normal 73,95 €) — inchangé depuis le relevé du 2026-10-12)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Ergonomic",
@@ -594,7 +628,7 @@
     "dimension_status": "verified",
     "price_eur": 45.0,
     "price_status": "owner_spec_unverified",
-    "price_note": "Prix issu du cahier des charges (45,00 €, non daté). Observation 2026-10-11 : 44,90 € (noir, en stock) chez Maxesport, revendeur FR.",
+    "price_note": "Prix issu du cahier des charges (45,00 €, non daté). Observation 2026-10-11 : 44,90 € (noir, en stock) chez Maxesport, revendeur FR. Relevé officiel du 2026-10-13 : la boutique ATK (pays France) vend la variante figée par le bouton, « A9 Plus / White », à 27,95 € (prix normal 36,95 €, en stock) — l'écart avec les 45,00 € du cahier des charges reste ouvert : rien ne prouve encore que le « A9 Plus » de la boutique soit le même modèle que le « A9 Plus 2.0 » du revendeur. Prix NON modifié (le membre paie moins que le prix annoncé, jamais plus) ; question posée au propriétaire (point ouvert 16 de l'audit).",
     "fit_rationale": "Rapport qualité/prix imbattable pour les budgets serrés. Forme 'patate' universelle.",
     "weight_g": 57.0,
     "polling_hz": 1000,
@@ -671,6 +705,14 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — A9 Series, variante « A9 Plus / White » (celle que le bouton d'achat ouvre) : 27,95 € en stock, prix normal 36,95 € — relevé du 2026-10-13, prix du catalogue NON adopté (45,00 € du cahier des charges, identité « A9 Plus » / « A9 Plus 2.0 » à trancher)",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-series-lightweight-wireless-mouse?variant=46320046047450",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -758,6 +800,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky Phantom (prix EUR affiché en France, relevé du 2026-10-13 : 91,95 € (prix normal 109,95 €) — inchangé depuis le relevé du 2026-10-11)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -784,7 +835,7 @@
     "dimension_status": "single_source",
     "price_eur": 68.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 68,95 € (fiche ATK pays France, variante « Ultimate », prix normal 100,95 € ; noir en rupture de stock au relevé, Argent et Rouge en stock). Le relevé du 2026-10-11 donnait le même montant (« à partir de »).",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 68,95 € (fiche ATK pays France, variante « Ultimate », prix normal 100,95 € ; noir en rupture de stock au relevé, Argent et Rouge en stock). Le relevé du 2026-10-11 donnait le même montant (« à partir de »). Dette réglée le 2026-10-13 : la variante « Ultimate / Black » a été relevée à son tour — 68,95 €, prix normal 100,95 € — ce qui CONFIRME le prix ; elle est en revanche épuisée, donc le bouton d'achat ouvre désormais la variante « Ultimate / Silver », au même prix et en stock.",
     "fit_rationale": "Fabricant : « Optimized fit for medium-to-small hands across all grip styles » (coque dérivée de la X1).",
     "weight_g": 48.0,
     "sensor": "PAW3950 Ultra",
@@ -849,6 +900,14 @@
           "price_note"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — GHOST (carbone), variante « Ultimate / Silver » : 68,95 € en stock (le coloris « Ultimate / Black » est épuisé ; bouton d'achat recâblé le 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?variant=47320425595098",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -942,6 +1001,23 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — GHOST (carbone), variante « Extreme / Black » : 86,95 € en stock (prix normal 118,95 € ; bouton d'achat vérifié le 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?variant=47320425627866",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky GHOST, variante « Extreme / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 86,95 € — inchangé depuis le relevé du 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -967,7 +1043,7 @@
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (ATK, modèle « Y9 Ultimate », affiché en euros pays France).",
+    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 59.95 € (ATK, modèle « Y9 Ultimate », affiché en euros pays France). Vérification du 2026-10-13 : la variante figée par le bouton, « Ultimate / White », est ÉPUISÉE (comme tout le modèle « Pro Max » de la page) ; la variante « Ultimate / Pink », au même prix de 59,95 €, est en stock et devient la cible du bouton.",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm », « best for hand size: Medium-to-Large », « contoured back and asymmetrical rear for stable palm and thumb support ».",
     "weight_g": 55.0,
     "sensor": "PAW3950 Ultra",
@@ -1086,6 +1162,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — Y9 Series, variante « Ultimate / Pink » : 59,95 € en stock (les coloris « Ultimate / White » et « Pro Max » sont épuisés ; bouton d'achat recâblé le 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse?variant=47178929897690",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Ergonomic",
@@ -1198,6 +1282,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK FIERCE X (prix EUR affiché en France, relevé du 2026-10-13 : 69,95 € (prix normal 82,95 €) — inchangé depuis le relevé du 2026-10-11 ; produit en rupture de stock)",
+        "url": "https://www.atk.store/en-fr/products/atk-fierce-x-lightweight-wireless-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -1223,7 +1316,7 @@
     "dimension_status": "verified",
     "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 59.95 € (ATK Blazing Sky U2 V2, prix du produit, prix normal 72.95 €).",
+    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 59.95 € (ATK Blazing Sky U2 V2, prix du produit, prix normal 72.95 €). Vérification du 2026-10-13 : la variante figée par le bouton, « U2 V2 Ultimate / White », est ÉPUISÉE ; « U2 V2 Ultimate / Lake Green » (59,95 €) est en stock et devient la cible du bouton.",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw » (modèle U2 V2 Ultimate) ; mains moyennes-grandes. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du ATK U2 V2 Ultimate, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : palm : Okay. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
     "weight_g": 45.0,
     "sensor": "PAW3950 Ultra",
@@ -1310,6 +1403,14 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — U2 V2 Superlight, variante « U2 V2 Ultimate / Lake Green » : 59,95 € en stock (le coloris « U2 V2 Ultimate / White » est épuisé ; bouton d'achat recâblé le 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?variant=47201864974554",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -1427,6 +1528,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 V2, variante « Mini / White » (prix EUR affiché en France, relevé du 2026-10-13 : 59,95 € — inchangé depuis le relevé du 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -1517,6 +1627,15 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky ZERO (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 63,95 € (prix normal 82,95 €) — inchangé depuis le relevé du 2026-10-11)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -1540,9 +1659,9 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
-    "price_eur": 81.95,
+    "price_eur": 82.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 81,95 € (fiche ATK pays France, modèle « Ultra », prix normal 118,95 €). Le relevé du 2026-10-11 donnait le même montant (« prix du produit »).",
+    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 82,95 € (fiche ATK pays France, modèle « Ultra », trois coloris, prix normal 118,95 €). Le relevé du 2026-10-12 donnait 81,95 € pour la même fiche : la boutique a relevé le prix d'un euro, le prix publié suit la boutique officielle à sa date de relevé.",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » ; mains petites-moyennes.",
     "weight_g": 46.0,
     "sensor": "PAW3950 Ultra",
@@ -1645,6 +1764,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — Blazing Sky Duckbill, modèle « Ultra » (prix EUR affiché en France, relevé du 2026-10-13 : 82,95 €, prix normal 118,95 €)",
+        "url": "https://www.atk.store/products/atk-blazing-sky-duckbill-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -1669,9 +1797,9 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
-    "price_eur": 41.95,
+    "price_eur": 59.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 41.95 € (ATK Dragonfly A9 Ultimate « à partir de », prix normal 63.95 €). Prix « à partir de » : variante la moins chère en stock.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 59,95 € (boutique ATK pays France, variante « Ultimate / Black » — celle que le bouton d'achat ouvre — prix normal 73,95 €). L'ancienne valeur (41,95 €) était le prix « à partir de » de la fiche : il appartient à une AUTRE édition de la même page, la variante « Ultra Max 2.0 / Black » (41,95 €, prix normal 63,95 €). C'est le même piège que la Y9 Ultimate et la Z1 V2, corrigé pour elles le 2026-10-12 et pour celle-ci le 2026-10-13. Règle appliquée : le prix d'une fiche est celui de la variante figée par son lien d'achat, jamais le minimum d'une page qui vend plusieurs modèles.",
     "fit_rationale": "Fabricant : la série A9 est présentée comme « comfortably accommodating claw, palm, and fingertip grips » (page officielle de la série, dont cette souris reprend la coque symétrique).",
     "weight_g": 53.0,
     "sensor": "PAW3950 Ultra",
@@ -1703,14 +1831,6 @@
           "polling_hz"
         ],
         "date_checked": "2026-10-10"
-      },
-      {
-        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Dragonfly A9 Ultimate « à partir de »",
-        "url": "https://www.atk.store/fr-fr/collections/souris",
-        "fields": [
-          "price_eur"
-        ],
-        "date_checked": "2026-10-11"
       },
       {
         "label": "EloShapes — famille A9 (A9 / Plus / Pro / SE / Ultra) : toutes « Symmetrical »",
@@ -1775,6 +1895,14 @@
           "height_mm"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Dragonfly A9 Ultimate, variante « Ultimate / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 59,95 €, prix normal 73,95 €) — c'est la variante que le bouton d'achat ouvre",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?variant=46878654005466",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -1897,6 +2025,23 @@
           "height_mm"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — fiche ATK Dragonfly A9 Ultimate, variante « Air / Black » : 59,95 € en stock (prix normal 73,95 €) — c'est la variante que le bouton d'achat ouvre, relevée le 2026-10-13",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?variant=47193565364442",
+        "fields": [
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — ATK Dragonfly A9, variante « Air / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 59,95 € — inchangé depuis le relevé du 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2010,6 +2155,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Dragonfly A9, variante « Mini / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 59,95 € — inchangé depuis le relevé du 2026-10-13)",
+        "url": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2113,6 +2267,15 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — VXE Dragonfly V3 Series (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 13,95 € (prix normal 17,95 €) — inchangé depuis le relevé du 2026-10-11)",
+        "url": "https://www.atk.store/en-fr/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2214,6 +2377,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — VXE Dragonfly R1 Series (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 13,95 € (prix normal 17,95 €) — inchangé depuis le relevé du 2026-10-11)",
+        "url": "https://www.atk.store/en-fr/products/vxe-dragonfly-r1-series-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2244,8 +2416,8 @@
     "weight_g": 36.0,
     "sensor": "PAW3395",
     "polling_hz": 8000,
-    "price_eur": 40.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 40,95 € (série MAD R « à partir de », boutique ATK pays France). Produit affiché en rupture de stock à cette date : le prix retenu est celui de la boutique officielle, le réapprovisionnement est annoncé sur la fiche. Aucune conversion d'un prix en dollars.",
+    "price_eur": 41.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 41,95 € (série MAD R « à partir de », boutique ATK pays France ; c'est le montant que la page affiche aujourd'hui). Le relevé du 2026-10-12 donnait 40,95 € pour la même page : l'écart d'un euro est consigné, le prix publié suit la boutique officielle à sa date de relevé. Produit affiché en rupture de stock à ces deux dates : le réapprovisionnement est annoncé sur la fiche. Aucune conversion d'un prix en dollars.",
     "sources": [
       {
         "label": "EloShapes — VXE MAD R",
@@ -2318,6 +2490,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — VXE MAD R Series (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 41,95 €, produit en rupture de stock à cette date)",
+        "url": "https://www.atk.store/products/vxe-mad-r-series-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2394,6 +2575,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — VXE Dragonfly X3 Series (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 27,95 € (prix normal 31,95 €) — inchangé depuis le relevé du 2026-10-11)",
+        "url": "https://www.atk.store/en-fr/products/vxe-dragonfly-x3-series-lightweight-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2490,6 +2680,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 Mini (prix EUR affiché en France, relevé du 2026-10-13 : 77,95 € — inchangé depuis le relevé du 2026-10-11 (coloris blanc en rupture, rose en stock))",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2521,8 +2720,8 @@
     "weight_g": 56.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": 72.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-11 : 72.95 € (ATK Dragonfly A9 NB, prix du produit, prix normal 122.95 €).",
+    "price_eur": 73.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 73,95 € (ATK Dragonfly A9 NB, prix du produit, prix normal 123,95 €). Le relevé du 2026-10-11 donnait 72,95 € (prix normal 122,95 €) : la boutique a relevé le prix d'un euro, le prix publié suit la boutique officielle à sa date de relevé. Aucune conversion.",
     "sources": [
       {
         "label": "ATK Store — ATK Dragonfly A9 NB",
@@ -2607,6 +2806,15 @@
           "hump_position"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — Dragonfly A9 NB (prix EUR affiché en France, relevé du 2026-10-13 : 73,95 €, prix normal 123,95 €)",
+        "url": "https://www.atk.store/products/atk-dragonfly-a9-nb-lightweight-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2638,8 +2846,8 @@
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": 40.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-12 : 40,95 € (boutique ATK pays France, fiche F1 V2, variante « Ultra Max 2.0 / Black », prix normal 63,95 €). L'ancienne valeur (41,95 €) venait du « à partir de » de la collection ATK française relevé le 2026-10-11. Les autres modèles sont plus chers : « Ultimate 2.0 » (39 ± 2 g, modèle décrit ici) 54,95 € et « Extreme 2.0 » 77,95 €. Prix retenu = variante la moins chère en stock, comme pour l'A9 Ultimate et le GHOST.",
+    "price_eur": 41.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 41,95 € (boutique ATK pays France, fiche F1 V2, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre — prix normal 63,95 €). Le relevé du 2026-10-12 donnait 40,95 € pour la même variante : la promotion d'un euro a pris fin, le prix publié suit la boutique officielle à sa date de relevé. Les autres modèles de la série sont plus chers : « Ultimate 2.0 » 54,95 € (39 ± 2 g) et « Extreme 2.0 » 77,95 €.",
     "sources": [
       {
         "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
@@ -2711,6 +2919,15 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — F1 V2 Series, variante « Ultra Max 2.0 / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 41,95 €, prix normal 63,95 €) — c'est la variante que le bouton d'achat ouvre",
+        "url": "https://www.atk.store/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2805,6 +3022,15 @@
           "button_height"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "ATK Store — ATK Blazing Sky U2 Series (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 22,95 € (prix normal 28,95 €) — inchangé depuis le relevé du 2026-10-11)",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-series-wireless-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ],
     "shape": "Symmetrical",
@@ -2876,6 +3102,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (X2 v3 Mini) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/x2-v3-mini-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -2950,6 +3185,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (X2H v3 Mini) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/x2h-v3-mini-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3020,6 +3264,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (X2A v3) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/x2a-v3-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3081,6 +3334,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (X2 CrazyLight Medium) : prix EUR affiché en France, relevé du 2026-10-13 : 149.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3155,6 +3417,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (Xlite v4 Mini) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/xlite-v4-mini-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3228,6 +3499,15 @@
           "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (Xlite v4 Medium) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; produit en rupture de stock (aucun coloris disponible à cette date)",
+        "url": "https://eu.pulsar.gg/products/xlite-v4-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3297,6 +3577,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (X2 CrazyLight Mini) : prix EUR affiché en France, relevé du 2026-10-13 : 149.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3371,6 +3660,15 @@
           "fingertip_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (X2H CrazyLight Mini) : prix EUR affiché en France, relevé du 2026-10-13 : 149.99 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/x2h-crazylight-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3444,6 +3742,15 @@
           "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (Xlite CrazyLight Medium) : prix EUR affiché en France, relevé du 2026-10-13 : 149.90 € — inchangé ; en stock",
+        "url": "https://eu.pulsar.gg/products/xlite-crazylight-medium-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   },
@@ -3517,6 +3824,15 @@
           "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
+      },
+      {
+        "label": "Pulsar EU — fiche officielle (Xlite v4 Large) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; produit en rupture de stock (aucun coloris disponible à cette date)",
+        "url": "https://eu.pulsar.gg/products/xlite-v4-large-gaming-mouse",
+        "fields": [
+          "price_note",
+          "price_eur"
+        ],
+        "date_checked": "2026-10-13"
       }
     ]
   }

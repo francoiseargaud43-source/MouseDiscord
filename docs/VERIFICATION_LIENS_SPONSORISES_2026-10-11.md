@@ -23,6 +23,7 @@ en stock, modèle « Ultra » par défaut — donc aucune variante figée dans l
 | C'est la bonne souris | `search/suggest.json` (titre + handle + variante) et page produit (« All Models ») |
 | La bonne variante est cochée | `https://www.atk.store/variants/<id>.json` → renvoie le libellé exact de la variante (ex. `Extreme / Black`) |
 | Le prix est le bon | relevé EUR officiel du 2026-10-11 (`?country=FR`) et prix USD de la variante pour identifier le modèle |
+| Le prix est celui de **la variante figée** | `https://www.atk.store/products/<handle>.js?country=FR` → `variants[]` donne, pour chaque variante, son identifiant, son libellé **et son prix**. C'est le contrôle ajouté le 2026-10-13 (§7) : un relevé « à partir de » ne dit rien du prix de la variante que le lien ouvre. |
 
 Rappel : sans `?country=FR`, atk.store affiche des **dollars**. Tous les liens du fichier portent
 donc `country=FR` (prix en euros) et ton code d'affiliation (`ref=aze` chez atk.store,
@@ -30,7 +31,9 @@ donc `country=FR` (prix en euros) et ton code d'affiliation (`ref=aze` chez atk.
 
 ## 2. Les 26 liens validés
 
-Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses.
+Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses. **Instantané historique** : ces
+prix sont ceux du relevé du 2026-10-11. Le prix *de la variante figée par chaque lien* a été
+recontrôlé le 2026-10-13 ; c'est ce contrôle qui fait foi aujourd'hui (§7).
 
 | id | Souris (base) | Ce que le lien ouvre | Variante figée | Prix EUR |
 | --- | --- | --- | --- | --- |
@@ -153,3 +156,112 @@ d'affiliation : **le propriétaire l'a fourni le 2026-10-12**, il est ajouté te
   paramètre sur chaque lien `pulsar_*` (comme `country=FR` l'est pour atk.store).
 - État complet, ligne par ligne : `docs/audit/LIENS_AFFILIES_2026-10-12.md` — **36 souris, 36 liens,
   36 affiliés** ; plus aucun lien à compléter.
+
+## 7. Addendum du 2026-10-13 (37e passe) : le prix affiché est celui de la page ouverte par le lien
+
+Le contrôle du 2026-10-11 avait vérifié le **libellé** de la variante ouverte par chaque lien
+(`variants/<id>.json`), pas son **prix** : le prix venait d'un relevé « **dès** X € », c'est-à-dire du
+modèle le moins cher de la page — pas forcément celui que le lien ouvre. Le **2026-10-13**, les **36
+liens** ont été repassés un par un sur la page du marchand, avec l'outil qui donne les prix en euros et
+le détail des variantes :
+
+- **atk.store** : `products/<handle>.js?country=FR` → `variants[]` (libellé exact, prix en centimes,
+  disponibilité) ;
+- **eu.pulsar.gg** : `search/suggest.json?…&country=FR` (prix TTC en EUR) et `products/<handle>.js` ;
+- **scyrox.com** : pas de prix en euros sur la boutique (voir plus bas).
+
+**Résultat : six prix étaient faux** (la boutique avait relevé plusieurs tarifs d'un euro entre le 12 et
+le 13), **trois liens tombaient sur une variante épuisée**, et un écart de prix reste une question posée
+au propriétaire.
+
+### 7.1 Les six prix corrigés (relevés du 2026-10-13)
+
+| Souris | Prix annoncé | Prix réel de la page | Ce qui s'était passé |
+| --- | --- | --- | --- |
+| **ATK A9 Ultimate** | 41,95 € | **59,95 €** | le lien ouvre l'édition « Ultimate » ; 41,95 € était le prix d'une **autre édition** de la même page (« Ultra Max 2.0 ») |
+| **ATK X1 V2 Ultra Max** | 40,95 € | **41,95 €** | même variante (`47058382782682`), prix relevé d'un euro depuis le 12 |
+| **ATK F1 V2** | 40,95 € | **41,95 €** | variante « Ultra Max 2.0 / Black » (`47006581096666`), +1 € (prix normal 63,95 €) |
+| **VXE MAD R** | 40,95 € | **41,95 €** | série « à partir de », +1 € (produit toujours en rupture) |
+| **ATK Dragonfly A9 NB** | 72,95 € | **73,95 €** | prix du produit, +1 € (prix normal 123,95 €) |
+| **ATK Blazing Sky Duckbill** | 81,95 € | **82,95 €** | modèle « Ultra » unique, +1 € (prix normal 118,95 €) |
+
+Chaque correction est écrite dans la `price_note` de la souris (ancien prix, nouveau prix, prix normal,
+date) et **tracée par une source datée du 2026-10-13** dans `data/mouse_db.json`.
+
+### 7.2 Les onze liens qui figent une variante
+
+| id | Variante figée | Libellé réel au 2026-10-13 | Prix | Verdict |
+| --- | --- | --- | --- | --- |
+| `atk_a9_ultimate` | `46878654005466` | A9 **Ultimate** / Black | **59,95 €** (annoncé 41,95 €) | ❌ **prix corrigé** |
+| `atk_x1_ultra_max` | `47058382782682` | X1 V2 **Ultra Max 2.0** / Black | **41,95 €** (catalogue 40,95 €) | ⚠️ **prix corrigé** (dérive d'un jour) |
+| `atk_a9_plus` | `46320046047450` | A9 **Plus** / White | 27,95 € (normal 36,95 €) | ⚠️ écart avec les 45,00 € du cahier → **prix conservé**, question posée |
+| `atk_a9_air` | `47193565364442` | A9 **Air** / Black | 59,95 € | ✅ cohérent |
+| `atk_a9_mini` | `47852235718874` | A9 **Mini** / Black | 59,95 € | ✅ cohérent |
+| `atk_ghost_extreme` | `47320425627866` | GHOST **Extreme** / Black | 86,95 € | ✅ cohérent, en stock |
+| `atk_f1_ultimate` | `48175399370970` | F1 V3 **Ultimate+** / Black | 59,95 € | ✅ cohérent (**désormais en stock**) |
+| `atk_u2_v2_mini` | `47204034150618` | U2 V2 **Mini** / White | 59,95 € | ✅ cohérent, en stock |
+| `atk_ghost_ultimate` | `47320425595098` | GHOST **Ultimate** / Silver | 68,95 € | ✅ recâblé (Black épuisé) |
+| `atk_y9_ultimate` | `47178929897690` | Y9 **Ultimate** / Pink | 59,95 € | ✅ recâblé (White épuisé) |
+| `atk_u2_v2_ultimate` | `47201864974554` | U2 V2 **Ultimate** / Lake Green | 59,95 € | ✅ recâblé (White épuisé) |
+
+**Les trois liens recâblés** gardent le **même prix** : seul le coloris change, pour qu'un clic
+n'atterrisse jamais sur une page où l'on ne peut pas acheter :
+`atk_ghost_ultimate` → `47320425595098` (Silver) · `atk_u2_v2_ultimate` → `47201864974554` (Lake Green) ·
+`atk_y9_ultimate` → `47178929897690` (Pink). `docs/audit/LIENS_AFFILIES_2026-10-12.md` porte les trois
+nouvelles URL.
+
+### 7.3 Les treize liens ATK sans variante figée
+
+Pour ceux-là, le lien ouvre la page : l'annonce doit donc valoir le prix le moins cher affiché
+(« à partir de »). Tous ont été relus le 2026-10-13.
+
+| Souris | Annoncé | Page du 2026-10-13 | Verdict |
+| --- | --- | --- | --- |
+| ATK Blazing Sky U2 | 22,95 € | 22,95 € (normal 28,95 €) | ✅ |
+| ATK Blazing Sky U2 Mini | 77,95 € | 77,95 € | ✅ (blanc en rupture, rose en stock) |
+| ATK Blazing Sky ZERO | 63,95 € | 63,95 € | ✅ |
+| ATK Blazing Sky Z1 V2 (« Ultimate ») | 59,95 € | 59,95 € (normal 73,95 €) | ✅ |
+| ATK Blazing Sky Phantom | 91,95 € | 91,95 € (normal 109,95 €) | ✅ |
+| ATK FIERCE X | 69,95 € | 69,95 € | ✅ (produit en rupture de stock) |
+| VXE Dragonfly R1 | 13,95 € | 13,95 € | ✅ |
+| VXE Dragonfly V3 | 13,95 € | 13,95 € | ✅ |
+| VXE Dragonfly X3 | 27,95 € | 27,95 € | ✅ |
+| ATK Dragonfly A9 NB | 72,95 € | **73,95 €** | ❌ **prix corrigé** |
+| ATK Blazing Sky Duckbill | 81,95 € | **82,95 €** | ❌ **prix corrigé** |
+| ATK Blazing Sky F1 V2 | 40,95 € | **41,95 €** | ❌ **prix corrigé** |
+| VXE MAD R | 40,95 € | **41,95 €** | ❌ **prix corrigé** |
+
+### 7.4 Les dix liens Pulsar et les deux liens Scyrox
+
+- **Pulsar (eu.pulsar.gg)** : les **dix prix sont identiques** à ceux du relevé du 2026-10-12 —
+  X2 v3 Mini **119,99 €**, X2H v3 Mini **119,99 €**, X2A v3 Medium **119,99 €**, X2 CrazyLight Mini et
+  Medium **149,99 €**, X2H CrazyLight Mini **149,99 €**, Xlite CrazyLight Medium **149,90 €**,
+  Xlite v4 Mini, Medium et Large **119,99 €**. Toutes ces fiches sont en stock **sauf** les deux Xlite
+  v4 **Medium et Large**, dont les deux coloris sont épuisés : le lien reste le bon (aucun autre coloris
+  n'existe), il n'y a rien à recâbler. C'est **noté**, pas corrigé.
+- **Scyrox (scyrox.com)** : la boutique n'affiche **aucun prix en euros** (et aucune conversion n'est
+  faite — règle du 2026-10-11). Les 74,90 € des V6 et V8 viennent du **cahier des charges** du
+  propriétaire (V6 : `owner_spec_unverified`, affiché « prix non vérifié ») et le prix de la V8 est
+  corroboré par un revendeur français (Maxesport, 74,90 €, relevé du 2026-10-11). **Rien n'a changé** le
+  2026-10-13 ; la note de la V6 dit désormais explicitement pourquoi son prix n'est pas vérifiable sur
+  la boutique officielle.
+
+### 7.5 Le point ouvert : le prix de l'A9 Plus
+
+La variante liée est l'« A9 Plus / White » à **27,95 €** (36,95 € normal). Le catalogue porte **45,00 €**
+(cahier des charges) et un revendeur affiche 44,90 €. Rien ne prouve que « A9 Plus » (27,95 € à la
+boutique) et « A9 Plus 2.0 » (45,00 €) soient le même produit : **le prix n'a pas été changé**, une
+source d'observation datée a été ajoutée, la question est posée au propriétaire (point ouvert 16 de
+`docs/audit/AUDIT.md`).
+
+### 7.6 Effet mesuré et verrous
+
+- **Effet sur les résultats** (`tools/db_effect.py --avant` — catalogue d'avant la passe, grille
+  complète de **27 170 profils**) : **6 058 profils (22,30 %)** changent d'une place ; **0 place gagnée,
+  91 perdues** (profils à 45 € ou moins qui voyaient l'A9 Ultimate) ; 5 411 listes sans deux fois la même
+  coque, 647 avec le repli documenté. Détail : §25 de `docs/audit/ROBUSTESSE_2026-10-12.md`.
+- **Trois tests verrouillent la règle** dans `tests/test_data.py` :
+  `test_le_prix_de_l_a9_ultimate_est_celui_de_sa_variante` (le prix d'une fiche est celui de la variante
+  que son lien ouvre), `test_chaque_lien_a_variante_est_trace_par_une_source` (toute variante figée doit
+  être datée par une source) et `test_chaque_prix_de_souris_est_date_par_une_source` (**aucun prix sans
+  source datée** : c'est le contrôle qui manquait et qui a laissé passer les six écarts).

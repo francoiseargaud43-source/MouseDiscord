@@ -1,5 +1,6 @@
 """Intégrité des fichiers de données livrés (catalogue v2, liens, images)."""
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -184,9 +185,13 @@ def test_a9_shell_variants_share_the_owners_button_height(mice):
         assert not score.is_pending, ident
 
 
-# Versions « allégées » condamnées par les règles actuelles (2026-10-12) : mêmes données de score que
-# leur jumelle de coque, mais plus chères — et le poids n'entre pas dans le score. Mesuré sur la grille
-# complète : 100 % des profils notés les voient devancées par leur jumelle (0 exception).
+# Versions « allégées » dominées par les règles actuelles (2026-10-12) : mêmes données de score que
+# leur jumelle de coque, et **jamais moins chères** — le poids n'entre pas dans le score. Mesuré sur la
+# grille complète : 100 % des profils notés les voient devancées par leur jumelle (0 exception).
+# Depuis le 2026-10-13, la paire A9 est à **prix égal** (59,95 €) : la boutique ATK vend l'A9 Ultimate
+# et l'A9 Air au même prix (relevé officiel du 2026-10-13, variantes « Ultimate / Black » et
+# « Air / Black ») ; la domination de l'A9 Air repose donc sur l'ordre du classement à score et prix
+# égaux, que la boucle ci-dessous vérifie cas par cas.
 PAIRES_DOMINEES = (
     ("atk_a9_air", "atk_a9_ultimate"),
     ("atk_u2_mini", "atk_u2_v2_mini"),
@@ -202,7 +207,9 @@ def test_light_versions_can_never_pass_their_cheaper_twin(mice):
 
     Chaque paire partage la même coque (`shell_id`) et **exactement les mêmes données de score** ; seuls
     le poids et le prix diffèrent, et le poids ne compte pas. Dans les cinq modes, à score égal, le
-    départage finit par le prix : la version allégée ne peut donc jamais passer devant sa jumelle.
+    départage finit par le prix — puis, à prix égal, par l'ordre du catalogue : la version allégée ne
+    passe jamais devant sa jumelle (« jamais plus chère » remplace « toujours plus chère » depuis que la
+    paire A9 est à prix égal, cf. le commentaire de `PAIRES_DOMINEES`).
     Vérifié sur la grille complète de `tools/recommendation_stats.py` : 11 172 profils pour l'ATK A9 Air
     (0 fois devant), 5 544 pour l'U2 Mini, 4 830 pour la X2 CrazyLight Medium, 3 990 pour la X2H
     CrazyLight Mini. Ce test rejoue le contrôle sur le catalogue entier (cinq modes × trois prises ×
@@ -218,7 +225,7 @@ def test_light_versions_can_never_pass_their_cheaper_twin(mice):
         assert a.shell_id and a.shell_id == b.shell_id, (allegee, a.shell_id, b.shell_id)
         for champ in CHAMPS_DE_SCORE:
             assert getattr(a, champ) == getattr(b, champ), (allegee, champ)
-        assert b.price_eur < a.price_eur, (allegee, a.price_eur, b.price_eur)
+        assert b.price_eur <= a.price_eur, (allegee, a.price_eur, b.price_eur)
         vus = 0
         for mode in modes:
             # Le mode Budget personnalisé exige un plafond : 200 € couvrent tout le catalogue.
@@ -368,14 +375,40 @@ def test_duckbill_dimensions_resolved_from_the_manufacturer(mice):
 def test_duckbill_price_matches_the_only_variant_on_sale(mice):
     """La Duckbill n'existe qu'en un modèle (« Ultra », trois coloris) : le prix retenu est le sien.
 
-    Vérifié le 2026-10-12 sur la boutique ATK pays France : 81,95 € pour les trois coloris
-    (prix normal 118,95 €). Aucune variante moins chère n'existe, donc le prix ne bouge pas.
+    Relevé sur la boutique ATK pays France : 81,95 € le 2026-10-12, **82,95 € le 2026-10-13**
+    (prix normal 118,95 €, inchangé pour les trois coloris). Aucune variante moins chère n'existe,
+    donc le prix de la fiche est celui de ce modèle — et il suit la boutique, pas l'ancien relevé.
+    Le prix et la note gardent la trace des deux dates.
     """
     duck = mice["atk_duckbill"]
-    assert (duck.price_eur, duck.price_status) == (81.95, "verified")
+    assert (duck.price_eur, duck.price_status) == (82.95, "verified")
     assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields
                for s in duck.sources)
     assert "« Ultra »" in duck.price_note      # modèle unique : le prix est celui de ce modèle
+    assert "2026-10-13" in duck.price_note      # la date du relevé qui fait foi est écrite
+    assert "81,95" in duck.price_note           # l'ancien relevé reste expliqué, pas effacé
+
+
+def test_chaque_prix_de_souris_est_date_par_une_source(mice):
+    """Aucun prix ne vit sans une source datée qui dit À QUOI il correspond.
+
+    Défaut trouvé le 2026-10-13 (37e passe) : quatre fiches annonçaient un prix que la page du
+    marchand n'affichait plus (F1 V2 et MAD R 40,95 € au lieu de 41,95 €, A9 NB 72,95 € au lieu de
+    73,95 €, Duckbill 81,95 € au lieu de 82,95 €) — la boutique avait relevé ses prix d'un euro
+    sans que le catalogue le sache. Le contrôle ci-dessous exige, pour chaque souris, au moins une
+    source de boutique officielle (atk.store, eu.pulsar.gg, scyrox.com) dont l'adresse rappelle le
+    relevé de prix : impossible de publier un prix sans écrire d'où il vient.
+    """
+    for ident, mouse in sorted(mice.items()):
+        assert mouse.price_eur > 0, ident
+        assert re.search(r"20\d\d-\d\d-\d\d", mouse.price_note or ""), (
+            f"{ident} : la note de prix ne dit pas quand le prix a été relevé"
+        )
+        sources_prix = [s for s in mouse.sources if "price_eur" in s.fields]
+        assert sources_prix, f"{ident} : aucune source ne trace le prix"
+        assert all(re.fullmatch(r"20\d\d-\d\d-\d\d", s.date_checked) for s in sources_prix), (
+            f"{ident} : une source de prix n'est pas datée"
+        )
 
 
 def test_ghost_prices_are_read_variant_by_variant(mice):
@@ -1067,3 +1100,47 @@ def test_le_statut_des_cotes_ne_reste_pas_sous_estime(mice):
     assert controle >= 5, f"trop peu d'entrées contrôlées ({controle}) : le contrôle ne prouve rien"
     assert sous_estimes == [], ("statut de cotes sous-estimé (les sources justifient « verified ») : "
                                + " ; ".join(sous_estimes))
+
+
+def test_le_prix_de_l_a9_ultimate_est_celui_de_sa_variante(mice):
+    """Corrigé le 2026-10-13 : la fiche A9 Ultimate portait le prix « à partir de » d'une autre édition.
+
+    La boutique ATK vend plusieurs éditions de l'A9 sur la même page ; notre bouton d'achat ouvre
+    depuis toujours la variante **« Ultimate / Black »**, mais le prix publié (41,95 €) était le minimum
+    de la page — celui de la variante « Ultra Max 2.0 / Black ». Le membre lisait donc 41,95 € et en
+    payait 59,95 €. Même piège que la Y9 Ultimate et la Z1 V2, corrigées le 2026-10-12 ; règle
+    appliquée : **le prix d'une fiche est celui de la variante figée par son lien d'achat**. Ce test
+    gèle le prix, la provenance et la variante.
+    """
+    a9 = mice["atk_a9_ultimate"]
+    assert (a9.price_eur, a9.price_status) == (59.95, "verified")
+    assert "« Ultimate / Black »" in a9.price_note
+    assert "41,95" in a9.price_note or "41.95" in a9.price_note   # l'ancien relevé reste expliqué
+    source = [s for s in a9.sources if "46878654005466" in s.url]
+    assert len(source) == 1, "la variante figée par le bouton doit être citée par une source datée"
+    assert "price_eur" in source[0].fields and source[0].date_checked == "2026-10-13"
+
+
+def test_chaque_lien_a_variante_est_trace_par_une_source(mice):
+    """Traçabilité des liens d'achat : toute variante figée (`?variant=…`) doit être citée par une source.
+
+    Le prix publié est celui de cette variante (règle du 2026-10-12, appliquée à la Y9, la Z1 V2 puis à
+    l'A9 Ultimate) : sans la source qui NOMME la variante, une relecture du prix ne sait plus quel
+    modèle vérifier — c'est exactement l'angle mort qui a laissé la fiche A9 Ultimate à 41,95 € pendant
+    deux jours. Le test ne vérifie pas le prix (cela demande une connexion) : il interdit qu'un lien
+    figé reste sans provenance.
+    """
+    from config import COMMERCIAL_LINKS_PATH
+    import re
+    from utils.catalog import load_commercial_links
+
+    liens = load_commercial_links(COMMERCIAL_LINKS_PATH)
+    figes = {mid: re.search(r"variant=(\d+)", url).group(1)
+             for mid, url in liens.items() if "variant=" in url}
+    assert len(figes) >= 10, f"trop peu de liens figés ({len(figes)}) : le contrôle serait vide"
+    manquants = []
+    for mid, variante in figes.items():
+        mouse = mice[mid]
+        if not any(variante in s.url for s in mouse.sources):
+            manquants.append(f"{mid} (variant={variante})")
+    assert manquants == [], f"variantes figées sans source : {', '.join(manquants)}"

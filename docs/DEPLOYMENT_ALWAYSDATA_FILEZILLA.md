@@ -1311,7 +1311,8 @@ pkill -f "bot.py"                 # la tâche planifiée relance le bot au proch
 
 ```
 cogs/finder_flow.py                  (décisif : fenêtres de l'alternative et de l'économie)
-data/mouse_db.json                   (décisif : prix A9 Air 59,95 €, VXE MAD R 40,95 € + prise fabricant)
+data/mouse_db.json                   (décisif : prix A9 Air 59,95 €, VXE MAD R 40,95 € → **41,95 € depuis le
+                                     2026-10-13**, §12.19 — + prise fabricant)
 tools/qa_flow_matrix.py              (facultatif : banc d'essai durci, chaque place contrôlée dans SA fenêtre)
 tools/flow_effect.py                 (facultatif : mesure avant/après des trois places)
 docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : documentation, §8.8, §9.5 et §10)
@@ -1575,6 +1576,10 @@ sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
 > coque**, plus légère et moins chère (l'A9 Ultimate, 41,95 €, remplace l'A9 Plus 2.0, 45,00 €, ou l'A9 NB,
 > 72,95 € : forme identique). Les places remplies (85,50 %) et le banc d'essai (**0 problème**) sont
 > inchangés. Retour arrière possible en une valeur : `atk_a9_ultimate` et `atk_a9_air`, `width_max_mm`.
+>
+> **Note du 2026-10-13** : depuis la 37e passe, l'ATK A9 Ultimate n'est plus à 41,95 € mais à **59,95 €**
+> (le 41,95 € était le prix d'une autre édition de la même page, que le lien n'ouvre pas — voir §12.19).
+> Les 1 043 profils de la correction de largeur restent valides, leur prix a changé depuis.
 
 **1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
 
@@ -1611,8 +1616,10 @@ sinon `pkill -f "bot.py"`.
 **5. Vérification en 60 secondes dans Discord**
 
 1. Parcours **Palm**, main **200 × 110**, **Haut de Gamme** : le match idéal doit être **ATK A9 Ultimate**
-   (41,95 €), suivi de l'ATK X1 V2 Ultra Max et de l'ATK A9 Plus 2.0 — trois souris à 88 %. Avant la mise à
-   jour, la première ligne était l'A9 Plus 2.0 au même prix supérieur.
+   (**59,95 €**), suivi de l'ATK X1 V2 Ultra Max (41,95 €) et de l'ATK A9 Plus 2.0 (45,00 €) — trois souris à
+   88 %. Avant la mise à jour de cette section, la première ligne était l'A9 Plus 2.0 au même prix supérieur.
+   **Prix remis à jour le 2026-10-13** : l'A9 Ultimate est passée de 41,95 € à 59,95 € (lien ≠ prix, voir
+   §12.19) — c'est ce prix-là qui doit s'afficher.
 2. Parcours **Palm** 180 × 90, Qualité/Prix : le résultat doit rester **ATK Phantom Ultimate** (91,95 €),
    puis **ATK Z1 V2 Ultra** (59,95 €), puis **ATK A9 Mini** (59,95 €) — exemple documenté du README.
 3. Aucun libellé ne doit promettre une économie qui n'en est pas une, et aucune souris au-dessus du budget
@@ -1677,8 +1684,8 @@ jour** (c'est le point de cette passe) :
 
 1. Parcours **Palm**, main **180 × 90**, Qualité/Prix : **ATK Phantom Ultimate** (91,95 €), puis
    **ATK Z1 V2 Ultra** (59,95 €), puis **ATK A9 Mini** (59,95 €).
-2. Parcours **Palm**, main **200 × 110**, Haut de Gamme : **ATK A9 Ultimate** (41,95 €), puis
-   **ATK X1 V2 Ultra Max**, puis **ATK A9 Plus 2.0**.
+2. Parcours **Palm**, main **200 × 110**, Haut de Gamme : **ATK A9 Ultimate** (**59,95 €** depuis le
+   2026-10-13, §12.19 ; 41,95 € avant cette date), puis **ATK X1 V2 Ultra Max**, puis **ATK A9 Plus 2.0**.
 3. Le parcours démarre et se termine normalement (le clic « Start » ouvre bien l'étape 1/4).
 
 **Retour arrière** : remettre l'ancien `cogs/finder_flow.py` (ou l'ancien `data/mouse_db.json`) par
@@ -1759,6 +1766,86 @@ sinon `pkill -f "bot.py"`.
 **Retour arrière** : remettre l'ancien `cogs/finder_flow.py` par FileZilla, puis `pkill -f "bot.py"`. Le
 retour arrière remet l'ancienne sélection des 2e et 3e places, masque de nouveau le marqueur de prix et le
 marqueur de score partiel — les prix, les liens et les cotes ne sont pas concernés.
+
+---
+
+### 12.19 Mise à jour du 2026-10-13 (10e) : les prix des liens remis sur la page du marchand
+
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §25) : un lien
+d'achat peut figer une **variante** précise (`variant=<id>`), et le contrôle précédent vérifiait le **nom**
+de cette variante, pas son **prix** — qui venait d'un relevé « dès X € », donc du modèle le moins cher de
+la page. Les **36 liens** ont été repassés un par un sur la page du marchand le 2026-10-13. Résultat :
+**six prix étaient faux, trois liens tombaient sur une variante épuisée.**
+
+1. **ATK A9 Ultimate : 41,95 € → 59,95 €.** Le lien ouvre l'édition « Ultimate », vendue 59,95 € ; les
+   41,95 € étaient le prix d'une **autre édition** de la même page (« Ultra Max 2.0 »). Le prix est
+   désormais celui de la variante que le lien ouvre, source datée à l'appui.
+2. **Cinq prix vieillis d'un euro**, tous relevés à nouveau le 13 : **X1 V2 Ultra Max 40,95 → 41,95 €** ·
+   **F1 V2 40,95 → 41,95 €** · **MAD R 40,95 → 41,95 €** · **A9 NB 72,95 → 73,95 €** ·
+   **Duckbill 81,95 → 82,95 €**. Le catalogue suit la boutique, pas l'ancien relevé.
+3. **Trois liens recâblés** vers le coloris **en stock**, au même prix : GHOST Ultimate → **Silver**
+   (68,95 €), U2 V2 Ultimate → **Lake Green** (59,95 €), Y9 Ultimate → **Pink** (59,95 €). Les variantes
+   précédentes étaient épuisées : le clic n'ouvrait plus rien d'achetable.
+4. **A9 Plus : rien n'a changé, une question est posée.** Sa variante liée est l'« A9 Plus / White » à
+   27,95 € alors que le catalogue porte 45,00 € : rien ne prouve que ce soit le même produit. Le prix de
+   45,00 € est **conservé** en attendant votre réponse.
+5. **Les dix liens Pulsar sont justes** (119,99 € / 149,99 € / 149,90 €, prix inchangés). Deux d'entre eux
+   (Xlite v4 Medium et Large) ouvrent un produit **en rupture de stock** : aucun coloris de rechange
+   n'existe, donc le lien reste tel quel — c'est signalé, pas contourné.
+
+> **Les résultats changent** — mesuré, pas supposé (`tools/db_effect.py --avant … --grille complete`) :
+> **6 058 profils sur 27 170 (22,30 %)** changent d'une place (idéale 573 · alternative 2 517 ·
+> économique 3 781) ; **0 place gagnée, 91 perdues** — des profils à 45 € ou moins qui voyaient l'A9
+> Ultimate à 41,95 € et ne la voient plus à 59,95 €. Le banc d'essai reste à **0 problème**, les places
+> remplies sont identiques (85,17 %), et les quatre parcours de référence du README ne bougent pas (seul
+> le parcours Claw 180 × 100 affiche la MAD R à 41,95 € au lieu de 40,95 €).
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+data/mouse_db.json                   (décisif : six prix corrigés, notes et 37 relevés datés du 2026-10-13)
+data/commercial_links.json           (décisif : les trois liens recâblés vers une variante en stock)
+tests/test_data.py                   (facultatif : 3 tests — prix et variante, traçabilité des liens, prix daté)
+docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md  (facultatif : §7, le contrôle des 36 liens)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : §25, l'audit et l'effet mesuré)
+docs/audit/AUDIT.md                  (facultatif : points ouverts 16 et 17)
+docs/audit/CATALOGUE_ATK.md          (facultatif : prix du catalogue et note de lecture)
+docs/audit/LIENS_AFFILIES_2026-10-12.md  (facultatif : les trois nouvelles URL)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md, docs/audit/matrice_profils.md (facultatif : rapports régénérés)
+```
+
+`cogs/`, `utils/`, `bot.py`, `assets/` **ne changent pas** : aucun barème, aucun seuil, aucune fenêtre,
+aucun libellé. Le moteur est identique — seules les données d'achat et trois tests ont bougé.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 412 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"`.
+
+**5. Vérification en 60 secondes dans Discord**
+
+1. Parcours **Palm**, main **200 × 110**, **Haut de Gamme** : **ATK A9 Ultimate 59,95 €** (et non plus
+   41,95 €), puis **ATK X1 V2 Ultra Max 41,95 €**, puis **ATK A9 Plus 2.0 45,00 € (prix non vérifié)** —
+   trois souris à 88 %.
+2. Parcours **Claw**, main **180 × 100**, Claw **pincée** : la troisième ligne (VXE MAD R) affiche
+   **41,95 €**.
+3. Un budget personnalisé de **45 €** avec la main 200 × 110 ne doit plus proposer l'A9 Ultimate (elle est
+   au-dessus du plafond) : la ligne du bas prend alors l'A9 Plus.
+4. Les boutons « Acheter » ouvrent bien une page avec un coloris **achetable** pour GHOST Ultimate, U2 V2
+   Ultimate et Y9 Ultimate.
+
+**Retour arrière** : remettre l'ancien `data/mouse_db.json` **et** l'ancien `data/commercial_links.json`
+par FileZilla, puis `pkill -f "bot.py"`. Les deux vont ensemble : les prix et les liens qui les ouvrent ont
+été corrigés dans le même mouvement.
 
 ---
 

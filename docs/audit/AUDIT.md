@@ -162,6 +162,29 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     sous-estimé) ; **10 704 lignes** portent désormais le marqueur. Détail : §24.4 de
     `ROBUSTESSE_2026-10-12.md`.
 
+16. **Prix de l'A9 Plus** (nouveau, 37e passe, 2026-10-13) : le lien sponsorisé de la souris fige la
+    variante « A9 Plus / White », relevée **27,95 €** à la boutique ATK FR (prix normal 36,95 €) —
+    alors que le catalogue porte **45,00 €** (cahier des charges, non daté) et qu'un revendeur affiche
+    44,90 €. Rien ne prouve, en l'état, que « A9 Plus » (la variante vendue 27,95 €) et « A9 Plus 2.0 »
+    (les 45,00 € du cahier des charges) soient le même produit : peut-être une édition antérieure, un
+    autre capteur. **Le prix du catalogue n'a donc pas été changé** ; une source d'observation datée du
+    2026-10-13 a été ajoutée pour garder la trace, et la question est posée. Si le propriétaire confirme
+    qu'il s'agit du même produit, l'A9 Plus passe à 27,95 € — effet à mesurer avant application, la
+    souris étant sur 26,0 % des profils. Détail : §7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`.
+17. ~~**Cohérence entre le prix annoncé et le prix réellement ouvert par le lien**~~ **Tranché le
+    2026-10-13 (37e passe)** : le prix d'une souris est **le prix de la page que son lien ouvre**, relevé
+    chez le marchand le jour de la conclusion (`products/<handle>.js?country=FR` chez atk.store,
+    `search/suggest.json` chez eu.pulsar.gg). Les **36 liens** ont été relus : **six prix étaient faux** —
+    l'A9 Ultimate annonçait 41,95 € (prix d'une *autre* édition de la même page) pour une variante vendue
+    59,95 €, et cinq souris avaient vieilli d'un euro depuis le relevé précédent (X1 V2 Ultra Max 40,95 →
+    41,95 €, F1 V2 40,95 → 41,95 €, MAD R 40,95 → 41,95 €, A9 NB 72,95 → 73,95 €, Duckbill 81,95 →
+    82,95 €). **Trois liens recâblés** vers le coloris en stock, au même prix (GHOST Ultimate → Silver,
+    U2 V2 Ultimate → Lake Green, Y9 Ultimate → Pink). **Effet mesuré** : 6 058 profils sur 27 170
+    (22,30 %) changent d'une place, **0 place gagnée, 91 perdues**. **Trois tests** verrouillent la règle,
+    dont celui qui manquait (`test_chaque_prix_de_souris_est_date_par_une_source` : aucun prix sans source
+    de prix datée). Détail : §7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`, effet complet dans
+    `ROBUSTESSE_2026-10-12.md` §25.
+
 ## 9. Vérifications Discord
 
 **Aucun test Discord réel n'a été exécuté** : l'environnement n'a pas de connexion à un serveur Discord.

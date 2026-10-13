@@ -27,7 +27,7 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | ATK U2 V2 Ultimate | ✅ 20/40 | 123.7 mm (dans la plage) | 61.6 mm (estimée, écart 2.0) | Moyen | Rear | High | faible | — |
 | ATK U2 V2 Mini | ⏳ à vérifier (15/25 pts partiels) | 119.5 mm (dans la plage) | 60.0 mm (estimée, écart 0.4) | Inconnu | Rear | Inconnu | faible | compatibilité Palm Grip non vérifiée, hauteur des boutons non vérifiée |
 | ATK ZERO | ✅ 25/40 | 120.1 mm (dans la plage) | 60.2 mm (estimée, écart 0.6) | Élevé | Rear | Low | faible | — |
-| ATK Duckbill | ❌ exclue — Prix 81.95 € au-dessus du budget maximal 75.00 € | 118.0 mm (écart 0.8 mm) | 52.0 mm (estimée, écart 3.6) | Élevé | Rear | Inconnu | — | Prix 81.95 € au-dessus du budget maximal 75.00 € |
+| ATK Duckbill | ❌ exclue — Prix 82.95 € au-dessus du budget maximal 75.00 € | 118.0 mm (écart 0.8 mm) | 52.0 mm (estimée, écart 3.6) | Élevé | Rear | Inconnu | — | Prix 82.95 € au-dessus du budget maximal 75.00 € |
 | ATK A9 Ultimate | ✅ 25/40 | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Élevé | Mid | Mid | faible | — |
 | ATK A9 Air | ✅ 25/40 | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Élevé | Mid | Mid | faible | — |
 | ATK A9 Mini | ✅ 30/40 (boutons non documentés) | 118.4 mm (écart 0.4 mm) | 58.2 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
@@ -83,7 +83,7 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | ATK U2 V2 Ultimate | ✅ 15/40 | 123.7 mm (écart 7.8 mm) | 61.6 mm (estimée, écart 3.2) | Élevé | Rear | High | faible | — |
 | ATK U2 V2 Mini | ✅ 20/40 (boutons non documentés) | 119.5 mm (écart 3.6 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK ZERO | ✅ 25/40 | 120.1 mm (écart 4.2 mm) | 60.2 mm (estimée, écart 1.8) | Élevé | Rear | Low | faible | — |
-| ATK Duckbill | ❌ exclue — Prix 81.95 € au-dessus du budget maximal 75.00 € | 118.0 mm (écart 2.1 mm) | 52.0 mm (estimée, écart 2.4) | Élevé | Rear | Inconnu | — | Prix 81.95 € au-dessus du budget maximal 75.00 € |
+| ATK Duckbill | ❌ exclue — Prix 82.95 € au-dessus du budget maximal 75.00 € | 118.0 mm (écart 2.1 mm) | 52.0 mm (estimée, écart 2.4) | Élevé | Rear | Inconnu | — | Prix 82.95 € au-dessus du budget maximal 75.00 € |
 | ATK A9 Ultimate | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Élevé | Mid | Mid | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK A9 Air | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Élevé | Mid | Mid | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK A9 Mini | ✅ 30/40 (boutons non documentés) | 118.4 mm (écart 2.5 mm) | 58.2 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | faible | hauteur des boutons non vérifiée |
@@ -139,7 +139,7 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | ATK U2 V2 Ultimate | ⏳ à vérifier (10/30 pts partiels) | 123.7 mm (dans la plage) | 61.6 mm (estimée, écart 2.4) | Inconnu | ignorée (Fingertip) | High | faible | compatibilité Fingertip Grip non vérifiée |
 | ATK U2 V2 Mini | ✅ 20/40 (boutons non documentés) | 119.5 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Moyen | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK ZERO | ✅ 35/40 | 120.1 mm (dans la plage) | 60.2 mm (estimée, écart 1.0) | Élevé | ignorée (Fingertip) | Low | faible | — |
-| ATK Duckbill | ❌ exclue — Prix 81.95 € au-dessus du budget maximal 75.00 € | 118.0 mm (dans la plage) | 52.0 mm (estimée, écart 3.3) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 81.95 € au-dessus du budget maximal 75.00 € |
+| ATK Duckbill | ❌ exclue — Prix 82.95 € au-dessus du budget maximal 75.00 € | 118.0 mm (dans la plage) | 52.0 mm (estimée, écart 3.3) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 82.95 € au-dessus du budget maximal 75.00 € |
 | ATK A9 Ultimate | ✅ 35/40 | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Élevé | ignorée (Fingertip) | Mid | faible | — |
 | ATK A9 Air | ✅ 35/40 | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Élevé | ignorée (Fingertip) | Mid | faible | — |
 | ATK A9 Mini | ✅ 30/40 (boutons non documentés) | 118.4 mm (dans la plage) | 58.2 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |

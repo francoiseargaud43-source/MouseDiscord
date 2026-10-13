@@ -1,4 +1,4 @@
-# Liens d'achat des souris du catalogue — état au 2026-10-12 (complet)
+# Liens d'achat des souris du catalogue — état au 2026-10-13 (complet)
 
 **Question du propriétaire** : « donne-moi tous les liens affiliés qu'il te manque dans les souris que tu as
 intégrées ». Puis : « il faut juste que tu rajoutes `?ref=AZE` à la fin des URL » (paramètre d'affiliation Pulsar).
@@ -42,12 +42,12 @@ Les liens Pulsar complétés le 2026-10-12 :
 | ATK F1 V3 Ultimate | `atk_f1_ultimate` | https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR&ref=aze&variant=48175399370970 | oui — `ref=aze` |
 | ATK Fierce X | `atk_fierce_x` | https://www.atk.store/en-fr/products/atk-fierce-x-lightweight-wireless-gaming-mouse?country=FR&ref=aze | oui — `ref=aze` |
 | ATK GHOST Extreme | `atk_ghost_extreme` | https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425627866 | oui — `ref=aze` |
-| ATK GHOST Ultimate | `atk_ghost_ultimate` | https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425562330 | oui — `ref=aze` |
+| ATK GHOST Ultimate | `atk_ghost_ultimate` | https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425595098 | oui — `ref=aze` |
 | ATK Phantom Ultimate | `atk_phantom_ultimate` | https://www.atk.store/en-fr/products/atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse?country=FR&ref=aze | oui — `ref=aze` |
 | ATK U2 V2 Mini | `atk_u2_v2_mini` | https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=47204034150618 | oui — `ref=aze` |
-| ATK U2 V2 Ultimate | `atk_u2_v2_ultimate` | https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=47201864941786 | oui — `ref=aze` |
+| ATK U2 V2 Ultimate | `atk_u2_v2_ultimate` | https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=47201864974554 | oui — `ref=aze` |
 | ATK X1 V2 Ultra Max | `atk_x1_ultra_max` | https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=47058382782682 | oui — `ref=aze` |
-| ATK Y9 Ultimate | `atk_y9_ultimate` | https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse?country=FR&ref=aze&variant=47178929864922 | oui — `ref=aze` |
+| ATK Y9 Ultimate | `atk_y9_ultimate` | https://www.atk.store/en-fr/products/atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse?country=FR&ref=aze&variant=47178929897690 | oui — `ref=aze` |
 | ATK Z1 V2 Ultra | `atk_z1_ultra` | https://www.atk.store/en-fr/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse?country=FR&ref=aze | oui — `ref=aze` |
 | ATK ZERO | `atk_zero` | https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse?country=FR&ref=aze | oui — `ref=aze` |
 | Pulsar X2 CrazyLight Medium | `pulsar_x2_crazylight_medium` | https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse?ref=AZE | oui — `ref=AZE` |

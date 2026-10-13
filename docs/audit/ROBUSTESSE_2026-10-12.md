@@ -2028,3 +2028,96 @@ de l'option choisie, et le banc d'essai continue de contrôler les limites Disco
 | `tools/flow_effect.py --avant 41d741d` (24 609 profils) | match idéal **0 profil changé** · alternative 1 615 · troisième place 1 976 · **ordre violé 2 046 → 84** · places remplies identiques |
 | `tools/privacy_scan.py` | 0 violation |
 | `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
+
+## 25. Trente-septième passe (2026-10-13) : le prix affiché est celui de la page ouverte par le lien
+
+Passe d'audit, **sans nouveauté** : relire les 36 liens d'achat, prouver chaque écart contre la page du
+marchand, corriger les prix, et verrouiller la règle par des tests. Aucune ligne du moteur n'a été
+touchée — aucun seuil, aucun barème, aucune fenêtre, aucun libellé.
+
+### 25.1 Le défaut : le prix annoncé peut ne pas être celui de la page ouverte
+
+Un lien de `data/commercial_links.json` peut figer une **variante** par son paramètre `variant=<id>`. Le
+contrôle du 2026-10-11 avait vérifié le **libellé** de cette variante (`variants/<id>.json`) — jamais son
+**prix**, qui venait d'un relevé « **dès** X € » : le modèle le moins cher de la page, pas forcément
+celui que le lien ouvre. Le piège s'était déjà refermé deux fois (Y9, Z1 V2, corrigées le 2026-10-12).
+
+Le 2026-10-13, **les 36 liens** ont été repassés un par un sur la page du marchand
+(`products/<handle>.js?country=FR` chez atk.store → prix et variantes en euros ; `search/suggest.json` et
+`products/<handle>.js` chez eu.pulsar.gg). Le résultat est plus large que prévu : **six prix étaient
+faux**, et **l'erreur n'était pas dans le code mais dans la donnée** — la boutique avait relevé plusieurs
+tarifs d'un euro entre le 12 et le 13, sans que rien ne le signale.
+
+| Souris | Annoncé | Prix réel du 2026-10-13 | Cause |
+| --- | --- | --- | --- |
+| **ATK A9 Ultimate** | 41,95 € | **59,95 €** | le lien ouvre l'édition « Ultimate » ; 41,95 € était le prix d'une **autre édition** de la même page |
+| **ATK X1 V2 Ultra Max** | 40,95 € | **41,95 €** | même variante, prix relevé d'un euro depuis le 12 |
+| **ATK F1 V2** | 40,95 € | **41,95 €** | variante « Ultra Max 2.0 / Black » (prix normal 63,95 €) |
+| **VXE MAD R** | 40,95 € | **41,95 €** | série « à partir de » (produit toujours en rupture) |
+| **ATK Dragonfly A9 NB** | 72,95 € | **73,95 €** | prix du produit (prix normal 123,95 €) |
+| **ATK Blazing Sky Duckbill** | 81,95 € | **82,95 €** | modèle « Ultra » unique (prix normal 118,95 €) |
+
+Trois liens ont aussi été **recâblés vers un coloris en stock**, au même prix — GHOST Ultimate → Silver
+(68,95 €), U2 V2 Ultimate → Lake Green (59,95 €), Y9 Ultimate → Pink (59,95 €) : les variantes
+précédentes étaient épuisées, donc le clic ouvrait une page sans achat possible. Les neuf autres liens
+qui figent une variante sont cohérents, et les deux liens Pulsar qui tombent sur une rupture (Xlite v4
+Medium et Large, aucun coloris disponible) ne peuvent pas être recâblés : c'est **noté**, pas corrigé.
+
+Enfin, l'écart de prix de l'**A9 Plus** (variante liée à 27,95 €, catalogue à 45,00 €) **n'est pas
+tranché** : rien ne prouve que ce soit le même produit. Le prix est conservé, une source d'observation
+datée est ajoutée, et la question est posée (point ouvert 16 de `AUDIT.md`).
+
+### 25.2 Effet mesuré (avant / après, grille complète)
+
+`tools/db_effect.py --avant` (catalogue d'avant la passe) sur **27 170 profils** :
+
+| Mesure | Avant → après |
+|---|---|
+| Profils dont le résultat change | **6 058 (22,30 %)** — place idéale 573 · alternative 2 517 · économique 3 781 |
+| Places gagnées / perdues | **0 gagnée · 91 perdues** |
+| Listes sans deux fois la même coque | **5 411** (contre 647 avec le repli documenté) |
+
+Les 91 places perdues sont des profils à **45 € ou moins** qui voyaient l'A9 Ultimate à 41,95 € : à
+59,95 €, elle sort de leur budget. C'est la conséquence assumée du prix corrigé — **le classement ne peut
+pas dépendre d'un prix faux**. Les profils de référence bougent d'un seul chiffre : le parcours **Claw
+180 × 100 pincée** affiche la MAD R à 41,95 € (au lieu de 40,95 €) ; les quatre autres exemples
+documentés (Palm 180 × 90 Qualité/Prix et Économique, Palm 200 × 110 Haut de gamme, Palm 150 × 65 à 25 €)
+sont identiques.
+
+### 25.3 Ce que la passe a aussi vérifié
+
+- **Chasse aux références mortes** (analyse syntaxique de tout le code) : seuls `NAVY` et `SPARK`
+  ressortent — des constantes de la palette des illustrations, utilisées par le rendu d'aperçu. **Faux
+  positifs, rien à nettoyer.**
+- **Audit structurel des liens** : **36 liens pour 36 souris**, tous en HTTPS, **aucun orphelin** (ni
+  souris sans lien, ni lien sans souris), 24 ATK / 10 Pulsar / 2 Scyrox.
+- **Domination de l'A9 Air** : l'A9 Air et l'A9 Ultimate sont au **même prix** (59,95 €) ; le test de
+  domination n'exige donc plus « strictement moins chère ». Mesure : sur **54 profils** où l'A9 Air est
+  classée, elle n'est **jamais** devant sa jumelle.
+- **Pulsar** : les dix prix (119,99 € / 149,99 € / 149,90 €) sont **identiques** au relevé du 12.
+- **Scyrox** : aucun prix en euros sur la boutique officielle ; les 74,90 € du cahier des charges sont
+  conservés (V6 marquée « prix non vérifié »), la note dit maintenant pourquoi.
+- **Ce qui n'a pas changé** : aucun seuil, aucun barème, aucune fenêtre, aucun libellé de place, aucune
+  cote, aucun poids, aucune prise. Seules des données de prix (et leurs sources) et trois tests ont bougé.
+
+### 25.4 Preuves d'exécution (37e passe)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **412 passed** (409 avant la passe : 3 tests ajoutés) |
+| `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
+| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places 23 140 (85,17 %) · 2 places 1 287 · 1 place 182 · 0 place 2 561 · repli « même coque » 631 · match idéal partiel 3 118 · ordre non garanti 70 (0,26 %) |
+| `tools/db_effect.py --avant` (grille complète) | 6 058 profils changent (22,30 %) · **0 place gagnée, 91 perdue** |
+| `tools/privacy_scan.py` | 0 violation |
+| `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
+| `data/mouse_db.json` | 36 souris, **254 sources** (226 avant la passe) dont **37 relevés datés du 2026-10-13**, sur 34 souris |
+
+Les trois tests ajoutés à `tests/test_data.py` :
+
+1. `test_le_prix_de_l_a9_ultimate_est_celui_de_sa_variante` — le prix d'une fiche est celui de la
+   variante que son lien ouvre (59,95 €), pas celui d'une édition voisine de la même page (41,95 €) ;
+2. `test_chaque_lien_a_variante_est_trace_par_une_source` — tout lien qui fige une variante doit porter,
+   en base, une source datée de ce relevé ;
+3. `test_chaque_prix_de_souris_est_date_par_une_source` — **aucun prix sans source de prix datée**, et
+   la note de prix doit dire **quand** elle a été relevée. C'est le contrôle qui manquait : les six
+   écarts du 13 sont exactement ce qu'il interdit désormais.
