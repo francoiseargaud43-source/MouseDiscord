@@ -1901,15 +1901,23 @@ cd ~/MouseDiscord
    l'écriture du fichier. Le bot écrit lui-même un âge positif : ce cas n'arrive qu'avec une horloge
    reculée ou un fichier modifié à la main.
 
-Dans les deux cas : **aucun texte affiché, aucun score, aucun classement, aucun lien, aucun prix ne
-change**. La même passe a mesuré, plutôt que supposé, trois choses sur le code réellement exécuté : les
+3. Le chargement du catalogue refusait mal trois familles de valeurs : un **poids en texte** (ou en
+   liste, ou en objet) faisait échouer l'affichage du résultat — « erreur inattendue » au lieu des souris —,
+   tandis qu'un `NaN`, un infini ou un booléen traversaient la validation et s'affichaient tels quels
+   (« nan g », « inf € », « 1 Hz »). Un lien d'achat contenant un espace ou un saut de ligne était, lui
+   aussi, transmis au bouton alors que Discord le refuse — ce qui aurait fait échouer **tout** le
+   résultat. Ces valeurs sont maintenant refusées **au chargement**, avec un message lisible, et un lien
+   inutilisable est écarté souris par souris (les autres gardent le leur).
+
+Dans ces trois cas : **aucun texte affiché, aucun score, aucun classement, aucun lien, aucun prix ne
+change** — les garde-fous ne se déclenchent que sur un fichier de données abîmé. La même passe a mesuré, plutôt que supposé, trois choses sur le code réellement exécuté : les
 **limites Discord** sur les 27 170 profils (**0 violation**, tableau au §26.1), la **typographie** de
 15 133 textes affichés (**0 défaut réel**, §26.2) et le comportement de l'affichage sur **162 combinaisons
 de données dégradées** (**0 exception**, §26.3), plus **14 contenus hostiles** de fichier d'état
 (§26.5) — aucun ne bloque le démarrage.
 
 **1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py`, `utils/session.py`,
-`tests/test_flow.py` et `tests/test_session.py`. Facultatifs au sens strict : le bot fonctionne
+`utils/catalog.py`, `tests/test_flow.py`, `tests/test_session.py` et `tests/test_data.py`. Facultatifs au sens strict : le bot fonctionne
 exactement pareil sans eux (le chemin corrigé n'est jamais emprunté en production, et l'âge négatif
 d'un fichier d'état n'arrive qu'avec une horloge reculée). Envoyez-les pour que le serveur
 corresponde au dépôt — et supprimez `state/sessions.json` si vous voulez repartir d'un état neuf.
@@ -1920,7 +1928,7 @@ corresponde au dépôt — et supprimez `state/sessions.json` si vous voulez rep
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 506 passed
+.venv/bin/python -m pytest -q                      # attendu : 523 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

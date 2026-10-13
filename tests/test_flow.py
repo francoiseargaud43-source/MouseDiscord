@@ -1223,6 +1223,22 @@ async def test_double_tap_on_start_shows_no_error_and_opens_the_parcours():
     assert status == "ok" and session is not None        # le parcours est bien ouvert
 
 
+def test_le_poids_des_36_souris_s_affiche_sans_planter_ni_charabia():
+    """Le poids est la seule ligne du résultat construite par un formatage direct (`_num`).
+
+    Trouvé le 2026-10-13 en attaquant le catalogue : un poids en texte, une liste ou un objet passait
+    la validation puis faisait lever l'affichage du résultat (`ValueError: Unknown format code 'g'`),
+    soit « erreur inattendue » pour le membre. Le chargeur refuse désormais ces valeurs
+    (`tests/test_data.py`), et ici la chaîne complète est parcourue : aucune des 36 souris du
+    catalogue livré ne peut produire autre chose qu'un nombre de grammes.
+    """
+    for mouse in flow.load_catalog(flow.MOUSE_DB_PATH):
+        texte = flow._weight_text(mouse)
+        assert texte.endswith(" g"), f"{mouse.id} : {texte!r}"
+        nombre = texte[:-2].replace(",", ".")
+        assert float(nombre) == mouse.weight_g, f"{mouse.id} : {texte!r}"
+
+
 @pytest.mark.asyncio
 async def test_deux_appuis_sur_le_panneau_ne_laissent_qu_un_parcours_vivant():
     """Deux appuis distincts sur le bouton d'accueil : un seul parcours reste vivant, le plus récent.

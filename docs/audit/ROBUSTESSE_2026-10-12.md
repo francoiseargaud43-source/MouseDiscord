@@ -2362,11 +2362,58 @@ ramené à zéro (« vue à l'instant »), ce qui est aussi ce que le magasin é
 après le délai normal) et par les quatre cas récupérés de
 `test_ce_qui_est_lisible_est_recupere_sans_gagner_de_vie`.
 
-### 26.6 Preuves d'exécution (38e passe)
+### 26.6 Le catalogue, attaqué avec des valeurs hostiles
+
+Deuxième fichier du serveur qui peut être abîmé : `data/mouse_db.json` (transfert interrompu, édition à la
+main, export mal formé). **279 combinaisons** ont été testées — 31 champs de la fiche × 9 valeurs hostiles
+(texte, `true`, `NaN`, infini, négatif, milliard, liste, objet, chaîne vide) — chacune appliquée à
+**toutes** les souris d'un catalogue de travail, puis affichée sur 5 profils (Palm 180×90 Q/P, Palm
+200×110 HDG, Palm 160×70 éco, Claw 180×100 Q/P, Fingertip 170×80 éco).
+
+**Ce que le chargement acceptait à tort, et ce que le membre voyait alors :**
+
+| Valeur hostile | Chargement (avant) | Ce que voyait le membre |
+|---|---|---|
+| `weight_g` en **texte** (« 55 g ») | accepté | **erreur inattendue** (`ValueError: Unknown format code 'g'`) |
+| `weight_g` en **liste** ou en **objet** | accepté | **erreur inattendue** (`TypeError`) |
+| `weight_g` = `NaN`, infini ou négatif | accepté | « nan g » · « inf g » · « -5 g » |
+| `length_mm`, `width_max_mm`, `height_mm`, `grip_width_mm` = `NaN` ou infini | accepté | « nan mm » dans les repères de taille |
+| `price_eur` = `NaN` ou infini | accepté | « nan € » · « inf € » |
+| `polling_hz` = `true` | accepté | « 1 Hz » |
+| n'importe quel nombre = `true` | accepté | `True` est un `int` en Python : la règle passait |
+
+`nan <= 0` et `inf <= 0` sont **faux** : la règle « nombre positif » les laissait donc traverser. C'était
+le **dernier endroit du livrable où une donnée hostile pouvait faire échouer l'affichage** — les 162
+combinaisons du §26.3 portaient sur des données déjà chargées.
+
+**Corrigé le 2026-10-13** : `_positive_or_none` refuse les booléens, tout ce qui n'est pas un nombre et
+**tout nombre non fini** ; `weight_g` passe par cette validation comme les autres nombres (c'était le seul
+champ numérique sans contrôle, et c'est précisément celui qui plantait) ; `polling_hz` refuse les
+booléens. Aucune donnée réelle ne change : le catalogue livré se recharge à l'identique (36 souris, poids
+inchangés), vérifié par `test_les_nombres_du_vrai_catalogue_sont_finis_et_positifs`, et
+`tests/test_data.py` refuse désormais les 14 valeurs hostiles une par une.
+
+**Le même banc a trouvé un troisième verrou manquant, sur les liens d'achat.** Un lien de
+`data/commercial_links.json` contenant un espace, une tabulation, un saut de ligne ou un caractère de
+contrôle était accepté (seul le schéma `http(s)://` était vérifié) puis transmis tel quel au bouton du
+résultat. Une telle adresse n'est pas une URL : Discord refuse le composant au moment de l'envoi, et
+c'est alors le **résultat entier** qui échoue — le membre recevrait « erreur inattendue » au lieu de ses
+trois souris. Ce n'est pas éprouvable depuis cet atelier (aucun accès à l'API Discord), mais la parade ne
+coûte rien : le lien fautif est écarté (avertissement dans les journaux, bouton « Liens à venir »),
+**les autres souris gardent le leur** — on perd un bouton, jamais le résultat. Une espace encodée
+(`%20`) reste valide, et les 36 liens livrés sont tous conservés (vérifié).
+
+**Ce qui reste accepté, et pourquoi** : `brand` / `model` en texte libre (c'est ce qui s'affiche, par
+conception), et un prix ou un poids **géant mais fini** (`1e9`) — donnée absurde, pas erreur de code : le
+poids réel est déjà encadré par un test de données (20–120 g). Seul effet d'affichage possible :
+« 1e+09 g ». Aucune souris livrée n'est dans ce cas.
+
+### 26.7 Preuves d'exécution (38e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **506 passed** (488 avant la passe : 2 tests de code, 14 cas de fichier d'état hostile, 2 tests de temps de vie) |
+| `pytest -q` | **523 passed** (488 avant la passe : 17 tests de code et de validation, 18 cas de fichiers hostiles) |
+| Catalogue attaqué (279 combinaisons) | 0 affichage cassé après correction (3 cas d'erreur et 8 cas de charabia avant) |
 | `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
 | Mesure des limites Discord (27 170 profils) | **0 violation** (tableau §26.1) |
 | Scan typographique (15 133 textes) | 0 défaut réel (tableau §26.2) |

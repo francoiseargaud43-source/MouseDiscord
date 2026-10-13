@@ -1,5 +1,6 @@
 """Intégrité des fichiers de données livrés (catalogue v2, liens, images)."""
 import json
+import math
 import re
 from pathlib import Path
 
@@ -578,6 +579,27 @@ def test_links_file_skips_invalid_entries(tmp_path):
     assert load_commercial_links(f) == {"a": "https://shop.test/a"}
 
 
+def test_un_lien_avec_espace_ou_saut_de_ligne_est_ecarte(tmp_path):
+    """Trouvé le 2026-10-13 (fichiers du serveur attaqués).
+
+    Un lien contenant un espace, une tabulation, un saut de ligne ou un caractère de contrôle était
+    transmis tel quel au bouton du résultat. Une telle adresse n'est pas une URL : Discord refuse le
+    composant au moment de l'envoi — c'est alors le **résultat entier** qui échoue, et le membre voit
+    « erreur inattendue » au lieu de ses trois souris. Le chargeur écarte ce seul lien ; les autres
+    souris gardent le leur, et une espace encodée (`%20`) reste valide.
+    """
+    f = tmp_path / "links.json"
+    f.write_text(json.dumps({
+        "espace": "https://shop.test/a b",
+        "tabulation": "https://shop.test/a\tb",
+        "saut": "https://shop.test/a\nhttps://evil.test",
+        "controle": "https://shop.test/a\x00b",
+        "encode": "https://shop.test/a%20b",
+        "normal": "https://shop.test/ok",
+    }), encoding="utf-8")
+    assert load_commercial_links(f) == {"encode": "https://shop.test/a%20b", "normal": "https://shop.test/ok"}
+
+
 # ---------------------------------------------------------------------------
 # Validation du schéma : chaque erreur doit être détectée
 # ---------------------------------------------------------------------------
@@ -608,6 +630,51 @@ def test_valid_minimal_record_parses():
 def test_invalid_values_are_rejected(override):
     with pytest.raises(CatalogError):
         parse_mouse(base_raw(**override), 1)
+
+
+@pytest.mark.parametrize("override", [
+    {"weight_g": "55 g"},
+    {"weight_g": [55]},
+    {"weight_g": {"grammes": 55}},
+    {"weight_g": -5},
+    {"weight_g": float("nan")},
+    {"length_mm": float("nan")},
+    {"length_mm": float("inf")},
+    {"width_max_mm": float("nan")},
+    {"height_mm": float("inf")},
+    {"grip_width_mm": float("nan")},
+    {"price_eur": float("nan")},
+    {"price_eur": float("inf")},
+    {"polling_hz": True},
+    {"length_mm": True},
+])
+def test_un_nombre_hostile_est_refuse_au_chargement(override):
+    """Trouvé le 2026-10-13 (catalogue attaqué avec des valeurs hostiles).
+
+    Le chargement promet une erreur **immédiate et lisible** plutôt qu'un échec à l'affichage. Ce
+    n'était pas le cas des nombres : un poids en texte, une liste ou un objet passaient la validation,
+    puis l'affichage du résultat levait `ValueError: Unknown format code 'g'` (poids en texte) ou
+    `TypeError` (liste, objet) — donc « erreur inattendue » pour le membre. Et un `NaN`, un infini ou
+    un booléen traversaient tout : `nan <= 0` et `inf <= 0` sont faux, et `True` est un `int` en
+    Python. Ils s'affichaient tels quels (« nan g », « inf € », « 1 Hz »).
+    """
+    with pytest.raises(CatalogError):
+        parse_mouse(base_raw(**override), 1)
+
+
+def test_les_nombres_du_vrai_catalogue_sont_finis_et_positifs(mice):
+    """Le durcissement ne touche aucune donnée réelle : tout est fini, positif, du bon type."""
+    for mouse in mice.values():
+        for nom, valeur in (("weight_g", mouse.weight_g), ("length_mm", mouse.length_mm),
+                            ("height_mm", mouse.height_mm), ("grip_width_mm", mouse.grip_width_mm),
+                            ("price_eur", mouse.price_eur)):
+            if valeur is None:
+                continue
+            assert isinstance(valeur, float), f"{mouse.id} : {nom} n'est pas un flottant"
+            assert math.isfinite(valeur) and valeur > 0, f"{mouse.id} : {nom} = {valeur!r}"
+        if mouse.polling_hz is not None:
+            assert isinstance(mouse.polling_hz, int) and not isinstance(mouse.polling_hz, bool)
+            assert mouse.polling_hz > 0
 
 
 def test_length_null_requires_documented_conflict_or_note():

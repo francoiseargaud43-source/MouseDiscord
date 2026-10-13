@@ -243,7 +243,10 @@ Les liens d'affiliation sont dans **`data/commercial_links.json`**, séparés du
 - Sans lien, le résultat affiche **un seul** bouton informatif désactivé `🔗 Liens à venir` (jamais un bouton grisé par souris) ;
   ajoutez simplement l'`id` de la souris pour afficher son bouton 🛒 `Acheter …`.
 - Aucun lien n'est inventé dans le dépôt : le fichier est volontairement vide tant que le propriétaire ne fournit pas les liens.
-- Les entrées dont l'URL ne commence pas par `http(s)://` sont ignorées (un avertissement est écrit dans les logs).
+- Les entrées dont l'URL ne commence pas par `http(s)://`, ou qui contient une espace, une tabulation ou un
+  caractère de contrôle, sont ignorées **souris par souris** (un avertissement est écrit dans les logs) :
+  une telle adresse n'est pas une URL utilisable, et Discord la refuse au moment de l'envoi — ce qui ferait
+  échouer **tout** le résultat, pas seulement ce bouton.
 - Modification à chaud : rechargé à chaque résultat, sans redémarrage.
 
 ---
@@ -489,7 +492,7 @@ python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOM
 
 - `tests/test_matcher.py` : plages cibles, points pour 180 × 90 mm en Palm (non-régression), bornes strictes, largeur mesurée vs estimée, statuts `scored` / `pending` / `excluded`, budget personnalisé.
 - `tests/test_selection.py` : effet réel de chaque mode, tolérances, prix inconnus, candidats à vérifier jamais classés.
-- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs, absence de valeur inventée, liens et images, résolution `IMAGES_BASE_URL` (nom de fichier), existence réelle des 15 illustrations, repli de clé d'image.
+- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs (**dont 14 valeurs numériques hostiles** — `NaN`, infini, booléen, poids en texte — et un lien à espace, refusés au chargement), absence de valeur inventée, liens et images, résolution `IMAGES_BASE_URL` (nom de fichier), existence réelle des 15 illustrations, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : rattachement au membre, remplacement d'un parcours, expiration, enregistrement/relecture du fichier d'état, et **14 contenus de fichier d'état hostiles** (tronqué, version inconnue, dossier à la place du fichier, âge négatif…) qui ne doivent jamais empêcher le bot de démarrer.
 - `tests/test_privacy.py` : scénarios de confidentialité et de robustesse **P02–P18** (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage, clic rejoué, erreur inattendue, fichier d'état) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md` et `docs/audit/ROBUSTESSE_2026-10-12.md`.

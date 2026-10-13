@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import json
 import logging
+import math
+import re
 from dataclasses import fields
 from pathlib import Path
 from typing import Any, Mapping
@@ -39,9 +41,21 @@ class CatalogError(ValueError):
 
 
 def _positive_or_none(value: Any, name: str, mouse_id: str) -> float | None:
+    """Nombre fini strictement positif, ou ``None``.
+
+    Trois garde-fous trouvés le 2026-10-13 en attaquant le catalogue avec des valeurs hostiles : un
+    **booléen** (`True` est un `int` en Python), un **NaN** ou un **infini** (`nan <= 0` et
+    `inf <= 0` sont faux : ils passaient la validation) traversaient le chargement puis s'affichaient
+    tels quels — « nan g », « inf € », « 1 Hz ». Un catalogue hostile doit être refusé **au
+    chargement**, avec un message lisible, pas au moment du résultat.
+    """
     if value is None:
         return None
-    if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        raise CatalogError(f"{mouse_id} : {name} doit être un nombre positif ou null")
+    if not math.isfinite(value):
+        raise CatalogError(f"{mouse_id} : {name} doit être un nombre fini (ni NaN ni infini)")
+    if value <= 0:
         raise CatalogError(f"{mouse_id} : {name} doit être un nombre positif ou null")
     return float(value)
 
@@ -118,7 +132,7 @@ def parse_mouse(raw: Mapping[str, Any], index: int) -> Mouse:
         raise CatalogError(f"{mouse_id} : shape renseigné sans source listant « shape »")
 
     polling = raw.get("polling_hz")
-    if polling is not None and (not isinstance(polling, int) or polling <= 0):
+    if polling is not None and (isinstance(polling, bool) or not isinstance(polling, int) or polling <= 0):
         raise CatalogError(f"{mouse_id} : polling_hz invalide")
 
     values = {f.name: raw.get(f.name) for f in fields(Mouse) if f.name in raw}
@@ -128,6 +142,10 @@ def parse_mouse(raw: Mapping[str, Any], index: int) -> Mouse:
         width_max_mm=width,
         height_mm=_positive_or_none(raw.get("height_mm"), "height_mm", mouse_id),
         grip_width_mm=_positive_or_none(raw.get("grip_width_mm"), "grip_width_mm", mouse_id),
+        # Le poids s'affiche à côté du match idéal : un texte, une liste ou un objet à sa place
+        # faisait échouer l'affichage du résultat (`ValueError: Unknown format code 'g'`), donc
+        # « erreur inattendue » pour le membre. Validé ici, comme les autres nombres.
+        weight_g=_positive_or_none(raw.get("weight_g"), "weight_g", mouse_id),
         price_eur=_positive_or_none(raw.get("price_eur"), "price_eur", mouse_id),
         conflicts=conflicts,
         sources=sources,
@@ -156,6 +174,22 @@ def load_catalog(path: Path) -> tuple[Mouse, ...]:
     return mice
 
 
+# Espace, tabulation, saut de ligne, caractères de contrôle : une URL qui en contient n'en est pas une.
+_LIEN_INUTILISABLE = re.compile(r"[\s\x00-\x1f\x7f]")
+
+
+def _lien_utilisable(url: str) -> bool:
+    """L'URL peut-elle vraiment servir de bouton ?
+
+    Trouvé le 2026-10-13 (fichiers du serveur attaqués) : un lien contenant un espace, une tabulation
+    ou un saut de ligne était accepté tel quel puis transmis au bouton. Une telle adresse n'est pas une
+    URL : Discord refuse le composant au moment de l'envoi, et c'est le **résultat entier** qui échoue
+    — le membre voit « erreur inattendue » au lieu de ses trois souris. Mieux vaut écarter ce seul lien
+    (avertissement dans les journaux, bouton « Liens à venir ») que perdre le résultat.
+    """
+    return url.startswith(("https://", "http://")) and _LIEN_INUTILISABLE.search(url) is None
+
+
 def load_commercial_links(path: Path) -> dict[str, str]:
     """Retourne {mouse_id: url}. Les entrées invalides sont ignorées avec un avertissement."""
     try:
@@ -171,7 +205,7 @@ def load_commercial_links(path: Path) -> dict[str, str]:
     for mouse_id, url in raw.items():
         if mouse_id.startswith("_"):
             continue
-        if isinstance(url, str) and url.startswith(("https://", "http://")):
+        if isinstance(url, str) and _lien_utilisable(url):
             links[mouse_id] = url
         else:
             log.warning("Lien ignoré pour %s : URL invalide", mouse_id)
