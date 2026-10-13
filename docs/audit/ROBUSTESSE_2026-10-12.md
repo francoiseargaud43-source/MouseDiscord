@@ -2100,6 +2100,32 @@ sont identiques.
 - **Ce qui n'a pas changé** : aucun seuil, aucun barème, aucune fenêtre, aucun libellé de place, aucune
   cote, aucun poids, aucune prise. Seules des données de prix (et leurs sources) et trois tests ont bougé.
 
+### 25.5 Mesuré mais non modifié : quatre souris en rupture de stock
+
+La relecture des liens a aussi rapporté la **disponibilité**. À la date du 2026-10-13, **quatre souris du
+catalogue ne peuvent pas être achetées** : la **VXE MAD R** (produit entier), l'**ATK Fierce X** (produit
+entier), la **Pulsar Xlite v4 Large** et la **Pulsar Xlite v4 Medium** (les deux coloris de chacune). S'y
+ajoutent des **coloris** isolés, déjà traités autrement : GHOST Ultimate, U2 V2 Ultimate, Y9 Ultimate et
+U2 Mini ont vu leur bouton d'achat recâblé vers un coloris en stock (§25.1).
+
+Ce que ces ruptures pèsent, sur la grille statistique (**18 522 profils**, 51 504 places remplies) :
+
+| Souris en rupture | Places occupées | Part des profils |
+|---|---:|---:|
+| VXE MAD R / MAD R Major | 1 317 | 7,1 % |
+| Pulsar Xlite v4 Large | 180 | 1,0 % |
+| ATK Fierce X | 105 | 0,6 % |
+| Pulsar Xlite v4 Medium | 12 | 0,1 % |
+| **Total** | **1 614 places sur 51 504 (3,1 %)** | — |
+
+**Rien n'a été changé**, et c'est volontaire : un membre qui lit « VXE MAD R — 41,95 € » sur une des trois
+lignes du résultat ne peut pas l'acheter aujourd'hui. Trois réponses sont possibles et elles n'ont pas le
+même effet — **retirer** la souris du classement (elle sort aussi le jour où elle revient), la **classer
+après** ses concurrentes disponibles, ou **écrire « en rupture »** sur sa ligne (le message reste honnête
+sans toucher au classement, mais la ligne s'allonge). Aucune n'a été tranchée par le propriétaire : la
+question est posée avec ces chiffres (point ouvert 18 de `AUDIT.md`), et rien n'est appliqué sans réponse —
+c'est la règle du projet (le moteur ne bouge que sur demande explicite, et une donnée ne s'invente pas).
+
 ### 25.4 Preuves d'exécution (37e passe)
 
 | Contrôle | Résultat |

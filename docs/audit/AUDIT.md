@@ -185,6 +185,18 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     de prix datée). Détail : §7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`, effet complet dans
     `ROBUSTESSE_2026-10-12.md` §25.
 
+18. **Souris en rupture de stock recommandées** (nouveau, 37e passe, 2026-10-13) : la relecture des
+    36 liens a aussi relevé la disponibilité. **Quatre souris du catalogue sont en rupture** à cette date
+    — VXE MAD R (produit entier), ATK Fierce X (produit entier), Pulsar Xlite v4 Large et Pulsar Xlite v4
+    Medium (les deux coloris de chacune) — plus quelques **coloris** isolés dont le bouton d'achat a déjà
+    été recâblé vers un coloris en stock (GHOST Ultimate, U2 V2 Ultimate, Y9 Ultimate, U2 Mini). Mesure sur
+    la grille statistique (18 522 profils) : ces quatre souris occupent **1 614 places sur 51 504**
+    (3,1 %) — la MAD R à elle seule en occupe 1 317 (7,1 % des profils), la Xlite v4 Large 180, la
+    Fierce X 105, la Xlite v4 Medium 12. **Rien n'a été changé** : retirer une souris du classement, la
+    faire passer après les autres ou écrire « en rupture » sur sa ligne sont trois décisions différentes,
+    toutes visibles par les membres, et aucune n'a été tranchée. La question est posée telle quelle, avec
+    les chiffres. Détail : §25.5 de `ROBUSTESSE_2026-10-12.md`.
+
 ## 9. Vérifications Discord
 
 **Aucun test Discord réel n'a été exécuté** : l'environnement n'a pas de connexion à un serveur Discord.
