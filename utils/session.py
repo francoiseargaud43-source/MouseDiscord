@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import os
 import secrets
 import time
@@ -29,6 +30,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar
+# Bornes du formulaire (source unique : ``utils/validation.py``). Elles servent à reconnaître une
+# valeur qu'un membre ne peut PAS avoir saisie — donc venue d'un fichier bricolé ou abîmé.
+from utils.validation import BUDGET_BOUNDS_EUR, LENGTH_BOUNDS_MM, WIDTH_BOUNDS_MM
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +51,16 @@ def _float_or_none(value: object) -> float | None:
         return float(value)  # type: ignore[arg-type]
     except (TypeError, ValueError):
         return None
+
+
+def _dans_bornes(valeur: float | None, bornes: tuple[float, float]) -> bool:
+    """Nombre FINI compris dans les bornes du formulaire (``NaN`` et l'infini sont refusés)."""
+    return valeur is not None and math.isfinite(valeur) and bornes[0] <= valeur <= bornes[1]
+
+
+def _mesures_du_formulaire(longueur: float | None, largeur: float | None) -> bool:
+    """Le formulaire valide longueur et largeur **ensemble** : les deux tiennent, ou aucune."""
+    return _dans_bornes(longueur, LENGTH_BOUNDS_MM) and _dans_bornes(largeur, WIDTH_BOUNDS_MM)
 
 
 @dataclass
@@ -117,9 +131,26 @@ class FinderSession:
                 session.claw_variant = ClawVariant(raw["claw_variant"])
             if raw.get("budget_mode"):
                 session.budget_mode = BudgetMode(raw["budget_mode"])
-            session.hand_length_mm = _float_or_none(raw.get("hand_length_mm"))
-            session.hand_width_mm = _float_or_none(raw.get("hand_width_mm"))
+            longueur = _float_or_none(raw.get("hand_length_mm"))
+            largeur = _float_or_none(raw.get("hand_width_mm"))
+            # Mesures hors bornes du formulaire (`0`, négatif, `NaN`, infini, 900 × 400…) : un membre
+            # ne peut PAS les saisir, elles viennent donc d'un fichier bricolé ou abîmé. Les garder
+            # donnait deux comportements également faux : un message « les données des souris sont
+            # momentanément illisibles » sans issue (0, négatif → le moteur refuse de comparer) ou un
+            # résultat absurde présenté sans réserve (`NaN` : cibles NaN, toutes les souris « dans la
+            # plage »). Règle de ce fichier (C45, C46) : une réponse que le bot n'aurait jamais écrite
+            # vaut réponse absente — le parcours reprend à l'étape « Vos mesures ».
+            if _mesures_du_formulaire(longueur, largeur):
+                session.hand_length_mm, session.hand_width_mm = longueur, largeur
             session.max_budget_eur = _float_or_none(raw.get("max_budget_eur"))
+            if session.budget_mode is BudgetMode.CUSTOM and not _dans_bornes(session.max_budget_eur,
+                                                                             BUDGET_BOUNDS_EUR):
+                # « Budget personnalisé » sans plafond exploitable (absent, illisible, `NaN`, infini,
+                # hors des bornes du formulaire) : le moteur n'a rien à comparer et lève — le membre
+                # lisait alors « les données des souris sont illisibles », puis le même message à chaque
+                # essai. Le mode redevient « aucune gamme choisie » : la question est reposée.
+                session.budget_mode = None
+                session.max_budget_eur = None
         except (KeyError, TypeError, ValueError):
             return None
         session.last_seen = last_seen

@@ -1,4 +1,6 @@
 """Sessions de parcours : isolation par identifiant unique et vérification du propriétaire."""
+import json
+
 import pytest
 
 from utils.session import LOOKUP_FORBIDDEN, LOOKUP_INACTIVE, LOOKUP_OK, SessionStore
@@ -233,7 +235,6 @@ def test_un_etat_impossible_a_ecrire_ne_casse_pas_le_parcours(tmp_path):
 
 def test_un_age_negatif_ne_rend_pas_la_session_immortelle():
     """Horloge reculée de 5 s : la session repart « vue à l'instant » et expire après le délai."""
-    import json
     import tempfile
     from pathlib import Path as _Path
 
@@ -256,3 +257,115 @@ def test_un_dossier_a_la_place_du_fichier_d_etat_ne_bloque_pas_le_demarrage(tmp_
     assert len(store) == 0
     session = store.start(user_id=1)
     assert store.lookup(session.session_id, 1)[1] == LOOKUP_OK
+
+
+# --- Chasse aux micro-bugs du 2026-10-13 : un état bricolé ne doit ni bloquer ni mentir ---
+MESURES_IMPOSSIBLES = {
+    "zéro": (0.0, 0.0),
+    "négatives": (-180.0, -90.0),
+    "NaN": (float("nan"), float("nan")),
+    "infini": (float("inf"), 90.0),
+    "trop courtes (60 × 120)": (60.0, 120.0),
+    "trop longues (900 × 400)": (900.0, 400.0),
+    "juste au-dessus (260,1 × 130,1)": (260.1, 130.1),
+    "l'une des deux absente": (180.0, None),
+}
+
+MESURES_DU_FORMULAIRE = {
+    "courantes (180 × 90)": (180.0, 90.0),
+    "bornes basses (100 × 50)": (100.0, 50.0),
+    "bornes hautes (260 × 130)": (260.0, 130.0),
+    "décimales (180,5 × 90,5)": (180.5, 90.5),
+}
+
+
+def _restaurer(tmp_path, **etat):
+    """Écrit un fichier d'état à une session puis le relit (comme au démarrage du bot)."""
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(json.dumps({"version": 1, "sessions": [
+        {"session_id": "s1", "user_id": 42, "age_seconds": 10.0, **etat}]}), encoding="utf-8")
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+    session, statut = store.current(42)
+    assert statut == LOOKUP_OK
+    return session
+
+
+@pytest.mark.parametrize("nom", sorted(MESURES_IMPOSSIBLES))
+def test_des_mesures_que_le_formulaire_ne_peut_pas_produire_sont_ecartees(tmp_path, nom):
+    """Trouvé le 2026-10-13 : ces mesures étaient restaurées telles quelles, avec deux suites fausses.
+
+    `0 × 0` ou des mesures négatives faisaient lever le moteur (« Les mesures de la main doivent être
+    strictement positives ») : le membre lisait **« ⚠️ Les données des souris sont momentanément
+    illisibles. Réessayez dans un instant »** — un message qui accuse le catalogue, ne dit rien de la
+    vraie cause et ne se résout jamais. Des mesures `NaN` étaient pires : toutes les comparaisons avec
+    `NaN` étant fausses, chaque souris passait pour « dans la plage » et le membre recevait un résultat
+    absurde, présenté sans réserve. Un membre ne peut saisir que des nombres finis dans les bornes du
+    formulaire (100–260 mm et 50–130 mm, `utils/validation.py`) : toute autre valeur vient d'un fichier
+    bricolé ou abîmé. Elle vaut donc **réponse absente** — le parcours reprend à l'étape « Vos mesures ».
+    """
+    longueur, largeur = MESURES_IMPOSSIBLES[nom]
+    session = _restaurer(tmp_path, grip="palm", hand_length_mm=longueur, hand_width_mm=largeur,
+                         budget_mode="qualite_prix")
+    assert session.has_measures is False, f"{nom} : mesures gardées alors qu'elles sont impossibles"
+    assert session.hand_length_mm is None and session.hand_width_mm is None
+
+
+@pytest.mark.parametrize("nom", sorted(MESURES_DU_FORMULAIRE))
+def test_les_mesures_du_formulaire_sont_conservees(tmp_path, nom):
+    """Non-régression : aucune valeur saisissable n'est écartée (bornes comprises)."""
+    longueur, largeur = MESURES_DU_FORMULAIRE[nom]
+    session = _restaurer(tmp_path, grip="palm", hand_length_mm=longueur, hand_width_mm=largeur,
+                         budget_mode="qualite_prix")
+    assert session.has_measures is True
+    assert (session.hand_length_mm, session.hand_width_mm) == (longueur, largeur)
+
+
+@pytest.mark.parametrize("plafond", [None, "beaucoup", float("nan"), float("inf"), 0.0, -5.0, 5.0, 9000.0])
+def test_un_budget_personnalise_sans_plafond_exploitable_revient_a_la_question(tmp_path, plafond):
+    """« Budget personnalisé » sans plafond utilisable : le moteur refuse de comparer.
+
+    Le membre lisait « les données des souris sont momentanément illisibles » puis, à chaque nouvel
+    essai, le même message — sans issue, puisque la cause était son propre enregistrement. Le mode
+    redevient « aucune gamme choisie » (et le plafond inutilisable est retiré) : la question est reposée.
+    """
+    etat = dict(grip="palm", hand_length_mm=180.0, hand_width_mm=90.0, budget_mode="custom")
+    if plafond is not None:
+        etat["max_budget_eur"] = plafond
+    session = _restaurer(tmp_path, **etat)
+    assert session.budget_mode is None, f"plafond {plafond!r} : mode conservé sans plafond exploitable"
+    assert session.max_budget_eur is None
+    assert session.has_measures is True          # le reste du parcours est intact
+
+
+@pytest.mark.parametrize("plafond", [10.0, 45.0, 5000.0])
+def test_un_budget_personnalise_avec_plafond_valide_est_conserve(tmp_path, plafond):
+    """Non-régression : un plafond saisissable est gardé, avec son mode."""
+    session = _restaurer(tmp_path, grip="palm", hand_length_mm=180.0, hand_width_mm=90.0,
+                         budget_mode="custom", max_budget_eur=plafond)
+    assert session.budget_mode is not None and session.max_budget_eur == plafond
+
+
+def test_un_etat_bricole_reprend_exactement_comme_un_parcours_sans_mesures(tmp_path):
+    """La conséquence visible : le membre reprend à l'étape Mesures, sans message d'erreur.
+
+    Le flux décide de l'étape sur `has_measures`, et le calcul du résultat sur `compute_selection` :
+    mesures écartées ou jamais saisies mènent donc au même endroit. Le contrôle compare les deux états
+    plutôt que de supposer (avant correction, l'état bricolé faisait lever `compute_selection` sur
+    « Les mesures de la main doivent être strictement positives » — donc « données illisibles »).
+    """
+    from cogs import finder_flow as flow
+
+    restauree = _restaurer(tmp_path, grip="palm", hand_length_mm=float("nan"),
+                           hand_width_mm=float("nan"), budget_mode="qualite_prix")
+    jamais_repondue = SessionStore(ttl_seconds=1800).start(user_id=7)
+    jamais_repondue.grip = restauree.grip
+
+    assert restauree.has_measures is False
+    assert jamais_repondue.has_measures is False
+    messages = []
+    for session in (restauree, jamais_repondue):
+        with pytest.raises(ValueError) as levee:
+            flow.compute_selection(session)
+        messages.append(str(levee.value))
+    assert messages[0] == messages[1]
+    assert "Parcours incomplet" in messages[0]

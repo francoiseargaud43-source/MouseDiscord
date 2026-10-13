@@ -2019,16 +2019,26 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    `tests/test_tools_usage_errors.py` vérifie ce contrat sur les quatorze outils. Ces outils-là servent
    au dépouillement **sur le serveur** (SSH) autant qu'en local : envoyez `tools/` si vous voulez le même
    comportement des deux côtés.
+4. **Un fichier de parcours bricolé ne bloque plus le membre** (C51 et C52, §26.21) : `state/sessions.json`
+   **lisible mais incohérent** (édité à la main, ou corruption partielle qui laisse du JSON valide) était
+   accepté tel quel. Des mesures à `0` ou négatives faisaient afficher « ⚠️ Les données des souris sont
+   momentanément illisibles, réessayez dans un instant » — à chaque essai, sans issue ; des mesures `NaN`
+   donnaient un résultat absurde présenté sans réserve ; un « Budget personnalisé » sans plafond
+   reproduisait la même impasse, et avec un plafond `NaN`/infini **le budget était ignoré en silence**.
+   Désormais, ce que le formulaire n'aurait jamais pu écrire vaut **réponse absente** : le parcours
+   reprend à l'étape Mesures, ou repose la question de la gamme. **Envoyez `utils/session.py`** (et
+   `tests/test_session.py` si vous voulez le contrôle sur le serveur) pour l'avoir des deux côtés.
 
-**À envoyer si vous le souhaitez** : `tools/` (les quatorze outils, dont quatre qui répondent maintenant
-correctement à une erreur d'usage). **Rien à redémarrer** : le bot n'exécute aucun de ces outils — ils
-servent au dépouillement et aux mesures, à la main. Le compteur du contrôle ci-dessous passe de 558
-(valeur du jour du §12.22) à **599**. Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur
-mise à jour — seul celui-ci est courant.
+**Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
+vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
+erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **623**.
+Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
+courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 599 passed
+.venv/bin/python -m pytest -q                      # attendu : 623 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

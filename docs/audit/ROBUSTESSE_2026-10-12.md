@@ -2890,3 +2890,50 @@ Preuves (les cinq gardes retirées une à une font échouer le contrôle — vé
 donnée, aucun prix, aucun lien. Le pack IA se construit à l'identique (75 230 octets, 11 fichiers,
 `pack_ia_mousediscord.zip`, comme avant la correction). Aucun résultat publié ne dépend de cette
 correction : elle ne touche que la façon dont les outils **répondent à une erreur d'usage**.
+
+### 26.21 Un état bricolé bloquait le parcours ou lui donnait un résultat absurde (C51)
+
+Les deux passes précédentes ont rendu le fichier d'état **tolérant** : illisible, il vaut « aucun état »
+(C45, C46), et un âge négatif est ramené à zéro (C38). Restait le cas d'un fichier **lisible mais
+incohérent** — celui qu'on obtient en l'ouvrant à la main, ou après une corruption partielle qui laisse
+du JSON valide. Le parcours l'acceptait tel quel, et la suite dépendait de ce qu'il contenait :
+
+| Ce que le fichier contenait | Ce que le membre vivait |
+|---|---|
+| `hand_length_mm: 0` (ou négatif) | `compute_selection` lève (« Les mesures de la main doivent être strictement positives ») → le membre lit **« ⚠️ Les données des souris sont momentanément illisibles. Réessayez dans un instant »** : un message qui accuse le catalogue, ne dit rien de la vraie cause, et **ne se résout jamais** (le même à chaque essai) |
+| `hand_length_mm: NaN` | pire : toute comparaison avec `NaN` étant fausse, **chaque souris passe pour « dans la plage »** — le membre reçoit un résultat absurde, présenté sans aucune réserve, sous un récapitulatif annonçant « `nan × nan mm` » |
+| `hand_length_mm: 900`, `hand_width_mm: 400` | score calculé contre des cibles impossibles → « Aucun match classable » (message honnête, mais pour une main qui n'existe pas) |
+| `budget_mode: "custom"` **sans** `max_budget_eur` | même impasse que la première ligne : erreur du moteur, message « données illisibles », sans issue |
+| `budget_mode: "custom"` avec `max_budget_eur: NaN` (ou infini) | **le budget est ignoré en silence** : aucune souris n'est écartée (`prix > NaN` est faux), le résultat est celui d'un budget illimité alors que le récapitulatif annonce « Budget personnalisé » |
+
+La règle appliquée est celle qui existe déjà dans ce fichier — **une valeur illisible est écartée, le
+reste du parcours reprend** (c'est écrit et testé pour le budget : « budget texte », cas `CAS_RECUPERES`) —
+appliquée aux deux endroits qui y échappaient :
+
+- **les mesures de la main** ne sont restaurées que si elles sont des nombres **finis** dans les bornes du
+  formulaire (`utils/validation.py` : 100–260 mm et 50–130 mm, les deux ensemble — le formulaire valide le
+  couple). Sinon elles valent **réponse absente** : le parcours reprend à l'étape « Vos mesures » ;
+- **« Budget personnalisé »** n'est conservé qu'avec un plafond fini dans les bornes du formulaire
+  (10–5 000 €). Sinon le mode redevient « aucune gamme choisie » et la question est reposée.
+
+Aucune valeur **saisissable** n'est touchée : un membre ne peut produire que des nombres finis dans ces
+bornes (`parse_hand_measures` / `parse_budget` les refusent autrement), donc tout ce qu'un membre a
+réellement répondu est restauré à l'identique. Aucun score, aucun seuil, aucune donnée du catalogue,
+aucun texte affiché au membre n'est modifié par cette correction : c'est un filtre d'entrée, sur le seul
+fichier que le bot écrit lui-même.
+
+Preuves (les deux filtres retirés font échouer 9 puis 8 cas — vérifié par mutation) :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_session.py` | **57 passed** (+24 cas : 8 mesures impossibles, 4 mesures du formulaire, 8 plafonds, 2 non-régressions, 1 comparaison de parcours) |
+| Mutation — mesures restaurées sans contrôle | **9 échecs** · restauré → 57 passed |
+| Mutation — mode `CUSTOM` conservé sans plafond | **8 échecs** · restauré → 57 passed |
+| Matrix des états restaurés (17 états bricolés) | **aucune exception inattendue** avant comme après ; après correction, « mesures nulles / négatives / inversées / énormes » reprennent comme un parcours sans mesures |
+| `pytest -q` | **623 passed** |
+| `tools/qa_flow_matrix.py` (grille complète, 27 170 profils, après la correction) | **Problèmes détectés : 0** — 0 place 2 561 · 1 place 182 · 2 places 1 287 · 3 places 23 140 (85,17 %) · idéal partiel 3 118 · repli « même coque » 631 · ordre non garanti 70 (0,26 %) : **identique** aux chiffres documentés au §25.1 |
+| `pyflakes` · `tools/privacy_scan.py` | 0 avertissement · 0 violation |
+
+**Ce qui n'a pas changé** : le barème, la sélection, le catalogue, les prix, les liens, les illustrations,
+les textes affichés et les trois aperçus. La correction ne concerne que la **restauration** d'un parcours
+après un redémarrage.
