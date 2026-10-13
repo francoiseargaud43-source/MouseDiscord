@@ -1,4 +1,5 @@
 """Configuration : lecture de .env indépendante du répertoire courant, erreurs explicites."""
+import importlib
 import os
 import subprocess
 import sys
@@ -119,3 +120,32 @@ def test_the_bot_turns_a_broken_configuration_into_a_clear_message():
     assert "Configuration invalide" in proc.stderr
     assert "SESSION_TTL_SECONDS doit être supérieur à 0" in proc.stderr
     assert "Traceback" not in proc.stderr
+
+
+@pytest.mark.parametrize("variable, valeur, fragment", [
+    ("SESSION_TTL_SECONDS", "0", "SESSION_TTL_SECONDS doit être supérieur à 0"),
+    ("FINDER_CHANNEL_ID", "-1", "FINDER_CHANNEL_ID doit être un identifiant positif"),
+])
+def test_une_valeur_hors_bornes_refuse_le_chargement(monkeypatch, variable, valeur, fragment):
+    """Les deux bornes de la configuration sont refusées **au chargement**, pas au premier usage.
+
+    Le sous-processus (ci-dessus) vérifie le vrai démarrage ; ici, le module est rechargé **dans le
+    processus de test** — c'est ce chemin que la mesure de couverture voit, et c'est aussi la garantie
+    qu'aucun code du bot ne tourne avec une valeur incohérente (durée de vie nulle : chaque parcours
+    expirerait aussitôt ; salon négatif : `!setup_finder` viserait un salon inexistant).
+    """
+    monkeypatch.setenv(variable, valeur)
+    monkeypatch.delitem(sys.modules, "config", raising=False)
+    try:
+        with pytest.raises(ValueError) as erreur:
+            importlib.import_module("config")
+    finally:
+        # La configuration saine reprend sa place pour les tests suivants, quel que soit le résultat :
+        # la variable fautive est retirée AVANT de recharger (sinon le rechargement échoue à son tour),
+        # et `monkeypatch` remettra l'environnement d'origine à la fin du test.
+        monkeypatch.delenv(variable)
+        sys.modules.pop("config", None)
+        importlib.import_module("config")
+    assert type(erreur.value).__name__ == "ConfigError"
+    assert fragment in str(erreur.value)
+    assert "Corrigez" in str(erreur.value)

@@ -3345,3 +3345,50 @@ résumé qui ne compte plus les fiches injoignables) : **1 échec chacune**, fic
 développement (réseau restreint) il sort en **2** avec la phrase « le contrôle n'a pas eu lieu », il ne
 produit aucun verdict ; et le format `products/<handle>.json` **ne porte pas la disponibilité**, qui reste
 constatée à part (MAD R épuisée, Xlite v4 Medium et Large épuisées, Xlite v4 Mini en stock…).
+
+### 26.31 La couverture atteint 100 % — ce que les onze dernières lignes cachaient (C63, 2026-10-13)
+
+Le §26.26 avait ramené les lignes non mesurées de 90 à **11**, et les avait toutes justifiées (chacune
+était « soit dans un vrai sous-processus, soit morte tant que le thénar est en pause »). Une justification
+n'est pas une couverture : les onze lignes ont été mesurées une par une, et **deux défauts réels sont
+apparus en le faisant**.
+
+1. **`bot.py` 32-35 (configuration invalide) et 108 (`__main__`)** et **`config.py` 83, 93 (les deux
+   bornes)** : ces lignes n'étaient exécutées que dans un **sous-processus** (`tests/test_config.py`
+   lance `bot.py` comme un vrai script) — un vrai test, mais que la mesure en mémoire ne voit pas.
+   Elles sont désormais **rejouées dans le processus de test** : `runpy.run_path("bot.py",
+   run_name="__main__")` avec une **configuration relue de l'environnement** (le module `config` est
+   retiré du cache puis rechargé, et remis en place après le test). Deux cas : jeton vide → phrase
+   « DISCORD_TOKEN est vide » + code 1 ; `SESSION_TTL_SECONDS=0` → « Configuration invalide —
+   SESSION_TTL_SECONDS doit être supérieur à 0 » + code 1. Le vrai sous-processus reste testé.
+2. **Le défaut trouvé là, et corrigé** : sur les quatre messages de `config.py`, celui de
+   `FINDER_CHANNEL_ID` était **le seul** à ne pas dire où corriger (pas de « Corrigez-la dans le fichier
+   `.env`. ») ni à rappeler que **0 = le salon où la commande est tapée** — l'exploitant lisait « doit
+   être un identifiant positif » sans savoir quoi mettre. Message aligné sur les trois autres.
+3. **`cogs/finder_flow.py` 461, 463 (les deux phrases du thénar)** : mortes tant que le barème du thénar
+   est à **0/0/0** (décision du propriétaire : thénar en pause). Un test fabrique maintenant un barème et
+   distingue **trois** cas : thénar défavorable (la phrase s'affiche), favorable (elle doit tenir dans les
+   trois « points forts » que le bilan garde — c'est la règle de concision), **neutre** (aucun mot sur le
+   thénar). Observation consignée : le bilan ne garde que **trois** points forts, donc un thénar favorable
+   arrivé **quatrième** resterait muet ; sans effet aujourd'hui (thénar à zéro), à revoir le jour où le
+   barème thénar est réactivé — **le moteur n'est pas modifié sans demande du propriétaire**.
+4. **`utils/selection.py` 128** : `_same_shell` se décide d'abord sur l'**identifiant** (même souris deux
+   fois — le garde-fou né du bug « l'alternative = la même souris »). Couverte par un test unitaire, y
+   compris le cas d'une souris **sans** coque partagée renseignée.
+5. **`utils/session.py` 360** : `_remove` sur un identifiant **inconnu** (clic rejoué sur un parcours déjà
+   retiré, purge concurrente) doit être ignoré en silence, sans toucher au parcours vivant d'à côté.
+
+**Mesure** : `.venv/bin/python -m coverage run --source=cogs,utils,bot,config -m pytest -q` puis
+`coverage report -m` → **1 655 instructions, 0 non exécutée (100 %)**, 704 tests verts. C'est la première
+fois que le dépôt n'a plus aucune ligne non mesurée dans son périmètre.
+
+**Vérifié par mutation** — six cas, un par garantie ajoutée (message de `FINDER_CHANNEL_ID` privé de sa
+consigne, point d'entrée qui ne traduit plus l'erreur de configuration, `main()` retiré du bloc
+`__main__`, les deux phrases du thénar échangées, `_same_shell` qui ne reconnaît plus le même identifiant,
+`_remove` qui ne tolère plus un identifiant inconnu) : **1 échec chacun**, fichiers restaurés à l'octet
+près.
+
+**Limites dites quand même** : la mesure est **en cours de processus**. Ce qui n'y est pas mesurable le
+reste : une vraie connexion Discord (`MouseBot().run()` est simulé : jeton et classe remplacés), et les
+outils (`tools/`) qui ont leur propre contrat, testé par `tests/test_tools_usage_errors.py`. Le vrai
+démarrage en sous-processus, lui, continue d'être vérifié par `tests/test_config.py`.

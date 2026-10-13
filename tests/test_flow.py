@@ -1350,6 +1350,41 @@ def test_match_summary_does_not_lowercase_the_grip_label():
     assert text.startswith("Longueur dans la cible")
 
 
+def test_le_bilan_sait_dire_le_thenar_quand_le_bareme_en_porte_un():
+    """Le thénar est en pause (0/0/0) : ses deux phrases n'étaient donc jamais produites.
+
+    Le jour où le propriétaire réactive le thénar, le bilan doit déjà dire la bonne chose dans les deux
+    sens (un arrière marqué qui soutient, ou un arrière large peu adapté) — sans jamais inventer un
+    défaut quand l'ajustement est nul. Le texte est donc verrouillé ici, sur un barème fabriqué.
+    """
+    from utils.matcher import STATUS_SCORED, MouseScore, ScoreBreakdown
+
+    mouse = SimpleNamespace(label="Test thénar", id="t_thenar", length_mm=120.0, width_max_mm=60.0,
+                            hump_position="Inconnu", button_height="Inconnu", price_eur=49.9,
+                            price_status="verified", shape="Symmetrical")
+
+    # Thénar défavorable : la phrase s'affiche dès que les autres critères sont dans la cible.
+    penalise = MouseScore(
+        mouse=mouse, grip=Grip.PALM, status=STATUS_SCORED,
+        breakdown=ScoreBreakdown(length_pts=10, width_pts=10, grip_pts=10, thenar_pts=-5))
+    assert "arrière large peu adapté à un petit thénar" in flow._match_summary(penalise)
+
+    # Thénar favorable : le bilan ne garde que trois « points forts » — le thénar doit donc y tenir la
+    # place (ici, avec une seule autre force) pour être visible. C'est la règle de concision du bilan
+    # (trois points forts, un point à noter) : le jour où le thénar compte, il ne doit pas être le
+    # quatrième point muet.
+    favorise = MouseScore(
+        mouse=mouse, grip=Grip.PALM, status=STATUS_SCORED,
+        breakdown=ScoreBreakdown(length_pts=10, thenar_pts=5))
+    assert "arrière marqué qui soutient votre thénar" in flow._match_summary(favorise)
+
+    # Thénar neutre (0) : rien n'est dit — ni éloge, ni reproche, ni mot « thénar ».
+    sans_thenar = MouseScore(
+        mouse=mouse, grip=Grip.PALM, status=STATUS_SCORED,
+        breakdown=ScoreBreakdown(length_pts=10, width_pts=10, grip_pts=10))
+    assert "thénar" not in flow._match_summary(sans_thenar)
+
+
 def test_match_summary_never_claims_a_direction_the_score_does_not_carry():
     """« largeur de prise un peu large » était faux pour une souris PLUS ÉTROITE que la cible.
 

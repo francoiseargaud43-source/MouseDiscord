@@ -402,16 +402,16 @@ elles sont figées par `tests/test_matcher.py` et ne doivent jamais bouger sans 
 | Souris | Résultat | Détail |
 |---|---|---|
 | Scyrox V6 | **30** | longueur 10 · largeur 10 · grip Moyen 5 · bosse Mid 5 · boutons Mid 0 |
-| ATK Z1 V2 Ultra | **30** | longueur 10 · largeur 0 (écart 4.2 mm, zone 2–5 mm) · grip 10 · bosse Mid-Front 5 · boutons High 5 |
-| ATK A9 Plus 2.0 | **25** | longueur 5 · largeur 5 · grip Élevé 10 · bosse Mid 5 · boutons 0 |
-| ATK X1 V2 Ultra Max | **20** | longueur 0 (écart 3.2 mm) · largeur 5 · grip 10 · bosse 5 · boutons 0 |
+| ATK Z1 V2 Ultimate | **30** | longueur 10 · largeur 0 (écart 4.2 mm, zone 2–5 mm) · grip 10 · bosse Mid-Front 5 · boutons High 5 |
+| ATK A9 Plus | **25** | longueur 5 · largeur 5 · grip Élevé 10 · bosse Mid 5 · boutons 0 |
+| ATK X1 V2 Ultra Max 2.0 | **20** | longueur 0 (écart 3.2 mm) · largeur 5 · grip 10 · bosse 5 · boutons 0 |
 | Scyrox V8 / V8S, ATK F1 V3 | exclues | grip Palm « Faible » |
 
 **Réponse réelle du bot pour ce profil** : en *Rapport Qualité/Prix*, match idéal **ATK Phantom Ultimate**
-(35/40 — 88 %, 91,95 €), alternative **ATK Z1 V2 Ultra** (30/40 — 75 %, 59,95 €) et, en troisième ligne,
+(35/40 — 88 %, 91,95 €), alternative **ATK Z1 V2 Ultimate** (30/40 — 75 %, 59,95 €) et, en troisième ligne,
 **ATK A9 Mini** (30/40 — 75 %, 59,95 €) sous le titre « ➕ L'autre option » — au même prix que l'alternative,
 elle n'est pas une économie et ne s'annonce donc pas comme telle ; le gagnant dépend du mode
-(en *Économique*, la Z1 V2 Ultra passe devant, parce qu'elle est la moins chère de la fenêtre). Ce résultat est
+(en *Économique*, la Z1 V2 Ultimate passe devant, parce qu'elle est la moins chère de la fenêtre). Ce résultat est
 vérifié par `tests/test_flow.py` ; le classement des cinq modes, pour les trois profils de référence, est dans
 la matrice ci-dessous — c'est elle qui fait foi, pas ce paragraphe.
 
@@ -510,7 +510,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : rattachement au membre, remplacement d'un parcours, expiration, enregistrement/relecture du fichier d'état, et **14 contenus de fichier d'état hostiles** (tronqué, version inconnue, dossier à la place du fichier, âge négatif…) qui ne doivent jamais empêcher le bot de démarrer.
 - `tests/test_privacy.py` : scénarios de confidentialité et de robustesse **P02–P18** (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage, clic rejoué, erreur inattendue, fichier d'état) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md` et `docs/audit/ROBUSTESSE_2026-10-12.md`.
-- `tests/test_bot_runtime.py` : comportements de `bot.py` mesurés le 2026-10-13 (couverture 67 % → 91 %) — purge périodique des parcours expirés (et son silence quand rien n'a expiré), erreur d'événement journalisée sans arrêter le bot, commande inconnue totalement muette, erreur de commande tracée sans rien publier, message de connexion, démarrage refusé sans jeton.
+- `tests/test_bot_runtime.py` : comportements de `bot.py` mesurés le 2026-10-13 (couverture de `bot.py` : 67 % → **100 %**, lignes de script comprises) — purge périodique des parcours expirés (et son silence quand rien n'a expiré), erreur d'événement journalisée sans arrêter le bot, commande inconnue totalement muette, erreur de commande tracée sans rien publier, message de connexion, démarrage refusé sans jeton.
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts, et **renvois « fichier + §numéro » valides** (aucune citation ne doit pointer vers une section qui n'existe pas).
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.

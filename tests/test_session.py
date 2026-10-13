@@ -460,3 +460,18 @@ def test_terminer_un_parcours_inconnu_ne_change_rien():
     store.finish("inconnu")
     assert len(store) == 1
     assert store.lookup(vivant.session_id, 1)[1] == LOOKUP_OK
+
+
+def test_retirer_un_parcours_inconnu_ne_change_rien():
+    """`_remove` reçoit des identifiants venus de l'extérieur : un inconnu doit être ignoré en silence.
+
+    Sans cette garde, un clic rejoué sur un parcours déjà retiré (ou une purge concurrente) ferait tomber
+    le bot au lieu de ne rien faire — et le parcours vivant d'à côté ne doit pas être touché.
+    """
+    store = SessionStore(ttl_seconds=60, clock=FakeClock())
+    vivant = store.start(42)
+
+    store._remove("parcours-jamais-vu")
+
+    assert store.lookup(vivant.session_id, 42) == (vivant, LOOKUP_OK)
+    assert len(store) == 1

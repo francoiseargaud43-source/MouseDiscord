@@ -292,3 +292,27 @@ def test_every_catalogue_switch_string_is_recognised():
     from utils.selection import _switch_tier
     sans_rang = sorted({m.switches for m in _catalogue() if m.switches and _switch_tier(m.switches) == 0})
     assert sans_rang == [], f"switchs non reconnus par _switch_tier : {sans_rang}"
+
+
+def test_deux_fois_la_meme_souris_est_toujours_la_meme_coque():
+    """`_same_shell` se décide d'abord sur l'identifiant : la même entrée deux fois est la même coque.
+
+    C'est le garde-fou qui empêche d'afficher deux fois la même souris (bug constaté en 44e passe :
+    « l'alternative = la même souris »). Il doit se déclencher même quand la souris n'a **aucune** coque
+    partagée renseignée — sinon une entrée dupliquée passerait pour deux souris distinctes.
+    """
+    from types import SimpleNamespace
+
+    from utils.matcher import STATUS_SCORED, MouseScore
+    from utils.selection import _same_shell
+
+    sans_coque = MouseScore(mouse=SimpleNamespace(id="atk_a9_plus", shell_id=None),
+                            grip=Grip.PALM, status=STATUS_SCORED)
+    coque_a = MouseScore(mouse=SimpleNamespace(id="atk_a9_ultimate", shell_id="atk_a9_large"),
+                         grip=Grip.PALM, status=STATUS_SCORED)
+    coque_b = MouseScore(mouse=SimpleNamespace(id="atk_a9_air", shell_id="atk_a9_large"),
+                         grip=Grip.PALM, status=STATUS_SCORED)
+
+    assert _same_shell(sans_coque, sans_coque) is True          # même identifiant, sans coque partagée
+    assert _same_shell(coque_a, coque_b) is True                # deux identifiants, une seule coque
+    assert _same_shell(sans_coque, coque_a) is False            # ni identifiant, ni coque commune

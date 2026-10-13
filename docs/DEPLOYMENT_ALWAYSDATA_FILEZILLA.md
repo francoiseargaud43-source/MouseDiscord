@@ -2051,8 +2051,9 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    exacte dans les journaux) et le résultat s'affiche, avec le rappel « Liens à venir » à la place.
    Même envoi que le point 6 (`utils/catalog.py`).
 8. **Les chemins d'échec sont désormais tenus par des tests** (C58, §26.26) : la couverture du code
-   passe de 95 % à **99 %** (90 → 11 lignes non exécutées ; les 11 restantes sont mesurées dans un vrai
-   sous-processus ou sont des branches mortes aujourd'hui — détail au §26.26). Ce qui était le moins
+   passe de 95 % à **99 %** (90 → 11 lignes non exécutées ; ces 11 lignes sont mesurées depuis — 100 %,
+   §12.25). Ces onze-là tenaient à un vrai sous-processus ou étaient des branches mortes aujourd'hui —
+   détail au §26.26. Ce qui était le moins
    couvert n'était pas décoratif : tous les chemins d'erreur de `!setup_finder` (salon non textuel,
    verrouillage impossible, écriture refusée, message d'erreur du gestionnaire), le démarrage (purge des
    parcours expirés, erreur d'événement, commande inconnue, jeton vide) et la conservation du parcours
@@ -2095,7 +2096,7 @@ ci-dessous est le seul tenu à jour** (dernière valeur : §12.24).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 697 passed
+.venv/bin/python -m pytest -q                      # attendu : 704 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2131,7 +2132,31 @@ calcul et d'affichage). Envoyez les deux fichiers, c'est tout — la tâche plan
 **Fichiers à envoyer** : `data/mouse_db.json` et `data/commercial_links.json`. **Facultatif** :
 `tools/check_links.py` (le contrôle, qui a besoin d'un réseau joignant les boutiques) et
 `tests/test_liens_achat.py` (son verrou) — ces deux fichiers ne servent pas au bot. Le compteur ci-dessus
-passe de 676 (valeur du jour du §12.23) à **697**.
+passe de 676 (valeur du jour du §12.23) à **704** (dernière valeur : §12.25).
+
+---
+
+### 12.25 Mise à jour du 2026-10-13 (16e) : les onze dernières lignes non mesurées (et un message corrigé)
+
+Le §12.23 (point 8) annonçait une couverture de **99 %** — onze lignes non exécutées, toutes justifiées
+(sous-processus, thénar en pause). Ces onze lignes ont été mesurées une par une : **la couverture du
+périmètre mesuré est maintenant de 100 %** (1 655 instructions, 0 non exécutée), et le travail a mis au
+jour un défaut visible pour l'exploitant.
+
+1. **Le message de `FINDER_CHANNEL_ID` ne disait pas quoi corriger** : c'était le seul des quatre messages
+   de configuration sans « Corrigez-la dans le fichier `.env`. » ni rappel que **0 = le salon où la
+   commande est tapée**. Corrigé. **Envoyez `config.py`** : le reste de la passe ne touche que des tests
+   et des documents — le comportement du bot ne change pas ailleurs, aucun texte affiché au membre ne
+   change, et il n'y a rien à redémarrer d'autre que d'habitude (la tâche planifiée s'en charge, ou
+   `pkill -f "bot.py"` ; **jamais `bot.py` à la main**).
+2. **Les deux démarrages « comme un script »** (configuration invalide, jeton vide) sont désormais mesurés
+   *dans* la suite de tests en plus du vrai sous-processus de `tests/test_config.py`.
+3. **Les deux phrases du thénar** (barème en pause à 0/0/0), le garde-fou « même souris deux fois »
+   (`utils/selection.py`) et le retrait d'un parcours inconnu (`utils/session.py`) ont chacun leur test.
+
+**Fichiers à envoyer** : `config.py`. **Facultatif** : `tests/` (la suite complète) — aucun autre fichier
+du bot n'est touché. Le compteur ci-dessus passe de 697 à **704** (la couverture, elle, passe de 99 % à
+**100 %**).
 
 ---
 

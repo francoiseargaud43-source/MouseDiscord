@@ -6,13 +6,20 @@ plus bas du dépôt. Les lignes non exercées n'étaient pas décoratives — pu
 gérées, erreurs de commande, démarrage sans jeton. Un test par garantie, chacune vérifiée par
 mutation (voir `docs/audit/ROBUSTESSE_2026-10-12.md` §26.26).
 
-Les lignes 32-35 (configuration invalide) et 108 (`__main__`) restent hors mesure en processus : elles
-sont exercées par `tests/test_config.py`, qui lance `bot.py` dans un vrai sous-processus — la mesure de
-couverture en mémoire ne les voit pas.
+Les lignes 32-35 (configuration invalide) et 108 (`__main__`) étaient « hors mesure en processus » : le
+vrai démarrage est vérifié par `tests/test_config.py`, qui lance `bot.py` dans un sous-processus que la
+mesure de couverture ne voit pas. Les deux cas sont donc **rejoués ici dans le processus de test**
+(`runpy` + configuration relue de l'environnement) : mêmes garanties, et plus de ligne non mesurée — sauf
+le vrai `MouseBot().run()`, qui exige un jeton Discord.
 """
 from __future__ import annotations
 
+import importlib
 import logging
+import os
+import runpy
+import sys
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -21,6 +28,8 @@ from discord.ext import commands
 import bot as bot_module
 from bot import MouseBot
 from utils.session import SessionStore
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class FakeClock:
@@ -132,3 +141,55 @@ def test_le_demarrage_lance_le_bot_avec_le_jeton(monkeypatch):
     bot_module.main()
 
     instance.run.assert_called_once_with("jeton-de-test", log_handler=None)
+
+
+@pytest.fixture
+def configuration_rechargeable(monkeypatch):
+    """Rend `config` relisible depuis l'environnement, et remet la configuration d'origine après.
+
+    `bot.py` lit la configuration par `from config import ...` : le module gardé en cache par la session
+    de tests porte les valeurs du tout premier import. Pour mesurer un vrai démarrage, il faut donc un
+    module frais — relu avec l'environnement imposé par le test, puis restauré pour les tests suivants.
+    """
+    noms = ("DISCORD_TOKEN", "SESSION_TTL_SECONDS", "FINDER_CHANNEL_ID")
+    original = {nom: os.environ.get(nom) for nom in noms}
+    yield
+    for nom, valeur in original.items():
+        if valeur is None:
+            monkeypatch.delenv(nom, raising=False)
+        else:
+            monkeypatch.setenv(nom, valeur)
+    sys.modules.pop("config", None)
+    importlib.import_module("config")
+
+
+def test_lancer_le_fichier_comme_un_script_sans_jeton_dit_quoi_faire(monkeypatch, configuration_rechargeable, caplog):
+    """`python bot.py` sans jeton : une phrase, code 1 — et la ligne `__main__` est ainsi mesurée."""
+    monkeypatch.setenv("DISCORD_TOKEN", "")
+    monkeypatch.delitem(sys.modules, "config", raising=False)
+
+    with caplog.at_level(logging.ERROR), pytest.raises(SystemExit) as sortie:
+        runpy.run_path(str(ROOT / "bot.py"), run_name="__main__")
+
+    assert sortie.value.code == 1
+    assert "DISCORD_TOKEN est vide" in caplog.text
+
+
+def test_lancer_le_fichier_avec_une_configuration_invalide_refuse_de_demarrer(
+        monkeypatch, configuration_rechargeable, caplog):
+    """Une valeur hors bornes dans `.env` : le bot ne démarre pas « à moitié », il le dit et sort.
+
+    C'est le chemin des lignes 32-35 de `bot.py` : la configuration lève pendant l'import, le point
+    d'entrée traduit l'erreur en une phrase et sort en code 1 (aucune trace technique pour l'exploitant).
+    """
+    monkeypatch.setenv("DISCORD_TOKEN", "jeton-de-test")
+    monkeypatch.setenv("SESSION_TTL_SECONDS", "0")
+    monkeypatch.delitem(sys.modules, "config", raising=False)
+
+    with caplog.at_level(logging.ERROR), pytest.raises(SystemExit) as sortie:
+        runpy.run_path(str(ROOT / "bot.py"), run_name="__main__")
+
+    assert sortie.value.code == 1
+    assert "Configuration invalide" in caplog.text
+    assert "SESSION_TTL_SECONDS doit être supérieur à 0" in caplog.text
+    assert "Traceback" not in caplog.text

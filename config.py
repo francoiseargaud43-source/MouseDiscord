@@ -81,7 +81,9 @@ COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!").strip() or "!"
 FINDER_CHANNEL_ID = _env_int("FINDER_CHANNEL_ID", 0)
 if FINDER_CHANNEL_ID < 0:
     raise ConfigError(
-        f"FINDER_CHANNEL_ID doit être un identifiant positif (valeur actuelle : {FINDER_CHANNEL_ID})."
+        f"FINDER_CHANNEL_ID doit être un identifiant positif (0 = le salon où la commande est tapée ; "
+        f"valeur actuelle : {FINDER_CHANNEL_ID}). "
+        f"Corrigez-la dans le fichier {ENV_FILE}."
     )
 # Rend le salon en lecture seule pour @everyone lors du setup.
 LOCK_FINDER_CHANNEL = _env_bool("LOCK_FINDER_CHANNEL", True)

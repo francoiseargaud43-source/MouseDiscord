@@ -5,7 +5,7 @@ Bug trouvé le 2026-10-12 (28e passe) : le script évaluait **toutes** les souri
 quatre modes sans plafond (Économique, Qualité/Prix, Haut de gamme, Peu importe le prix) héritaient
 donc silencieusement d'un filtre que le bot n'applique pas, et la matrice annonçait un autre gagnant
 que le bot sur **8 lignes sur 15** (ex. profil Palm 180 × 90 mm : Phantom Ultimate 91,95 € écarté par
-le plafond, la matrice donnait Z1 V2 Ultra pour « Haut de gamme »).
+le plafond, la matrice donnait Z1 V2 Ultra pour « Haut de gamme » — nom de l'époque du relevé ; la souris s'appelle Z1 V2 Ultimate depuis le 2026-10-13, c'est le nom publié par la boutique).
 
 Le bot, lui, passe le mode choisi à `evaluate_mouse` (`cogs/finder_flow.py`) : seul le mode budget
 plafonne. La matrice doit décrire le bot, pas un profil hybride.
