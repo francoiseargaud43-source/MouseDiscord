@@ -15,10 +15,10 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 |---|---|---|---|---|---|---|---|---|
 | Scyrox V8 / V8S | ❌ exclue — Compatibilité Palm Grip « Faible » | 118.0 mm (écart 0.8 mm) | 60.0 mm (estimée, écart 0.4) | Faible | Rear | Low | — | Compatibilité Palm Grip « Faible » |
 | Scyrox V6 | ✅ 30/40 | 119.0 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Moyen | Mid | Mid | faible | — |
-| ATK F1 V3 Ultimate | ❌ exclue — Compatibilité Palm Grip « Faible » | 118.2 mm (écart 0.6 mm) | 59.4 mm (estimée, écart 0.0) | Faible | Mid | Low | — | Compatibilité Palm Grip « Faible » |
-| ATK X1 V2 Ultra Max | ✅ 20/40 | 127.0 mm (écart 3.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Mid | moyenne | — |
-| ATK Z1 V2 Ultra | ✅ 30/40 | 122.5 mm (dans la plage) | 63.8 mm (estimée, écart 4.2) | Élevé | Mid-Front | High | moyenne | — |
-| ATK A9 Plus 2.0 | ✅ 25/40 | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Élevé | Mid | Mid | moyenne | — |
+| ATK F1 V3 Ultimate+ | ❌ exclue — Compatibilité Palm Grip « Faible » | 118.2 mm (écart 0.6 mm) | 59.4 mm (estimée, écart 0.0) | Faible | Mid | Low | — | Compatibilité Palm Grip « Faible » |
+| ATK X1 V2 Ultra Max 2.0 | ✅ 20/40 | 127.0 mm (écart 3.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Mid | moyenne | — |
+| ATK Z1 V2 Ultimate | ✅ 30/40 | 122.5 mm (dans la plage) | 63.8 mm (estimée, écart 4.2) | Élevé | Mid-Front | High | moyenne | — |
+| ATK A9 Plus | ✅ 25/40 | 125.0 mm (écart 1.2 mm) | 60.5 mm (estimée, écart 0.9) | Élevé | Mid | Mid | moyenne | — |
 | ATK Phantom Ultimate | ❌ exclue — Prix 91.95 € au-dessus du budget maximal 75.00 € | 119.7 mm (dans la plage) | 59.5 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | — | Prix 91.95 € au-dessus du budget maximal 75.00 € |
 | ATK GHOST Ultimate | ✅ 30/40 (boutons non documentés) | 121.0 mm (dans la plage) | 58.3 mm (estimée, écart 0.0) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK GHOST Extreme | ❌ exclue — Prix 86.95 € au-dessus du budget maximal 75.00 € | 121.0 mm (dans la plage) | 58.3 mm (estimée, écart 0.0) | Élevé | Rear | Inconnu | — | Prix 86.95 € au-dessus du budget maximal 75.00 € |
@@ -56,11 +56,11 @@ Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = matc
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | ATK Z1 V2 Ultra (30/40) | ATK A9 Mini (30/40) | 6 candidat(s) | Économique : ATK Z1 V2 Ultra est la moins chère parmi les 6 souris à 5 pts ou moins du meilleur score (35/40). |
-| Qualité/Prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
-| Peu importe le prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Forme d'abord : ATK Phantom Ultimate est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
-| Budget ≤ 75 € | ATK Z1 V2 Ultra (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
+| Économique | ATK Z1 V2 Ultimate (30/40) | ATK A9 Mini (30/40) | 6 candidat(s) | Économique : ATK Z1 V2 Ultimate est la moins chère parmi les 6 souris à 5 pts ou moins du meilleur score (35/40). |
+| Qualité/Prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultimate (30/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultimate (30/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
+| Peu importe le prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultimate (30/40) | 1 candidat(s) | Forme d'abord : ATK Phantom Ultimate est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Budget ≤ 75 € | ATK Z1 V2 Ultimate (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
 
 
 ## Profil C — Claw 150 × 75 mm
@@ -71,10 +71,10 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 |---|---|---|---|---|---|---|---|---|
 | Scyrox V8 / V8S | ✅ 30/40 | 118.0 mm (écart 2.1 mm) | 60.0 mm (estimée, écart 1.6) | Élevé | Rear | Low | faible | — |
 | Scyrox V6 | ✅ 25/40 | 119.0 mm (écart 3.1 mm) | 58.0 mm (estimée, écart 0.0) | Élevé | Mid | Mid | faible | — |
-| ATK F1 V3 Ultimate | ✅ 30/40 | 118.2 mm (écart 2.3 mm) | 59.4 mm (estimée, écart 1.0) | Élevé | Mid | Low | moyenne | — |
-| ATK X1 V2 Ultra Max | ❌ exclue — Longueur hors plage de 11.1 mm (> 8 mm) | 127.0 mm (écart 11.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Mid | — | Longueur hors plage de 11.1 mm (> 8 mm) |
-| ATK Z1 V2 Ultra | ❌ exclue — Largeur de prise hors plage de 5.4 mm (> 5 mm) | 122.5 mm (écart 6.6 mm) | 63.8 mm (estimée, écart 5.4) | Moyen | Mid-Front | High | — | Largeur de prise hors plage de 5.4 mm (> 5 mm) |
-| ATK A9 Plus 2.0 | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Élevé | Mid | Mid | — | Longueur hors plage de 9.1 mm (> 8 mm) |
+| ATK F1 V3 Ultimate+ | ✅ 30/40 | 118.2 mm (écart 2.3 mm) | 59.4 mm (estimée, écart 1.0) | Élevé | Mid | Low | moyenne | — |
+| ATK X1 V2 Ultra Max 2.0 | ❌ exclue — Longueur hors plage de 11.1 mm (> 8 mm) | 127.0 mm (écart 11.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Mid | — | Longueur hors plage de 11.1 mm (> 8 mm) |
+| ATK Z1 V2 Ultimate | ❌ exclue — Largeur de prise hors plage de 5.4 mm (> 5 mm) | 122.5 mm (écart 6.6 mm) | 63.8 mm (estimée, écart 5.4) | Moyen | Mid-Front | High | — | Largeur de prise hors plage de 5.4 mm (> 5 mm) |
+| ATK A9 Plus | ❌ exclue — Longueur hors plage de 9.1 mm (> 8 mm) | 125.0 mm (écart 9.1 mm) | 60.5 mm (estimée, écart 2.1) | Élevé | Mid | Mid | — | Longueur hors plage de 9.1 mm (> 8 mm) |
 | ATK Phantom Ultimate | ❌ exclue — Prix 91.95 € au-dessus du budget maximal 75.00 € | 119.7 mm (écart 3.8 mm) | 59.5 mm (estimée, écart 1.1) | Élevé | Mid | Inconnu | — | Prix 91.95 € au-dessus du budget maximal 75.00 € |
 | ATK GHOST Ultimate | ✅ 25/40 (boutons non documentés) | 121.0 mm (écart 5.1 mm) | 58.3 mm (estimée, écart 0.0) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK GHOST Extreme | ❌ exclue — Prix 86.95 € au-dessus du budget maximal 75.00 € | 121.0 mm (écart 5.1 mm) | 58.3 mm (estimée, écart 0.0) | Élevé | Rear | Inconnu | — | Prix 86.95 € au-dessus du budget maximal 75.00 € |
@@ -127,10 +127,10 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 |---|---|---|---|---|---|---|---|---|
 | Scyrox V8 / V8S | ✅ 35/40 | 118.0 mm (dans la plage) | 60.0 mm (estimée, écart 0.8) | Élevé | ignorée (Fingertip) | Low | faible | — |
 | Scyrox V6 | ✅ 40/40 | 119.0 mm (dans la plage) | 58.0 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Mid | faible | — |
-| ATK F1 V3 Ultimate | ✅ 35/40 | 118.2 mm (dans la plage) | 59.4 mm (estimée, écart 0.2) | Élevé | ignorée (Fingertip) | Low | moyenne | — |
-| ATK X1 V2 Ultra Max | ❌ exclue — Compatibilité Fingertip Grip « Faible » | 127.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Faible | ignorée (Fingertip) | Mid | — | Compatibilité Fingertip Grip « Faible » |
-| ATK Z1 V2 Ultra | ❌ exclue — Compatibilité Fingertip Grip « Faible » | 122.5 mm (dans la plage) | 63.8 mm (estimée, écart 4.6) | Faible | ignorée (Fingertip) | High | — | Compatibilité Fingertip Grip « Faible » |
-| ATK A9 Plus 2.0 | ✅ 30/40 | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Moyen | ignorée (Fingertip) | Mid | moyenne | — |
+| ATK F1 V3 Ultimate+ | ✅ 35/40 | 118.2 mm (dans la plage) | 59.4 mm (estimée, écart 0.2) | Élevé | ignorée (Fingertip) | Low | moyenne | — |
+| ATK X1 V2 Ultra Max 2.0 | ❌ exclue — Compatibilité Fingertip Grip « Faible » | 127.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Faible | ignorée (Fingertip) | Mid | — | Compatibilité Fingertip Grip « Faible » |
+| ATK Z1 V2 Ultimate | ❌ exclue — Compatibilité Fingertip Grip « Faible » | 122.5 mm (dans la plage) | 63.8 mm (estimée, écart 4.6) | Faible | ignorée (Fingertip) | High | — | Compatibilité Fingertip Grip « Faible » |
+| ATK A9 Plus | ✅ 30/40 | 125.0 mm (dans la plage) | 60.5 mm (estimée, écart 1.3) | Moyen | ignorée (Fingertip) | Mid | moyenne | — |
 | ATK Phantom Ultimate | ❌ exclue — Prix 91.95 € au-dessus du budget maximal 75.00 € | 119.7 mm (dans la plage) | 59.5 mm (estimée, écart 0.3) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 91.95 € au-dessus du budget maximal 75.00 € |
 | ATK GHOST Ultimate | ✅ 30/40 (boutons non documentés) | 121.0 mm (dans la plage) | 58.3 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
 | ATK GHOST Extreme | ❌ exclue — Prix 86.95 € au-dessus du budget maximal 75.00 € | 121.0 mm (dans la plage) | 58.3 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 86.95 € au-dessus du budget maximal 75.00 € |

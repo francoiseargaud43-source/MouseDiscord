@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import importlib
 import inspect
+import re
 import sys
 from pathlib import Path
 
@@ -184,3 +185,44 @@ def test_rapide_n_ecrase_pas_le_rapport_statistique_du_depot(tmp_path, capsys):
 
     assert stats.main(["--rapide", "--sortie", str(tmp_path / "rapide.md")]) == 0
     assert "## Résultats vides et repli de coque" in (tmp_path / "rapide.md").read_text(encoding="utf-8")
+
+
+def _sans_date(texte: str) -> str:
+    """Neutralise les dates : la comparaison porte sur le contenu, pas sur le jour de génération."""
+    return re.sub(r"\d{4}-\d{2}-\d{2}", "AAAA-MM-JJ", texte)
+
+
+def test_le_rapport_statistique_du_depot_est_bien_celui_de_la_grille_complete():
+    """Défaut trouvé le 2026-10-13 (50e passe) : l'artefact versionné était un rapport de **grille
+    resserrée** (420 profils, quatre anciens noms de modèles) alors que la correction C61 le décrit comme
+    la référence « grille complète, 18 522 profils ». Le contrôle de C61 vérifiait seulement que le
+    fichier survivait à un `--rapide` — pas qu'il était le bon rapport."""
+    from tools import recommendation_stats as stats
+
+    reference = stats.SORTIE_PAR_DEFAUT.read_text(encoding="utf-8")
+    complet = sum(1 for _ in stats.profiles(fast=False))
+    resserre = sum(1 for _ in stats.profiles(fast=True))
+    assert resserre < complet
+    assert f"Grille : **{complet:,} profils**".replace(",", " ") in reference, (
+        "le rapport versionné n'annonce pas la grille complète "
+        f"({complet:,} profils) : le régénérer avec `python tools/recommendation_stats.py`"
+    )
+    assert f"**{resserre:,} profils**".replace(",", " ") not in reference
+    for ancien in ("ATK A9 Plus 2.0 |", "ATK Z1 V2 Ultra |", "ATK F1 V3 Ultimate |", "ATK X1 V2 Ultra Max |"):
+        assert ancien not in reference, f"le rapport régénéré porte encore l'ancien nom « {ancien[:-2]} »"
+
+
+def test_la_matrice_des_profils_du_depot_est_celle_du_script_relance(tmp_path):
+    """Défaut trouvé le 2026-10-13 (50e passe) : `docs/audit/matrice_profils.md` se déclarait « généré le
+    2026-10-13 » mais portait encore les quatre anciens noms de modèles (34 lignes) — le script n'avait pas
+    été relancé après leur correction. Le fichier dit pourtant « Ne pas modifier à la main : relancer le
+    script » : ce test le relance et compare le contenu, date de génération mise de côté."""
+    from tools import compare_profiles as compare
+
+    fichier = ROOT / "docs" / "audit" / "matrice_profils.md"
+    sortie = tmp_path / "matrice.md"
+    assert compare.main(["--sortie", str(sortie)]) == 0
+    attendu = _sans_date(fichier.read_text(encoding="utf-8"))
+    obtenu = _sans_date(sortie.read_text(encoding="utf-8"))
+    assert obtenu == attendu, ("la matrice versionnée ne correspond plus au script : "
+                               "relancer `python tools/compare_profiles.py`")

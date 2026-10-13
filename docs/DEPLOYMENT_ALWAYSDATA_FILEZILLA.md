@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.27).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.28).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 706 passed
+.venv/bin/python -m pytest -q                      # attendu : 709 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2213,6 +2213,24 @@ documents. **Envoyez `data/mouse_db.json`** : ce fichier est relu à chaque inte
 redémarrer.
 
 Le compteur ci-dessus passe de 705 à **707** tests.
+
+---
+
+### 12.28 Mise à jour du 2026-10-13 (19e) : les deux rapports de référence remis à jour
+
+**Aucun fichier du bot n'est touché** : deux documents **générés** et deux tests seulement. Rien à envoyer
+sur le serveur — copiez les deux rapports si vous les gardez à côté.
+
+Ce qui n'allait pas : `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`, présenté partout comme le
+rapport **de la grille complète (18 522 profils)**, contenait en réalité un rapport de **grille resserrée
+(420 profils)** avec quatre anciens noms de modèles ; `docs/audit/matrice_profils.md`, qui dit « ne pas
+modifier à la main : relancer le script », portait les mêmes anciens noms sur 34 lignes.
+
+Les deux sont régénérés sur le catalogue du jour (rapport : 18 522 profils, 252 profils sans résultat,
+1 262 replis de coque ; matrice : 34 lignes alignées), et deux tests empêchent le retour : le rapport doit
+annoncer la grille **comptée**, la matrice doit être **le script relancé**.
+
+Le compteur ci-dessus passe de 707 à **709** tests.
 
 ---
 

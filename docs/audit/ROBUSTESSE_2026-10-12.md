@@ -3494,3 +3494,49 @@ de passer à vide (aucun fichier trouvé = échec, pas succès silencieux) — e
 **Mesure finale de la passe** : 707 tests verts, `pyflakes` 0, `privacy_scan` 0 violation. Fichiers à envoyer
 sur le serveur : **`data/mouse_db.json`** (la note corrigée ; le fichier est relu à chaque interaction, aucun
 redémarrage). Rien d'autre.
+
+## 26.34 50e passe — les deux artefacts générés ne suivaient plus leur script (2026-10-13)
+
+### 26.34.1 Le rapport statistique « de référence » était un rapport de grille resserrée
+
+`docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` est décrit partout comme **l'artefact de
+référence — grille complète, 18 522 profils** : le README le cite comme la source du tableau statistique, le
+guide de déploiement le liste dans les fichiers à garder, et la correction C61 (46e passe) a été écrite pour
+empêcher un `--rapide` de l'écraser.
+
+Le fichier versionné, lui, était **un rapport de grille resserrée : 420 profils**, 44 fois moins, et il
+portait encore quatre anciens noms de modèles (« ATK A9 Plus 2.0 », « ATK Z1 V2 Ultra », « ATK F1 V3
+Ultimate », « ATK X1 V2 Ultra Max ») — donc **antérieur** à leur correction, alors que son en-tête annonçait
+« rapport régénéré le 2026-10-13 sur le catalogue du même jour ». Le contrôle de C61 vérifiait que le fichier
+**survivait** à un `--rapide` ; personne ne vérifiait qu'il était le bon rapport.
+
+**Second défaut de la même famille** : `docs/audit/matrice_profils.md` — qui dit en toutes lettres « Ne pas
+modifier à la main : relancer le script » — se déclarait « généré le 2026-10-13 » et portait les mêmes
+anciens noms sur **34 lignes** : le script n'avait pas été relancé après la correction des quatre libellés.
+
+### 26.34.2 Les deux artefacts sont régénérés, et deux tests les tiennent
+
+| Artefact | Avant | Après (2026-10-13) |
+|---|---|---|
+| `STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` | 420 profils, anciens noms | **18 522 profils**, libellés à jour |
+| `matrice_profils.md` | anciens noms sur 34 lignes | **identique à la sortie du script** |
+
+Chiffres du rapport régénéré (grille complète, moteur réel) : **252 profils sans aucun résultat (1,4 %)** —
+budget inférieur à la souris qui convient la moins chère —, **1 262 profils où deux places montrent la même
+coque (6,8 %)** — repli documenté, paires `atk_a9_plus` + `atk_a9_ultimate` 786, `pulsar_x2_crazylight_mini`
++ `pulsar_x2_v3_mini` 210, `atk_f1_ultimate` + `atk_f1_v2` 164, `pulsar_x2h_crazylight_mini` +
+`pulsar_x2h_v3_mini` 96, `atk_ghost_extreme` + `atk_ghost_ultimate` 6 —, 16 050 profils à trois places
+(86,65 %), troisième place « ➕ L'autre option » 9 563 · « 💸 L'économie » 4 908 · « 🔎 Autre piste » 1 579.
+
+**Les deux verrous** (`tests/test_tools_usage_errors.py`) :
+
+- le rapport versionné doit annoncer le nombre de profils **compté** par le module
+  (`sum(1 for _ in profiles(fast=False))`) — pas un chiffre recopié — et ne plus contenir les quatre anciens
+  libellés ;
+- la matrice versionnée doit être **égale à la sortie du script relancé** (`tools/compare_profiles.py`,
+  0,3 s), les dates de génération mises de côté pour que le test reste valable les jours suivants.
+
+**Mutations** : remettre « 420 profils » dans le rapport → **1 échec** ; remettre « ATK Z1 V2 Ultra » dans la
+matrice → **1 échec**. **Mesure de la passe** : 709 tests verts, `pyflakes` 0, `privacy_scan` 0 violation.
+Aucun fichier du bot n'est touché (deux documents générés, deux tests) : **rien à envoyer** sur le serveur,
+les deux rapports sont des copies de référence si vous les voulez.
