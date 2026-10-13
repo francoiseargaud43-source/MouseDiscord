@@ -34,6 +34,9 @@ donc `country=FR` (prix en euros) et ton code d'affiliation (`ref=aze` chez atk.
 Prix = relevé officiel du 2026-10-11, prix normal entre parenthèses. **Instantané historique** : ces
 prix sont ceux du relevé du 2026-10-11. Le prix *de la variante figée par chaque lien* a été
 recontrôlé le 2026-10-13 ; c'est ce contrôle qui fait foi aujourd'hui (§7).
+Les noms de la colonne « Souris (base) » sont ceux de la base **au 2026-10-11** ; quatre ont été
+alignés sur la boutique le 2026-10-13 — « A9 Plus », « Z1 V2 Ultimate », « F1 V3 Ultimate+ » et
+« X1 V2 Ultra Max 2.0 » (détail §8.3). L'instantané ci-dessous n'est pas réécrit.
 
 | id | Souris (base) | Ce que le lien ouvre | Variante figée | Prix EUR |
 | --- | --- | --- | --- | --- |

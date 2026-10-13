@@ -1723,6 +1723,12 @@ changements **visibles**, donc à déployer ensemble :
    sous-estimé) sans que rien ne le dise — **8 187 places** sur 27 170 profils (30,1 %). Le match idéal, lui,
    garde la note longue du bloc « 📐 Vos repères de taille » (pas de doublon).
 
+**Depuis, deux chiffres de cette liste ont bougé avec les prix** (47e et 48e passes, 2026-10-13) : le
+marqueur « (prix non vérifié) » ne concerne plus que la **Scyrox V6** — l'A9 Plus est attestée à 27,95 € —
+et porte **3 332 places (12,26 % des profils)** ; l'ordre des pourcentages n'est plus non garanti que sur
+**28 profils (0,10 %)**. Ces deux chiffres sont **recourants** — ils suivent les prix :
+`python tools/qa_flow_matrix.py` les affiche, c'est sa sortie qui fait foi (§12.26).
+
 **1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
 
 ```
@@ -2092,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.24).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.26).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 704 passed
+.venv/bin/python -m pytest -q                      # attendu : 705 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2132,7 +2138,7 @@ calcul et d'affichage). Envoyez les deux fichiers, c'est tout — la tâche plan
 **Fichiers à envoyer** : `data/mouse_db.json` et `data/commercial_links.json`. **Facultatif** :
 `tools/check_links.py` (le contrôle, qui a besoin d'un réseau joignant les boutiques) et
 `tests/test_liens_achat.py` (son verrou) — ces deux fichiers ne servent pas au bot. Le compteur ci-dessus
-passe de 676 (valeur du jour du §12.23) à **704** (dernière valeur : §12.25).
+passe de 676 (valeur du jour du §12.23) à **697**.
 
 ---
 
@@ -2157,6 +2163,31 @@ jour un défaut visible pour l'exploitant.
 **Fichiers à envoyer** : `config.py`. **Facultatif** : `tests/` (la suite complète) — aucun autre fichier
 du bot n'est touché. Le compteur ci-dessus passe de 697 à **704** (la couverture, elle, passe de 99 % à
 **100 %**).
+
+---
+
+### 12.26 Mise à jour du 2026-10-13 (17e) : rien à envoyer sur le serveur, deux chiffres à jour
+
+Cette passe ne touche **aucun fichier du bot** : elle corrige des chiffres et des noms dans les documents,
+et ajoute un compteur au banc d'essai (`tools/qa_flow_matrix.py`, outil de contrôle, **hors serveur**).
+
+Ce qui était faux : deux mesures **recourantes** (elles suivent les prix du catalogue) étaient restées à la
+35e passe — « 4 373 places, 16,09 % des profils » pour le marqueur « (prix non vérifié) » et « 84 profils,
+0,31 % » pour l'ordre des pourcentages non garanti. Depuis, l'**A9 Plus est passée de 45,00 € à 27,95 €
+attestés** : elle ne porte plus le marqueur, et, moins chère, elle remplit des profils où le plafond de score
+ne laissait auparavant aucun candidat.
+
+Valeurs du jour (`python tools/qa_flow_matrix.py`, grille complète, 27 170 profils, 0 problème) :
+
+| Mesure | 35e passe | **2026-10-13 (48e passe)** |
+|---|---|---|
+| Places portant « (prix non vérifié) » | 4 373 (16,09 %), deux souris | **3 332 (12,26 %), Scyrox V6 seule** |
+| Ordre des pourcentages non garanti (plafond sans candidat) | 84 (0,31 %) | **28 (0,10 %)** |
+
+Le banc d'essai **compte** désormais ces places (fonction testée) et les affiche dans sa sortie : c'est elle
+qui fait foi, plus aucun document ne cite un chiffre figé sans le dater. **Aucun envoi** : ni `cogs/`, ni
+`utils/`, ni `data/`, ni `assets/`. Le compteur ci-dessus passe de 704 à **705** tests (le compteur du banc
+d'essai a son propre test).
 
 ---
 

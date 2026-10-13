@@ -3392,3 +3392,49 @@ près.
 reste : une vraie connexion Discord (`MouseBot().run()` est simulé : jeton et classe remplacés), et les
 outils (`tools/`) qui ont leur propre contrat, testé par `tests/test_tools_usage_errors.py`. Le vrai
 démarrage en sous-processus, lui, continue d'être vérifié par `tests/test_config.py`.
+
+## 26.32 48e passe — les chiffres recourants et quatre noms publiés (2026-10-13)
+
+### 26.32.1 Deux mesures citées comme « recourantes » ne suivaient personne
+
+Le master prompt, le déploiement et l'audit publiaient deux mesures qui **bougent avec les prix** du
+catalogue, figées à la 35e passe :
+
+| Mesure | Valeur écrite | Valeur du 2026-10-13 (48e passe) |
+|---|---|---|
+| Places portant « (prix non vérifié) » | 4 373 (16,09 % des 27 170 profils) | **3 332 (12,26 %)** |
+| Profils où l'ordre des pourcentages n'est pas garanti | 84 (0,31 %), puis 70 (0,26 %) à la 37e | **28 (0,10 %)** |
+
+Ce n'est pas une erreur de mesure : ces deux chiffres **dépendent des prix et du nombre de souris non
+attestées**. Entre la 35e et la 48e passe, l'**A9 Plus est passée de 45,00 € (prix du cahier des charges) à
+27,95 € attestés** sur la boutique officielle (47e passe). Moins chère, elle entre dans des fenêtres de
+budget où le plafond de score ne laissait auparavant **aucun** candidat — d'où 84 → 70 → **28** profils —, et
+elle ne porte plus le marqueur de prix non attesté : il ne reste que la **Scyrox V6**, dont la boutique vend
+en dollars (jamais convertis).
+
+**Ce qui a changé dans l'outillage** : `tools/qa_flow_matrix.py` *vérifiait* le marqueur place par place
+(« prix non vérifié affiché sans le dire ») mais ne le **comptait** pas — le chiffre publié venait donc d'un
+relevé manuel. Il le compte désormais (`places_au_prix_non_verifie`, fonction pure, un test dans
+`tests/test_qa_flow_matrix.py`, une mutation → 1 échec) et l'affiche : « Places portant « (prix non
+vérifié) » : … ». Les documents datent leur chiffre et renvoient à cette sortie.
+
+**Mesure de la passe** (`python tools/qa_flow_matrix.py`, grille complète, 1 min 33) : 27 170 profils,
+**0 problème**, trois places dans 23 140 profils (85,17 %), marqueur de prix **3 332 places (12,26 %)**,
+ordre non garanti **28 profils (0,10 %)**, replis de coque 1 136 profils, match idéal partiel 3 109.
+
+### 26.32.2 Quatre libellés périmés traînaient dans les documents de travail
+
+Le tri des noms publiés (boutique ⇄ cahier des charges) avait été fait dans `README.md` et dans
+`tests/test_compare_profiles.py` ; deux documents **de travail** portaient encore les anciens :
+
+- `docs/LISTE_LIENS_SPONSORISES_2026-10-11.md` : « F1 V3 Ultimate », « X1 V2 Ultra Max », « Z1 V2 Ultra »
+  et « A9 Plus 2.0 » → **« F1 V3 Ultimate+ », « X1 V2 Ultra Max 2.0 », « Z1 V2 Ultimate », « A9 Plus »**,
+  et la gamme U2 complétée (« Blazing Sky U2 / U2 Plus / U2 Ultimate »). C'est la liste qui sert à
+  **fabriquer les liens** : un libellé qui n'existe pas sur la boutique y est un défaut, pas une archive.
+- `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` §2 : **instantané daté** (« état des liens au
+  2026-10-11 ») — il n'est **pas réécrit** ; une ligne ajoutée sous le tableau dit quels noms ont été
+  alignés depuis et renvoie au §8.3.
+
+Restent volontairement en l'état les **journaux datés** (`docs/audit/…`, `RECHERCHE_PRIX_EUR_…`,
+`REPORTE_DESIGN.md`, `docs/audit/matrice_profils.md`) et les **libellés de sources** de
+`data/mouse_db.json`, qui doivent reproduire le titre exact du revendeur.

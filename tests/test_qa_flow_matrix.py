@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 
 from cogs.finder_flow import compute_selection, result_slots, results_embeds, third_slot_title  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
-from tools.qa_flow_matrix import check_result_message, message_text  # noqa: E402
+from tools.qa_flow_matrix import check_result_message, message_text, places_au_prix_non_verifie  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.models import BudgetMode, Grip, Thenar  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
@@ -134,3 +134,14 @@ def test_les_libelles_comptes_par_le_rapport_statistique_sont_ceux_du_moteur():
     assert stats.AUTRE_OPTION_TITLE == third_slot_title(
         SimpleNamespace(mouse=SimpleNamespace(price_eur=100.0)),
         SimpleNamespace(mouse=SimpleNamespace(price_eur=10.0)), None)
+
+
+def test_le_compteur_du_prix_non_verifie_ne_compte_que_les_places_affichees():
+    """Le chiffre publié (« 3 332 places portent « (prix non vérifié) » ») vient de cette fonction :
+    elle ne doit compter ni les places vides, ni les prix attestés."""
+    atteste = SimpleNamespace(mouse=SimpleNamespace(price_status="verified"))
+    non_atteste = SimpleNamespace(mouse=SimpleNamespace(price_status="owner_spec_unverified"))
+    assert places_au_prix_non_verifie((non_atteste, atteste, None)) == 1
+    assert places_au_prix_non_verifie((atteste, atteste, atteste)) == 0
+    assert places_au_prix_non_verifie((None, None, None)) == 0
+    assert places_au_prix_non_verifie((non_atteste, non_atteste, non_atteste)) == 3

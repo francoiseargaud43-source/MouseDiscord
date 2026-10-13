@@ -65,6 +65,18 @@ LINKS = load_commercial_links(COMMERCIAL_LINKS_PATH)
 GRIP_FIELD = {Grip.PALM: "palm_grip_fit", Grip.CLAW: "claw_grip_fit", Grip.FINGERTIP: "fingertip_grip_fit"}
 
 
+def places_au_prix_non_verifie(slots) -> int:
+    """Nombre de places affichées dont le prix n'est pas attesté.
+
+    Chaque place dont la souris n'a pas `price_status == "verified"` porte le marqueur
+    « (prix non vérifié) » à côté de son prix : c'est ce total que publient les documents
+    (4 373 places le 2026-10-13 à la 35e passe, **3 332** à la 47e, une seule souris non
+    attestée). Le chiffre suit les prix du catalogue : seul le banc d'essai fait foi.
+    """
+    return sum(1 for score in slots
+               if score is not None and score.mouse.price_status != "verified")
+
+
 def prix_fr(price: float) -> str:
     """« 68,95 € » — la virgule décimale française, telle qu'affichée au membre."""
     return f"{price:.2f}".replace(".", ",") + " €"
@@ -341,6 +353,7 @@ def run(fast: bool) -> int:
     problems: list[str] = []
     empties: list[str] = []
     partials = 0
+    marques_prix = 0
     places = {0: 0, 1: 0, 2: 0, 3: 0}          # nombre de places réellement remplies dans le message
     same_shell_slots: list[str] = []            # profils où deux places partagent la même coque (repli)
     ordre_repli: list[str] = []                 # profils où le plafond d'ordre n'a laissé aucun candidat
@@ -379,6 +392,7 @@ def run(fast: bool) -> int:
                 else:
                     if ideal.is_partial:
                         partials += 1
+                    marques_prix += places_au_prix_non_verifie((ideal, alternative, economy))
                     for score in (ideal, alternative, economy):
                         if score is None:
                             continue
@@ -403,6 +417,8 @@ def run(fast: bool) -> int:
     print("Places remplies dans le résultat : "
           + " · ".join(f"{n} place(s) : {places[n]}" for n in (0, 1, 2, 3))
           + f"  (3 places = {100 * places[3] / cases:.2f} % des profils)" if cases else "")
+    print(f"Places portant « (prix non vérifié) » : {marques_prix}"
+          + (f"  ({100 * marques_prix / cases:.2f} % des profils)" if cases else ""))
     print(f"Problèmes détectés : {len(problems)}")
     for problem in problems[:40]:
         print(f"  ! {problem}")

@@ -367,9 +367,10 @@ largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inve
   catalogue).
 - **Prix non vérifié affiché** : une souris dont le prix n'est pas attesté (`price_status != "verified"`)
   affiche « (prix non vérifié) » à côté de son prix, dans les trois places **et** dans la petite ligne de
-  prix du mode « Peu importe le prix » (seul endroit où le prix apparaît dans ce mode). Deux souris sont
-  concernées : Scyrox V6 et ATK A9 Plus 2.0. Ne jamais présenter un prix du cahier des charges comme un
-  prix vérifié.
+  prix du mode « Peu importe le prix » (seul endroit où le prix apparaît dans ce mode). **Une seule souris
+  est concernée depuis le 2026-10-13** : la **Scyrox V6** (74,90 € du cahier des charges, la boutique du
+  fabricant vend en dollars, jamais convertis) — l'A9 Plus est attestée à 27,95 € depuis la 47e passe. Ne
+  jamais présenter un prix du cahier des charges comme un prix vérifié.
 - **Score partiel annoncé** : une souris dont la hauteur des boutons n'est pas documentée est notée sans ce
   critère (`PARTIAL_SCORING_ALLOWED`), donc son pourcentage est **sous-estimé**. Le match idéal l'explique
   en clair dans le bloc « 📐 Vos repères de taille » ; les 2e et 3e places portent le marqueur discret
@@ -389,6 +390,12 @@ Main `180×90 mm`, **Palm** → cibles `118.8–123.8` (L) et `55.6–59.6` (W p
 | Scyrox V8 / ATK F1 V3 | **exclues** | grip Palm Faible |
 
 **Si un de ces scores change après ta refonte visuelle, tu as cassé le moteur.** Revert.
+
+> **Note du 2026-10-13.** Ces scores sont verrouillés **par identifiant** (`atk_z1_ultra`, `atk_a9_plus`,
+> `atk_x1_ultra_max`) : quatre libellés publiés ont suivi la boutique (« Z1 V2 Ultimate », « A9 Plus »,
+> « X1 V2 Ultra Max 2.0 », « F1 V3 Ultimate+ ») sans qu'un seul score ne bouge — c'est
+> `tests/test_matcher.py` qui les tient. Les exemples de résultat de ce document gardent, eux, les noms
+> du 2026-10-11 : ils illustrent une mise en forme, pas l'état du catalogue.
 
 ### 7.6 Muscle thénar — règle absolue
 
@@ -856,12 +863,15 @@ Aucun autre fichier ne lit `thenar` pour calculer.
   **garanti** (idéal ≥ alternative ≥ économie), la contrainte porte sur le choix de la souris et jamais
   sur le score (§7.7). Mesure avant/après : 2 046 → **84 profils** (0,31 % des 27 170 profils) où le plafond ne laisse aucun
   candidat, la place restant alors remplie (jamais de trou) ; le match idéal ne change jamais. Valeur
-  **recourante** (elle bouge avec les prix) : **70 profils (0,26 %)** au banc d'essai du 2026-10-13 après
-  la remise des prix (37e passe) — c'est `tools/qa_flow_matrix.py` qui fait foi, pas ce chiffre.
+  **recourante** (elle bouge avec les prix) : **28 profils (0,10 %)** au banc d'essai du 2026-10-13, après
+  les remises de prix des 37e (70 profils, 0,26 %) et 47e passes — c'est `tools/qa_flow_matrix.py` qui
+  fait foi, pas ce chiffre.
 - **Marqueur « prix non vérifié »** : ~~absent du résultat~~ **tranché le 2026-10-13 (35e passe)** — le
-  marqueur est affiché à côté du prix des souris non attestées (Scyrox V6, ATK A9 Plus 2.0), dans les
-  trois places et dans la petite ligne du mode « Peu importe le prix » : **16,09 % des profils**
-  (mesure de la 35e passe ; le chiffre suit le prix des souris concernées, le banc d'essai le vérifie souris par souris).
+  marqueur est affiché à côté du prix des souris non attestées — **Scyrox V6** seule depuis le 47e passe
+  (l'A9 Plus est passée à 27,95 € attestés le 2026-10-13) —, dans les trois places et dans la petite
+  ligne du mode « Peu importe le prix » : **3 332 places, 12,26 % des profils** (mesure de la 47e passe ;
+  la 35e en comptait 4 373 / 16,09 %, avec deux souris concernées ; le chiffre suit les prix, le banc
+  d'essai le vérifie souris par souris et le compte désormais à chaque passage).
 - **Pied de message** : ~~renvoi mort vers « Comment lire ce résultat »~~ **corrigé le 2026-10-13**, avec
   l'autorisation du propriétaire : le renvoi pointe vers « 🧭 Pourquoi ce choix ? », et seulement quand ce
   bloc est affiché (C27 de `docs/audit/AUDIT.md`).
