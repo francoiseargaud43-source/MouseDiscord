@@ -132,6 +132,26 @@ def test_une_note_qui_annonce_la_variante_du_bouton_exige_que_le_lien_la_fige():
     assert fautives == [], f"notes qui parlent du bouton sans lien figé : {fautives}"
 
 
+NOMS_VERIFIES_SUR_LA_BOUTIQUE = {
+    # Relevé du 2026-10-13 (boutique ATK, pays France) : ces quatre noms sont ceux que la page qu'ouvre le
+    # bouton affiche. Les noms du cahier des charges (« A9 Plus 2.0 », « Z1 V2 Ultra », « F1 V3 Ultimate »
+    # — sans « + » —, « X1 V2 Ultra Max » — sans « 2.0 ») ne se retrouvaient PAS sur la page : le membre
+    # ne pouvait pas y reconnaître la souris annoncée par le bot.
+    "atk_a9_plus": "A9 Plus",
+    "atk_z1_ultra": "Z1 V2 Ultimate",
+    "atk_f1_ultimate": "F1 V3 Ultimate+",
+    "atk_x1_ultra_max": "X1 V2 Ultra Max 2.0",
+}
+
+
+def test_les_quatre_noms_de_modeles_corriges_ne_reviennent_pas_en_arriere():
+    """Le nom publié est celui de la boutique : ces quatre noms sont datés, et datés du 2026-10-13."""
+    for identifiant, attendu in NOMS_VERIFIES_SUR_LA_BOUTIQUE.items():
+        assert CATALOGUE[identifiant]["model"] == attendu, (
+            f"{identifiant} : « {CATALOGUE[identifiant]['model']} » publié au lieu de « {attendu} » "
+            "(nom relevé sur la page que le bouton ouvre)")
+
+
 # ---------------------------------------------------------------------------
 # L'outil de contrôle, essayé hors réseau (fausse boutique injectée)
 # ---------------------------------------------------------------------------
@@ -248,3 +268,18 @@ def test_le_rapport_complet_s_ecrit_sur_la_sortie_standard(capsys):
     sortie = capsys.readouterr().out
     assert "41,95€" in sortie.replace(" ", "")
     assert "1 lien(s) contrôlé(s) · 0 écart(s)." in sortie
+
+
+def test_le_resume_ne_cache_pas_les_fiches_injoignables(capsys):
+    """« 0 écart » alors que rien n'a pu être ouvert serait un faux rassurant : les deux comptes sont dits."""
+    def bloque(url: str, delai: float = 15.0) -> dict:
+        raise OSError("réseau injoignable")
+
+    liens = {"atk_exemple": "https://www.atk.store/products/exemple"}
+    catalogue = [type("S", (), {"id": "atk_exemple", "price_eur": 41.95})()]
+    verdicts = analyser(liens, catalogue, telecharger=bloque)
+    check_links.rapporter(verdicts)
+    assert code_de_sortie(verdicts) == 2
+    sortie = capsys.readouterr().out
+    assert "1 lien(s) contrôlé(s) · 0 écart(s) · 1 fiche(s) inaccessible(s)." in sortie
+    assert "le contrôle n'a pas eu lieu" in sortie

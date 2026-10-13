@@ -2095,7 +2095,7 @@ ci-dessous est le seul tenu à jour** (dernière valeur : §12.24).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 695 passed
+.venv/bin/python -m pytest -q                      # attendu : 697 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2131,7 +2131,7 @@ calcul et d'affichage). Envoyez les deux fichiers, c'est tout — la tâche plan
 **Fichiers à envoyer** : `data/mouse_db.json` et `data/commercial_links.json`. **Facultatif** :
 `tools/check_links.py` (le contrôle, qui a besoin d'un réseau joignant les boutiques) et
 `tests/test_liens_achat.py` (son verrou) — ces deux fichiers ne servent pas au bot. Le compteur ci-dessus
-passe de 676 (valeur du jour du §12.23) à **695**.
+passe de 676 (valeur du jour du §12.23) à **697**.
 
 ---
 

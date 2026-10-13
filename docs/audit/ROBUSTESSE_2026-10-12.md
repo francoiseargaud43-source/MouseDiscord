@@ -3331,13 +3331,15 @@ inexploitable) — un réseau qui bloque les boutiques n'est pas un catalogue fa
 la liste des statuts d'échec, et le statut **composé** n'y figurait pas — l'outil aurait rendu **0** sur une
 variante disparue. Le statut est maintenant stocké **à part** du détail.
 
-**Ce que le test verrouille** : `tests/test_liens_achat.py` (15 cas) relit le tableau §8.1 dans les deux
+**Ce que le test verrouille** : `tests/test_liens_achat.py` (17 cas) relit le tableau §8.1 dans les deux
 sens — chaque lien doit ouvrir le handle annoncé et figer la variante annoncée (ou aucune), chaque prix
 publié doit être celui de la fiche et chaque prix hors euros doit être justifié dans la note — et essaie
 l'outil **hors réseau** sur une fausse boutique (cohérent, variante disparue, prix changé, fiche en
-dollars, réseau bloqué, lien bricolé, souris inconnue). Huit mutations (statut d'échec retiré, devise
-ignorée, variante ignorée, code de sortie neutralisé, tableau §8.1 faussé sur la variante, sur le prix, sur
-le handle) : **1 échec chacune**, fichiers restaurés à l'octet près.
+dollars, réseau bloqué, lien bricolé, souris inconnue) — plus un verrou des **quatre noms de modèles**
+relevés sur la boutique, et un contrôle du **résumé** (« 0 écart » ne doit pas cacher des fiches
+injoignables). Dix mutations (statut d'échec retiré, devise ignorée, variante ignorée, code de sortie
+neutralisé, tableau §8.1 faussé sur la variante, sur le prix, sur le handle, nom « A9 Plus 2.0 » réintroduit,
+résumé qui ne compte plus les fiches injoignables) : **1 échec chacune**, fichiers restaurés à l'octet près.
 
 **Limites dites franchement** : l'outil a besoin de joindre les boutiques — depuis le bac à sable de
 développement (réseau restreint) il sort en **2** avec la phrase « le contrôle n'a pas eu lieu », il ne

@@ -213,8 +213,15 @@ def rapporter(verdicts: list[Verdict]) -> None:
         boutique = f"{_montant(v.fiche.prix, v.fiche.devise)}" if v.fiche else "—"
         print(f"{v.souris:<{largeur}}  {v.verdict:<32} boutique {boutique:>10}  "
               f"publié {_montant(v.prix_publie):>10}  variante {v.variante}")
-    ecarts = [v for v in verdicts if v.echec]
-    print(f"\n{len(verdicts)} lien(s) contrôlé(s) · {len(ecarts)} écart(s).")
+    # Un « écart » est une divergence PROUVÉE entre la boutique et le catalogue. Une fiche injoignable
+    # n'en est pas une : elle est comptée à part, dans la même ligne — « 0 écart » tout seul, quand rien
+    # n'a pu être ouvert, serait un faux rassurant.
+    ecarts = [v for v in verdicts if v.statut in (ECHECS - {INACCESSIBLE})]
+    injoignables = [v for v in verdicts if v.statut == INACCESSIBLE]
+    resume = f"\n{len(verdicts)} lien(s) contrôlé(s) · {len(ecarts)} écart(s)."
+    if injoignables:
+        resume = resume[:-1] + f" · {len(injoignables)} fiche(s) inaccessible(s)."
+    print(resume)
     if ecarts:
         print("Mettre à jour le relevé puis l'inventaire §8 de "
               "docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md et data/mouse_db.json.")
