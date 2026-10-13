@@ -2091,16 +2091,20 @@ sont identiques.
   positifs, rien à nettoyer.**
 - **Chasse aux renvois morts dans la documentation** : **deux** renvois de ce document citaient « §6.6 »
   et « §6.8 » d'un fichier qui n'a pas ces sections (les faits visés étaient les **points 6 et 8 du §3**
-  de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`) — corrigés. Un **test** vérifie désormais les **72
-  renvois** du dépôt (`tests/test_doc_references.py::test_les_renvois_de_section_pointent_sur_une_section_existante`) :
-  un renvoi qui pointe dans le vide fait échouer la suite.
+  de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`) — corrigés. Un **test** vérifie désormais ces renvois
+  dans tout le dépôt (`tests/test_doc_references.py::test_les_renvois_de_section_pointent_sur_une_section_existante`) :
+  il balaie les **74 fichiers** de documentation et de code et contrôle chaque citation « fichier §N » sur
+  trois formes — **82 citations distinctes** au comptage du 2026-10-13 (72 le jour de la passe). Un renvoi
+  qui pointe dans le vide fait échouer la suite.
 - **Hygiène des données** (contrôle rejoué) : aucune source en double, aucune date invalide ou future,
   toutes les URL en HTTPS, cotes identiques pour une même `shell_id` — **0 problème**.
 - **Audit structurel des liens** : **36 liens pour 36 souris**, tous en HTTPS, **aucun orphelin** (ni
   souris sans lien, ni lien sans souris), 24 ATK / 10 Pulsar / 2 Scyrox.
 - **Domination de l'A9 Air** : l'A9 Air et l'A9 Ultimate sont au **même prix** (59,95 €) ; le test de
-  domination n'exige donc plus « strictement moins chère ». Mesure : sur **54 profils** où l'A9 Air est
-  classée, elle n'est **jamais** devant sa jumelle.
+  domination n'exige donc plus « strictement moins chère ». Mesure : le contrôle automatisé rejoue
+  **54 combinaisons** (6 modes × 3 prises × 3 mains) où l'A9 Air est classée, et elle n'est **jamais**
+  devant sa jumelle ; sur la **grille statistique complète**, elle est notée dans **11 172 profils** et
+  n'obtient **aucune place** (elle est aussi « jamais recommandée » dans le rapport, avec sa cause).
 - **Pulsar** : les dix prix (119,99 € / 149,99 € / 149,90 €) sont **identiques** au relevé du 12.
 - **Scyrox** : aucun prix en euros sur la boutique officielle ; les 74,90 € du cahier des charges sont
   conservés (V6 marquée « prix non vérifié »), la note dit maintenant pourquoi.
