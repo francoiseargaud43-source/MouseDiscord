@@ -265,3 +265,122 @@ source d'observation datée a été ajoutée, la question est posée au proprié
   que son lien ouvre), `test_chaque_lien_a_variante_est_trace_par_une_source` (toute variante figée doit
   être datée par une source) et `test_chaque_prix_de_souris_est_date_par_une_source` (**aucun prix sans
   source datée** : c'est le contrôle qui manquait et qui a laissé passer les six écarts).
+
+## 8. Inventaire du 2026-10-13 (après-midi) : les 36 liens relus, un par un
+
+La 37e passe avait relu les 36 liens **le matin** du 2026-10-13. Le propriétaire a demandé une
+vérification de **cohérence** entre les liens et les modèles du catalogue, puis la **mise à jour des
+prix**. Les 36 liens ont donc été relus une seconde fois, le même jour, avec la méthode la moins
+coûteuse et la plus précise pour chaque boutique :
+
+- **atk.store** : `products/<handle>.json?country=FR` (liste complète des variantes, prix en euros) et,
+  pour un lien qui fige une variante, `variants/<id>.json?country=FR` (une seule variante, quelques
+  centaines d'octets : libellé exact, prix, devise) ;
+- **eu.pulsar.gg** : `products/<handle>.json?country=FR` — l'étiquette `Size/...` de chaque fiche dit
+  la taille, et le titre porte le modèle (« Xlite v4 **Medium** Gaming Mouse ») ;
+- **scyrox.com** : `products/<handle>.json?country=FR`, `search/suggest.json` et `cart.js?country=FR`
+  (la devise est **USD** — voir §8.3).
+
+Le tableau ci-dessous est **lu par un test** (`tests/test_liens_achat.py`) : il est comparé, ligne à
+ligne, à `data/commercial_links.json` (handle et variante figée) et à `data/mouse_db.json` (prix
+publié). Modifier un lien ou un prix sans mettre à jour ce tableau fait **échouer la suite**.
+
+### 8.1 Les 36 liens (handle, variante figée, prix de la boutique, prix publié)
+
+| id | handle | variante figée | libellé de la variante (ou du produit) | prix boutique | prix publié | verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| `atk_a9_ultimate` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `46878654005466` | Ultimate / Black | 59,95 € | 59,95 € | ✅ |
+| `atk_a9_air` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47193565364442` | Air / Black | 59,95 € | 59,95 € | ✅ |
+| `atk_a9_mini` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47852235718874` | Mini / Black | 59,95 € | 59,95 € | ✅ |
+| `atk_a9_plus` | `atk-dragonfly-a9-series-lightweight-wireless-mouse` | `46320046047450` | A9 Plus / White | 27,95 € | 27,95 € | 🔧 prix corrigé (45,00 € → 27,95 €) |
+| `atk_a9_nb` | `atk-dragonfly-a9-nb-lightweight-wireless-mouse` | — | Ultra (4 coloris) | 72,95 € | 72,95 € | 🔧 prix corrigé (73,95 € → 72,95 €) |
+| `atk_x1_ultra_max` | `atk-blazing-sky-x1-v2-series-esports-wireless-mouse` | `47058382782682` | Ultra Max 2.0 / Black | 41,95 € | 41,95 € | ✅ |
+| `atk_z1_ultra` | `atk-blazing-sky-z1-v2-gaming-wireless-mouse` | — | Ultimate (le moins cher ; l'édition Ultimate+ est à 65,95 €) | 59,95 € | 59,95 € | ✅ |
+| `atk_phantom_ultimate` | `atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse` | — | Ultimate (modèle unique de la page, 4 coloris) | 91,95 € | 91,95 € | ✅ |
+| `atk_ghost_ultimate` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425595098` | Ultimate / Silver | 68,95 € | 68,95 € | ✅ |
+| `atk_ghost_extreme` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425627866` | Extreme / Black | 86,95 € | 86,95 € | ✅ |
+| `atk_y9_ultimate` | `atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse` | `47178929897690` | Ultimate / Pink | 59,95 € | 59,95 € | ✅ |
+| `atk_f1_ultimate` | `atk-blazing-sky-f1-v3-series-esports-wireless-mouse` | `48175399370970` | Ultimate+ / Black | 59,95 € | 59,95 € | ✅ |
+| `atk_f1_v2` | `atk-blazing-sky-f1-v2-series-esports-wireless-mouse` | `47006581096666` | Ultra Max 2.0 / Black | 41,95 € | 41,95 € | 🔧 variante figée (le lien ouvrait la page des trois éditions) |
+| `atk_u2_v2_ultimate` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47201864974554` | U2 V2 Ultimate / Lake Green | 59,95 € | 59,95 € | ✅ |
+| `atk_u2_v2_mini` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47204034150618` | U2 V2 Mini / White | 59,95 € | 59,95 € | ✅ |
+| `atk_u2` | `atk-blazing-sky-u2-series-wireless-mouse` | — | U2 (le moins cher de la série) | 22,95 € | 22,95 € | ✅ |
+| `atk_u2_mini` | `atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse` | — | U2 Mini (modèle unique) | 77,95 € | 77,95 € | ✅ |
+| `atk_zero` | `atk-blazing-sky-zero-ultralight-wireless-gaming-mouse` | — | ZERO (le moins cher) | 63,95 € | 63,95 € | ✅ |
+| `atk_duckbill` | `atk-blazing-sky-duckbill-wireless-mouse` | — | Duckbill (modèle unique) | 82,95 € | 82,95 € | ✅ |
+| `atk_fierce_x` | `atk-fierce-x-lightweight-wireless-gaming-mouse` | — | FIERCE X (3 coloris) | 69,95 € | 69,95 € | ✅ (produit épuisé) |
+| `vxe_v3` | `vxe-dragonfly-v3-series-lightweight-wireless-mouse` | — | Dragonfly V3 (le moins cher) | 13,95 € | 13,95 € | ✅ |
+| `vxe_r1` | `vxe-dragonfly-r1-series-wireless-mouse` | — | Dragonfly R1 (le moins cher) | 13,95 € | 13,95 € | ✅ |
+| `vxe_mad_r` | `vxe-mad-r-series-wireless-mouse` | — | MAD R (le moins cher) | 41,95 € | 41,95 € | ✅ (produit épuisé) |
+| `vxe_x3` | `vxe-dragonfly-x3-series-lightweight-wireless-mouse` | — | Dragonfly X3 (le moins cher) | 27,95 € | 27,95 € | ✅ |
+| `pulsar_x2_v3_mini` | `x2-v3-mini-gaming-mouse` | — | X2 v3 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
+| `pulsar_x2h_v3_mini` | `x2h-v3-mini-gaming-mouse` | — | X2H v3 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
+| `pulsar_x2a_v3_medium` | `x2a-v3-gaming-mouse` | — | X2A v3 Medium (taille `Size/Medium`) | 119,99 € | 119,99 € | ✅ |
+| `pulsar_x2_crazylight_medium` | `x2-crazylight-medium-gaming-mouse` | — | X2 CrazyLight Medium | 149,99 € | 149,99 € | ✅ |
+| `pulsar_x2_crazylight_mini` | `x2-crazylight-gaming-mouse` | — | X2 CrazyLight Mini | 149,99 € | 149,99 € | ✅ |
+| `pulsar_x2h_crazylight_mini` | `x2h-crazylight-gaming-mouse` | — | X2H CrazyLight Mini | 149,99 € | 149,99 € | ✅ |
+| `pulsar_xlite_crazylight_medium` | `xlite-crazylight-medium-gaming-mouse` | — | Xlite CrazyLight Medium | 149,90 € | 149,90 € | ✅ |
+| `pulsar_xlite_v4_mini` | `xlite-v4-mini-gaming-mouse` | — | Xlite v4 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
+| `pulsar_xlite_v4_medium` | `xlite-v4-gaming-mouse` | — | Xlite v4 Medium (taille `Size/Medium`) | 119,99 € | 119,99 € | ✅ |
+| `pulsar_xlite_v4_large` | `xlite-v4-large-gaming-mouse` | — | Xlite v4 Large (taille `Size/Large`) | 119,99 € | 119,99 € | ✅ |
+| `scyrox_v8` | `scyrox-v8` | — | Scyrox V8 (6 variantes) | 69,99 USD | 74,90 € | ⚠️ monnaie ≠ EUR (voir §8.3) |
+| `scyrox_v6` | `scyrox-v6` | — | Scyrox V6 | 69,99 USD | 74,90 € | ⚠️ monnaie ≠ EUR (voir §8.3) |
+
+### 8.2 Ce que la relecture a corrigé
+
+1. **Deux prix** : l'**A9 Plus** (45,00 € au catalogue) est vendu **27,95 €** par la boutique
+   officielle, dans la variante même que son bouton ouvre ; l'**A9 NB** (73,95 € le matin) est
+   redescendu à **72,95 €** dans la journée. Les deux notes de prix gardent l'historique.
+2. **Quatre noms de modèles alignés sur la boutique** — c'est la réponse à « les liens
+   correspondent-ils aux modèles ? ». Trois noms ne se retrouvaient **pas** sur la page ouverte :
+   - `atk_a9_plus` : « A9 Plus 2.0 » → **« A9 Plus »** (la boutique ne propose aucun modèle « 2.0 » :
+     les modèles de la série A9 sont « A9 SE », « A9 », « A9 Plus », « A9 Pro », « A9 Pro Max »,
+     « A9 Ultra ») ;
+   - `atk_z1_ultra` : « Z1 V2 Ultra » → **« Z1 V2 Ultimate »** (les modèles de la page sont
+     « Ultimate » et « Ultimate+ » : « Ultra » n'existe pas, et le prix publié est celui de
+     « Ultimate ») ;
+   - `atk_f1_ultimate` : « F1 V3 Ultimate » → **« F1 V3 Ultimate+ »** (la page ne propose que
+     « Ultimate+ » et « Extreme+ ») ;
+   - `atk_x1_ultra_max` : « X1 V2 Ultra Max » → **« X1 V2 Ultra Max 2.0 »** (l'édition vendue par le
+     bouton porte « 2.0 »).
+3. **Deux notes de prix ne décrivaient pas ce que le bouton ouvre** — l'inverse du premier point :
+   c'est le texte qui était faux, pas le lien.
+   - `atk_a9_air` : la note datait la variante « Air / Shadow White ». Le bouton, lui, fige
+     « **Air / Black** » (59,95 €, prix normal 72,95 €, relevé le 2026-10-13). « Shadow White » est le
+     coloris d'un **revendeur** (Maxesport), pas celui de la boutique officielle ; la note le dit
+     désormais, et la source du 2026-10-13 nomme la variante réelle.
+   - `atk_f1_v2` : la note affirmait que le bouton ouvre « Ultra Max 2.0 / Black » alors que le lien ne
+     figeait **aucune** variante — la fiche vend trois éditions (41,95 € / 54,95 € / 77,95 €). Le lien a
+     été **figé** sur la variante vendue (41,95 €) le 2026-10-13 : le prix publié et l'édition achetée sont
+     désormais la même.
+4. **Une source qui contredisait sa propre donnée** : la source du 2026-10-13 de l'**A9 Plus** disait
+   encore « prix du catalogue NON adopté (45,00 € du cahier des charges) » une fois le prix adopté.
+   Cinq libellés de source disaient aussi « relevé du 2026-10-13 … inchangé depuis le relevé du
+   2026-10-13 » — un relevé comparé à lui-même ne prouve rien ; la comparaison portait sur la veille.
+5. **Rien d'autre** : les 32 autres prix sont **identiques** au relevé du matin, les 12 variantes
+   figées ouvrent toutes l'édition annoncée, et les 10 fiches Pulsar sont exactement celles du
+   catalogue (mêmes tailles, mêmes prix).
+
+### 8.3 Ce que ce tableau ne prouve pas
+
+- **La disponibilité** : elle n'est pas dans ce tableau (le format `products/<handle>.json` ne la
+  porte pas). Elle est notée là où elle compte — A9 Plus en stock, U2 V2 Ultimate en Lake Green,
+  produit MAD R épuisé, Xlite v4 Medium et Large épuisées (voir §7.4).
+- **Le montant en euros des Scyrox** : `cart.js?country=FR` répond `"currency":"USD"`, les variantes
+  portent `price_currency: "USD"` et la fiche V8 affiche **69,99 USD**. Aucune conversion n'est faite
+  (règle du 2026-10-11) : les 74,90 € publiés viennent du cahier des charges et d'un revendeur FR, et
+  la V6 reste marquée « prix non vérifié ».
+- **La stabilité des promotions** : les promotions « Halloween Specials » (5 → 31 octobre 2026)
+  expliquent la plupart des écarts de prix d'un jour à l'autre. C'est pourquoi chaque relevé porte sa
+  date, et pourquoi le contrôle se refait avec `tools/check_links.py` : pour chaque souris, il ouvre la
+  fiche de la boutique et compare **la variante figée par le bouton** (ou, à défaut, le modèle le moins
+  cher de la page) au prix publié par `data/mouse_db.json`. Il sort en code 0 si tout concorde, 1 s'il
+  trouve un écart, **2 s'il n'a rien pu ouvrir** (un réseau qui bloque les boutiques n'est pas un
+  catalogue faux). Le tableau §8.1 ci-dessus est, lui, relu par `tests/test_liens_achat.py` : modifier un
+  prix ou un lien sans mettre à jour ce tableau fait échouer la suite.
+- **Douze figées, vingt-quatre non** : douze liens figent une variante (`variant=<id>`). Les vingt-quatre
+  autres ouvrent une page qui ne vend qu'un seul modèle (les dix fiches Pulsar, une par taille, et les deux
+  Scyrox) ou, pour **douze** fiches ATK/VXE, une page qui vend plusieurs éditions ou plusieurs coloris. Dans
+  ce dernier cas le prix publié est celui que la page affiche aujourd'hui (le moins cher de la série) et la
+  note de prix dit lequel ; figer une variante n'y apporterait rien tant que la page ne vend pas d'édition
+  plus chère sous le nom publié.

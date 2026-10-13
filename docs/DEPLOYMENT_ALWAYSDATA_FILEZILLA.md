@@ -2089,19 +2089,49 @@ besoin d'être corrigé.
 deux fichiers du bot touchés ici — et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676**.
-Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
-courant.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
+Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.24).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 676 passed
+.venv/bin/python -m pytest -q                      # attendu : 695 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
 .venv/bin/python tools/recommendation_stats.py --sortie /tmp/stats.md \
   && diff /tmp/stats.md docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md && echo "statistiques identiques"
 ```
+
+---
+
+### 12.24 Mise à jour du 2026-10-13 (15e) : les liens d'achat vérifiés contre les modèles (noms et prix corrigés)
+
+Demande du propriétaire : « vérifie si les liens que je t'ai envoyés correspondent bien au modèle » puis
+« mets à jour les prix sur tous les modèles ». Les 36 liens ont été rouverts un par un sur la boutique
+(détail daté : §8 de `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`).
+
+1. **Quatre noms de modèles ne se retrouvaient pas sur la page ouverte** : « A9 Plus 2.0 » (la série A9 ne
+   vend aucun « 2.0 »), « Z1 V2 Ultra » (la page vend « Ultimate » et « Ultimate+ »), « F1 V3 Ultimate »
+   (elle vend « Ultimate+ » et « Extreme+ »), « X1 V2 Ultra Max » (la page dit « Ultra Max 2.0 »). Les noms
+   publiés suivent maintenant la boutique, pour que le membre retrouve sur la page ce que le bot annonce.
+2. **Deux prix** : l'**A9 Plus** était publié à 45,00 € (cahier des charges, non daté) alors que la variante
+   que son bouton ouvre est vendue **27,95 €** ; l'**A9 NB** passe de 73,95 € à **72,95 €**. Les 32 autres
+   prix sont inchangés.
+3. **Trois traces remises d'aplomb** : la note de l'A9 Air nommait un coloris de revendeur (« Shadow
+   White ») au lieu de celui du bouton (« Air / Black ») ; la note de la F1 V2 annonçait une variante que
+   son lien ne figeait pas (la fiche vend trois éditions) ; une source de l'A9 Plus disait encore
+   « prix non adopté (45,00 €) » après l'adoption du nouveau prix. Le lien de la **F1 V2 fige désormais la
+   variante vendue** (`data/commercial_links.json`).
+
+**Aucun redémarrage nécessaire** : `data/mouse_db.json` et `data/commercial_links.json` sont relus **à
+chaque interaction** (aucun cache : `load_catalog` / `load_commercial_links` sont appelés dans le flux de
+calcul et d'affichage). Envoyez les deux fichiers, c'est tout — la tâche planifiée n'a rien à redémarrer.
+
+**Fichiers à envoyer** : `data/mouse_db.json` et `data/commercial_links.json`. **Facultatif** :
+`tools/check_links.py` (le contrôle, qui a besoin d'un réseau joignant les boutiques) et
+`tests/test_liens_achat.py` (son verrou) — ces deux fichiers ne servent pas au bot. Le compteur ci-dessus
+passe de 676 (valeur du jour du §12.23) à **695**.
 
 ---
 

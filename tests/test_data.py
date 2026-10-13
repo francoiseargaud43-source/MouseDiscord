@@ -119,7 +119,26 @@ def test_owner_models_keep_their_compatibility_values(mice):
     # Non-régression : les compatibilités fournies par le cahier des charges ne doivent pas changer.
     assert (mice["atk_z1_ultra"].palm_grip_fit, mice["atk_z1_ultra"].hump_position, mice["atk_z1_ultra"].button_height) == ("Élevé", "Mid-Front", "High")
     assert (mice["scyrox_v6"].palm_grip_fit, mice["scyrox_v6"].button_height) == ("Moyen", "Mid")
-    assert mice["atk_a9_plus"].price_eur == 45.0
+
+
+def test_le_prix_de_l_a9_plus_est_celui_de_la_variante_ouverte_par_le_bouton(mice):
+    """Le prix publié est celui de la boutique officielle (règle du 2026-10-12), à jour au 2026-10-13.
+
+    Décision du 2026-10-13 : le bouton d'achat fige la variante « A9 Plus / White » (46320046047450),
+    vendue **27,95 €** ; la boutique ne propose **aucun** modèle « 2.0 » (les modèles de la série A9
+    sont « A9 SE », « A9 », « A9 Plus », « A9 Pro », « A9 Pro Max », « A9 Ultra »). Le nom publié a
+    donc suivi la boutique — « A9 Plus » — et les deux autres relevés (45,00 € du cahier des charges,
+    44,90 € chez Maxesport pour un « A9 Plus ») restent écrits dans la note de prix : ils ne sont
+    pas effacés, seulement plus publiés.
+    """
+    a9 = mice["atk_a9_plus"]
+    assert (a9.model, a9.price_eur, a9.price_status) == ("A9 Plus", 27.95, "verified")
+    liens = json.loads((ROOT / "data" / "commercial_links.json").read_text(encoding="utf-8"))
+    assert liens["atk_a9_plus"].endswith("variant=46320046047450")   # la variante dont le prix est publié
+    for montant in ("27,95", "45,00", "44,90"):
+        assert montant in a9.price_note, montant
+    recentes = [s for s in a9.sources if s.date_checked == "2026-10-13" and "price_eur" in s.fields]
+    assert recentes, "le prix publié doit être tracé par une source datée du jour du relevé"
 
 
 def test_a9_plus_width_kept_with_documented_conflict_tolerance(mice):
@@ -165,7 +184,7 @@ def test_two_missing_criteria_still_block_a_mouse(mice):
 
 # Hauteur des boutons héritée par coque (2026-10-12) : les quatre variantes « large » de la coque A9
 # (125 mm) sont la même souris avec des entrailles différentes — le propriétaire a donné la hauteur de
-# boutons de la sienne (A9 Plus 2.0 : « Mid »), donc les trois autres la partagent. La A9 Mini (118,4 mm)
+# boutons de la sienne (A9 Plus : « Mid »), donc les trois autres la partagent. La A9 Mini (118,4 mm)
 # n'est PAS de cette coque : elle garde « Inconnu ».
 A9_LARGE_SHELL = ("atk_a9_plus", "atk_a9_ultimate", "atk_a9_air", "atk_a9_nb")
 
@@ -910,7 +929,7 @@ def test_partial_scoring_opens_the_choice_without_inventing_points(mice):
 # même coque : le moteur ne doit jamais les proposer comme DEUX choix dans un résultat (« le match
 # idéal » puis « l'alternative » étant la même souris). Encore faut-il que la coque soit enregistrée
 # dans ``shell_id`` : mesure du 2026-10-12, 92 profils montraient deux fois la même souris
-# (A9 Plus 2.0 + A9 NB Ultra ; X2A v3 + X2 CrazyLight Medium) faute de ce champ. Corrigé pour
+# (A9 Plus + A9 NB Ultra ; X2A v3 + X2 CrazyLight Medium) faute de ce champ. Corrigé pour
 # l'A9 NB Ultra, les deux U2 Mini et la X3 ; deux paires restent en attente d'une source fabricant
 # explicite (elles ne sortent aujourd'hui jamais ensemble, mais le champ doit être tranché).
 SAME_SHELL_PAIRS_PENDING_SOURCE = (
@@ -1123,7 +1142,7 @@ def test_un_statut_verified_se_justifie_par_ses_sources(mice):
 def test_deux_entrees_de_la_meme_coque_ne_divergent_pas_hors_tolerance(mice):
     """Deux entrées d'une même coque décrivent une seule pièce de plastique.
 
-    Écart admis : la tolérance de concordance (0,5 mm) — l'ATK A9 Plus 2.0 (cahier des charges,
+    Écart admis : la tolérance de concordance (0,5 mm) — l'ATK A9 Plus (cahier des charges,
     63,5 mm) et l'A9 Ultimate (EloShapes, 64,0 mm) sont à l'intérieur. Au-delà, c'est une erreur de
     saisie ou deux coques différentes, et le test le dit.
     """

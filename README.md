@@ -447,6 +447,8 @@ MouseDiscord/
 │   └── illustrations/        # Les 15 assets ImageUse (T01–T15), à publier en https (voir REPORTE_DESIGN.md)
 ├── tools/
 │   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
+│   ├── check_links.py        # Chaque lien d'achat ouvre-t-il le modèle ET le prix publiés ? (réseau requis)
+│   │                         #   code 0 cohérent · 1 écart · 2 rien n'a pu être vérifié (réseau bloqué)
 │   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
 │   ├── build_ai_bundle.py    # Prépare le pack (prompt + règles + catalogue) pour une IA de recherche
 │   ├── measure_grip_width.py # Largeur de prise en mm depuis une capture vue de dessus (méthode Oblivity)
@@ -528,13 +530,19 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_catalog_hardening.py` : catalogue hostile (valeurs numériques, booléens, listes, dictionnaires, chaînes) refusé au chargement avec un message clair, jamais au milieu d'une réponse d'interaction.
 - `tests/test_build_mouse_db_guard.py` : garde-fou du générateur (`tools/build_mouse_db.py`) — il refuse d'écraser le catalogue réel et n'écrit qu'avec `--force`, en une seule fois.
 - `tests/test_doc_coherence.py` : chaque pourcentage des documents doit correspondre à l'ensemble cité (« N sur M ») — le contrôle qui a rattrapé C48, limites comprises.
-- `tests/test_tools_usage_errors.py` : **le contrat d'erreur des quatorze outils** (phrase sur la sortie d'erreur, code 2, jamais de trace Python), leur aide, et l'invariant `main(argv=None)` qui rend ce contrôle possible — c'est lui qui a rattrapé C50.
+- `tests/test_tools_usage_errors.py` : **le contrat d'erreur des quinze outils** (phrase sur la sortie d'erreur, code 2, jamais de trace Python), leur aide, et l'invariant `main(argv=None)` qui rend ce contrôle possible — c'est lui qui a rattrapé C50.
 - `tests/test_image_corpus_check.py` : les groupes de doublons d'un corpus d'images (une même photo circulait sous huit noms de modèles) sont signalés, les fichiers non-image ignorés.
 - `tests/test_image_identity_check.py` : rattachement d'une image sans nom imprimé à une image nommée par sa silhouette (mise dans le même sens, deux verdicts bornés, refus de trancher).
 - `tests/test_measure_button_height.py` : mesure exacte sur une vue orthographique synthétique, classe estimée par les références étalonnées, et vue en perspective **refusée** (aucune valeur produite).
 - `tests/test_measure_grip_width.py` : largeur au capteur depuis une vue de dessus, précision et cas limites.
 - `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes) — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
+- `tests/test_liens_achat.py` : **les 36 liens d'achat ouverts un par un** — le tableau §8.1 de
+  `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` est relu contre `data/commercial_links.json` (handle
+  et variante figée) et `data/mouse_db.json` (prix publié), dans les deux sens ; une note qui annonce
+  « la variante que le bouton ouvre » exige un lien qui la fige ; et `tools/check_links.py` est essayé hors
+  réseau sur une fausse boutique (cohérent, variante disparue, prix changé, fiche en dollars, réseau
+  bloqué) — c'est ce test qui a rattrapé le statut composé mal reconnu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main
 (voir `docs/audit/RAPPORT_FINAL.md`, §8 « Vérifications Discord manuelles (non exécutées) », le protocole `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md` et la liste de contrôle `docs/audit/ROBUSTESSE_2026-10-12.md` §4) : isolation des sessions entre deux utilisateurs,

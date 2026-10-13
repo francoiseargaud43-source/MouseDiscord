@@ -473,12 +473,13 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     # 18e passe (2026-10-12) : la prise publiée par ATK pour le Phantom Ultimate a été relevée sur la
     # fiche officielle, il n'est donc plus « en attente » et passe en tête du profil Palm 180 × 90 en
     # Qualité/Prix (35/40, 88 %, 91,95 €) ; l'alternative est une AUTRE coque trouvée dans
-    # l'élargissement de la fenêtre, l'ATK Z1 V2 Ultra (30/40, 75 %, 59,95 €, moins chère que l'idéal).
+    # l'élargissement de la fenêtre, l'ATK Z1 V2 Ultimate (30/40, 75 %, 59,95 €, moins chère que
+    # l'idéal) — nom de la boutique officielle depuis le 2026-10-13 (« Z1 V2 Ultra » n'existe pas).
     assert "ATK Phantom Ultimate" in ideal
     assert "91,95 €" in ideal and "**88 %**" in ideal   # nom · poids · prix · pourcentage · forme
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
-    assert "ATK Z1 V2 Ultra" in alt
+    assert "ATK Z1 V2 Ultimate" in alt
     assert guide.title == "📐 Vos repères de taille"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
     assert "35/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
@@ -532,7 +533,7 @@ async def test_result_never_mentions_the_excluded_mice():
     assert "Confiance" not in text and "confiance" not in text
     # Les écartées du profil sont testées nommément (le Phantom, écarté jusqu'au 2026-10-12 faute de
     # prise publiée, est désormais le gagnant : il ne peut plus servir de sentinelle).
-    assert "Scyrox V8" not in text and "F1 V3 Ultimate" not in text and "Xlite v4 Large" not in text
+    assert "Scyrox V8" not in text and "F1 V3 Ultimate+" not in text and "Xlite v4 Large" not in text
 
 
 def test_result_sections_follow_the_reference_tool_order():
@@ -1021,7 +1022,7 @@ async def test_two_slots_never_show_the_same_shell():
     """2026-10-12 : le match idéal et l'alternative ne sont jamais deux variantes de la même coque.
 
     Avec l'ATK Phantom Ultimate en tête (35/40, 18ᵉ passe), l'alternative vient de l'élargissement de
-    la fenêtre : l'ATK Z1 V2 Ultra (30/40, 59,95 €), autre coque et strictement moins chère que l'idéal.
+    la fenêtre : l'ATK Z1 V2 Ultimate (30/40, 59,95 €), autre coque et strictement moins chère que l'idéal.
     """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
@@ -1029,7 +1030,7 @@ async def test_two_slots_never_show_the_same_shell():
     ideal, alternative, troisieme = flow.result_slots(flow.compute_selection(session))
     assert ideal is not None and alternative is not None
     assert not selection._same_shell(ideal, alternative)
-    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK Phantom Ultimate", "ATK Z1 V2 Ultra")
+    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK Phantom Ultimate", "ATK Z1 V2 Ultimate")
     # Troisième place (décision du 2026-10-12) : elle est remplie, d'une TROISIÈME coque, et son titre
     # dit la vérité — l'ATK A9 Mini est au même prix que l'alternative (59,95 €), donc « L'autre option ».
     assert troisieme is not None and troisieme.mouse.label == "ATK A9 Mini"

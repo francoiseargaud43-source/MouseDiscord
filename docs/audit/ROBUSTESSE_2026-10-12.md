@@ -3287,3 +3287,59 @@ Verrou : `tests/test_tools_usage_errors.py::test_rapide_n_ecrase_pas_le_rapport_
 lit le rapport avant, lance `--rapide`, vérifie le code 2, la phrase sur la sortie d'erreur, **et que le
 fichier n'a pas bougé** ; puis il vérifie que le contrôle rapide écrit bien son rapport ailleurs. Une mutation
 (garde retirée) : **1 échec**, fichier restauré.
+
+### 26.30 « Ces liens ouvrent-ils vraiment le modèle annoncé ? » — le contrôle devient un outil (C62, 2026-10-13)
+
+Demande du propriétaire (2026-10-13) : « vérifie si les liens que je t'ai envoyés correspondent bien au
+modèle », puis « mets à jour les prix sur tous les modèles ». La relecture avait déjà été faite à la main
+le matin même (37e passe, six prix). Elle a été refaite l'après-midi, **lien par lien**, avec la méthode la
+moins coûteuse par boutique — `products/<handle>.json?country=FR` donne toutes les variantes et leurs prix
+en euros, `variants/<id>.json?country=FR` donne **la** variante que le bouton ouvre.
+
+**Ce que la relecture a changé** (le détail daté est le §8 de
+`docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`) :
+
+1. **Quatre noms de modèles ne se retrouvaient pas sur la page ouverte** — c'est le cœur de la question.
+   « A9 Plus 2.0 » n'existe pas (la série A9 vend « A9 SE », « A9 », « A9 Plus », « A9 Pro », « A9 Pro
+   Max », « A9 Ultra ») ; « Z1 V2 Ultra » non plus (la page vend « Ultimate » et « Ultimate+ ») ; « F1 V3
+   Ultimate » non plus (elle vend « Ultimate+ » et « Extreme+ ») ; « X1 V2 Ultra Max » désigne en fait
+   « X1 V2 Ultra Max **2.0** ». Le membre qui cherchait sur la page le nom affiché par le bot ne le
+   trouvait pas. **Corrigé dans `data/mouse_db.json`**, donc dans les six endroits qui l'affichent.
+2. **Deux prix** : l'**A9 Plus** publiait 45,00 € (cahier des charges, non daté) alors que la variante que
+   son bouton ouvre — « A9 Plus / White » — est vendue **27,95 €** (prix normal 36,95 €) ; l'**A9 NB** est
+   passé de 73,95 € à **72,95 €** dans la journée. Les 32 autres prix sont **identiques** au relevé du
+   matin.
+3. **Une note qui ne décrivait pas ce que le bouton ouvre** (A9 Air : « Shadow White », un coloris de
+   revendeur, alors que le lien fige « Air / Black ») et **une note qui affirmait plus que le lien ne
+   faisait** (F1 V2 : « celle que le bouton d'achat ouvre », alors qu'aucune variante n'était figée — la
+   fiche vend trois éditions, 41,95 € / 54,95 € / 77,95 €). Le lien de la F1 V2 est désormais **figé** sur
+   la variante vendue : le prix publié et l'édition achetée sont la même.
+4. **Deux traces qui se contredisaient** : la source du 2026-10-13 de l'A9 Plus disait encore « prix du
+   catalogue NON adopté (45,00 €) » une fois le prix adopté, et cinq libellés de source disaient
+   « relevé du 2026-10-13 … inchangé depuis le relevé du 2026-10-13 » — un relevé comparé à lui-même ne
+   prouve rien ; la comparaison portait sur la veille.
+
+**Le contrôle est devenu un outil** : `tools/check_links.py` ouvre, pour chaque souris, la fiche de la
+boutique (`products/<handle>.json?country=FR`, ou la variante figée), et compare le prix affiché au prix
+publié. Trois sorties distinctes, parce que les confondre ferait mentir l'outil : **0** tout concorde,
+**1** au moins un écart, **2** rien n'a pu être vérifié (réseau bloqué, boutique indisponible, lien
+inexploitable) — un réseau qui bloque les boutiques n'est pas un catalogue faux. Une fiche en dollars
+(Scyrox) est signalée « hors comparaison » et **aucune conversion n'est faite**.
+
+**Le test a rattrapé un bug de l'outil lui-même**, et c'est le meilleur argument pour l'avoir écrit :
+`Verdict.echec` comparait la phrase entière (« ❌ variante introuvable — variante absente de la fiche ») à
+la liste des statuts d'échec, et le statut **composé** n'y figurait pas — l'outil aurait rendu **0** sur une
+variante disparue. Le statut est maintenant stocké **à part** du détail.
+
+**Ce que le test verrouille** : `tests/test_liens_achat.py` (15 cas) relit le tableau §8.1 dans les deux
+sens — chaque lien doit ouvrir le handle annoncé et figer la variante annoncée (ou aucune), chaque prix
+publié doit être celui de la fiche et chaque prix hors euros doit être justifié dans la note — et essaie
+l'outil **hors réseau** sur une fausse boutique (cohérent, variante disparue, prix changé, fiche en
+dollars, réseau bloqué, lien bricolé, souris inconnue). Huit mutations (statut d'échec retiré, devise
+ignorée, variante ignorée, code de sortie neutralisé, tableau §8.1 faussé sur la variante, sur le prix, sur
+le handle) : **1 échec chacune**, fichiers restaurés à l'octet près.
+
+**Limites dites franchement** : l'outil a besoin de joindre les boutiques — depuis le bac à sable de
+développement (réseau restreint) il sort en **2** avec la phrase « le contrôle n'a pas eu lieu », il ne
+produit aucun verdict ; et le format `products/<handle>.json` **ne porte pas la disponibilité**, qui reste
+constatée à part (MAD R épuisée, Xlite v4 Medium et Large épuisées, Xlite v4 Mini en stock…).

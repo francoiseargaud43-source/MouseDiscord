@@ -153,7 +153,7 @@ def test_tous_les_outils_acceptent_argv_et_sont_donc_couverts():
     """Complétude : un outil dont `main` n'accepte pas `argv` échapperait à tout ce fichier.
 
     C'était le cas de cinq outils avant le 2026-10-13 (ils lisaient `sys.argv` directement ou pas du
-    tout). L'invariant est désormais vérifié plutôt qu'espéré : `main(argv=None)` sur les quatorze.
+    tout). L'invariant est désormais vérifié plutôt qu'espéré : `main(argv=None)` sur tous les outils du dossier.
     """
     sans_argv = [nom for nom in OUTILS
                  if "argv" not in inspect.signature(_outil(nom).main).parameters]

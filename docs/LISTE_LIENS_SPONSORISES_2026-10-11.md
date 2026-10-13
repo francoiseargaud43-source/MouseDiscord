@@ -4,6 +4,8 @@ Le bot affiche un bouton **« 🛒 Acheter <souris> »** uniquement si la souris
 `data/commercial_links.json` (clé = `id` de la souris dans `data/mouse_db.json`). Aujourd'hui le fichier ne contient
 que **2 liens fictifs** (`https://url.com/v8`, `https://url.com/a9`) : les souris ci-dessous n'ont donc **aucun lien**.
 
+> **Mise à jour du 2026-10-13.** Les 36 liens sont fournis, installés et vérifiés un par un (détail daté : §8 de `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`). Quatre noms de souris publiés ont suivi la boutique, qui ne les nomme pas comme le cahier des charges : « A9 Plus » (et non « A9 Plus 2.0 »), « Z1 V2 Ultimate » (« Z1 V2 Ultra » n'existe pas), « F1 V3 Ultimate+ » et « X1 V2 Ultra Max 2.0 ». Le tableau ci-dessous garde les noms du relevé du 11 octobre ; l'état courant est dans `data/mouse_db.json`.
+
 Ci-dessous : la **page produit à utiliser pour créer le lien sponsorisé**. Priorité **1** = souris déjà mesurées et les plus
 susceptibles d'être recommandées (12) ; priorité **2** = le reste du catalogue.
 

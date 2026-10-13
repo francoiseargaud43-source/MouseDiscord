@@ -66,3 +66,6 @@ Les liens Pulsar complétés le 2026-10-12 :
 | VXE Dragonfly V3 / V3 Pro | `vxe_v3` | https://www.atk.store/en-fr/products/vxe-dragonfly-v3-series-lightweight-wireless-mouse?country=FR&ref=aze | oui — `ref=aze` |
 | VXE Dragonfly X3 / X3 Pro / X3 Turbo | `vxe_x3` | https://www.atk.store/en-fr/products/vxe-dragonfly-x3-series-lightweight-wireless-mouse?country=FR&ref=aze | oui — `ref=aze` |
 | VXE MAD R / MAD R Major | `vxe_mad_r` | https://www.atk.store/en-fr/products/vxe-mad-r-series-wireless-mouse?country=FR&ref=aze | oui — `ref=aze` |
+
+> **Mise à jour du 2026-10-13.** Le lien de l'**ATK Blazing Sky F1 V2** fige désormais la variante vendue (`&variant=47006581096666`, 41,95 €) : la fiche vend trois éditions (41,95 / 54,95 / 77,95 €) et le bouton ouvrait la page sans choisir. Deux noms publiés ont suivi la boutique : « A9 Plus 2.0 » → **« A9 Plus »** et « Z1 V2 Ultra » → **« Z1 V2 Ultimate »**. Ce tableau garde les URL relevées le 12 ; l'état courant est dans `data/commercial_links.json`.
+
