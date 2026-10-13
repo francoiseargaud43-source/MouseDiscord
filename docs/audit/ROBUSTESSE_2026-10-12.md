@@ -1979,7 +1979,31 @@ d'explication), le pied de page reste le simple avertissement de score. La phras
 direction (« plus bas » était faux : le pied de page est posé sur le dernier bloc, l'explication est
 au-dessus).
 
-### 24.4 Ce que la passe a aussi vérifié
+### 24.4 Le score partiel des 2e et 3e places est annoncé (décision : « marqueur discret »)
+
+Une souris dont la **hauteur des boutons n'est pas documentée** est notée sur les critères disponibles
+(`PARTIAL_SCORING_ALLOWED`, décision du 2026-10-12) : son pourcentage est donc calculé **sans** ce
+critère, donc **sous-estimé** — le critère manquant ne peut que rapporter des points, jamais en retirer.
+Le message l'explique en clair, mais **seulement quand cette souris est le match idéal** : la note vit
+dans le bloc « 📐 Vos repères de taille », écrit pour `ideal.is_partial`.
+
+En 2e ou 3e place, le pourcentage s'affichait donc comme un score complet : **8 187 places** sur 27 170
+profils (30,1 %), réparties sur **7 304 profils** — mesuré le 2026-10-13 (35e passe), signalé au
+propriétaire (C35) et **tranché le jour même** : un **marqueur discret** à la fin de la ligne, plutôt
+qu'une phrase sous les trois lignes.
+
+**La règle appliquée** (`PARTIAL_HINT` dans `cogs/finder_flow.py`) : les 2e et 3e places ajoutent
+« · boutons non documentés » **à la fin** de leur ligne — après la forme de coque, pour ne pas casser
+l'alignement « Symétrique / Ergonomique » tout à droite. Le match idéal garde la note longue (pas de
+doublon). Aucun score, aucun classement, aucune sélection ne change : c'est un texte.
+
+**Effet mesuré** : **10 704 lignes** de place portent le marqueur sur la grille complète (8 187 pour un
+match idéal complet, 2 517 en plus là où le match idéal est lui-même partiel). La ligne la plus longue
+du catalogue passe de 87 à **102 caractères** (« **Pulsar Xlite CrazyLight Medium** · 44 g · 149,90 € ·
+**38 %** · Ergonomique · boutons non documentés ») : le marqueur allonge la ligne, c'est le prix assumé
+de l'option choisie, et le banc d'essai continue de contrôler les limites Discord (0 problème).
+
+### 24.5 Ce que la passe a aussi vérifié
 
 - **Les cinq profils de référence** du README et du guide de déploiement sont inchangés, mais leur ordre est
   désormais cohérent : Palm 180 × 90 Qualité/Prix → Phantom 88 % · Z1 V2 75 % · A9 Mini 75 % ;
@@ -1994,13 +2018,13 @@ au-dessus).
 - **Rapports régénérés** : `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`,
   `docs/audit/matrice_profils.md` et les trois aperçus PNG (`docs/apercu_*.png`, dont le résultat).
 
-### 24.5 Preuves d'exécution (35e passe)
+### 24.6 Preuves d'exécution (35e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **407 passed** (403 avant la passe : 4 tests ajoutés — ordre garanti, match idéal intact, marqueur de prix, pied de message) |
+| `pytest -q` | **409 passed** (403 avant la passe : 6 tests ajoutés — ordre garanti, match idéal intact, marqueur de prix, pied de message, marqueur de score partiel dans les deux sens) |
 | `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
-| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places 23 231 (85,50 %) · 2 places 1 196 · 1 place 182 · 0 place 2 561 · repli « même coque » 645 · match idéal partiel 3 118 · **ordre non garanti 84 (0,31 %)** |
+| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** (contrôle du marqueur de score partiel ajouté) · 3 places 23 231 (85,50 %) · 2 places 1 196 · 1 place 182 · 0 place 2 561 · repli « même coque » 645 · match idéal partiel 3 118 · **ordre non garanti 84 (0,31 %)** |
 | `tools/flow_effect.py --avant 41d741d` (24 609 profils) | match idéal **0 profil changé** · alternative 1 615 · troisième place 1 976 · **ordre violé 2 046 → 84** · places remplies identiques |
 | `tools/privacy_scan.py` | 0 violation |
 | `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |

@@ -211,7 +211,8 @@ Le message privé ne montre plus ni score, ni badge de confiance, ni repères de
   seule ligne « **Nom** · poids · prix · pourcentage du maximum théorique · forme de coque ». Rien d'autre : ni score /40, ni confiance,
   et **les pourcentages sont ordonnés du haut vers le bas** (décision du propriétaire, 2026-10-13 : une place n'affiche jamais un
   pourcentage supérieur à la place du dessus ; la contrainte porte sur le choix de la souris, jamais sur le score). Une souris dont
-  le prix n'est pas attesté l'annonce à côté du montant : « 74,90 € (prix non vérifié) »,
+  le prix n'est pas attesté l'annonce à côté du montant : « 74,90 € (prix non vérifié) », et une souris notée sans le critère des
+  boutons (hauteur non documentée) porte « · boutons non documentés » en 2e et 3e place, son pourcentage étant sous-estimé,
   ni détail de géométrie, et aucune liste de souris écartées. Image : la bosse de la souris retenue (ou ses boutons).
   **Exception (mode « Peu importe le prix », 2026-10-11)** : la ligne garde « Nom · pourcentage » et le prix descend en
   tout petit, suivi des composants documentés (capteur, fréquence, poids) — le prix ne concurrence plus la forme ;

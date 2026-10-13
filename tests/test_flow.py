@@ -1332,3 +1332,42 @@ def test_le_pied_de_message_ne_renvoie_plus_a_un_bloc_disparu():
     incomplet = flow.FinderSession(user_id=1)
     incomplet.grip = Grip.PALM
     assert flow.results_embeds(incomplet, selection)[0].footer.text == flow.SCORE_DISCLAIMER
+
+
+def test_une_place_au_score_partiel_l_annonce_sur_sa_ligne():
+    """Score partiel en 2e / 3e place (décision du propriétaire, 2026-10-13) : la ligne le dit.
+
+    Une souris dont la hauteur des boutons n'est pas documentée est notée sur les critères disponibles
+    : son pourcentage est donc calculé SANS ce critère, donc **sous-estimé** (le critère ne peut que
+    rapporter des points, jamais en retirer). La note longue du bloc « 📐 Vos repères de taille » n'est
+    écrite que pour le match idéal : sans le marqueur, les 2e et 3e places affichaient un pourcentage
+    amputé comme s'il était complet (**8 187 places** sur 27 170 profils, mesuré le 2026-10-13).
+    """
+    session, selection, (ideal, alternative, economy) = _trois_places(
+        BudgetMode.ECONOMIQUE, None, Grip.CLAW, 140.0, 60.0)
+    assert ideal is not None and not ideal.is_partial, "le profil de contrôle doit avoir un idéal complet"
+    assert alternative is not None and alternative.is_partial
+    assert economy is not None and economy.is_partial
+    main = flow.results_embeds(session, selection)[0]
+    lignes = {f.name: f.value.split("\n")[0]
+              for f in main.fields if f.name.startswith(("🥇", "🥈", "🔎", "➕", "💸"))}
+    assert len(lignes) == 3
+    assert all(flow.PARTIAL_HINT not in ligne for name, ligne in lignes.items()
+               if name.startswith("🥇")), "le match idéal est expliqué en clair : pas de marqueur"
+    marquees = [ligne for name, ligne in lignes.items() if not name.startswith("🥇")]
+    assert len(marquees) == 2 and all(ligne.endswith(flow.PARTIAL_HINT) for ligne in marquees), marquees
+    # Le marqueur vient APRÈS la forme de coque : la comparaison « Symétrique / Ergonomique » reste
+    # alignée tout à droite (demande du propriétaire du 2026-10-11).
+    assert all(ligne.split(" · ")[-2] in ("Symétrique", "Ergonomique") for ligne in marquees)
+
+
+def test_la_note_du_score_partiel_ne_se_repete_pas_sur_la_ligne_du_match_ideal():
+    """Quand le match idéal est au score partiel, la note longue en tient lieu : pas de marqueur en plus."""
+    session, selection, (ideal, _, _) = _trois_places(None, None, Grip.PALM, 140.0, 60.0)
+    assert ideal is not None and ideal.is_partial
+    embeds = flow.results_embeds(session, selection)
+    main = embeds[0]
+    ligne = next(f.value.split("\n")[0] for f in main.fields if f.name.startswith("🥇"))
+    assert flow.PARTIAL_HINT not in ligne
+    note = "\n".join((embed.description or "") for embed in embeds)
+    assert "Hauteur des boutons non documentée" in note

@@ -1704,14 +1704,19 @@ changements **visibles**, donc à déployer ensemble :
 3. **Le pied de message ne renvoie plus à un bloc disparu** : « Comment lire ce résultat » (bloc supprimé le
    2026-10-11) devient **« 🧭 Pourquoi ce choix ? »**, et le renvoi n'apparaît que si ce bloc est bien dans le
    message.
+4. **Une souris notée sans le critère des boutons (hauteur non documentée) l'annonce en 2e et 3e place** :
+   « · boutons non documentés » à la fin de la ligne. Son pourcentage était calculé sans ce critère (donc
+   sous-estimé) sans que rien ne le dise — **8 187 places** sur 27 170 profils (30,1 %). Le match idéal, lui,
+   garde la note longue du bloc « 📐 Vos repères de taille » (pas de doublon).
 
 **1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
 
 ```
-cogs/finder_flow.py                  (DÉCISIF : ordre des pourcentages, marqueur de prix, pied de message)
+cogs/finder_flow.py                  (DÉCISIF : ordre des pourcentages, marqueur de prix, pied de message,
+                                      marqueur de score partiel)
 tools/qa_flow_matrix.py              (facultatif : contrôle du marqueur et de l'ordre)
 tools/flow_effect.py                 (facultatif : compare un changement de moteur avant/après)
-tests/test_flow.py                   (facultatif : 4 tests nouveaux sur les trois décisions)
+tests/test_flow.py                   (facultatif : 6 tests nouveaux sur les quatre décisions)
 README.md                            (facultatif : ordre garanti et prix signalés décrits)
 docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : §24, l'audit complet de la passe)
 docs/audit/AUDIT.md                  (facultatif : C27 et C34 fermés, points ouverts 13 et 14 tranchés)
@@ -1730,7 +1735,7 @@ cette mise à jour ne touche ni les prix, ni les liens, ni les cotes.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 407 passed
+.venv/bin/python -m pytest -q                      # attendu : 409 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```
@@ -1747,10 +1752,13 @@ sinon `pkill -f "bot.py"`.
    **« 45,00 € (prix non vérifié) »** — le marqueur revient.
 3. En bas du message privé, le pied de page dit **« … expliqué dans le bloc « 🧭 Pourquoi ce choix ? » »**,
    et non plus « Comment lire ce résultat ».
+4. Parcours **Palm**, main **180 × 90**, **Économique** : la 2e et la 3e ligne (ATK A9 Mini, ATK GHOST
+   Ultimate) se terminent par **« · boutons non documentés »** — leur pourcentage est calculé sans ce
+   critère, et la ligne le dit maintenant.
 
 **Retour arrière** : remettre l'ancien `cogs/finder_flow.py` par FileZilla, puis `pkill -f "bot.py"`. Le
-retour arrière remet l'ancienne sélection des 2e et 3e places et masque de nouveau le marqueur de prix —
-les prix, les liens et les cotes ne sont pas concernés.
+retour arrière remet l'ancienne sélection des 2e et 3e places, masque de nouveau le marqueur de prix et le
+marqueur de score partiel — les prix, les liens et les cotes ne sont pas concernés.
 
 ---
 

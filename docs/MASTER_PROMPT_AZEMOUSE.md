@@ -368,6 +368,11 @@ largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inve
   prix du mode « Peu importe le prix » (seul endroit où le prix apparaît dans ce mode). Deux souris sont
   concernées : Scyrox V6 et ATK A9 Plus 2.0. Ne jamais présenter un prix du cahier des charges comme un
   prix vérifié.
+- **Score partiel annoncé** : une souris dont la hauteur des boutons n'est pas documentée est notée sans ce
+  critère (`PARTIAL_SCORING_ALLOWED`), donc son pourcentage est **sous-estimé**. Le match idéal l'explique
+  en clair dans le bloc « 📐 Vos repères de taille » ; les 2e et 3e places portent le marqueur discret
+  « · boutons non documentés » à la fin de leur ligne (`PARTIAL_HINT`), après la forme de coque pour ne pas
+  casser l'alignement tout à droite. Jamais de doublon des deux sur la même place.
 
 ### 7.5 Cas de non-régression (à garder en tests)
 
@@ -855,6 +860,10 @@ Aucun autre fichier ne lit `thenar` pour calculer.
 - **Pied de message** : ~~renvoi mort vers « Comment lire ce résultat »~~ **corrigé le 2026-10-13**, avec
   l'autorisation du propriétaire : le renvoi pointe vers « 🧭 Pourquoi ce choix ? », et seulement quand ce
   bloc est affiché (C27 de `docs/audit/AUDIT.md`).
+- **Score partiel des 2e et 3e places** : ~~pourcentage calculé sans le critère des boutons, sans que rien
+  ne le dise~~ **tranché le 2026-10-13 (35e passe)** — marqueur discret « · boutons non documentés » à la
+  fin de la ligne (`PARTIAL_HINT`). Il l'annonçait sur **8 187 places** (30,1 %) sans le dire : le biais
+  était toujours défavorable à la souris, jamais au membre (aucune souris survendue).
 - **Thème Discord clair** : tester la lisibilité (embed bordeaux sur fond clair reste OK, mais vérifier).
 
 ---

@@ -32,6 +32,9 @@ Contrôles effectués, profil par profil :
   dépasse pas la deuxième ;
 - **prix non attesté annoncé** : une souris dont le prix n'est pas `verified` affiche « (prix non
   vérifié) » à côté de son prix (décision du propriétaire, 2026-10-13) ;
+- **score partiel annoncé** : une souris au score partiel (hauteur des boutons non documentée) affichée
+  en 2e ou 3e place porte « boutons non documentés » (décision du propriétaire, 2026-10-13) ; pour le
+  match idéal, la note longue du bloc « 📐 Vos repères de taille » en tient lieu ;
 - comptage, sans le compter comme une faute, des profils où DEUX places montrent la même coque :
   c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance ne
   contient que des variantes de la coque retenue — il est mesuré, pas supposé ;
@@ -203,6 +206,12 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
                     break
         if mouse.price_eur is not None and prix_fr(mouse.price_eur) not in texte:
             problems.append(f"prix absent ou faux pour {mouse.label} : attendu {prix_fr(mouse.price_eur)}")
+        # Score partiel (décision du propriétaire, 2026-10-13) : la note longue n'existe que pour le
+        # match idéal, donc les 2e et 3e places portent « boutons non documentés ». Sans ce marqueur,
+        # le pourcentage s'affiche comme un score complet alors qu'il est calculé sans ce critère —
+        # toujours SOUS-ESTIMÉ, jamais gonflé (`PARTIAL_HINT` dans `cogs/finder_flow.py`).
+        if role != "le match idéal" and score.is_partial and "boutons non documentés" not in texte:
+            problems.append(f"{role} au score partiel annoncée sans le dire : {mouse.label}")
         # Prix non attesté : le message doit le dire (décision du propriétaire, 2026-10-13 — le
         # marqueur existait dans le code mais aucun appelant ne l'activait depuis le 2026-10-11).
         if mouse.price_status != "verified" and "prix non vérifié" not in texte:

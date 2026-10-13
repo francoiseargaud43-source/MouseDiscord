@@ -106,6 +106,10 @@ SCORE_DISCLAIMER = (
 # (« plus bas » était faux, et le bloc « Comment lire ce résultat » n'existe plus depuis le
 # 2026-10-11). Correction autorisée par le propriétaire le 2026-10-13 (point ouvert C27).
 EXPLANATION_REFERENCE = " Le calcul est expliqué dans le bloc « 🧭 Pourquoi ce choix ? »."
+# Marqueur des souris au score partiel (hauteur des boutons non documentée, décision du propriétaire du
+# 2026-10-13) : la note longue n'existe que dans le bloc « 📐 Vos repères de taille », écrit pour le
+# MATCH IDÉAL seul — les 2e et 3e places portent donc ce marqueur discret à la fin de leur ligne.
+PARTIAL_HINT = "boutons non documentés"
 BUTTON_LABEL_MAX = 80
 
 # Affichage : noms français des positions de bosse et des hauteurs de boutons (le catalogue garde
@@ -474,7 +478,7 @@ def _components_text(mouse) -> str:
     return " · ".join(parts)
 
 
-def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
+def _slot_text(score: MouseScore, mode: BudgetMode | None = None, *, partial_hint: bool = False) -> str:
     """Une souris recommandée : nom · poids · prix · pourcentage · forme, sur une ligne.
 
     Le poids documenté et la forme de coque (« Symétrique » / « Ergonomique », tout à droite) sont
@@ -483,6 +487,12 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
     brut, ni badge de confiance, ni commentaire : tout cela vit dans les blocs plus bas. Seul le
     mode « Peu importe le prix » ajoute une seconde ligne, en tout petit : le prix (sans effet sur
     ce classement) et les composants documentés, qui départagent les égalités de forme.
+
+    ``partial_hint`` ajoute « boutons non documentés » à la fin de la ligne (décision du propriétaire,
+    2026-10-13) : la note complète du bloc « 📐 Vos repères de taille » n'est écrite que pour le match
+    idéal, donc une souris au score partiel en 2e ou 3e place affichait son pourcentage — calculé SANS
+    le critère des boutons, donc sous-estimé — sans que rien ne le dise (**8 187 places** sur 27 170
+    profils, mesuré le 2026-10-13). Le marqueur ne touche ni le score ni le classement.
     """
     mouse = score.mouse
     parts = [f"**{mouse.label}**"]
@@ -495,6 +505,8 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
     shape = SHAPE_LINE_LABELS.get(mouse.shape)
     if shape:
         parts.append(shape)          # tout à droite : symétrique ou ergonomique
+    if partial_hint and score.is_partial:
+        parts.append(PARTIAL_HINT)   # score calculé sans les boutons : le dire (2026-10-13)
     line = " · ".join(parts)
     if mode is not BudgetMode.PEU_IMPORTE_PRIX:
         return line
@@ -1033,10 +1045,10 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     if alternative is not None:
         main.add_field(name=alternative_slot_title(alternative, ideal, selection.reference_score,
                                                   mode_tolerance(selection.mode)),
-                       value=_slot_text(alternative, session.budget_mode), inline=False)
+                       value=_slot_text(alternative, session.budget_mode, partial_hint=True), inline=False)
     if economy is not None:
         main.add_field(name=third_slot_title(economy, ideal, alternative, selection.reference_score),
-                       value=_slot_text(economy, session.budget_mode), inline=False)
+                       value=_slot_text(economy, session.budget_mode, partial_hint=True), inline=False)
     image_key = result_image_key(ideal, session.grip)
     if image_key:
         main = _image(main, image_key)

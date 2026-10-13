@@ -65,7 +65,7 @@ et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'uti
 - toute erreur inattendue est tracée et expliquée en privé au membre — jamais un silence.
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
-théorique** pour le match idéal, l'alternative et la troisième place (remplies dès que le budget le permet : « 💸 économie » si elle en est une, « ➕ autre option » sinon, « 🔎 autre piste » quand la souris vient du dernier palier ; les pourcentages **ne remontent jamais** d'une ligne à l'autre, et une souris dont le prix n'est pas attesté l'annonce : « 74,90 € (prix non vérifié) »). Ni score /40, ni souris
+théorique** pour le match idéal, l'alternative et la troisième place (remplies dès que le budget le permet : « 💸 économie » si elle en est une, « ➕ autre option » sinon, « 🔎 autre piste » quand la souris vient du dernier palier ; les pourcentages **ne remontent jamais** d'une ligne à l'autre, une souris dont le prix n'est pas attesté l'annonce : « 74,90 € (prix non vérifié) », et une souris dont la hauteur des boutons n'est pas documentée — donc notée sans ce critère — porte « · boutons non documentés » quand elle occupe une 2e ou 3e place). Ni score /40, ni souris
 écartées à ce niveau : le détail vient **plus bas dans le même message privé**, en petits blocs illustrés,
 dans l'ordre de l'outil de référence (Oblivity) :
 
