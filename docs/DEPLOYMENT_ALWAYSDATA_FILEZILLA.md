@@ -1887,23 +1887,32 @@ cd ~/MouseDiscord
 
 ---
 
-### 12.21 Mise à jour du 2026-10-13 (12e) : une erreur muette corrigée (rien de visible ne change)
+### 12.21 Mise à jour du 2026-10-13 (12e) : deux erreurs muettes corrigées (rien de visible ne change)
 
-**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §26) : un seul
-endroit du code, `_step_number`, remontait un `KeyError` **muet** quand on lui demandait une étape qui
-n'existe pas pour la prise choisie (le thénar en Fingertip, la variante de Claw hors Claw). Le parcours
-**n'emprunte jamais ce chemin** (`step_kind` saute le thénar en Fingertip) : aucune personne n'a donc vu
-d'erreur, et **aucun texte affiché, aucun score, aucun classement ne change**. L'erreur est maintenant
-lisible — elle nomme la prise, l'étape et les étapes qui existent.
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §26) :
 
-La même passe a mesuré, plutôt que supposé, trois choses sur le code réellement exécuté : les **limites
-Discord** sur les 27 170 profils (**0 violation**, tableau au §26.1), la **typographie** de 15 133 textes
-affichés (**0 défaut réel**, §26.2) et le comportement de l'affichage sur **162 combinaisons de données
-dégradées** (**0 exception**, §26.3).
+1. `_step_number` remontait un `KeyError` **muet** quand on lui demandait une étape qui n'existe pas pour
+   la prise choisie (le thénar en Fingertip, la variante de Claw hors Claw). Le parcours **n'emprunte
+   jamais ce chemin** (`step_kind` saute le thénar en Fingertip) : personne n'a vu d'erreur. L'erreur est
+   maintenant lisible — elle nomme la prise, l'étape et les étapes qui existent.
+2. Un enregistrement de `state/sessions.json` portant un âge **négatif** (horloge reculée, fichier
+   bricolé) faisait repartir le parcours **dans le futur** : il gagnait la vie en plus et pouvait ne plus
+   jamais expirer. Un âge négatif est maintenant ramené à zéro (« vue à l'instant »), comme le fait déjà
+   l'écriture du fichier. Le bot écrit lui-même un âge positif : ce cas n'arrive qu'avec une horloge
+   reculée ou un fichier modifié à la main.
 
-**1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py` et `tests/test_flow.py`. Facultatifs au sens
-strict : le bot fonctionne exactement pareil sans eux (le chemin corrigé n'est jamais emprunté en
-production). Envoyez-les pour que le serveur corresponde au dépôt.
+Dans les deux cas : **aucun texte affiché, aucun score, aucun classement, aucun lien, aucun prix ne
+change**. La même passe a mesuré, plutôt que supposé, trois choses sur le code réellement exécuté : les
+**limites Discord** sur les 27 170 profils (**0 violation**, tableau au §26.1), la **typographie** de
+15 133 textes affichés (**0 défaut réel**, §26.2) et le comportement de l'affichage sur **162 combinaisons
+de données dégradées** (**0 exception**, §26.3), plus **14 contenus hostiles** de fichier d'état
+(§26.5) — aucun ne bloque le démarrage.
+
+**1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py`, `utils/session.py`,
+`tests/test_flow.py` et `tests/test_session.py`. Facultatifs au sens strict : le bot fonctionne
+exactement pareil sans eux (le chemin corrigé n'est jamais emprunté en production, et l'âge négatif
+d'un fichier d'état n'arrive qu'avec une horloge reculée). Envoyez-les pour que le serveur
+corresponde au dépôt — et supprimez `state/sessions.json` si vous voulez repartir d'un état neuf.
 
 **2. Rien à ajouter au `.env`** — aucune nouvelle variable.
 
@@ -1911,7 +1920,7 @@ production). Envoyez-les pour que le serveur corresponde au dépôt.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 489 passed
+.venv/bin/python -m pytest -q                      # attendu : 506 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

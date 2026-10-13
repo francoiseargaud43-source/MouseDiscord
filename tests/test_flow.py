@@ -1224,6 +1224,30 @@ async def test_double_tap_on_start_shows_no_error_and_opens_the_parcours():
 
 
 @pytest.mark.asyncio
+async def test_deux_appuis_sur_le_panneau_ne_laissent_qu_un_parcours_vivant():
+    """Deux appuis distincts sur le bouton d'accueil : un seul parcours reste vivant, le plus récent.
+
+    Un double appui mobile envoie deux interactions distinctes : chacune ouvre son parcours, et la
+    seconde **remplace** la première. La garantie tenue est donc « un seul parcours vivant pour ce
+    membre », pas « une seule réponse » — le commentaire du code affirmait le contraire avant le
+    2026-10-13. Les deux messages restent utilisables : leurs composants retrouvent le parcours du
+    membre qui clique (`SessionStore.current`).
+    """
+    store = SessionStore(ttl_seconds=600)
+    premier = make_interaction(user_id=99, store=store)
+    second = make_interaction(user_id=99, store=store)
+    await flow.StartView().start.callback(premier)
+    premiere_session, _ = store.current(99)
+    await flow.StartView().start.callback(second)
+    session, status = store.current(99)
+    assert status == "ok" and session is not None
+    assert len(store) == 1, "deux parcours vivants pour le même membre"
+    assert session.session_id != premiere_session.session_id
+    assert premier.response.send_message.await_count == 1
+    assert second.response.send_message.await_count == 1
+
+
+@pytest.mark.asyncio
 async def test_expired_notice_is_an_orange_embed_with_the_restart_button():
     """Le message d'expiration garde la charte (orange) ET permet de repartir sur place."""
     store = SessionStore(ttl_seconds=600)

@@ -1199,8 +1199,11 @@ class StartView(FinderView):
         try:
             await interaction.response.send_message(embed=step_embed, view=step_view, ephemeral=True)
         except discord.InteractionResponded:
-            # Double appui (fréquent sur mobile) : la première réponse est déjà partie et le parcours
-            # est ouvert. Aucune erreur affichée, aucune seconde session créée.
+            # Réémission de la MÊME interaction (double appui sur mobile, interaction rejouée par
+            # Discord) : la réponse est déjà partie, on ne répond pas deux fois et rien ne s'affiche en
+            # double. Le parcours créé juste au-dessus remplace l'éventuel précédent du même membre :
+            # il n'y en a jamais deux vivants (vérifié par
+            # tests/test_flow.py::test_deux_appuis_sur_le_panneau_ne_laissent_qu_un_parcours_vivant).
             return
 
 

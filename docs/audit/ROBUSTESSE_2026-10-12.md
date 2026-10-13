@@ -2323,11 +2323,50 @@ nul, capteur/MCU/switchs nuls, forme inconnue, bosse inconnue, longueur nulle en
   parcours), et un test le verrouille
   (`tests/test_flow.py::test_une_etape_qui_n_existe_pas_pour_la_prise_le_dit`).
 
-### 26.4 Preuves d'exécution (38e passe)
+### 26.4 Un commentaire qui promettait autre chose que le code
+
+Le bouton d'accueil du panneau portait ce commentaire : « Double appui (fréquent sur mobile) : la première
+réponse est déjà partie et le parcours est ouvert. Aucune erreur affichée, **aucune seconde session
+créée** ». C'est faux, et c'est mesurable : un double appui mobile envoie **deux interactions distinctes**,
+la méthode est donc appelée **deux fois**, et chaque appel **crée un parcours** — le second remplace le
+premier (`SessionStore.start` supprime le parcours précédent du même membre). Rien de grave pour le membre
+(il n'a jamais deux parcours vivants, et les deux messages affichés restent utilisables : chaque composant
+retrouve le parcours du membre qui clique), mais le commentaire disait le contraire de la garantie réelle.
+
+**Corrigé le 2026-10-13** : le commentaire dit maintenant la vérité (« il n'y en a jamais deux vivants »),
+et **deux tests** la verrouillent —
+`test_double_tap_on_start_shows_no_error_and_opens_the_parcours` (une interaction réémise ne provoque
+aucune erreur visible) et le nouveau `test_deux_appuis_sur_le_panneau_ne_laissent_qu_un_parcours_vivant`
+(deux appuis = un seul parcours vivant, le plus récent).
+
+### 26.5 Le fichier d'état du serveur, attaqué de toutes les façons
+
+Le livrable conserve les parcours en cours dans `state/sessions.json` (sur le serveur, ce fichier peut être
+**tronqué** par un transfert FileZilla interrompu, **édité à la main**, écrit par une **version
+antérieure**, ou son nom occupé par un **dossier**). Quatorze contenus hostiles ont été passés au
+`SessionStore` : fichier vide, JSON invalide, liste à la racine, version inconnue, `sessions` qui n'est pas
+une liste, entrée qui n'est pas un objet, session sans `user_id`, âge illisible (« hier »), âge démesuré
+(`1e12`), prise inconnue, budget en texte, session dupliquée, âge négatif, dossier à la place du fichier.
+
+**Résultat** : aucune exception dans tous les cas — soit le fichier est ignoré et un parcours neuf
+fonctionne immédiatement, soit ce qui est lisible est récupéré. Le démarrage du bot ne peut donc pas être
+bloqué par ce fichier.
+
+**Un micro-défaut trouvé et corrigé** : un âge **négatif** (horloge reculée, ou fichier bricolé) était
+accepté tel quel, et la session repartait avec `last_seen = maintenant − âge`, c'est-à-dire **dans le
+futur** : elle gagnait la vie en plus, et avec un âge très négatif elle ne pouvait **plus jamais expirer**
+(elle restait en mémoire et dans le fichier jusqu'au redémarrage suivant). Corrigé : un âge négatif est
+ramené à zéro (« vue à l'instant »), ce qui est aussi ce que le magasin écrit lui-même
+(`max(0.0, age_seconds)` dans `to_state`). Verrouillé par
+`tests/test_session.py::test_un_age_negatif_ne_rend_pas_la_session_immortelle` (la session récupérée expire
+après le délai normal) et par les quatre cas récupérés de
+`test_ce_qui_est_lisible_est_recupere_sans_gagner_de_vie`.
+
+### 26.6 Preuves d'exécution (38e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **489 passed** (488 avant la passe : 1 test ajouté) |
+| `pytest -q` | **506 passed** (488 avant la passe : 2 tests de code, 14 cas de fichier d'état hostile, 2 tests de temps de vie) |
 | `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
 | Mesure des limites Discord (27 170 profils) | **0 violation** (tableau §26.1) |
 | Scan typographique (15 133 textes) | 0 défaut réel (tableau §26.2) |

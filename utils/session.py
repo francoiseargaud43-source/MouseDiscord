@@ -277,6 +277,10 @@ class SessionStore:
             age = _float_or_none(entry.get("age_seconds"))
             if age is None or age > self._ttl:
                 continue
+            # Âge négatif (horloge reculée, fichier bricolé) : « vue à l'instant », jamais « vue dans
+            # le futur » — sinon la session gagnerait la vie en plus et pourrait ne jamais expirer
+            # (micro-défaut trouvé le 2026-10-13 en testant des fichiers d'état hostiles).
+            age = max(0.0, age)
             session = FinderSession.from_state(entry, last_seen=now - age)
             if session is None or session.session_id in self._by_id:
                 continue

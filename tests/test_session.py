@@ -120,3 +120,91 @@ def test_a_non_positive_ttl_is_refused(ttl):
     """Un TTL nul ferait expirer chaque parcours aussitôt (« ce parcours a expiré » à chaque clic)."""
     with pytest.raises(ValueError, match="ttl_seconds"):
         SessionStore(ttl_seconds=ttl)
+
+
+# --- Chasse aux micro-bugs du 2026-10-13 : le fichier d'état vit sur le SERVEUR ---
+# Il peut être tronqué (transfert FileZilla interrompu), édité à la main ou écrit par une version
+# antérieure. Un fichier hostile ne doit JAMAIS empêcher le bot de démarrer : soit il est ignoré,
+# soit ce qui est lisible est récupéré — jamais une exception.
+CAS_IGNORES = {
+    "vide": "",
+    "pas du json": "{ceci n'est pas du json",
+    "liste racine": "[1, 2, 3]",
+    "version inconnue": '{"version": 99, "sessions": []}',
+    "sessions pas une liste": '{"version": 1, "sessions": {"a": 1}}',
+    "entree pas un objet": '{"version": 1, "sessions": [42]}',
+    "session sans user_id": '{"version": 1, "sessions": [{"session_id": "x"}]}',
+    "age absurde": '{"version": 1, "sessions": [{"session_id": "a", "user_id": 1, "age_seconds": "hier"}]}',
+    "age demesure": '{"version": 1, "sessions": [{"session_id": "b", "user_id": 2, "age_seconds": 1e12}]}',
+    "grip inconnu": ('{"version": 1, "sessions": [{"session_id": "c", "user_id": 3, "age_seconds": 1,'
+                     ' "grip": "griffe-de-tigre"}]}'),
+}
+
+CAS_RECUPERES = {
+    # Le budget illisible est écarté, le reste du parcours reprend.
+    "budget texte": ('{"version": 1, "sessions": [{"session_id": "d", "user_id": 4, "age_seconds": 1,'
+                     ' "max_budget_eur": "beaucoup"}]}', 4),
+    # Deux copies de la même session : une seule est gardée (l'identifiant est unique).
+    "session dupliquee": ('{"version": 1, "sessions": [{"session_id": "e", "user_id": 5, "age_seconds": 1},'
+                          ' {"session_id": "e", "user_id": 5, "age_seconds": 1}]}', 5),
+    # Horloge reculée : « vue à l'instant », jamais « vue dans le futur » (micro-défaut corrigé
+    # le 2026-10-13 : une session d'âge négatif gagnait la vie en plus et pouvait ne jamais expirer).
+    "age negatif": ('{"version": 1, "sessions": [{"session_id": "f", "user_id": 6, "age_seconds": -5,'
+                    ' "grip": "palm"}]}', 6),
+    "age negatif demesure": ('{"version": 1, "sessions": [{"session_id": "g", "user_id": 7,'
+                             ' "age_seconds": -1e12, "grip": "palm"}]}', 7),
+}
+
+
+@pytest.mark.parametrize("nom", sorted(CAS_IGNORES))
+def test_un_fichier_d_etat_illisible_est_ignore_sans_bloquer_le_demarrage(tmp_path, nom):
+    """Fichier inutilisable : aucune exception, rien de restauré, et un parcours neuf marche."""
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(CAS_IGNORES[nom], encoding="utf-8")
+    store = SessionStore(ttl_seconds=1800, path=chemin)       # ne lève jamais
+    assert len(store) == 0, f"{nom} : session restaurée alors que l'enregistrement est inutilisable"
+    session = store.start(user_id=1)
+    assert store.lookup(session.session_id, 1)[1] == LOOKUP_OK
+
+
+@pytest.mark.parametrize("nom", sorted(CAS_RECUPERES))
+def test_ce_qui_est_lisible_est_recupere_sans_gagner_de_vie(tmp_path, nom):
+    """Session récupérée : elle reste soumise au délai d'inactivité, jamais immortelle."""
+    contenu, utilisateur = CAS_RECUPERES[nom]
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(contenu, encoding="utf-8")
+    clock = FakeClock()
+    store = SessionStore(ttl_seconds=1800, clock=clock, path=chemin)
+    assert len(store) == 1
+    assert store.current(utilisateur)[1] == LOOKUP_OK
+    # Un âge négatif est ramené à zéro : « vue à l'instant », jamais « vue dans le futur ».
+    assert store.current(utilisateur)[0].last_seen == clock.now
+    clock.now += 1801
+    assert store.purge_expired() == 1                     # donc elle expire normalement
+
+
+def test_un_age_negatif_ne_rend_pas_la_session_immortelle():
+    """Horloge reculée de 5 s : la session repart « vue à l'instant » et expire après le délai."""
+    import json
+    import tempfile
+    from pathlib import Path as _Path
+
+    with tempfile.TemporaryDirectory() as dossier:
+        chemin = _Path(dossier) / "sessions.json"
+        chemin.write_text(json.dumps({"version": 1, "sessions": [
+            {"session_id": "zz", "user_id": 7, "age_seconds": -5, "grip": "palm"}]}), encoding="utf-8")
+        clock = FakeClock()
+        store = SessionStore(ttl_seconds=10, clock=clock, path=chemin)
+        assert len(store) == 1                    # la reprise est acceptée
+        clock.now = 11
+        assert store.purge_expired() == 1         # et elle expire bien (sans le correctif : jamais)
+
+
+def test_un_dossier_a_la_place_du_fichier_d_etat_ne_bloque_pas_le_demarrage(tmp_path):
+    """Cas réel d'un transfert raté : un dossier porte le nom du fichier attendu."""
+    chemin = tmp_path / "sessions.json"
+    chemin.mkdir()
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+    assert len(store) == 0
+    session = store.start(user_id=1)
+    assert store.lookup(session.session_id, 1)[1] == LOOKUP_OK
