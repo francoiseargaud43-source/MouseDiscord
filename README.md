@@ -216,14 +216,13 @@ Deux façons de renseigner une image (elles peuvent cohabiter) :
 | `step3_budget` | Étape 4/4 — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
 | `illustration_mouse_dimensions` | Repères de taille du résultat | `T12_souris_longueur_largeur.png` |
 | `illustration_rear_narrow` | Résultat, si thénar « Petite » (indicatif) | `T13_arriere_etroit.png` |
-| `illustration_grip_relaxed` | Étape « variante de Claw » et résultat (variante relâchée) | `T04_griffe_relachee.png` |
+| `illustration_grip_relaxed` | Étape « variante de Claw » (illustration générique de l'étape) et résultat quand la variante choisie est « Claw relâchée » | `T04_griffe_relachee.png` |
 | `illustration_hump_mid` | Résultat — bosse centrale de la souris retenue, et conseil « bosse au milieu ou à l'avant » (Palm) | `T14_bosse_centrale.png` |
 | `illustration_hump_front` | Résultat — bosse avant / Mid-Front de la souris retenue | `T15_bosse_avant.png` |
 | `illustration_hump_rear` | Résultat — bosse arrière de la souris retenue, et conseil « bosse au milieu ou à l'arrière » (Claw) | `T07_bosse_arriere.png` |
 | `illustration_buttons_high` | Résultat — boutons hauts (souris retenue ou conseil Palm) | `T01_boutons_hauts.png` |
 | `illustration_buttons_low` | Résultat — boutons bas (souris retenue ou conseil Claw) | `T02_boutons_bas.png` |
 | `illustration_buttons_mid` | Résultat — boutons moyens (souris retenue ou conseil Fingertip) | `T03_boutons_moyens.png` |
-| `illustration_grip_relaxed` | Résultat, prise Claw — variante « Claw relâchée » | `T04_griffe_relachee.png` |
 | `illustration_grip_aggressive` | Résultat, prise Claw — variante « Claw agressive » | `T05_griffe_agressive.png` |
 | `illustration_grip_pincer` | Résultat, prise Claw — variante « Claw pincée » | `T06_griffe_pince.png` |
 

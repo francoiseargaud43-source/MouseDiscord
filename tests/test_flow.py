@@ -1624,6 +1624,37 @@ def test_aucun_match_classable_reste_une_reponse_honnete_et_utile():
     assert not [f.name for f in embeds[0].fields if "match idéal" in f.name]
 
 
+def test_le_message_sans_candidat_n_accuse_pas_le_catalogue():
+    """Le message doit nommer la vraie cause : les critères fournis, jamais les données des souris.
+
+    Trouvé le 2026-10-13 (46e passe, C59) : le texte disait « aucune souris ne peut être classée avec
+    les données vérifiées pour ces critères ». Or cette carte s'affiche dans trois cas réels — mesures
+    hors de la plage des 36 souris, budget trop serré, gamme sans candidat — où des souris **sont**
+    classables et où le catalogue n'a rien à se reprocher : le membre recevait une explication fausse,
+    qui l'incitait à attendre une correction de données au lieu d'essayer une autre gamme.
+    """
+    # 1. Un budget trop serré (140 × 60 mm en Palm : beaucoup de souris compatibles, aucune à 10 €).
+    serre = flow.FinderSession(user_id=1)
+    serre.grip, serre.thenar = Grip.PALM, Thenar.MOYENNE
+    serre.hand_length_mm, serre.hand_width_mm = 140.0, 60.0
+    serre.budget_mode, serre.max_budget_eur = BudgetMode.CUSTOM, 10.0
+    # 2. Des mesures hors de la plage du catalogue (main de 260 × 130 mm).
+    hors_plage = flow.FinderSession(user_id=1)
+    hors_plage.grip, hors_plage.thenar = Grip.PALM, Thenar.MOYENNE
+    hors_plage.hand_length_mm, hors_plage.hand_width_mm = 260.0, 130.0
+    hors_plage.budget_mode = BudgetMode.PEU_IMPORTE_PRIX
+
+    for session in (serre, hors_plage):
+        selection = flow.compute_selection(session)
+        assert flow.result_slots(selection) == (None, None, None)
+        assert not selection.ranked                       # aucune souris classable pour ces critères
+        valeur = fields_of(flow.results_embeds(session, selection)[0])["Aucun match classable"]
+        assert "Aucune souris ne peut être retenue avec ces critères." in valeur
+        assert "Essayez une autre gamme ou un budget plus élevé" in valeur
+        for accusation in ("données vérifiées", "illisible", "non vérifiée", "à vérifier"):
+            assert accusation not in valeur, f"le message accuse le catalogue : {valeur!r}"
+
+
 @pytest.mark.asyncio
 async def test_un_catalogue_illisible_dit_la_vraie_raison_au_membre(monkeypatch, tmp_path):
     """La garde « catalogue illisible » du résultat n'était jamais exercée.

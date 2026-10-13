@@ -3,6 +3,7 @@
 Ne vérifie pas le sens du texte (cela reste une relecture humaine), mais empêche les renvois morts
 (fichier renommé, section renumérotée, titre modifié) de revenir silencieusement.
 """
+import json
 import re
 from pathlib import Path
 
@@ -216,3 +217,41 @@ def test_le_readme_cite_tous_les_fichiers_de_tests_et_tous_les_outils():
     assert absents == [], f"fichiers absents du README : {absents}"
     morts = sorted(cites - attendus)
     assert morts == [], f"le README cite des fichiers qui n'existent pas : {morts}"
+
+# ---------------------------------------------------------------------------
+# Tableau des images du README : une clé décrite UNE fois, et toutes décrites
+# ---------------------------------------------------------------------------
+def test_le_tableau_des_images_du_readme_decrit_chaque_cle_une_seule_fois():
+    """Défaut trouvé le 2026-10-13 : `illustration_grip_relaxed` était décrit **deux fois**.
+
+    Deux lignes pour la même clé, avec deux textes différents (« étape et résultat » / « résultat ») :
+    l'exploitant qui personnalise une illustration ne sait plus laquelle est la bonne, et une clé
+    ajoutée à `assets/images.json` peut rester invisible. Le contrôle compare le tableau au fichier,
+    dans les deux sens, et vérifie que le fichier cité existe vraiment.
+    """
+    lignes = (ROOT / "README.md").read_text(encoding="utf-8").splitlines()
+    entete = next(i for i, l in enumerate(lignes) if l.startswith("| Clé | Affichée à |"))
+    tableau = []
+    for ligne in lignes[entete + 2:]:
+        if not ligne.startswith("|"):
+            break
+        tableau.append(ligne)
+
+    cles = [re.match(r"^\| `([a-z0-9_]+)` \|", l).group(1) for l in tableau]
+    assert len(cles) == len(set(cles)), f"clé décrite plusieurs fois : {sorted(cles)}"
+
+    images = json.loads((ROOT / "assets" / "images.json").read_text(encoding="utf-8"))
+    images = {k: v for k, v in images.items() if not k.startswith("_")}
+    assert set(cles) == set(images), (f"clés absentes du tableau : {sorted(set(images) - set(cles))} ; "
+                                      f"clés du tableau absentes du fichier : {sorted(set(cles) - set(images))}")
+
+    livrees = {f.name for f in (ROOT / "assets" / "illustrations").iterdir() if f.is_file()}
+    for ligne, cle in zip(tableau, cles):
+        cellules = [c.strip() for c in ligne.strip("|").split("|")]
+        fichier = cellules[2].strip("`")
+        if fichier and fichier != "*(vide)*":
+            assert fichier in livrees, f"{cle} cite {fichier}, absent de assets/illustrations/"
+        if images[cle]:
+            assert fichier and fichier != "*(vide)*", f"{cle} a une image mais le tableau dit « vide »"
+        else:
+            assert fichier == "*(vide)*", f"{cle} n'a pas d'image mais le tableau cite {fichier!r}"

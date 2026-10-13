@@ -1059,8 +1059,13 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     if ideal is None:
         main.add_field(
             name="Aucun match classable",
+            # Le message nomme ce que le membre a fourni (prise, mesures, gamme ou budget) et rien
+            # d'autre : l'ancien texte — « avec les données vérifiées pour ces critères » — accusait
+            # le catalogue dans les trois cas réels où cette carte s'affiche (mesures hors de la
+            # plage des 36 souris, budget trop serré, gamme sans candidat), alors que des souris
+            # classables existent. Corrigé le 2026-10-13 (46e passe, C59).
             value=(
-                "Aucune souris ne peut être classée avec les données vérifiées pour ces critères. "
+                "Aucune souris ne peut être retenue avec ces critères. "
                 "Essayez une autre gamme ou un budget plus élevé."
             ),
             inline=False,

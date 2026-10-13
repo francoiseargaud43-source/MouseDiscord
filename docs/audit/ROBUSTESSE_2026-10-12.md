@@ -3222,3 +3222,28 @@ Deux mutations ont d'abord été **écartées** parce qu'elles ne prouvaient rie
 d'affectation casse l'indentation (erreur de syntaxe, pas de comportement), et une mutation de boucle est
 passée inaperçue tant que le test ne couvrait pas le cas « deux parcours vivants » — c'est le test qui a été
 corrigé, puis la mutation a échoué comme les autres.
+
+### 26.27 Un message qui accusait le catalogue (2026-10-13, C59)
+
+La carte « Aucun match classable » — elle s'affiche pour **4 082 profils sur 27 170** (15,0 %, §25) —
+disait : « Aucune souris ne peut être **classée avec les données vérifiées** pour ces critères. » Or, dans
+les trois situations réelles où elle apparaît, le catalogue n'est pour rien :
+
+| Situation mesurée le 2026-10-13 | Ce qui bloque vraiment |
+|---|---|
+| Mesures hors de la plage des 36 souris (260 × 130 mm, 100 × 50 mm) | Aucune souris n'est morphologiquement compatible |
+| Budget trop serré (140 × 60 mm en Palm, plafond 10 €) | Des souris **sont** classables ; aucune n'est sous 10 € |
+| Gamme sans candidat (aucun gant dans la gamme choisie) | La gamme, pas les données |
+
+Le membre lisait donc une explication fausse : au mieux il attendait une correction de données qui ne
+viendrait jamais, au pire il croyait le bot incomplet. Le texte nomme maintenant ce que **lui** a fourni —
+« Aucune souris ne peut être retenue avec ces critères. » — suivi du même conseil (autre gamme, budget plus
+élevé). Aucune donnée, aucun score, aucun classement ne change ; seule la phrase change.
+
+Verrou dans `tests/test_flow.py::test_le_message_sans_candidat_n_accuse_pas_le_catalogue` : les deux
+situations réelles sont exercées, le test exige la phrase nouvelle **et** le conseil, et **refuse les mots
+qui accusent le catalogue** (« données vérifiées », « illisible », « non vérifiée », « à vérifier »). Deux
+mutations — retour à l'ancien texte, conseil supprimé : **1 échec chacune**, fichier restauré.
+
+Ce que ce contrôle ne peut pas faire : juger une phrase qu'il ne connaît pas. Le test fixe le texte actuel ;
+toute reformulation ultérieure devra être relue, pas devinée.

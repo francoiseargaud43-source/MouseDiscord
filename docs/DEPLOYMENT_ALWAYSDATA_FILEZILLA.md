@@ -2061,6 +2061,13 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    silencieuse. **Aucun fichier du bot n'est modifié par cette passe : rien à envoyer**, elle ne sert
    qu'à la suite de tests et à la documentation.
 
+**Rejeu des blocs de contrôle des §12.19 à §12.22 (2026-10-13, 46e passe)** — les compteurs de tests de ces
+blocs sont **datés** (488, 534, 558, 630) : c'est voulu, et la valeur courante est au-dessus. Les deux autres
+attendus de ces blocs, eux, sont vérifiables à tout moment et ont été **rejoués** :
+`tools/check_deployment.py` → **36 souris, 36 liens, 1 erreur** (le `.env` du serveur, absent sur un poste de
+travail) et `tools/qa_flow_matrix.py --rapide` → **0 problème détecté**. Aucun de ces quatre blocs n'avait
+besoin d'être corrigé.
+
 **Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
