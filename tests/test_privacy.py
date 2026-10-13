@@ -460,3 +460,24 @@ def test_p18_unreadable_state_file_never_breaks_the_bot(tmp_path):
     assert len(store) == 0
     session = store.start(1)                                  # le bot démarre quand même
     assert store.current(1)[0] is session
+
+def test_effacer_les_parcours_d_un_membre_est_possible_et_ecrit_sur_le_disque(tmp_path):
+    """Seule porte d'effacement **complet** des parcours d'un membre : elle n'était pas exercée.
+
+    `SessionStore.discard_user` n'est appelée nulle part dans le bot aujourd'hui (le flux passe par
+    `start`, qui efface l'ancien parcours du même membre). C'est pourtant la primitive de
+    minimisation : elle supprime **tous** les parcours d'un membre et l'écrit sur le disque. Ce test
+    la verrouille pour qu'un futur « supprimez mes données » ne la réécrive pas de travers — et
+    vérifie qu'elle ne touche jamais un autre membre.
+    """
+    etat = tmp_path / "sessions.json"
+    store = SessionStore(ttl_seconds=600, path=etat)
+    store.start(1)
+    autre = store.start(2)
+
+    store.discard_user(1)
+
+    assert store.current(1) == (None, LOOKUP_INACTIVE)
+    assert store.current(2)[0] is autre and store.current(2)[1] == LOOKUP_OK
+    contenu = json.loads(etat.read_text(encoding="utf-8"))
+    assert [s["user_id"] for s in contenu["sessions"]] == [2]

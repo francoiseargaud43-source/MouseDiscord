@@ -1,5 +1,6 @@
 """Intégrité des fichiers de données livrés (catalogue v2, liens, images)."""
 import json
+import sys
 import math
 import re
 from pathlib import Path
@@ -596,6 +597,29 @@ def test_une_url_d_image_inutilisable_n_affiche_rien(valeur):
     from utils.assets import build_image_url
 
     assert build_image_url(valeur, "https://aze.fr/img") is None
+
+
+def test_sans_configuration_importable_aucune_image_n_est_utilisee(monkeypatch):
+    """`utils/assets.py` reste importable hors du projet (outil lancé seul, test isolé).
+
+    Sans `config` importable, il n'y a pas d'adresse de base : le module doit dire « aucune image »
+    plutôt que de lever — c'est la branche `ImportError` documentée dans le module, que rien ne
+    traversait (passe de couverture du 2026-10-13).
+    """
+    from utils.assets import build_image_url, default_base_url
+
+    monkeypatch.setitem(sys.modules, "config", None)          # simule l'absence du module
+    assert default_base_url() == ""
+    assert build_image_url("T01_azemouse_banniere.png", default_base_url()) is None
+
+
+def test_une_entree_vide_ou_blanche_ne_produit_aucune_image():
+    """Un `assets/images.json` édité à la main avec `""` ou des espaces : pas d'image, jamais d'erreur."""
+    from utils.assets import build_image_url
+
+    assert build_image_url("", "https://aze.fr/img") is None
+    assert build_image_url("   ", "https://aze.fr/img") is None
+    assert build_image_url(None, "https://aze.fr/img") is None
 
 
 def test_invalid_image_url_is_ignored(tmp_path):

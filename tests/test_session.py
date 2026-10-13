@@ -3,7 +3,14 @@ import json
 
 import pytest
 
-from utils.session import LOOKUP_FORBIDDEN, LOOKUP_INACTIVE, LOOKUP_OK, SessionStore
+from utils.models import BudgetMode, ClawVariant, Grip, Thenar
+from utils.session import (
+    LOOKUP_FORBIDDEN,
+    LOOKUP_INACTIVE,
+    LOOKUP_OK,
+    FinderSession,
+    SessionStore,
+)
 
 
 class FakeClock:
@@ -369,3 +376,87 @@ def test_un_etat_bricole_reprend_exactement_comme_un_parcours_sans_mesures(tmp_p
         messages.append(str(levee.value))
     assert messages[0] == messages[1]
     assert "Parcours incomplet" in messages[0]
+
+# ---------------------------------------------------------------------------
+# Contrats de conservation : ce qui est écrit doit se relire à l'identique
+# (mesure du 2026-10-13 : `to_state`/`from_state` n'étaient jamais exercés en aller-retour complet)
+# ---------------------------------------------------------------------------
+def test_un_parcours_se_relit_a_l_identique_apres_redemarrage():
+    """Tout ce que `to_state` écrit, `from_state` le relit — variante de Claw comprise.
+
+    Aucune épreuve ne faisait l'aller-retour complet : retirer une ligne de `from_state` (ou une clé
+    de `to_state`) aurait fait perdre une réponse du membre au redémarrage sans qu'un seul test
+    bronche — la panne P11, en plus discret.
+    """
+    session = FinderSession(user_id=7)
+    session.grip = Grip.CLAW
+    session.claw_variant = ClawVariant.PINCEE
+    session.thenar = Thenar.GRANDE
+    session.hand_length_mm = 175.0
+    session.hand_width_mm = 82.5
+    session.budget_mode = BudgetMode.CUSTOM
+    session.max_budget_eur = 60.0
+
+    etat = session.to_state(age_seconds=12.5)
+    assert etat["claw_variant"] == "pincee"
+    relue = FinderSession.from_state(etat, last_seen=1000.0)
+
+    assert relue is not None
+    assert (relue.session_id, relue.user_id) == (session.session_id, 7)
+    assert (relue.grip, relue.thenar, relue.claw_variant) == (Grip.CLAW, Thenar.GRANDE, ClawVariant.PINCEE)
+    assert (relue.hand_length_mm, relue.hand_width_mm) == (175.0, 82.5)
+    assert (relue.budget_mode, relue.max_budget_eur) == (BudgetMode.CUSTOM, 60.0)
+
+
+DEUX_VIVANTS = {"version": 1, "sessions": [
+    {"session_id": "ancien", "user_id": 1, "age_seconds": 300, "grip": "palm"},
+    {"session_id": "recent", "user_id": 1, "age_seconds": 5, "grip": "claw"},
+    {"session_id": "autre", "user_id": 2, "age_seconds": 5, "grip": "palm"},
+]}
+
+
+def test_un_membre_avec_deux_parcours_restaures_garde_un_seul_vivant(tmp_path):
+    """Fichier d'état bricolé (deux parcours en cours du même membre) : le magasin se remet d'aplomb.
+
+    Cas réel : l'ancien parcours et le nouveau peuvent cohabiter si le fichier a été écrit par deux
+    exécutions ou édité à la main. Un seul reste **actif**, l'autre est **refusé** (jamais un mélange
+    des deux réponses) — et quand le membre relance, **les deux** disparaissent, pas seulement l'actif.
+    """
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(json.dumps(DEUX_VIVANTS), encoding="utf-8")
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+
+    assert len(store) == 3
+    assert store.current(1)[0].session_id == "recent"            # le plus récent est actif
+    assert store.lookup("ancien", 1) == (None, LOOKUP_INACTIVE)  # l'autre est refusé
+
+    store.start(1)                                               # le membre relance son test
+    assert store.lookup("ancien", 1)[1] == LOOKUP_INACTIVE
+    assert store.lookup("recent", 1)[1] == LOOKUP_INACTIVE       # aucun des deux ne survit
+    assert len(store) == 2                                       # « autre » + le nouveau
+    assert store.current(2)[0].session_id == "autre"
+    assert store.current(2)[1] == LOOKUP_OK                      # l'autre membre n'est pas touché
+
+
+def test_supprimer_le_parcours_actif_rend_la_main_a_celui_qui_reste(tmp_path):
+    """Deux vivants d'un membre : supprimer l'actif promeut l'autre (jamais « aucun parcours »)."""
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(json.dumps(DEUX_VIVANTS), encoding="utf-8")
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+
+    store.discard("recent")
+
+    assert store.lookup("ancien", 1)[1] == LOOKUP_OK             # l'ancien reprend la main
+    assert store.current(1)[0].session_id == "ancien"
+    assert store.current(2)[0].session_id == "autre"             # l'autre membre n'est pas touché
+    assert len(store) == 2
+
+
+def test_terminer_un_parcours_inconnu_ne_change_rien():
+    """`finish` sur un identifiant inconnu (expiré, redémarré, clic tardif) : aucun effet."""
+    store = SessionStore(ttl_seconds=60, clock=FakeClock())
+    vivant = store.start(1)
+    store.finish(None)
+    store.finish("inconnu")
+    assert len(store) == 1
+    assert store.lookup(vivant.session_id, 1)[1] == LOOKUP_OK

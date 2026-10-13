@@ -1713,3 +1713,82 @@ async def test_send_ephemeral_ne_leve_jamais_sur_une_interaction_morte():
     inter.response.is_done = MagicMock(return_value=True)
     inter.followup.send = AsyncMock(side_effect=discord.ClientException("expirée"))
     await flow._send_ephemeral(inter, "⚠️ message")
+
+# ---------------------------------------------------------------------------
+# Suite de la passe de couverture (2026-10-13) : branches atteignables en vrai, jamais exercées
+# ---------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_un_composant_du_parcours_sans_parcours_renvoie_la_reprise():
+    """Variante de Claw, thénar et plafond de budget cliqués **hors parcours** (expiré, redémarré).
+
+    Trois composants, un seul filet : le membre reçoit la carte « Session expirée » avec le bouton
+    pour repartir, au lieu d'un clic qui ne répond pas. Seuls les menus de prise et le budget étaient
+    vérifiés ; ces trois chemins-là n'étaient exercés par aucun test.
+    """
+    store = SessionStore(ttl_seconds=600)
+
+    variante = make_interaction(store=store)
+    await flow.ClawVariantView().children[0].callback(variante)
+    thenar = make_interaction(store=store)
+    await flow.ThenarView().children[0].callback(thenar)
+    budget = make_interaction(store=store)
+    await modal_budget("45").on_submit(budget)
+
+    for inter in (variante, thenar, budget):
+        kwargs = inter.response.send_message.call_args.kwargs
+        assert kwargs["embed"].title == "⏱️ Session expirée"
+        assert isinstance(kwargs["view"], flow.StartView)
+        assert kwargs["ephemeral"] is True
+        inter.response.edit_message.assert_not_awaited()
+
+
+def test_un_resultat_sans_gamme_choisie_dit_le_classement_morphologique():
+    """Mode absent (classement morphologique) : le récapitulatif ne porte pas de budget, il le DIT."""
+    session, selection, (ideal, _, _) = _trois_places(None, None, Grip.PALM, 180.0, 90.0)
+    assert flow._budget_text(session) == "—"
+    assert "Budget" not in flow._recap(session)
+
+    main = flow.results_embeds(session, selection)[0]
+    assert "🎚️ **Classement morphologique**" in main.description
+    assert "Budget" not in main.description
+
+
+def test_aucun_repere_ni_conseil_n_est_invente_sur_un_parcours_incomplet():
+    """Sans prise ni mesures, les blocs de conseil valent ``None`` — jamais une valeur par défaut."""
+    session, _, (ideal, _, _) = _trois_places(None, None, Grip.PALM, 180.0, 90.0)
+
+    vide = flow.FinderSession(user_id=1)
+    assert flow._hand_of(vide) is None
+    assert flow._dimensions_embed(vide, ideal, "peu importe") is None
+    assert flow._buttons_guide_embed(vide) is None
+
+    partielle = flow.FinderSession(user_id=1, grip=Grip.PALM)     # prise connue, mesures absentes
+    assert flow._hand_of(partielle) is None
+    assert flow._dimensions_embed(partielle, ideal, "peu importe") is None
+    assert flow._buttons_guide_embed(partielle) is not None      # le conseil de boutons reste possible
+
+
+def test_le_titre_de_l_alternative_reste_la_place_quand_la_regle_est_appelee_seule():
+    """Appel direct (outil, test) sans référence ni tolérance : titre de la place, jamais « piste »."""
+    _, _, (ideal, alternative, _) = _trois_places(BudgetMode.QUALITE_PRIX, None, Grip.PALM, 180.0, 90.0)
+    assert flow.alternative_slot_title(alternative, ideal) == "🥈 L'alternative"
+
+
+def test_une_meme_souris_ne_produit_qu_un_seul_bouton_d_achat():
+    """Garde-fou du résultat : deux fois la même souris dans la liste ⇒ un seul bouton (pas de doublon)."""
+    _, _, (ideal, _, _) = _trois_places(BudgetMode.QUALITE_PRIX, None, Grip.PALM, 180.0, 90.0)
+    view = flow.ResultsView([ideal, ideal], {ideal.mouse.id: "https://www.atk.store/fr-fr/products/x"})
+    assert len(view.children) == 1
+    assert view.children[0].url.endswith("/x")
+
+
+@pytest.mark.asyncio
+async def test_une_interaction_deja_repondue_recoit_l_etape_par_le_suivi():
+    """Après un `defer` (réponse déjà envoyée), la suite part en message de suivi éphémère."""
+    inter = make_interaction()
+    inter.message = None                       # réponse déjà envoyée : plus de message d'origine
+    inter.response.is_done = MagicMock(return_value=True)
+    inter.followup.send = AsyncMock()
+    await flow._show_private(inter, content="étape suivante")
+    inter.followup.send.assert_awaited_once_with(ephemeral=True, content="étape suivante")
+    assert not inter.response.edit_message.await_count

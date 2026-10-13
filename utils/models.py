@@ -62,10 +62,6 @@ class BudgetMode(Enum):
     PEU_IMPORTE_PRIX = "peu_importe_prix"
     CUSTOM = "custom"
 
-    @property
-    def label(self) -> str:
-        return BUDGET_LABELS[self]
-
 
 BUDGET_LABELS = {
     BudgetMode.ECONOMIQUE: "Économique",
@@ -93,10 +89,6 @@ class Thenar(Enum):
     MOYENNE = "moyenne"
     GRANDE = "grande"
 
-    @property
-    def label(self) -> str:
-        return THENAR_LABELS[self]
-
 
 THENAR_LABELS = {
     Thenar.PETITE: "Petite",
@@ -116,10 +108,6 @@ class ClawVariant(Enum):
     RELACHEE = "relachee"
     AGGRESSIVE = "aggressive"
     PINCEE = "pincee"
-
-    @property
-    def label(self) -> str:
-        return CLAW_VARIANT_LABELS[self]
 
 
 CLAW_VARIANT_LABELS = {
@@ -206,7 +194,3 @@ class Mouse:
 
     def fit_for(self, grip: Grip) -> str:
         return getattr(self, GRIP_FIT_FIELDS[grip])
-
-    @property
-    def is_price_known(self) -> bool:
-        return self.price_eur is not None

@@ -3119,17 +3119,17 @@ documentée que les boutons (VXE X3) et un garde-fou d'inventaire (au moins huit
 | `tests/test_data.py` | **93 passed** (+1 cas) |
 | `pytest -q` · `pyflakes` · `tools/privacy_scan.py` | **630 passed** · 0 · 0 violation |
 
-### 26.26 Passe guidée par la couverture : 42 chemins d'échec passés sous test (2026-10-13)
+### 26.26 Passe guidée par la couverture : 90 lignes ramenées à 11, dont aucune sans raison (2026-10-13)
 
 La consigne « perfectionner la totalité du code » a été traitée par la **mesure**, pas par l'impression :
 couverture en processus des quatre paquets du bot (`coverage run --source=bot,config,cogs,utils -m pytest`).
-Résultat avant cette passe : **95 %** — 1 667 instructions, **90 lignes jamais exécutées par les 630 tests**,
-dont **67 % pour `bot.py`** et **82 % pour `cogs/mouse_finder.py`**, les deux modules les moins couverts du
-dépôt. Ces 90 lignes ont été lues une par une : ce sont presque toutes des **chemins d'échec** (message
+État de départ : **95 %** — 1 667 instructions, **90 lignes jamais exécutées par les 630 tests**, dont
+**67 % pour `bot.py`** et **82 % pour `cogs/mouse_finder.py`**, les deux modules les moins couverts du
+dépôt. Les 90 lignes ont été lues une par une : ce sont presque toutes des **chemins d'échec** (message
 d'erreur, repli, garde) et non du code mort — c'est-à-dire exactement les endroits qu'un membre ou un
 administrateur voit le jour où quelque chose va mal, et que rien ne vérifiait.
 
-**a) Les chemins d'échec du parcours (`cogs/finder_flow.py`, 95 % → 98 %).** Huit tests ajoutés dans
+**a) Les chemins d'échec du parcours (`cogs/finder_flow.py`, 95 % → 99 %).** Quatorze tests ajoutés dans
 `tests/test_flow.py` :
 
 | Garantie verrouillée | Ce qui se passerait sans elle |
@@ -3138,21 +3138,21 @@ administrateur voit le jour où quelque chose va mal, et que rien ne vérifiait.
 | Sans candidat classable : conseil concret (« autre gamme ou budget plus élevé ») | Le membre reste sur un écran vide |
 | Catalogue illisible entre deux clics : « momentanément illisibles » + quoi faire | « erreur inattendue », ou résultat vide |
 | Parcours incomplet (redémarrage) : reprise **à l'étape manquante** | Tout recommencer, ou écran figé |
-| Interaction déjà répondue : édition par la réponse d'origine | Second message, ou clic muet |
+| Interaction déjà répondue : édition par la réponse d'origine, sinon message de suivi | Second message en double, ou clic muet |
 | Message supprimé par le membre : nouveau message privé | Le parcours s'arrête sans rien dire |
-| `_show_private` ne lève **jamais** (même si le repli échoue) | Erreur technique au milieu d'une interaction |
-| `_send_ephemeral` ne lève **jamais** (interaction expirée) | Trace technique, membre non prévenu |
-
-Huit mutations correspondantes (A–H, `/tmp/mutations_c58.py`), une par garantie : **1 échec à chaque fois**,
-fichier restauré à l'identique.
+| `_show_private` et `_send_ephemeral` ne lèvent **jamais** | Erreur technique au milieu d'une interaction |
+| Variante de Claw, thénar ou plafond de budget cliqués **hors parcours** | Clic sans réponse (trois composants) |
+| Sans gamme choisie : « Classement morphologique », aucun budget affiché | Le récapitulatif invente une gamme |
+| Parcours incomplet : aucun repère de taille ni conseil de boutons inventé | Un conseil fondé sur des mesures par défaut |
+| Titre de la 2e place quand la règle du moteur n'est pas fournie | « Autre piste » sans raison, ou plantage |
+| Un seul bouton d'achat par souris, même si elle est affichée deux fois | Deux boutons identiques dans le message |
 
 **b) La commande d'administration (`cogs/mouse_finder.py`, 82 % → 100 %).** Cinq tests ajoutés dans
 `tests/test_setup_command.py` : `!setup_finder #salon` (l'argument explicite était le **seul** chemin de la
 commande jamais exécuté), refus d'un salon non textuel (rien n'est publié, aucun état enregistré),
 verrouillage impossible (le salon reste ouvert **et c'est dit**, la publication a bien lieu), bot sans droit
 d'écriture (cause exacte, aucun état écrit, jamais « publié »), et les **quatre branches** du gestionnaire
-d'erreur (permission, serveur requis, salon invalide, erreur inattendue). Mutations A–E : **1 échec à chaque
-fois**. Le module est désormais couvert à 100 %.
+d'erreur (permission, serveur requis, salon invalide, erreur inattendue).
 
 **c) Le démarrage (`bot.py`, 67 % → 91 %).** Nouveau fichier `tests/test_bot_runtime.py`, cité dans le
 README : purge périodique des parcours expirés (minimisation — rien ne s'accumule en mémoire ni dans le
@@ -3162,30 +3162,63 @@ laisse aucune trace), erreur de commande réelle tracée sans rien publier dans 
 (compte, parcours en cours, emplacement du stockage), démarrage refusé sans jeton avec message lisible, et
 chemin de démarrage normal.
 
-Huit mutations correspondantes (A–H, `/tmp/mutations_c60.py`), une par garantie — purge réelle, silence,
-erreur d'événement, commande inconnue, erreur réelle, message de connexion, sortie sans jeton, passage du
-jeton : **1 échec à chaque fois**.
+**d) Les contrats de conservation du parcours (`utils/session.py`, 95 % → 99 %).** Quatre tests ajoutés dans
+`tests/test_session.py` et `tests/test_privacy.py` :
 
-Les cinq lignes qui restent hors mesure (`bot.py` 32-35 : configuration invalide, et 108 : `__main__`) sont
-exercées par `tests/test_config.py`, qui lance `bot.py` dans un **vrai sous-processus** — une mesure de
-couverture en mémoire ne peut pas les voir. Elles ne sont donc pas « non testées », seulement hors de cette
-mesure.
+- **aller-retour complet** `to_state` → `from_state` : tout ce qui est écrit se relit, **variante de Claw
+  comprise** — c'était le seul champ de réponse jamais vérifié en boucle, alors qu'il s'affiche dans le
+  récapitulatif et dans le guide de bosse ; le retirer de `from_state` aurait fait perdre une réponse du
+  membre au redémarrage sans qu'un seul test bronche ;
+- **fichier d'état bricolé à deux parcours vivants du même membre** : un seul reste actif, l'autre est
+  refusé (jamais un mélange), relancer efface **les deux**, et supprimer l'actif promeut celui qui reste —
+  trois chemins (l.353-354, 360, 365) qu'aucune épreuve ne traversait ;
+- **`finish` sur un identifiant inconnu** (parcours expiré, bot redémarré, clic tardif) : aucun effet, jamais
+  d'exception ;
+- **effacement complet des parcours d'un membre** (`discard_user`) : c'est la seule porte d'effacement total
+  et l'écriture sur disque qui va avec. Elle n'est appelée nulle part dans le bot aujourd'hui : plutôt que
+  de la supprimer, elle est **verrouillée** — un futur « supprimez mes données » ne doit pas la réécrire de
+  travers, et elle ne touche jamais un autre membre.
 
-**d) Ce qui reste volontairement non couvert.** Les 42 lignes restantes sont des gardes d'entrée et des
-replis (fichier illisible, valeur hostile, branche défensive) ; deux d'entre elles (`config.py` 83, 93 : les
-deux gardes de démarrage) sont elles aussi exercées en sous-processus par `tests/test_config.py`. Deux branches de `cogs/finder_flow.py`
-(l.461/463, thénar « ± ») sont **mortes tant que le thénar vaut 0/0/0** : le moteur n'a pas été touché pour
-les couvrir — il ne l'est que sur demande explicite du propriétaire (règle du master prompt). Aucune ligne du
-moteur, du catalogue ou des données n'a été modifiée par cette passe : aucune recommandation ne change.
+**e) Les gardes du catalogue et des images (`utils/catalog.py` et `utils/assets.py`, 96 % et 95 % → 100 %).**
+Quatre formes de catalogue abîmé refusées avec leur message (forme inconnue, statut de prise inconnu,
+largeur maximale absente, forme renseignée sans source) et la racine qui n'est pas une liste ; côté images,
+l'absence de `config` importable (module utilisé hors du projet) et une entrée vide ou blanche ne produisent
+aucune image, jamais d'exception.
+
+**f) Un ménage : quatre accesseurs sans appelant.** `BudgetMode.label`, `Thenar.label`, `ClawVariant.label` et
+`Mouse.is_price_known` n'étaient appelés **nulle part** (vérifié sur tout le dépôt, outils et tests compris) :
+les trois premiers doublonnaient un dictionnaire que le flux lit directement (`THENAR_LABELS[...]`), le
+quatrième répétait `price_eur is not None`. Retirés — un accesseur mort est un piège : il laisse croire
+qu'une valeur affichée passe par lui. Aucune valeur, aucun affichage, aucun score ne change.
+
+**g) Ce qui reste non couvert, et pourquoi c'est assumé.** Onze lignes, chacune avec sa raison :
+
+| Lignes | Pourquoi elles restent non exécutées en processus |
+|---|---|
+| `bot.py` 32-35 et 108 | Configuration invalide et `__main__` : exercés par `tests/test_config.py`, qui lance `bot.py` dans un **vrai sous-processus** — hors de portée d'une mesure en mémoire |
+| `config.py` 83, 93 | Les deux gardes de démarrage (`FINDER_CHANNEL_ID` négatif, délai nul) : même mesure, même sous-processus |
+| `cogs/finder_flow.py` 461, 463 | Branches « thénar ± » du texte d'explication : **mortes tant que le thénar vaut 0/0/0** — le moteur n'est touché que sur demande explicite du propriétaire (master prompt) |
+| `utils/selection.py` 128 · `utils/session.py` 360 | Gardes défensives (la même souris deux fois dans le vivier, suppression d'un identifiant inconnu) : inatteignables tant que les invariants du catalogue et du magasin tiennent — et **ce sont ces invariants que des tests vérifient** désormais |
+
+Aucune ligne du moteur, du catalogue ou des données n'a été modifiée par cette passe : aucune recommandation
+ne change.
 
 | Mesure | Avant | Après |
 |---|---|---|
-| Lignes non exécutées | **90** | **42** |
-| Couverture totale (`bot`, `config`, `cogs`, `utils`) | 95 % | **97 %** |
-| `bot.py` | 67 % | **91 %** (32-35, 108 hors mesure : sous-processus) |
+| Lignes non exécutées | **90** | **11** |
+| Couverture totale (`bot`, `config`, `cogs`, `utils`) | 95 % | **99 %** |
+| `bot.py` | 67 % | **91 %** (32-35, 108 : sous-processus) |
 | `cogs/mouse_finder.py` | 82 % | **100 %** |
-| `cogs/finder_flow.py` | 95 % | **98 %** |
+| `cogs/finder_flow.py` | 95 % | **99 %** |
+| `utils/session.py` | 95 % | **99 %** |
+| `utils/catalog.py` · `utils/assets.py` | 96 % · 95 % | **100 %** · **100 %** |
+| `utils/models.py` | 96 % | **100 %** (4 accesseurs morts retirés) |
 | `utils/matcher.py` · `utils/validation.py` | 100 % · 100 % | 100 % · 100 % |
-| Tests | 630 | **655** |
-| Mutations (garanties nouvelles) | — | **21 mutations : 1 échec chacune**, fichiers restaurés |
+| Tests | 630 | **673** |
+| Mutations (garanties nouvelles) | — | **41 mutations : 1 échec chacune**, fichiers restaurés |
 | `pyflakes` · `tools/privacy_scan.py` | 0 · 0 | **0 · 0** |
+
+Deux mutations ont d'abord été **écartées** parce qu'elles ne prouvaient rien : la suppression d'une ligne
+d'affectation casse l'indentation (erreur de syntaxe, pas de comportement), et une mutation de boucle est
+passée inaperçue tant que le test ne couvrait pas le cas « deux parcours vivants » — c'est le test qui a été
+corrigé, puis la mutation a échoué comme les autres.

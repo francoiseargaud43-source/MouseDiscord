@@ -35,10 +35,23 @@ def _write(tmp_path, name, payload):
     ([{**MOUSE, "sources": [{"label": "sans url ni date"}]}], "source mal formée"),
     ([{**MOUSE, "conflicts": ["length_mm"]}], "conflicts doit être un objet"),
     ([{**MOUSE, "conflicts": {"length_mm": "douze"}}], "conflit « length_mm » mal formé"),
+    # Ajouts du 2026-10-13 (passe de couverture) : quatre gardes de structure du catalogue
+    # n'étaient exercées par aucun test — un catalogue édité à la main pouvait les franchir.
+    ([{**MOUSE, "shape": "Ronflante"}], "shape invalide"),
+    ([{**MOUSE, "fit_status": "peut-être"}], "fit_status invalide"),
+    ([{**MOUSE, "width_max_mm": None}], "width_max_mm est obligatoire"),
+    ([{**MOUSE, "shape": "Symmetrical"}], "shape renseigné sans source listant « shape »"),
 ])
 def test_a_broken_catalog_entry_is_refused_with_a_clear_message(tmp_path, broken, motif):
     path = _write(tmp_path, "mouse_db.json", broken)
     with pytest.raises(CatalogError, match=motif):
+        load_catalog(path)
+
+
+def test_un_catalogue_qui_n_est_pas_une_liste_est_refuse(tmp_path):
+    """Racine objet (`{...}`) : refusée avec la phrase qui dit la forme attendue (l.169 de `catalog.py`)."""
+    path = _write(tmp_path, "mouse_db.json", {"souris": [MOUSE]})
+    with pytest.raises(CatalogError, match="mouse_db.json doit contenir une liste"):
         load_catalog(path)
 
 
