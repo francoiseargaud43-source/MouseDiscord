@@ -2401,7 +2401,9 @@ c'est alors le **résultat entier** qui échoue — le membre recevrait « erreu
 trois souris. Ce n'est pas éprouvable depuis cet atelier (aucun accès à l'API Discord), mais la parade ne
 coûte rien : le lien fautif est écarté (avertissement dans les journaux, bouton « Liens à venir »),
 **les autres souris gardent le leur** — on perd un bouton, jamais le résultat. Une espace encodée
-(`%20`) reste valide, et les 36 liens livrés sont tous conservés (vérifié).
+(`%20`) reste valide, et les 36 liens livrés sont tous conservés (vérifié). La même règle a été étendue aux
+**URL d'images** de `assets/images.json` : une adresse contenant une espace ou un caractère de contrôle
+n'affiche rien, ce qui est déjà le contrat de ce module (« aucune image plutôt qu'une exception »).
 
 **Ce qui reste accepté, et pourquoi** : `brand` / `model` en texte libre (c'est ce qui s'affiche, par
 conception), et un prix ou un poids **géant mais fini** (`1e9`) — donnée absurde, pas erreur de code : le
@@ -2412,7 +2414,7 @@ poids réel est déjà encadré par un test de données (20–120 g). Seul effet
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **523 passed** (488 avant la passe : 17 tests de code et de validation, 18 cas de fichiers hostiles) |
+| `pytest -q` | **527 passed** (488 avant la passe : 17 tests de code et de validation, 22 cas de fichiers hostiles) |
 | Catalogue attaqué (279 combinaisons) | 0 affichage cassé après correction (3 cas d'erreur et 8 cas de charabia avant) |
 | `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
 | Mesure des limites Discord (27 170 profils) | **0 violation** (tableau §26.1) |

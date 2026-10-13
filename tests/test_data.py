@@ -551,6 +551,24 @@ def test_full_https_urls_are_used_as_is(tmp_path):
     assert load_image_urls(f, base_url="https://autre.test/")["banner"] == "https://cdn.test/T08.png"
 
 
+@pytest.mark.parametrize("valeur", [
+    "https://exemple.fr/T01 .png",
+    "https://exemple.fr/T01\nhttps://exemple.fr/T02.png",
+    "https://exemple.fr/T01\t.png",
+    "https://exemple.fr/T01\x00.png",
+])
+def test_une_url_d_image_inutilisable_n_affiche_rien(valeur):
+    """Même famille que les liens d'achat (trouvé le 2026-10-13).
+
+    Une « URL » contenant un espace, un saut de ligne ou un caractère de contrôle n'en est pas une :
+    Discord refuse l'image au moment de l'envoi. Le contrat de ce module est « aucune image plutôt
+    qu'une exception » — la valeur est donc écartée, avec un avertissement dans les journaux.
+    """
+    from utils.assets import build_image_url
+
+    assert build_image_url(valeur, "https://aze.fr/img") is None
+
+
 def test_invalid_image_url_is_ignored(tmp_path):
     f = tmp_path / "images.json"
     f.write_text('{"banner": "javascript:alert(1)", "step1_grip": "https://x.test/a.png"}', encoding="utf-8")

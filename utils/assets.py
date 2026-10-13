@@ -51,6 +51,10 @@ LEGACY_KEYS = {"step3_budget": "step4_budget"}
 
 # Nom de fichier simple (pas de schéma, pas de chemin relatif, pas de « .. »).
 _FILENAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:png|jpe?g|webp|gif)$")
+# URL https complète utilisable telle quelle : ni espace, ni saut de ligne, ni caractère de contrôle
+# (trouvé le 2026-10-13, même famille que les liens d'achat : une adresse qui en contient n'est pas
+# une URL — Discord refuse alors l'image, voire l'embed entier. Ici : pas d'image, jamais d'erreur.)
+_URL_HTTPS_UTILISABLE = re.compile(r"^https://[^\s\x00-\x1f\x7f]+$")
 
 
 def default_base_url() -> str:
@@ -70,7 +74,10 @@ def build_image_url(value: object, base_url: str | None = None) -> str | None:
     if not entry:
         return None
     if entry.startswith("https://"):
-        return entry
+        if _URL_HTTPS_UTILISABLE.match(entry):
+            return entry
+        log.warning("URL d'image ignorée (espace ou caractère de contrôle) : %r", entry[:120])
+        return None
     base = (default_base_url() if base_url is None else base_url) or ""
     base = base.strip()
     if not base or not _FILENAME_RE.match(entry):

@@ -1917,7 +1917,8 @@ de données dégradées** (**0 exception**, §26.3), plus **14 contenus hostiles
 (§26.5) — aucun ne bloque le démarrage.
 
 **1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py`, `utils/session.py`,
-`utils/catalog.py`, `tests/test_flow.py`, `tests/test_session.py` et `tests/test_data.py`. Facultatifs au sens strict : le bot fonctionne
+`utils/catalog.py`, `utils/assets.py`, `tests/test_flow.py`, `tests/test_session.py` et
+`tests/test_data.py`. Facultatifs au sens strict : le bot fonctionne
 exactement pareil sans eux (le chemin corrigé n'est jamais emprunté en production, et l'âge négatif
 d'un fichier d'état n'arrive qu'avec une horloge reculée). Envoyez-les pour que le serveur
 corresponde au dépôt — et supprimez `state/sessions.json` si vous voulez repartir d'un état neuf.
@@ -1928,7 +1929,7 @@ corresponde au dépôt — et supprimez `state/sessions.json` si vous voulez rep
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 523 passed
+.venv/bin/python -m pytest -q                      # attendu : 527 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```
