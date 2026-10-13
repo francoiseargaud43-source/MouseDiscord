@@ -2050,17 +2050,25 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    `data/commercial_links.json` peut dépasser cette limite. Désormais ce lien-là est écarté (raison
    exacte dans les journaux) et le résultat s'affiche, avec le rappel « Liens à venir » à la place.
    Même envoi que le point 6 (`utils/catalog.py`).
+8. **Les chemins d'échec sont désormais tenus par des tests** (C58, §26.26) : la couverture du code
+   passe de 95 % à **97 %** (90 → 42 lignes non exécutées). Ce qui était le moins couvert n'était pas
+   décoratif : tous les chemins d'erreur de `!setup_finder` (salon non textuel, verrouillage impossible,
+   écriture refusée, message d'erreur du gestionnaire) et le démarrage (purge des parcours expirés,
+   erreur d'événement, commande inconnue, jeton vide). 24 tests et 21 mutations plus tard, retirer un
+   de ces replis fait échouer la suite au lieu de créer une impasse silencieuse. **Aucun fichier du bot
+   n'est modifié par cette passe : rien à envoyer**, elle ne sert qu'à la suite de tests et à la
+   documentation.
 
 **Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **630**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **655**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 630 passed
+.venv/bin/python -m pytest -q                      # attendu : 655 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

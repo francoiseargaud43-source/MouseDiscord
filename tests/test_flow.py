@@ -1584,3 +1584,132 @@ def test_la_note_du_score_partiel_ne_se_repete_pas_sur_la_ligne_du_match_ideal()
     assert flow.PARTIAL_HINT not in ligne
     note = "\n".join((embed.description or "") for embed in embeds)
     assert "Hauteur des boutons non documentée" in note
+
+# ---------------------------------------------------------------------------
+# Chemins d'échec et chemins de reprise : les seuls que la suite ne touchait pas
+# (mesure du 2026-10-13 : couverture des modules du bot à 95 %, ces branches à 0 %)
+# ---------------------------------------------------------------------------
+def test_un_prix_absent_est_annonce_comme_non_renseigne():
+    """`_price_text` ne doit jamais afficher un montant inventé ni un vide muet.
+
+    Aucune souris du catalogue n'a de prix manquant aujourd'hui : la branche n'était donc exercée
+    par aucun test. Elle dit « prix non renseigné » — l'information existe pour le membre, et le
+    mode « Peu importe le prix » reste utilisable avec une souris sans prix connu.
+    """
+    score = SimpleNamespace(mouse=SimpleNamespace(price_eur=None, price_status="unknown"))
+    assert flow._price_text(score, verified_hint=True) == "prix non renseigné"
+    # Un prix présent mais non attesté porte le marqueur ; un prix vérifié n'en porte aucun.
+    assert flow._price_text(SimpleNamespace(mouse=SimpleNamespace(price_eur=91.95, price_status="verified"))) == "91,95 €"
+    assert "(prix non vérifié)" in flow._price_text(
+        SimpleNamespace(mouse=SimpleNamespace(price_eur=45.0, price_status="owner_spec_unverified")),
+        verified_hint=True)
+
+
+def test_aucun_match_classable_reste_une_reponse_honnete_et_utile():
+    """Profil sans candidat (petite main, budget 10 €) : une seule carte, qui dit quoi faire.
+
+    C'est le cas de 2 561 profils sur 27 170 de la grille complète. Le message ne rejette la faute
+    ni sur le membre ni sur des « données manquantes » : il propose les deux seules issues réelles
+    (changer de gamme, élargir le budget).
+    """
+    session, selection, places = _trois_places(BudgetMode.CUSTOM, 10.0, Grip.PALM, 140.0, 60.0)
+    assert places == (None, None, None)
+    embeds = flow.results_embeds(session, selection)
+    assert len(embeds) == 1
+    champs = fields_of(embeds[0])
+    assert "Aucun match classable" in champs
+    valeur = champs["Aucun match classable"]
+    assert "Essayez une autre gamme ou un budget plus élevé" in valeur
+    assert embeds[0].footer.text == flow.SCORE_DISCLAIMER
+    assert not [f.name for f in embeds[0].fields if "match idéal" in f.name]
+
+
+@pytest.mark.asyncio
+async def test_un_catalogue_illisible_dit_la_vraie_raison_au_membre(monkeypatch, tmp_path):
+    """La garde « catalogue illisible » du résultat n'était jamais exercée.
+
+    Si `mouse_db.json` devient illisible entre deux clics (édition à la main, transfert
+    interrompu), le membre doit lire une phrase qui dit quoi faire — jamais « erreur inattendue »,
+    ni un résultat vide. Le parcours n'est pas consommé : il peut réessayer.
+    """
+    casse = tmp_path / "mouse_db.json"
+    casse.write_text('{"pas": "une liste"', encoding="utf-8")
+    monkeypatch.setattr(flow, "MOUSE_DB_PATH", casse)
+    store = SessionStore(ttl_seconds=600)
+    start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
+    inter = make_interaction(store=store)
+    view = flow.BudgetView()
+    select_values(view.children[0], BudgetMode.QUALITE_PRIX.value)
+    await view.children[0].callback(inter)
+    assert not inter.response.edit_message.await_count
+    message = inter.response.send_message.await_args.args[0]
+    assert "momentanément illisibles" in message
+    assert "prévenez la personne qui gère le bot" in message
+
+
+@pytest.mark.asyncio
+async def test_le_parcours_reprend_l_etape_manquante_si_ses_reponses_ont_disparu():
+    """Clic sur « Budget » après un redémarrage sans état : on reprend à l'étape manquante.
+
+    C'est le filet qui évite une impasse (mesures perdues par expiration ou fichier d'état
+    inutilisable) : la garde existait, aucun test ne la touchait.
+    """
+    # Prise choisie, thénar pas encore répondu : on reprend à l'étape qui manque, pas au début.
+    session = flow.FinderSession(user_id=99, grip=Grip.PALM)
+    inter = make_interaction()
+    await flow._show_results(inter, session)
+    # Le message d'origine existe encore : l'étape reprend DANS ce message (édition), sans en créer un.
+    kwargs = inter.response.edit_message.call_args.kwargs
+    assert kwargs["embed"].title.startswith("Étape 2")
+    assert isinstance(kwargs["view"], flow.ThenarView)
+    assert not inter.response.send_message.await_count
+
+    # Thénar renseigné, mesures absentes : la reprise saute à l'étape des mesures.
+    session.thenar = Thenar.MOYENNE
+    inter = make_interaction()
+    await flow._show_results(inter, session)
+    kwargs = inter.response.edit_message.call_args.kwargs
+    assert kwargs["embed"].title.startswith("Étape 3")
+    assert isinstance(kwargs["view"], flow.MeasureView)
+
+
+@pytest.mark.asyncio
+async def test_un_message_deja_repondu_est_edite_par_original_response():
+    """Après un `defer` ou une interaction déjà répondue, l'édition passe par la réponse d'origine."""
+    inter = make_interaction()
+    inter.edit_original_response = AsyncMock()
+    inter.response.is_done = MagicMock(return_value=True)
+    await flow._show_private(inter, content="texte")
+    inter.edit_original_response.assert_awaited_once_with(content="texte")
+    assert not inter.response.edit_message.await_count
+
+
+@pytest.mark.asyncio
+async def test_un_message_non_modifiable_part_dans_un_nouveau_message_prive():
+    """Message supprimé par le membre : un nouveau message privé prend le relais (jamais de silence)."""
+    inter = make_interaction()
+    inter.response.edit_message = AsyncMock(side_effect=discord.ClientException("message supprimé"))
+    await flow._show_private(inter, content="étape suivante")
+    inter.response.edit_message.assert_awaited_once()
+    inter.response.send_message.assert_awaited_once_with(ephemeral=True, content="étape suivante")
+
+
+@pytest.mark.asyncio
+async def test_show_private_ne_leve_jamais_meme_si_le_repli_echoue():
+    """Dernier maillon : si le repli échoue aussi (interaction expirée), l'erreur est journalisée."""
+    inter = make_interaction()
+    inter.response.edit_message = AsyncMock(side_effect=discord.ClientException("supprimé"))
+    inter.response.send_message = AsyncMock(side_effect=discord.ClientException("interaction expirée"))
+    await flow._show_private(inter, content="texte")          # ne lève pas
+    assert not inter.followup.send.await_count
+
+
+@pytest.mark.asyncio
+async def test_send_ephemeral_ne_leve_jamais_sur_une_interaction_morte():
+    """`_send_ephemeral` promet de ne jamais lever : la promesse était sans test."""
+    inter = make_interaction()
+    inter.response.send_message = AsyncMock(side_effect=discord.ClientException("expirée"))
+    await flow._send_ephemeral(inter, "⚠️ message")
+    inter.response.is_done = MagicMock(return_value=True)
+    inter.followup.send = AsyncMock(side_effect=discord.ClientException("expirée"))
+    await flow._send_ephemeral(inter, "⚠️ message")

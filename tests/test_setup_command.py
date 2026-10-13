@@ -1,9 +1,12 @@
 """Commande !setup_finder : publication, idempotence (pas de doublon), verrouillage du salon."""
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import discord
 import pytest
+
+from discord.ext import commands
 
 from cogs import mouse_finder as module
 from cogs.mouse_finder import MouseFinderCog, load_state
@@ -186,3 +189,88 @@ async def test_identifiant_non_enregistrable_ne_fait_pas_croire_a_un_echec(monke
     reponse = ctx.send.call_args.args[0]
     assert "publié" in reponse and "second message" in reponse
     assert "Erreur inattendue" not in reponse
+
+# ---------------------------------------------------------------------------
+# Chemins d'échec vus par l'administrateur : aucun n'était exercé (couverture 82 %)
+# ---------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_un_salon_texte_explicite_prime_sur_la_configuration(monkeypatch, state_file):
+    """`!setup_finder #salon` : l'argument explicite était le SEUL chemin non testé de la commande."""
+    monkeypatch.setattr(module, "FINDER_CHANNEL_ID", 123)      # configuration : un autre salon
+    monkeypatch.setattr(module, "LOCK_FINDER_CHANNEL", False)
+    cog = MouseFinderCog(MagicMock(), state_path=state_file)
+    ctx, own_channel = make_ctx()
+    _, explicite = make_ctx(channel_id=777)
+    ctx.guild.get_channel = MagicMock(return_value=None)       # le salon configuré n'existe pas
+
+    await cog.setup_finder.callback(cog, ctx, explicite)
+
+    ctx.guild.get_channel.assert_not_called()                  # l'argument l'emporte
+    explicite.send.assert_awaited_once()
+    own_channel.send.assert_not_awaited()
+    assert load_state(state_file) == {"channel_id": 777, "message_id": 555}
+
+
+@pytest.mark.asyncio
+async def test_un_salon_non_textuel_est_refuse_sans_rien_publier(monkeypatch, state_file):
+    monkeypatch.setattr(module, "FINDER_CHANNEL_ID", 0)
+    cog = MouseFinderCog(MagicMock(), state_path=state_file)
+    ctx, _ = make_ctx()
+    vocal = MagicMock(spec=discord.VoiceChannel)
+
+    await cog.setup_finder.callback(cog, ctx, vocal)
+
+    assert "doit être un salon textuel" in ctx.send.call_args.args[0]
+    vocal.send.assert_not_called()
+    vocal.set_permissions.assert_not_called()
+    assert not state_file.exists()
+
+
+@pytest.mark.asyncio
+async def test_verrouillage_impossible_est_signale_mais_n_empeche_pas_la_publication(monkeypatch, state_file):
+    """Permission « Gérer les permissions » manquante : le salon reste ouvert, et c'est DIT."""
+    monkeypatch.setattr(module, "FINDER_CHANNEL_ID", 0)
+    monkeypatch.setattr(module, "LOCK_FINDER_CHANNEL", True)
+    cog = MouseFinderCog(MagicMock(), state_path=state_file)
+    ctx, channel = make_ctx()
+    channel.set_permissions = AsyncMock(
+        side_effect=discord.Forbidden(MagicMock(status=403), "missing permissions"))
+
+    await cog.setup_finder.callback(cog, ctx, None)
+
+    channel.send.assert_awaited_once()                         # le message est publié quand même
+    reponse = ctx.send.call_args.args[0]
+    assert "Impossible de verrouiller le salon" in reponse
+    assert "publié" in reponse
+
+
+@pytest.mark.asyncio
+async def test_bot_sans_permission_d_ecriture_est_dit_clairement(monkeypatch, state_file):
+    """Sans droit d'écriture, l'administrateur lit la cause exacte : aucun état n'est enregistré."""
+    monkeypatch.setattr(module, "FINDER_CHANNEL_ID", 0)
+    monkeypatch.setattr(module, "LOCK_FINDER_CHANNEL", False)
+    cog = MouseFinderCog(MagicMock(), state_path=state_file)
+    ctx, channel = make_ctx()
+    channel.send = AsyncMock(side_effect=discord.Forbidden(MagicMock(status=403), "cannot send"))
+
+    await cog.setup_finder.callback(cog, ctx, None)
+
+    assert "ne peut pas écrire dans" in ctx.send.call_args.args[0]
+    assert not state_file.exists()
+    assert "publié" not in ctx.send.call_args.args[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("erreur, attendu", [
+    (commands.MissingPermissions(["manage_guild"]), "réservée aux membres ayant la permission"),
+    (commands.NoPrivateMessage(), "doit être utilisée sur un serveur"),
+    (commands.BadArgument("salon"), "Salon invalide"),
+    (commands.CommandError("panne"), "Erreur inattendue lors de la publication"),
+])
+async def test_chaque_erreur_de_la_commande_a_son_message(erreur, attendu):
+    """Les quatre branches du gestionnaire d'erreur répondaient sans être testées."""
+    cog = MouseFinderCog(MagicMock(), state_path=Path("/tmp") / "jamais_ecrit.json")
+    ctx = MagicMock()
+    ctx.send = AsyncMock()
+    await cog.setup_finder_error(ctx, erreur)
+    assert attendu in ctx.send.call_args.args[0]

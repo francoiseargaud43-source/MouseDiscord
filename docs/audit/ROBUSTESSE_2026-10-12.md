@@ -3118,3 +3118,74 @@ documentée que les boutons (VXE X3) et un garde-fou d'inventaire (au moins huit
 | Mutation B — une jumelle Pulsar laisse sa bosse « Inconnu » | **1 échec** · restauré → 1 passed |
 | `tests/test_data.py` | **93 passed** (+1 cas) |
 | `pytest -q` · `pyflakes` · `tools/privacy_scan.py` | **630 passed** · 0 · 0 violation |
+
+### 26.26 Passe guidée par la couverture : 42 chemins d'échec passés sous test (2026-10-13)
+
+La consigne « perfectionner la totalité du code » a été traitée par la **mesure**, pas par l'impression :
+couverture en processus des quatre paquets du bot (`coverage run --source=bot,config,cogs,utils -m pytest`).
+Résultat avant cette passe : **95 %** — 1 667 instructions, **90 lignes jamais exécutées par les 630 tests**,
+dont **67 % pour `bot.py`** et **82 % pour `cogs/mouse_finder.py`**, les deux modules les moins couverts du
+dépôt. Ces 90 lignes ont été lues une par une : ce sont presque toutes des **chemins d'échec** (message
+d'erreur, repli, garde) et non du code mort — c'est-à-dire exactement les endroits qu'un membre ou un
+administrateur voit le jour où quelque chose va mal, et que rien ne vérifiait.
+
+**a) Les chemins d'échec du parcours (`cogs/finder_flow.py`, 95 % → 98 %).** Huit tests ajoutés dans
+`tests/test_flow.py` :
+
+| Garantie verrouillée | Ce qui se passerait sans elle |
+|---|---|
+| Un prix absent s'affiche « prix non renseigné » | Ligne de prix vide, ou montant inventé |
+| Sans candidat classable : conseil concret (« autre gamme ou budget plus élevé ») | Le membre reste sur un écran vide |
+| Catalogue illisible entre deux clics : « momentanément illisibles » + quoi faire | « erreur inattendue », ou résultat vide |
+| Parcours incomplet (redémarrage) : reprise **à l'étape manquante** | Tout recommencer, ou écran figé |
+| Interaction déjà répondue : édition par la réponse d'origine | Second message, ou clic muet |
+| Message supprimé par le membre : nouveau message privé | Le parcours s'arrête sans rien dire |
+| `_show_private` ne lève **jamais** (même si le repli échoue) | Erreur technique au milieu d'une interaction |
+| `_send_ephemeral` ne lève **jamais** (interaction expirée) | Trace technique, membre non prévenu |
+
+Huit mutations correspondantes (A–H, `/tmp/mutations_c58.py`), une par garantie : **1 échec à chaque fois**,
+fichier restauré à l'identique.
+
+**b) La commande d'administration (`cogs/mouse_finder.py`, 82 % → 100 %).** Cinq tests ajoutés dans
+`tests/test_setup_command.py` : `!setup_finder #salon` (l'argument explicite était le **seul** chemin de la
+commande jamais exécuté), refus d'un salon non textuel (rien n'est publié, aucun état enregistré),
+verrouillage impossible (le salon reste ouvert **et c'est dit**, la publication a bien lieu), bot sans droit
+d'écriture (cause exacte, aucun état écrit, jamais « publié »), et les **quatre branches** du gestionnaire
+d'erreur (permission, serveur requis, salon invalide, erreur inattendue). Mutations A–E : **1 échec à chaque
+fois**. Le module est désormais couvert à 100 %.
+
+**c) Le démarrage (`bot.py`, 67 % → 91 %).** Nouveau fichier `tests/test_bot_runtime.py`, cité dans le
+README : purge périodique des parcours expirés (minimisation — rien ne s'accumule en mémoire ni dans le
+fichier d'état) et son **silence** quand rien n'a expiré, erreur d'événement journalisée sans arrêter le bot,
+commande inconnue **totalement muette** (règle de confidentialité : une faute de frappe ne publie rien et ne
+laisse aucune trace), erreur de commande réelle tracée sans rien publier dans le salon, message de connexion
+(compte, parcours en cours, emplacement du stockage), démarrage refusé sans jeton avec message lisible, et
+chemin de démarrage normal.
+
+Huit mutations correspondantes (A–H, `/tmp/mutations_c60.py`), une par garantie — purge réelle, silence,
+erreur d'événement, commande inconnue, erreur réelle, message de connexion, sortie sans jeton, passage du
+jeton : **1 échec à chaque fois**.
+
+Les cinq lignes qui restent hors mesure (`bot.py` 32-35 : configuration invalide, et 108 : `__main__`) sont
+exercées par `tests/test_config.py`, qui lance `bot.py` dans un **vrai sous-processus** — une mesure de
+couverture en mémoire ne peut pas les voir. Elles ne sont donc pas « non testées », seulement hors de cette
+mesure.
+
+**d) Ce qui reste volontairement non couvert.** Les 42 lignes restantes sont des gardes d'entrée et des
+replis (fichier illisible, valeur hostile, branche défensive) ; deux d'entre elles (`config.py` 83, 93 : les
+deux gardes de démarrage) sont elles aussi exercées en sous-processus par `tests/test_config.py`. Deux branches de `cogs/finder_flow.py`
+(l.461/463, thénar « ± ») sont **mortes tant que le thénar vaut 0/0/0** : le moteur n'a pas été touché pour
+les couvrir — il ne l'est que sur demande explicite du propriétaire (règle du master prompt). Aucune ligne du
+moteur, du catalogue ou des données n'a été modifiée par cette passe : aucune recommandation ne change.
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Lignes non exécutées | **90** | **42** |
+| Couverture totale (`bot`, `config`, `cogs`, `utils`) | 95 % | **97 %** |
+| `bot.py` | 67 % | **91 %** (32-35, 108 hors mesure : sous-processus) |
+| `cogs/mouse_finder.py` | 82 % | **100 %** |
+| `cogs/finder_flow.py` | 95 % | **98 %** |
+| `utils/matcher.py` · `utils/validation.py` | 100 % · 100 % | 100 % · 100 % |
+| Tests | 630 | **655** |
+| Mutations (garanties nouvelles) | — | **21 mutations : 1 échec chacune**, fichiers restaurés |
+| `pyflakes` · `tools/privacy_scan.py` | 0 · 0 | **0 · 0** |
