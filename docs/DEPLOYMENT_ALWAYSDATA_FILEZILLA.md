@@ -2078,19 +2078,29 @@ besoin d'être corrigé.
    comme d'habitude — **jamais `bot.py` à la main** : la tâche planifiée s'en charge, sinon
    `pkill -f "bot.py"`.
 
+10. **Le rapport statistique est reproductible — et le contrôle rapide ne l'écrase plus** (C61, §26.29) :
+   régénérer la grille complète dans un fichier temporaire donne un document **identique au caractère près**
+   à `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` (les chiffres publiés correspondent donc au
+   catalogue et au moteur du jour), et `tools/recommendation_stats.py --rapide` **sans** `--sortie` sort
+   désormais en **code 2** au lieu de remplacer ce rapport de référence par un rapport de 420 profils.
+   **Fichier facultatif** (`tools/recommendation_stats.py`) : le bot ne l'exécute jamais.
+
 **Fichiers à envoyer** : `utils/session.py` (point 4) et **`cogs/finder_flow.py`** (point 9) — ce sont les
 deux fichiers du bot touchés ici — et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **675**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 675 passed
+.venv/bin/python -m pytest -q                      # attendu : 676 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+# facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
+.venv/bin/python tools/recommendation_stats.py --sortie /tmp/stats.md \
+  && diff /tmp/stats.md docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md && echo "statistiques identiques"
 ```
 
 ---
