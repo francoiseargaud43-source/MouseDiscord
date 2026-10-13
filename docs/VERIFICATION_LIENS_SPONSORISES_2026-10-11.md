@@ -250,9 +250,14 @@ Pour ceux-là, le lien ouvre la page : l'annonce doit donc valoir le prix le moi
 
 La variante liée est l'« A9 Plus / White » à **27,95 €** (36,95 € normal). Le catalogue porte **45,00 €**
 (cahier des charges) et un revendeur affiche 44,90 €. Rien ne prouve que « A9 Plus » (27,95 € à la
-boutique) et « A9 Plus 2.0 » (45,00 €) soient le même produit : **le prix n'a pas été changé**, une
-source d'observation datée a été ajoutée, la question est posée au propriétaire (point ouvert 16 de
+boutique) et « A9 Plus 2.0 » (45,00 €) soient le même produit : **le prix n'a pas été changé** ce jour-là,
+une source d'observation datée a été ajoutée, la question est posée au propriétaire (point ouvert 16 de
 `docs/audit/AUDIT.md`).
+
+> **Suite le 2026-10-13 (47e passe)** : la question est **tranchée** — la série A9 de la boutique ne
+> propose **aucun** modèle « 2.0 » (« A9 SE », « A9 », « A9 Plus », « A9 Pro », « A9 Pro Max », « A9
+> Ultra »). Le prix publié est donc devenu **27,95 €**, celui de la variante que le bouton ouvre, et le
+> nom publié « **A9 Plus** » a suivi celui de la boutique (voir §8.2).
 
 ### 7.6 Effet mesuré et verrous
 

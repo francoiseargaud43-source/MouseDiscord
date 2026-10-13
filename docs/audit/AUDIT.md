@@ -192,7 +192,7 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     sous-estimé) ; **10 704 lignes** portent désormais le marqueur. Détail : §24.4 de
     `ROBUSTESSE_2026-10-12.md`.
 
-16. **Prix de l'A9 Plus** (nouveau, 37e passe, 2026-10-13) : le lien sponsorisé de la souris fige la
+16. ~~**Prix de l'A9 Plus**~~ **Tranché le 2026-10-13 (47e passe)** : le prix publié est **27,95 €** — celui de la variante « A9 Plus / White » que le bouton ouvre — et le nom publié a suivi la boutique (« A9 Plus », la série A9 ne vendant aucun modèle « 2.0 »). Effet mesuré sur la grille complète (27 170 profils) : **3 556 profils (13,09 %)** changent d'au moins une place, **0 place gagnée, 0 perdue** — exactement la redistribution annoncée ci-dessous. Détail : §8 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`. **Historique du point** : le lien sponsorisé de la souris figeait la
     variante « A9 Plus / White », relevée **27,95 €** à la boutique ATK FR (prix normal 36,95 €) —
     alors que le catalogue porte **45,00 €** (cahier des charges, non daté) et qu'un revendeur affiche
     44,90 €. Rien ne prouve, en l'état, que « A9 Plus » (la variante vendue 27,95 €) et « A9 Plus 2.0 »
