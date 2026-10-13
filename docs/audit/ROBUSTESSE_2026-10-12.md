@@ -2258,3 +2258,84 @@ deux renvois concernés ont suivi (`AUDIT.md` point 18 → §25.4, plus le renvo
 Dans le guide de déploiement, une note en tête du §12 rappelle que les « attendu : N passed » de
 chaque section sont **datés** et que seul le dernier compte (`488`) est à jour — un `pytest -q`
 qui affiche plus de tests dans une section ancienne n'est pas une anomalie.
+
+## 26. Trente-huitième passe (2026-10-13) : mesurer plutôt que supposer (limites Discord, typographie, appels hostiles)
+
+Chasse aux **micro-défauts** demandée par le propriétaire (« chasse tous les micro-bugs »). Trois familles de
+contrôles ont été passées sur le **code réellement exécuté**, pas sur des extraits : les limites de Discord
+sur les messages produits, la typographie des textes affichés, et le comportement du code d'affichage quand
+on lui donne des données dégradées.
+
+### 26.1 Les limites Discord, mesurées sur toute la grille (27 170 profils)
+
+Le contrôle existant (`tests/test_flow.py::test_embeds_respect_discord_limits_and_stay_short`) vérifie **un**
+profil, le plus chargé. Il est complété ici par une mesure exhaustive : pour chacun des **27 170 profils** de
+la grille complète, les embeds du résultat sont construits avec le moteur réel puis chaque limite de Discord
+est vérifiée.
+
+| Élément mesuré | Maximum observé | Limite Discord |
+|---|---:|---:|
+| Description d'un embed | 435 | 4 096 |
+| Titre d'un embed | 38 | 256 |
+| Pied de page | 152 | 2 048 |
+| Nom d'un champ | 53 | 256 |
+| Valeur d'un champ | 320 | 1 024 |
+| Total d'un embed | 1 039 | 6 000 |
+| Champs dans un embed | 3 | 25 |
+| Embeds dans le message | 6 | 10 |
+
+**0 violation.** Les marges sont larges (la valeur de champ la plus longue est à 31 % de la limite, le total
+d'un embed à 17 %) : aucun profil ne peut produire un message refusé par Discord.
+
+### 26.2 La typographie des messages affichés
+
+**15 133 textes** collectés sur la grille rapide (toutes les étapes, tous les modes, tous les résultats) puis
+passés au crible :
+
+| Contrôle | Résultat |
+|---|---|
+| Double espace hors du séparateur voulu `  •  ` (récapitulatif, match idéal) | **0** |
+| Espace devant une virgule ou un point | **0** |
+| Espace devant `?` `!` (usage français) | respecté partout |
+| Guillemet droit `"` | **0** |
+| Mot répété (« de de ») | **0** |
+| Espace oublié après une virgule | **0** |
+| Valeur technique qui fuit (`None`, `nan`, `{`, `}`, `pts`, « Inconnu » affiché) | **0** |
+| Champ vide | **0** |
+
+Un seul écart de style est relevé, et il est **cohérent** : les apostrophes sont **droites** (`'`) partout —
+dans le code livré comme dans la documentation (0 apostrophe typographique dans `cogs/` et `utils/`). Ce
+n'est donc pas une incohérence, et rien n'a été changé pour un détail que personne ne voit.
+
+### 26.3 Appels hostiles : ce que fait le code d'affichage avec des données dégradées
+
+**162 combinaisons hostiles** construites à partir du catalogue réel (neuf souris dégradées : prix nul, poids
+nul, capteur/MCU/switchs nuls, forme inconnue, bosse inconnue, longueur nulle en conflit, hauteur nulle,
+`shell_id` nul, tous les champs optionnels nuls — croisées avec les trois prises et les six modes) :
+
+- **0 exception** : aucune combinaison ne fait planter l'affichage ;
+- **0 fuite** : ni `None`, ni `nan`, ni accolade, ni terme interne (`pts`) n'apparaît dans une ligne affichée ;
+- **un piège réel trouvé** : `_step_number("thenar", Grip.FINGERTIP)` remontait un `KeyError: 'thenar'`
+  **muet** (ni la prise, ni l'étape fautive n'étaient nommées). Le parcours normal ne l'appelle jamais —
+  `step_kind` saute le thénar en Fingertip — mais tout code futur qui l'appellerait recevait une erreur
+  incompréhensible. **Corrigé** : une erreur lisible qui nomme la prise et l'étape, et la liste des étapes
+  qui existent pour cette prise. **Rien de visible ne change** (le chemin est inatteignable depuis le
+  parcours), et un test le verrouille
+  (`tests/test_flow.py::test_une_etape_qui_n_existe_pas_pour_la_prise_le_dit`).
+
+### 26.4 Preuves d'exécution (38e passe)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **489 passed** (488 avant la passe : 1 test ajouté) |
+| `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
+| Mesure des limites Discord (27 170 profils) | **0 violation** (tableau §26.1) |
+| Scan typographique (15 133 textes) | 0 défaut réel (tableau §26.2) |
+| Appels hostiles (162 combinaisons) | 0 exception, 0 fuite technique |
+| `tools/privacy_scan.py` | 0 violation |
+| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places 23 140 (85,17 %) |
+| `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier |
+
+**Ce qui n'a pas changé** : aucun score, aucun seuil, aucune fenêtre, aucun libellé, aucune donnée, aucun
+prix, aucun lien. Une seule ligne de code a bougé (`_step_number`), dans un chemin que le parcours
+n'emprunte jamais.

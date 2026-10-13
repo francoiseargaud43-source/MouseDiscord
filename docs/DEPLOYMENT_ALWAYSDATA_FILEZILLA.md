@@ -1887,6 +1887,42 @@ cd ~/MouseDiscord
 
 ---
 
+### 12.21 Mise à jour du 2026-10-13 (12e) : une erreur muette corrigée (rien de visible ne change)
+
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §26) : un seul
+endroit du code, `_step_number`, remontait un `KeyError` **muet** quand on lui demandait une étape qui
+n'existe pas pour la prise choisie (le thénar en Fingertip, la variante de Claw hors Claw). Le parcours
+**n'emprunte jamais ce chemin** (`step_kind` saute le thénar en Fingertip) : aucune personne n'a donc vu
+d'erreur, et **aucun texte affiché, aucun score, aucun classement ne change**. L'erreur est maintenant
+lisible — elle nomme la prise, l'étape et les étapes qui existent.
+
+La même passe a mesuré, plutôt que supposé, trois choses sur le code réellement exécuté : les **limites
+Discord** sur les 27 170 profils (**0 violation**, tableau au §26.1), la **typographie** de 15 133 textes
+affichés (**0 défaut réel**, §26.2) et le comportement de l'affichage sur **162 combinaisons de données
+dégradées** (**0 exception**, §26.3).
+
+**1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py` et `tests/test_flow.py`. Facultatifs au sens
+strict : le bot fonctionne exactement pareil sans eux (le chemin corrigé n'est jamais emprunté en
+production). Envoyez-les pour que le serveur corresponde au dépôt.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 489 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : inutile (aucun texte affiché ne change) ; si vous envoyez le fichier, redémarrer comme
+d'habitude — **jamais `bot.py` à la main** : la tâche planifiée s'en charge, sinon `pkill -f "bot.py"`.
+
+**5. Rien à vérifier dans Discord** : le résultat affiché est identique à celui du §12.20.
+
+---
+
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)
 
 Si Git est disponible sur le serveur (`git --version`), vous pourriez cloner le dépôt directement sur Alwaysdata.

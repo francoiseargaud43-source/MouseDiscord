@@ -268,6 +268,23 @@ def test_steps_total_follows_the_grip():
     assert flow._steps_total(Grip.FINGERTIP) == 3
 
 
+def test_une_etape_qui_n_existe_pas_pour_la_prise_le_dit():
+    """Le thénar n'existe pas en Fingertip, la variante de Claw n'existe qu'en Claw.
+
+    Un appel fautif doit lever une erreur **lisible** qui nomme la prise et l'étape : un ``KeyError``
+    ne disait ni l'une ni l'autre (relevé le 2026-10-13 en relisant le code d'affichage).
+    """
+    assert flow._step_number("thenar", Grip.PALM) == 2
+    assert flow._step_number("measure", Grip.FINGERTIP) == 2
+    assert flow._step_number("variant", Grip.CLAW) == 2
+    with pytest.raises(ValueError, match="thenar.*Fingertip"):
+        flow.thenar_step_embed(Grip.FINGERTIP)
+    with pytest.raises(ValueError, match="variant.*Palm"):
+        flow._step_number("variant", Grip.PALM)
+    with pytest.raises(ValueError, match="inexistante"):
+        flow._step_number("thenar", None)          # parcours sans prise : rien à numéroter
+
+
 @pytest.mark.asyncio
 async def test_measure_button_opens_modal_without_new_message():
     store = SessionStore(ttl_seconds=600)

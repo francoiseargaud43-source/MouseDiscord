@@ -353,8 +353,19 @@ STEP_NUMBERS = {
 
 
 def _step_number(kind: str, session_or_grip) -> int:
+    """Numéro de l'étape demandée pour cette prise.
+
+    Une étape qui n'existe pas pour la prise (le thénar en Fingertip, la variante de Claw hors Claw)
+    n'a pas de numéro : le dire clairement plutôt que de laisser remonter un ``KeyError`` muet, qui
+    ne dit ni la prise ni l'étape fautive.
+    """
     grip = getattr(session_or_grip, "grip", session_or_grip)
-    return STEP_NUMBERS[grip][kind]
+    numeros = STEP_NUMBERS.get(grip)
+    if numeros is None or kind not in numeros:
+        prise = grip.label if isinstance(grip, Grip) else repr(grip)
+        etapes = ", ".join(numeros) if numeros else "aucune"
+        raise ValueError(f"Étape « {kind} » inexistante en {prise} (étapes de cette prise : {etapes}).")
+    return numeros[kind]
 
 
 def _step_title(index: int, session_or_grip, label: str) -> str:
