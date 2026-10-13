@@ -871,6 +871,38 @@ def test_shells_documented_in_the_catalogue_notes_are_registered_in_shell_id(mic
     assert mice["atk_a9_nb"].shell_id == mice["atk_a9_plus"].shell_id == mice["atk_a9_ultimate"].shell_id
 
 
+def test_chaque_coque_partagee_declare_la_source_qui_l_atteste(mice):
+    """Provenance des coques : une entrée seule n'a rien à prouver, une coque PARTAGÉE si.
+
+    ``shell_id`` est le seul champ du catalogue laissé hors de ``CHAMPS_TRAÇABLES`` : pour une souris
+    sans jumelle il dit seulement « aucune autre entrée du catalogue ne partage ce moule », et c'est
+    ``test_two_entries_with_identical_dimensions_share_their_shell`` qui protège le cas dangereux
+    (deux cotes identiques sans coque commune). Dès que **deux** entrées partagent une coque, en
+    revanche, ce regroupement écarte une alternative réelle du résultat (deux variantes du même moule
+    ne s'affichent plus côte à côte) : chaque entrée doit alors citer la source qui l'atteste **et**
+    dire dans son libellé ce qui la justifie. Le fabricant ou un document du projet peuvent attester
+    un moule ; un guide de prise tiers ne le peut pas (il ne connaît pas les moules).
+    """
+    from urllib.parse import urlparse
+
+    groupes: dict[str, list[str]] = {}
+    for mouse in mice.values():
+        if mouse.shell_id:
+            groupes.setdefault(mouse.shell_id, []).append(mouse.id)
+    partagees = {coque: sorted(membres) for coque, membres in groupes.items() if len(membres) > 1}
+    # Garde-fou du test lui-même : l'inventaire doit rester celui du catalogue (8 coques partagées).
+    assert len(partagees) >= 8, f"coques partagées attendues : {partagees}"
+    justifications = ("coque", "moule", "famille", "série")
+    for coque, membres in sorted(partagees.items()):
+        for ident in membres:
+            declarantes = [s for s in mice[ident].sources if "shell_id" in s.fields]
+            assert declarantes, f"{ident} : coque partagée « {coque} » sans source déclarante"
+            for source in declarantes:
+                hote = urlparse(source.url).hostname or ""
+                assert hote in DOMAINES_FABRICANT or hote == "github.com", (ident, source.url)
+                assert any(mot in source.label.lower() for mot in justifications), (ident, source.label)
+
+
 def test_f1_v2_inherits_the_grip_verdicts_of_its_twin_shell(mice):
     """2026-10-12 : l'ATK F1 V2 était la SEULE souris sans aucune compatibilité de prise publiée —
     donc jamais classable, jamais recommandée (rapport STATISTIQUES : 0 sortie sur 18 522 profils).

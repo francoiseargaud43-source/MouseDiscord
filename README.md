@@ -290,7 +290,7 @@ pour un statut `verified`.
 | `height_mm` | Hauteur (informative). |
 | `dimension_status` | `verified` (**deux sources de cotes concordantes à ≤ 0,5 mm, ou une seule quand c'est le fabricant lui-même** — sa boutique officielle, ex. `atk.store`, `eu.pulsar.gg`), `single_source` (une seule source, tierce), `conflicting`, `owner_spec`, `owner_spec_unverified`. |
 | `conflicts` | Valeurs divergentes et leurs sources (ex. longueur 118.0 vs 117 mm). |
-| `shell_id` | Même coque = dimensions partagées (ex. A9 Ultimate / A9 Air / A9 Plus). |
+| `shell_id` | Même coque = dimensions partagées (ex. A9 Ultimate / A9 Air / A9 Plus). Une coque **partagée par plusieurs entrées** cite, sur chacune, la source qui l'atteste (fabricant ou document du projet) ; une coque unique n'a rien à citer. |
 
 **Compatibilité** (valeurs : `Élevé`, `Moyen`, `Faible`, `Inconnu`)
 

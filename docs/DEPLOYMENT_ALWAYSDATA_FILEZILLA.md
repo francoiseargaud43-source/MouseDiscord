@@ -2028,17 +2028,22 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    Désormais, ce que le formulaire n'aurait jamais pu écrire vaut **réponse absente** : le parcours
    reprend à l'étape Mesures, ou repose la question de la gamme. **Envoyez `utils/session.py`** (et
    `tests/test_session.py` si vous voulez le contrôle sur le serveur) pour l'avoir des deux côtés.
+5. **Traçabilité des coques** (C53, §26.22) : `data/mouse_db.json` gagne, sur 16 entrées, la source qui
+   atteste le partage de coque (`shell_id`). **Aucune cote, aucun prix, aucun verdict de prise, aucune
+   note ne change** (empreinte des valeurs identique avant/après) et **rien ne change à l'écran**.
+   **Aucun envoi obligatoire** ni redémarrage : envoyez le fichier seulement si vous voulez les deux
+   côtés identiques au caractère près.
 
 **Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **623**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **624**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 623 passed
+.venv/bin/python -m pytest -q                      # attendu : 624 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```

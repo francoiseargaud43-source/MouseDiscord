@@ -2937,3 +2937,65 @@ Preuves (les deux filtres retirés font échouer 9 puis 8 cas — vérifié par 
 **Ce qui n'a pas changé** : le barème, la sélection, le catalogue, les prix, les liens, les illustrations,
 les textes affichés et les trois aperçus. La correction ne concerne que la **restauration** d'un parcours
 après un redémarrage.
+
+### 26.22 Une coque partagée ne citait aucune source (C53)
+
+`shell_id` est le champ qui empêche **deux variantes du même moule** d'occuper deux places du même résultat
+(11e, 13e, 14e passes : coque A9 pleine taille, U2 Mini, F1, X1 / X3, familles Pulsar X2 et X2H). C'est donc,
+comme un prix ou une cote, une décision qui change ce que le membre voit — et c'était pourtant le **seul
+champ renseigné du catalogue absent de l'inventaire de provenance** vérifié par la machine (C23 : les seize
+champs de `CHAMPS_TRAÇABLES`). Mesure du 2026-10-13 : sur **23 entrées portant un `shell_id`, 21 ne citaient
+aucune source** déclarant le champ. Seules les deux entrées de la paire Pulsar X2 Medium (14e passe) le
+faisaient : la convention existait, elle n'était simplement **exigée par rien**.
+
+Pourquoi ce n'est pas cosmétique :
+
+| Si… | Ce qui se passe, faute de verrou |
+|---|---|
+| un `shell_id` disparaît | deux entrées du même moule redeviennent candidates ensemble : 92 profils montraient deux fois la même souris avant la 11e passe, et 4 555 profils sur 27 170 (**16,8 %**) montraient deux fois la même coque avant la 13e |
+| un `shell_id` est inventé | une souris est écartée d'un résultat pour une raison qui n'existe pas, sans que rien ne le signale |
+| deux entrées reçoivent la même coque par erreur | le canari existant ne le voit pas : `test_two_entries_with_identical_dimensions_share_their_shell` vérifie l'autre sens (deux cotes identiques ⇒ même coque), pas « ces deux-là n'ont rien à faire ensemble » |
+
+`shell_id` était resté hors de l'inventaire parce qu'une souris **sans jumelle** n'a aucune preuve externe à
+citer (« aucune autre entrée ne partage ce moule » est une phrase sur le catalogue, pas sur la souris). La
+règle retenue sépare donc les deux cas, et c'est elle qui est désormais verrouillée :
+
+- **coque partagée par au moins deux entrées** : chacune cite la source qui l'atteste (`sources[].fields`),
+  cette source doit appartenir au **fabricant** (`atk.store`, `eu.pulsar.gg`…) ou à un **document du projet**
+  (cahier des charges du propriétaire, mesure), et **son libellé dit ce qui la justifie** (« même coque »,
+  « un seul moule », « cotes publiées identiques », « série / famille »). Un guide de prise tiers ne peut pas
+  attester un moule : il ne le connaît pas ;
+- **coque d'une seule entrée** : rien à citer — et donc rien à inventer.
+
+Le catalogue appliquait déjà cette règle à la paire X2 Medium ; elle est maintenant écrite, appliquée aux
+**16 entrées** qui ne la respectaient pas, et verrouillée par
+`tests/test_data.py::test_chaque_coque_partagee_declare_la_source_qui_l_atteste`.
+
+| Coque | Entrées | Ce que la source déclarante énonce |
+|---|---|---|
+| `atk_a9_large` | A9 Plus, A9 Ultimate, A9 Air, A9 NB | « Coque ATK A9 pleine taille (`shell_id` « `atk_a9_large` ») » : un seul moule, celui de l'A9 Plus 2.0 du propriétaire ; cotes de la série 125 × 63,5 × 40 mm |
+| `atk_f1` | F1 V3 Ultimate, F1 V2 | « Coque ATK F1 (`shell_id` « `atk_f1` ») » ; cotes publiées 118,2 × 62,4 × 38,8 mm |
+| `atk_ghost` | GHOST Ultimate, GHOST Extreme | le fabricant publie les deux variantes sous **une seule fiche produit** (deux identifiants de variante) ; cotes identiques 121 × 61,3 × 38 mm |
+| `atk_u2_mini` | U2 V2 Mini, U2 Mini | collection U2 (119,5 × 63 × 38,5 mm) et « le store ne liste pas de U2 V2 Mini séparé » |
+| `atk_x1` | X1 V2 Ultra Max, VXE X3 | cotes publiées 127 × 64 × 40 mm, **identiques au dixième de millimètre** sur les deux fiches ATK |
+| `pulsar_x2_mini` | X2 v3 Mini, X2 CrazyLight Mini | cotes publiées 115,6 × 61 × 36,6 mm sur les deux fiches officielles ; « Same Size as the X2 Size 1 » côté CrazyLight |
+| `pulsar_x2h_mini` | X2H v3 Mini, X2H CrazyLight Mini | cotes publiées 115,6 × 62 × 38 mm sur les deux fiches officielles |
+| `pulsar_x2_medium` | X2A v3, X2 CrazyLight Medium | série « X2 » taille « Medium » de la fiche officielle (14e passe) |
+
+**Ce qui n'a pas changé** : aucune cote, aucun prix, aucun verdict de prise, aucune bosse, aucun poids,
+aucun capteur, aucun `shell_id`. Seules **seize listes de champs** et **huit libellés de sources** ont été
+complétés ; l'empreinte SHA-256 des 36 entrées projetées sur les 27 champs qui pèsent sur un score, un prix,
+un affichage ou un regroupement de coque est **identique avant / après** (`c0278240…`), le nombre de sources
+par souris est inchangé (aucune source ajoutée), et aucune note n'a bougé. Rien ne change à l'écran : les
+`fields` ne sont pas lus par le moteur de score, et les libellés de sources ne sont jamais affichés au membre.
+
+Preuves (le verrou tombe sur les trois formes du défaut — vérifié par mutation) :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_data.py` | **90 passed** (+1 cas : les huit coques partagées, source déclarante, hôte autorisé, libellé qui dit pourquoi) |
+| Mutation A — déclaration retirée de la X3 | **1 échec** · restauré → 1 passed |
+| Mutation B — source déclarante remplacée par un guide tiers | **1 échec** · restauré → 1 passed |
+| Mutation C — coque unique rattachée à une coque partagée sans preuve | **1 échec** · restauré → 1 passed |
+| `pytest -q` | **624 passed** |
+| `tools/privacy_scan.py` | 0 violation |
