@@ -159,3 +159,28 @@ def test_tous_les_outils_acceptent_argv_et_sont_donc_couverts():
                  if "argv" not in inspect.signature(_outil(nom).main).parameters]
     assert sans_argv == [], f"outils non testables en l'état : {sans_argv}"
     assert len(OUTILS) >= 14, f"le dossier ne contient plus les outils attendus : {OUTILS}"
+
+# ---------------------------------------------------------------------------
+# Un outil de mesure ne doit pas remplacer un rapport de référence sans le dire
+# ---------------------------------------------------------------------------
+def test_rapide_n_ecrase_pas_le_rapport_statistique_du_depot(tmp_path, capsys):
+    """Défaut trouvé le 2026-10-13 (46e passe, C61) : l'exemple du module invitait à écraser.
+
+    `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` est l'artefact de référence — grille
+    complète, 18 522 profils ; la grille resserrée en compte 420. Le module montrait `--rapide` **sans**
+    `--sortie` : suivre l'exemple remplaçait donc le rapport de référence par un rapport d'une autre
+    grille, sans avertissement. Le contrôle rapide écrit maintenant ailleurs, et le rapport du dépôt
+    n'est plus touché (vérifié ici en le relisant avant/après).
+    """
+    from tools import recommendation_stats as stats
+
+    rapport = stats.SORTIE_PAR_DEFAUT
+    avant = rapport.read_bytes()
+
+    assert stats.main(["--rapide"]) == 2                       # refusé, code 2
+    erreur = capsys.readouterr().err
+    assert "--sortie" in erreur and "Erreur" in erreur          # la phrase dit quoi faire
+    assert rapport.read_bytes() == avant                        # le rapport de référence est intact
+
+    assert stats.main(["--rapide", "--sortie", str(tmp_path / "rapide.md")]) == 0
+    assert "## Résultats vides et repli de coque" in (tmp_path / "rapide.md").read_text(encoding="utf-8")

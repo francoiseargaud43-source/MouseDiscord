@@ -3247,3 +3247,43 @@ mutations — retour à l'ancien texte, conseil supprimé : **1 échec chacune**
 
 Ce que ce contrôle ne peut pas faire : juger une phrase qu'il ne connaît pas. Le test fixe le texte actuel ;
 toute reformulation ultérieure devra être relue, pas devinée.
+
+### 26.28 Un tableau du README décrivait deux fois la même clé d'image (2026-10-13, C60)
+
+Le tableau « Clé / Affichée à / Illustration livrée » du README portait **deux lignes** pour
+`illustration_grip_relaxed`, avec deux textes différents (« Étape « variante de Claw » et résultat (variante
+relâchée) » et « Résultat, prise Claw — variante « Claw relâchée » »). L'exploitant qui personnalise ses
+illustrations ne savait plus laquelle était la bonne, et l'autre clé n'était décrite qu'une fois par chance :
+une clé ajoutée à `assets/images.json` pouvait rester invisible.
+
+Le code dit la vérité une seule fois : `claw_variant_step_embed()` (l'étape « Votre variante de Claw »)
+affiche `illustration_grip_relaxed`, et `_claw_variant_embeds()` la réutilise dans le résultat **quand la
+variante déclarée est « Claw relâchée »** — d'où la ligne unique, réécrite en une phrase. Les deux autres
+variantes (agressive, pincée) n'apparaissent que dans le résultat, comme le tableau le dit déjà.
+
+Verrou : `tests/test_doc_references.py::test_le_tableau_des_images_du_readme_decrit_chaque_cle_une_seule_fois`
+— il compare le tableau à `assets/images.json` **dans les deux sens**, exige une seule ligne par clé, et
+vérifie que le fichier cité existe dans `assets/illustrations/` (et qu'une clé vide est bien annoncée « vide »).
+Quatre mutations — clé décrite deux fois, clé du fichier absente du tableau, fichier cité inexistant, clé
+pourvue annoncée « vide » : **1 échec chacune**, fichier restauré.
+
+### 26.29 Le rapport statistique du dépôt est reproductible — et le contrôle rapide ne l'écrase plus (2026-10-13, C61)
+
+Le rapport `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md` (grille complète, **18 522 profils**) est
+un artefact de mesure : il est régénéré par `tools/recommendation_stats.py`, jamais édité à la main. Deux
+vérifications faites le 2026-10-13 :
+
+- **Reproductibilité au caractère près.** `python tools/recommendation_stats.py --sortie /tmp/stats.md`
+  (grille complète) puis `diff` contre le fichier du dépôt : **aucune différence**. Les chiffres publiés
+  correspondent donc exactement au catalogue et au moteur du jour — la commande `--sortie` permet de le
+  vérifier **sans** toucher au dépôt.
+- **Le contrôle rapide n'écrase plus le rapport de référence.** Le module proposait `--rapide` sans
+  `--sortie` dans son exemple d'usage : suivre l'exemple remplaçait le rapport de référence par un rapport
+  de **420 profils**, sans avertissement — l'artefact publié devenait un autre document, sous le même nom.
+  `--rapide` avec le chemin par défaut sort désormais en **code 2** avec une phrase qui dit quoi faire
+  (`--sortie /tmp/stats_rapide.md`) ; un `--sortie` explicite reste accepté, y compris le chemin du dépôt.
+
+Verrou : `tests/test_tools_usage_errors.py::test_rapide_n_ecrase_pas_le_rapport_statistique_du_depot` — il
+lit le rapport avant, lance `--rapide`, vérifie le code 2, la phrase sur la sortie d'erreur, **et que le
+fichier n'a pas bougé** ; puis il vérifie que le contrôle rapide écrit bien son rapport ailleurs. Une mutation
+(garde retirée) : **1 échec**, fichier restauré.

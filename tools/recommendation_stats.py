@@ -2,7 +2,8 @@
 
 Usage (depuis la racine du dépôt) :
     python tools/recommendation_stats.py                 # grille complète (~2 min)
-    python tools/recommendation_stats.py --rapide        # grille resserrée (contrôle rapide)
+    python tools/recommendation_stats.py --rapide --sortie /tmp/stats_rapide.md   # contrôle rapide
+    python tools/recommendation_stats.py                # rapport complet (défaut : docs/audit)
     python tools/recommendation_stats.py --sortie chemin.md
 
 Le script n'introduit AUCUNE donnée : il applique le moteur (utils/matcher.py), la sélection
@@ -25,6 +26,7 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+SORTIE_PAR_DEFAUT = ROOT / "docs" / "audit" / "STATISTIQUES_RECOMMANDATIONS_2026-10-12.md"
 sys.path.insert(0, str(ROOT))
 
 from config import MOUSE_DB_PATH  # noqa: E402
@@ -201,9 +203,17 @@ def run(fast: bool = False):
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Statistiques de recommandation sur toute la grille de mains.")
     parser.add_argument("--rapide", action="store_true", help="grille resserrée (contrôle rapide)")
-    parser.add_argument("--sortie", default=str(ROOT / "docs" / "audit" / "STATISTIQUES_RECOMMANDATIONS_2026-10-12.md"),
-                        help="fichier Markdown à écrire")
+    parser.add_argument("--sortie", default=str(SORTIE_PAR_DEFAUT), help="fichier Markdown à écrire")
     args = parser.parse_args(argv)
+    if args.rapide and args.sortie == str(SORTIE_PAR_DEFAUT):
+        # Trouvé le 2026-10-13 (46e passe) : l'exemple d'usage du module montrait `--rapide` sans
+        # `--sortie`, donc le contrôle rapide (grille resserrée) remplaçait le rapport de référence
+        # (18 522 profils) sans le dire. Le rapport complet reste régénérable à l'identique ; le
+        # contrôle rapide, lui, doit écrire ailleurs.
+        print("Erreur : --rapide écrirait un rapport de grille resserrée à la place du rapport complet "
+              f"« {SORTIE_PAR_DEFAUT.name} ». Donnez un autre fichier : --sortie /tmp/stats_rapide.md",
+              file=sys.stderr)
+        return 2
 
     data = run(fast=args.rapide)
     mice = data["mice"]
