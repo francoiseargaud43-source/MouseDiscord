@@ -22,10 +22,18 @@ log = logging.getLogger(__name__)
 
 
 def load_state(path: Path) -> dict | None:
+    """État enregistré, ou ``None`` : un fichier absent, illisible ou abîmé vaut « aucun état ».
+
+    ``OSError`` et ``ValueError`` couvrent tout ce que ce fichier peut subir : dossier à la place du
+    fichier, droits refusés, octets non UTF-8, JSON tronqué (`JSONDecodeError` **est** un `ValueError`).
+    Trouvé le 2026-10-13 : seul le JSON invalide était prévu — un dossier ou un fichier non UTF-8
+    faisaient remonter l'exception et **bloquaient `!setup_finder`** (« erreur inattendue ») au lieu de
+    traiter l'état comme absent et de publier un message neuf (même règle que le fichier de sessions).
+    """
     try:
         with Path(path).open(encoding="utf-8") as fh:
             data = json.load(fh)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (OSError, ValueError):
         return None
     if isinstance(data, dict) and isinstance(data.get("channel_id"), int) and isinstance(data.get("message_id"), int):
         return data
@@ -100,7 +108,14 @@ class MouseFinderCog(commands.Cog, name="Mouse Finder"):
             except discord.Forbidden:
                 await ctx.send(f"❌ Le bot ne peut pas écrire dans {target.mention}.")
                 return
-            save_state(self.state_path, target.id, sent.id)
+            try:
+                save_state(self.state_path, target.id, sent.id)
+            except OSError as exc:
+                # Le message EST publié : ne pas laisser croire à un échec (« erreur inattendue »),
+                # sinon l'administrateur relance la commande et publie un doublon. On dit la vérité :
+                # publié, mais non mémorisé — donc doublon possible au prochain appel.
+                notes.append(f"⚠️ Message publié, mais son identifiant n'a pas pu être enregistré "
+                             f"({exc}) : la prochaine exécution publiera un second message.")
             message = f"✅ Message de départ publié dans {target.mention}."
         if notes:
             message += "\n" + "\n".join(notes)

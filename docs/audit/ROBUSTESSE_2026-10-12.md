@@ -2597,3 +2597,52 @@ remis en effet de bord de l'import, il **échoue** — vérifié.
 **Ce qui n'a pas changé** : aucun score, aucun seuil, aucune fenêtre, aucun libellé affiché au membre, aucune
 donnée, aucun prix, aucun lien. Un total d'étapes dérivé de la table donne exactement les mêmes textes
 (les aperçus le prouvent) ; la seule image qui bouge est la légende d'un document de validation.
+
+### 26.15 Un fichier d'état illisible bloquait `!setup_finder` (C45)
+
+Dernière zone non ratissée de la passe : la commande d'installation, et le fichier qui la rend
+idempotente (`state/finder_message.json`, écrit par `save_state`, relu par `load_state`).
+
+Ce que faisait `load_state` — et ce que ça donnait :
+
+| État du fichier | Avant | Attendu |
+|---|---|---|
+| absent | `None` (publier un message neuf) | identique |
+| JSON tronqué ou mal formé | `None` | identique |
+| JSON valide mais pas un objet (`null`, liste, texte, nombre) | `None` | identique |
+| **dossier à la place du fichier** | `IsADirectoryError` remontait | `None` |
+| **octets non UTF-8** (fichier abîmé, copie partielle) | `UnicodeDecodeError` remontait | `None` |
+
+Dans les deux derniers cas, l'exception traversait la commande : `!setup_finder` répondait
+**« ⚠️ Erreur inattendue lors de la publication du message »** — et l'administrateur ne pouvait plus
+publier le message du tout, alors que la bonne réponse était « aucun état » (publier un message neuf).
+La leçon du fichier de sessions (C38) n'avait pas été appliquée ici : **un fichier d'état ne doit jamais
+bloquer une commande**, quelle que soit sa forme.
+
+Deuxième défaut, trouvé en lisant la même commande : le message est publié **avant** que son identifiant
+soit mémorisé. Si `save_state` échoue (disque plein, dossier non inscriptible), la commande répondait
+« ⚠️ Erreur inattendue » — faux : le message **est** publié. Pire, cette réponse pousse à relancer la
+commande, donc à publier un **doublon** de la bannière.
+
+Correction (`cogs/mouse_finder.py`) :
+
+- `load_state` attrape `(OSError, ValueError)` : dossier, droits refusés, octets non UTF-8, JSON tronqué
+  — tout vaut « aucun état ». Rien d'autre ne change : la forme du fichier est toujours vérifiée
+  (`channel_id` et `message_id` entiers), un état d'un autre salon est toujours ignoré ;
+- si l'enregistrement de l'identifiant échoue, la réponse **dit la vérité** : « ✅ Message de départ
+  publié » **plus** une note « ⚠️ Message publié, mais son identifiant n'a pas pu être enregistré (…)
+  : la prochaine exécution publiera un second message. »
+
+Preuves (les trois tests échouent sur l'ancien code — vérifié par mutation) :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_setup_command.py::test_un_etat_illisible_est_traite_comme_absent` | dossier, octets non UTF-8, `null`, liste, texte, nombre → `None` |
+| `tests/test_setup_command.py::test_setup_publie_meme_avec_un_etat_illisible` | le message est publié et le fichier d'état réécrit proprement |
+| `tests/test_setup_command.py::test_identifiant_non_enregistrable_ne_fait_pas_croire_a_un_echec` | réponse « publié » + note, jamais « Erreur inattendue » |
+| `pytest -q` | **541 passed** (538 avant cette correction : 3 tests ajoutés) |
+| `pyflakes` · `tools/privacy_scan.py` | 0 avertissement · 0 violation |
+
+**Ce qui n'a pas changé** : aucun texte affiché au membre, aucun score, aucune donnée, aucun prix,
+aucun lien. La commande `!setup_finder` publie et met à jour exactement comme avant — elle ne se bloque
+plus, et ne laisse plus croire à un échec lorsqu'elle a publié le message.

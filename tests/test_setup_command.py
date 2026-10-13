@@ -122,3 +122,67 @@ def test_corrupted_state_file_is_treated_as_absent(tmp_path):
     assert load_state(f) is None
     f.write_text('{"channel_id": "x", "message_id": 1}', encoding="utf-8")
     assert load_state(f) is None
+
+
+def test_un_etat_illisible_est_traite_comme_absent(tmp_path):
+    """Trouvé le 2026-10-13 : seul le JSON invalide était prévu.
+
+    Un **dossier** à la place du fichier d'état, ou un fichier en **octets non UTF-8**, faisait
+    remonter l'exception : `!setup_finder` répondait alors « ⚠️ Erreur inattendue » et l'administrateur
+    ne pouvait plus publier le message, alors que la bonne réponse est « aucun état » (publier un
+    message neuf, comme pour un fichier absent). Même règle que le fichier de sessions.
+    """
+    dossier = tmp_path / "etat"
+    dossier.mkdir()
+    assert load_state(dossier) is None                       # dossier à la place du fichier
+
+    binaire = tmp_path / "binaire.json"
+    binaire.write_bytes(b'{"channel_id": 1, "message_id": 2, "note": "\xff\xfe caf\xe9"}')
+    assert load_state(binaire) is None                       # octets non UTF-8
+
+    for contenu in ("null", "[1, 2, 3]", '"texte"', "12"):
+        f = tmp_path / "autre.json"
+        f.write_text(contenu, encoding="utf-8")
+        assert load_state(f) is None, contenu                # JSON valide mais pas un objet
+
+
+@pytest.mark.asyncio
+async def test_setup_publie_meme_avec_un_etat_illisible(monkeypatch, tmp_path):
+    """Un état illisible ne doit pas empêcher la publication — et doit être réécrit proprement."""
+    monkeypatch.setattr(module, "FINDER_CHANNEL_ID", 0)
+    monkeypatch.setattr(module, "LOCK_FINDER_CHANNEL", False)
+    etat = tmp_path / "state" / "finder_message.json"
+    etat.parent.mkdir(parents=True)
+    etat.write_bytes(b"\xff\xfe pas du JSON")
+    cog = MouseFinderCog(MagicMock(), state_path=etat)
+    ctx, channel = make_ctx(sent_id=909)
+    await cog.setup_finder.callback(cog, ctx, None)
+
+    channel.send.assert_awaited_once()
+    assert "publié" in ctx.send.call_args.args[0]
+    assert load_state(etat) == {"channel_id": 111, "message_id": 909}
+
+
+@pytest.mark.asyncio
+async def test_identifiant_non_enregistrable_ne_fait_pas_croire_a_un_echec(monkeypatch, state_file):
+    """Trouvé le 2026-10-13 : le message est publié **avant** l'enregistrement de son identifiant.
+
+    Si l'écriture échoue, répondre « ⚠️ Erreur inattendue » est faux et pousse l'administrateur à
+    relancer la commande — donc à publier un doublon. La réponse dit maintenant : publié, mais non
+    mémorisé, et ce que cela implique.
+    """
+    monkeypatch.setattr(module, "FINDER_CHANNEL_ID", 0)
+    monkeypatch.setattr(module, "LOCK_FINDER_CHANNEL", False)
+
+    def refuse(*args, **kwargs):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(module, "save_state", refuse)
+    cog = MouseFinderCog(MagicMock(), state_path=state_file)
+    ctx, channel = make_ctx()
+    await cog.setup_finder.callback(cog, ctx, None)
+
+    channel.send.assert_awaited_once()
+    reponse = ctx.send.call_args.args[0]
+    assert "publié" in reponse and "second message" in reponse
+    assert "Erreur inattendue" not in reponse
