@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.28).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.29).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 709 passed
+.venv/bin/python -m pytest -q                      # attendu : 715 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2231,6 +2231,23 @@ Les deux sont régénérés sur le catalogue du jour (rapport : 18 522 profils, 
 annoncer la grille **comptée**, la matrice doit être **le script relancé**.
 
 Le compteur ci-dessus passe de 707 à **709** tests.
+
+---
+
+### 12.29 Mise à jour du 2026-10-13 (20e) : un aperçu montrait encore un ancien nom de modèle
+
+**Aucun fichier du bot n'est touché** : un outil, un test et trois images de documentation. **Rien à
+envoyer** sur le serveur.
+
+L'aperçu livré du mode « Peu importe le prix » (`docs/apercu_prix_libre.png`) montrait encore « Z1 V2
+Ultra » — un libellé corrigé la veille. Trois images servent à valider l'affichage sans lancer le bot, et
+rien ne regardait leur contenu.
+
+Désormais chaque aperçu porte, dans ses métadonnées, une **empreinte des sources** (catalogue, liens,
+images, modules du message) et un test la recoupe : un aperçu plus vieux que les données qu'il montre est
+refusé, avec la commande à relancer. Les trois aperçus sont régénérés.
+
+Le compteur ci-dessus passe de 709 à **715** tests.
 
 ---
 

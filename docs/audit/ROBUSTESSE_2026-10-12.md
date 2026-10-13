@@ -3540,3 +3540,36 @@ coque (6,8 %)** — repli documenté, paires `atk_a9_plus` + `atk_a9_ultimate` 7
 matrice → **1 échec**. **Mesure de la passe** : 709 tests verts, `pyflakes` 0, `privacy_scan` 0 violation.
 Aucun fichier du bot n'est touché (deux documents générés, deux tests) : **rien à envoyer** sur le serveur,
 les deux rapports sont des copies de référence si vous les voulez.
+
+## 26.35 50e passe (suite) — l'aperçu du mode « Peu importe le prix » montrait un nom périmé (2026-10-13)
+
+### 26.35.1 Le défaut
+
+Les trois aperçus versionnés (`docs/apercu_parcours.png`, `docs/apercu_resultat.png`,
+`docs/apercu_prix_libre.png`) servent à valider la mise en page **sans lancer le bot**. Le troisième
+montrait encore « **Z1 V2 Ultra** » — un libellé qui n'existe plus depuis la correction du 2026-10-13 —,
+et l'ancien nom apparaissait aussi dans un bouton d'achat.
+
+Un document d'image ne se relit pas comme une ligne de texte : rien, dans la suite de tests, ne regardait
+son contenu. Le fichier est régénérable en trois secondes — mais rien ne disait qu'il fallait le faire.
+
+### 26.35.2 La correction : l'aperçu dit de quand il date
+
+`tools/render_preview.py` inscrit désormais dans les **métadonnées PNG** de chaque aperçu une **empreinte
+des sources** (`azemouse-empreinte`) : SHA-256 du contenu du catalogue, des liens d'achat, du fichier des
+images et des sept modules qui composent le message (dont lui-même). La sortie dit l'empreinte écrite :
+
+```
+Écrit : docs/apercu_resultat.png (620×4973, 417 Ko, empreinte f5a46051c0ea)
+```
+
+`tests/test_apercus.py` (3 tests paramétrés + 2 cas) relit la métadonnée et la recalcule : un aperçu plus
+vieux que les données qu'il montre est refusé, avec la commande à relancer. L'empreinte ne dépend ni du
+navigateur, ni de la police, ni de l'heure — seulement des sources.
+
+**Contre-épreuves** (mutation) : un octet ajouté à `assets/images.json` → **3 échecs**, message
+« relancez `python tools/render_preview.py` » ; et le test vérifie lui-même que l'empreinte **change** quand
+une source change (sur une copie temporaire : aucun fichier du dépôt n'est écrit pendant les tests).
+
+**Mesure** : 715 tests verts, `pyflakes` 0, `privacy_scan` 0 violation. **Rien à envoyer sur le serveur** :
+l'outil, un test et trois images de documentation.

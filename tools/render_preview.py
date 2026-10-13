@@ -1,7 +1,13 @@
-"""Génère un aperçu visuel (PNG) du parcours et du résultat, sans lancer le bot.
+"""Génère un aperçu visuel (PNG) du parcours, du résultat et du mode « Peu importe le prix ».
 
 Usage : python tools/render_preview.py
-Sortie : docs/apercu_parcours.png et docs/apercu_resultat.png
+Sortie : docs/apercu_parcours.png, docs/apercu_resultat.png, docs/apercu_prix_libre.png
+
+Chaque PNG porte dans ses métadonnées une **empreinte des sources** (catalogue, liens, images et
+modules qui décident du rendu) : `tests/test_apercus.py` la relit et refuse un aperçu plus vieux que
+les données qu'il montre (« relancez python tools/render_preview.py »). Un aperçu périmé est un
+document faux : celui du mode « Peu importe le prix » montrait encore « Z1 V2 Ultra » après le
+renommage du 2026-10-13.
 
 Le rendu imite le client Discord en thème sombre (fond #313338, carte #2B2D31, barre latérale
 bordeaux #8A2342) pour permettre au propriétaire de valider la refonte sans serveur.
@@ -10,19 +16,20 @@ Ce n'est PAS un rendu officiel de Discord : la mise en page réelle dépend du c
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
 
 import discord
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from cogs import finder_flow as flow  # noqa: E402
-from config import COMMERCIAL_LINKS_PATH  # noqa: E402
+from config import COMMERCIAL_LINKS_PATH, MOUSE_DB_PATH  # noqa: E402
 from utils.assets import IMAGE_KEYS  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
@@ -77,6 +84,39 @@ BOUTON_SECONDAIRE = (78, 80, 88)
 LISERE = (138, 35, 66)     # #8A2342 Bordeaux
 LARGEUR = 620
 PAD = 18
+
+# Tout ce qui décide de ce qu'on voit dans les aperçus : le catalogue, les liens, les images et les
+# modules qui composent le message. Un seul octet de ces fichiers change, et l'aperçu versionné est
+# déclaré périmé (métadonnée « azemouse-empreinte », relue par `tests/test_apercus.py`).
+CLE_EMPREINTE = "azemouse-empreinte"
+FICHIERS_SOURCES = (
+    MOUSE_DB_PATH,
+    COMMERCIAL_LINKS_PATH,
+    ROOT / "assets" / "images.json",
+    ROOT / "cogs" / "finder_flow.py",
+    ROOT / "utils" / "assets.py",
+    ROOT / "utils" / "catalog.py",
+    ROOT / "utils" / "matcher.py",
+    ROOT / "utils" / "models.py",
+    ROOT / "utils" / "selection.py",
+    ROOT / "utils" / "session.py",
+    ROOT / "tools" / "render_preview.py",
+)
+
+
+def empreinte_des_sources() -> str:
+    """SHA-256 du contenu des fichiers qui décident du rendu (12 caractères suffisent à le dire)."""
+    empreinte = hashlib.sha256()
+    for fichier in FICHIERS_SOURCES:
+        empreinte.update(fichier.name.encode("utf-8"))
+        empreinte.update(fichier.read_bytes())
+    return empreinte.hexdigest()[:12]
+
+
+def lire_empreinte(chemin: Path) -> str | None:
+    """L'empreinte inscrite dans un aperçu PNG, ou None s'il n'en porte pas (aperçu d'avant)."""
+    with Image.open(chemin) as image:
+        return image.text.get(CLE_EMPREINTE)
 
 
 def _font(bold: bool, size: int) -> ImageFont.FreeTypeFont:
@@ -378,11 +418,15 @@ def main(argv: list[str] | None = None) -> int:
     images_locales()                       # les faux domaines d'aperçu, branchés ici et pas à l'import
     dossier = Path(args.sortie_dossier)
     dossier.mkdir(parents=True, exist_ok=True)
+    empreinte = empreinte_des_sources()
+    metadonnees = PngImagePlugin.PngInfo()
+    metadonnees.add_text(CLE_EMPREINTE, empreinte)
     for nom, image in (("apercu_parcours.png", build_parcours()), ("apercu_resultat.png", build_resultat()),
                        ("apercu_prix_libre.png", build_prix_libre())):
         chemin = dossier / nom
-        image.save(chemin, optimize=True)
-        print(f"Écrit : {chemin} ({image.width}×{image.height}, {chemin.stat().st_size // 1024} Ko)")
+        image.save(chemin, optimize=True, pnginfo=metadonnees)
+        print(f"Écrit : {chemin} ({image.width}×{image.height}, {chemin.stat().st_size // 1024} Ko, "
+              f"empreinte {empreinte})")
     return 0
 
 

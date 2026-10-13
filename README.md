@@ -460,7 +460,7 @@ MouseDiscord/
 │   ├── db_effect.py          # Effet d'une modification des DONNÉES : deux catalogues, mêmes profils
 │   │                         #   (--retrait : mesure aussi le retrait de souris, catalogue réduit)
 │   ├── recommendation_stats.py # Combien de fois chaque souris est recommandée (rapport dans docs/audit/)
-│   ├── render_preview.py     # Aperçu PNG du parcours et du résultat, sans lancer le bot
+│   ├── render_preview.py     # Aperçu PNG du parcours, du résultat et du prix libre (+ empreinte des sources)
 │   ├── privacy_scan.py       # Contrôle statique de confidentialité (0 violation attendue)
 │   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
 ├── docs/
@@ -512,6 +512,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_privacy.py` : scénarios de confidentialité et de robustesse **P02–P18** (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage, clic rejoué, erreur inattendue, fichier d'état) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md` et `docs/audit/ROBUSTESSE_2026-10-12.md`.
 - `tests/test_bot_runtime.py` : comportements de `bot.py` mesurés le 2026-10-13 (couverture de `bot.py` : 67 % → **100 %**, lignes de script comprises) — purge périodique des parcours expirés (et son silence quand rien n'a expiré), erreur d'événement journalisée sans arrêter le bot, commande inconnue totalement muette, erreur de commande tracée sans rien publier, message de connexion, démarrage refusé sans jeton.
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
+- `tests/test_apercus.py` : **les trois aperçus PNG doivent être de la même date que les données qu'ils montrent** — chaque image porte dans ses métadonnées une empreinte du catalogue, des liens, des images et des modules qui composent le message ; un aperçu périmé (celui du mode « Peu importe le prix » montrait encore un ancien nom de modèle) est refusé avec la commande à relancer.
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts, et **renvois « fichier + §numéro » valides** (aucune citation ne doit pointer vers une section qui n'existe pas) — y compris dans les **données** (`data/*.json`), où une note de prix renvoyait à une section qui n'a jamais existé.
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement.
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
