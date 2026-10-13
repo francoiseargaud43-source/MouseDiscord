@@ -597,6 +597,27 @@ def test_links_file_skips_invalid_entries(tmp_path):
     assert load_commercial_links(f) == {"a": "https://shop.test/a"}
 
 
+def test_un_lien_trop_long_pour_discord_est_ecarte_et_les_autres_survivent(tmp_path):
+    """C56 (2026-10-13) : Discord refuse une URL de bouton de plus de 512 caractères.
+
+    C'est la limite documentée (« Component Reference », champ ``url`` d'un bouton de style lien) : le
+    composant refusé fait échouer **le message entier**, donc le résultat — le membre lit « erreur
+    inattendue » au lieu de ses souris. Un lien de suivi collé tel quel dans ``commercial_links.json``
+    suffit à dépasser la limite. Même règle que pour un espace : on écarte ce seul lien, jamais le
+    résultat. La limite elle-même est acceptée (512 exactement), 513 ne l'est pas.
+    """
+    base = "https://shop.test/"
+    f = tmp_path / "links.json"
+    f.write_text(json.dumps({
+        "juste": base + "a" * (512 - len(base)),
+        "trop_long": base + "a" * (513 - len(base)),
+        "normal": base + "ok",
+    }), encoding="utf-8")
+    liens = load_commercial_links(f)
+    assert set(liens) == {"juste", "normal"}, liens
+    assert len(liens["juste"]) == 512
+
+
 def test_un_fichier_de_liens_illisible_est_ignore_comme_un_fichier_absent(tmp_path):
     """Trouvé le 2026-10-13 (C54) : tronqué, illisible ou remplacé par un dossier, il faisait échouer
     TOUT le résultat — le membre lisait « une erreur inattendue » au lieu de ses souris, et refaire

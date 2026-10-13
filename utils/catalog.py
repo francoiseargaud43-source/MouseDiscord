@@ -176,6 +176,11 @@ def load_catalog(path: Path) -> tuple[Mouse, ...]:
 
 # Espace, tabulation, saut de ligne, caractères de contrôle : une URL qui en contient n'en est pas une.
 _LIEN_INUTILISABLE = re.compile(r"[\s\x00-\x1f\x7f]")
+# Longueur maximale d'une URL de bouton : 512 caractères. C'est la limite DOCUMENTÉE par Discord
+# (« Component Reference », champ ``url`` d'un bouton de style lien) ; le libellé, lui, est borné à
+# 80 caractères, déjà appliqué côté affichage (``BUTTON_LABEL_MAX``). Au-delà, Discord refuse le
+# composant — donc le message entier, boutons compris.
+_URL_BOUTON_MAX = 512
 
 
 def _lien_utilisable(url: str) -> bool:
@@ -186,8 +191,14 @@ def _lien_utilisable(url: str) -> bool:
     URL : Discord refuse le composant au moment de l'envoi, et c'est le **résultat entier** qui échoue
     — le membre voit « erreur inattendue » au lieu de ses trois souris. Mieux vaut écarter ce seul lien
     (avertissement dans les journaux, bouton « Liens à venir ») que perdre le résultat.
+
+    Même raisonnement pour la longueur (C56) : Discord refuse une URL de bouton de plus de 512
+    caractères. Un lien de suivi collé tel quel dans ``commercial_links.json`` suffit à dépasser cette
+    limite — et le contrôle porte sur la longueur en caractères, telle que Discord la compte.
     """
-    return url.startswith(("https://", "http://")) and _LIEN_INUTILISABLE.search(url) is None
+    return (url.startswith(("https://", "http://"))
+            and len(url) <= _URL_BOUTON_MAX
+            and _LIEN_INUTILISABLE.search(url) is None)
 
 
 def load_commercial_links(path: Path) -> dict[str, str]:

@@ -3045,3 +3045,33 @@ Preuves — le défaut est reproduit avant correction, et la garde retirée refa
 sortie d'un parcours complet est identique (mêmes souris, mêmes pourcentages, mêmes prix). Seuls les
 chemins de panne changent. `pytest -q` : **628 passed** · `pyflakes` : 0 · `tools/privacy_scan.py` :
 0 violation.
+
+### 26.24 Un lien plus long que la limite de Discord faisait perdre le résultat (C56)
+
+C40 avait appris au chargeur de liens à écarter une adresse **inutilisable** dans un bouton — schéma
+absent, espace, tabulation, saut de ligne, caractère de contrôle : Discord refuse alors le composant, et
+c'est le **message entier** qui échoue. Il restait un cas que ce contrôle ne voyait pas : la **longueur**.
+La référence des composants de Discord borne le champ `url` d'un bouton de style lien à **512 caractères**
+(le libellé, lui, à 80 — déjà borné côté affichage par `BUTTON_LABEL_MAX`). Au-delà, Discord refuse le
+composant de la même façon : le membre lit « ⚠️ Une erreur inattendue est survenue » au lieu de ses souris.
+
+Le cas n'est pas théorique : les liens du catalogue sont des liens de boutique, souvent copiés depuis un
+navigateur ou un tableau d'affiliation — une URL de suivi collée telle quelle dans
+`data/commercial_links.json` dépasse facilement 512 caractères, et **rien** ne le signalait : le fichier
+était valide, tous les tests passaient, et la panne n'apparaissait qu'au moment où cette souris-là était
+recommandée, pour un seul membre et un seul profil.
+
+La règle retenue est celle de C40/C54 — **écarter ce seul lien, jamais le résultat** — appliquée à la
+longueur, sur la valeur en caractères telle que Discord la compte :
+
+| Contrôle | Résultat |
+|---|---|
+| `tests/test_data.py::test_un_lien_trop_long_pour_discord_est_ecarte_et_les_autres_survivent` | 512 caractères **accepté** (limite exacte), 513 écarté, les autres liens du même fichier conservés |
+| Mutation (garde de longueur retirée) | **1 échec** · restauré → 1 passed |
+| Les 36 liens du catalogue | tous **bien en dessous** de la limite (le plus long fait moins d'un dixième des 512 caractères) : aucune donnée n'est écartée par cette règle aujourd'hui |
+
+Le membre dont la souris a un lien trop long voit le rappel désactivé « Liens à venir » à la place du
+bouton, et l'administrateur lit la raison exacte dans les journaux
+(`Lien ignoré pour <souris> : URL invalide`). Aucun autre comportement ne change : le lien écarté n'est
+jamais remplacé ni raccourci — une adresse tronquée mènerait ailleurs, ce que le projet s'interdit.
+`pytest -q` : **629 passed** · `pyflakes` : 0.

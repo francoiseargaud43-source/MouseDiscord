@@ -2042,17 +2042,23 @@ preuve et le README). Elle est décrite ici pour que le contrôle ci-dessous res
    boutons d'achat cèdent la place au rappel « Liens à venir », et les étapes s'affichent sans image.
    **Envoyez `utils/catalog.py` et `utils/assets.py`** — c'est le seul changement du jour qui touche le
    comportement du bot — puis redémarrez la tâche planifiée (`pkill -f "bot.py"`).
+7. **Un lien d'achat trop long ne fait plus perdre le résultat** (C56, §26.24) : la référence des
+   composants de Discord borne l'URL d'un bouton de style lien à **512 caractères** ; au-delà, Discord
+   refuse le composant et le message entier échoue. Un lien de boutique ou de suivi collé tel quel dans
+   `data/commercial_links.json` peut dépasser cette limite. Désormais ce lien-là est écarté (raison
+   exacte dans les journaux) et le résultat s'affiche, avec le rappel « Liens à venir » à la place.
+   Même envoi que le point 6 (`utils/catalog.py`).
 
 **Fichiers à envoyer** : `utils/session.py` (point 4 — c'est le seul fichier du bot touché ici) et, si
 vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent maintenant correctement à une
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
-affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **628**.
+affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **629**.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — seul celui-ci est
 courant.
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 628 passed
+.venv/bin/python -m pytest -q                      # attendu : 629 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```
