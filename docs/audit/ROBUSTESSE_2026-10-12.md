@@ -3703,7 +3703,58 @@ donc servi **avant** d'être commité, ce qui est la meilleure preuve qu'il mesu
 au-dessus d'une variable effacé ; le rappel « 0 = … » effacé ; `config.py` qui apprend une variable que
 l'exemple ignore.
 
-**Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
-côtés)** — remesurées après ces trois tests —, **735 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation.
+**Mesure** (à cette date-là) : **735 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation.
 Aucun fichier du bot n'est modifié (un fichier d'exemple, des tests et des documents) : **rien à envoyer** sur
 le serveur.
+
+## 26.39 54e passe — la question « la justification peut-elle être coupée ? » est tranchée par la mesure (2026-10-13)
+
+### 26.39.1 Ce qui était resté sans réponse
+
+`cogs/finder_flow.py` écrit `explanation[:1024]` : la limite Discord d'un champ d'embed. Cette coupe est
+apparue à la 38e passe ; personne ne l'a mesurée depuis. Elle pouvait être une simple ceinture de sécurité —
+ou mordre un jour un profil, en coupant une phrase en plein mot **sans qu'aucun test ne le voie** : la
+vérification d'outillage (`tools/qa_flow_matrix.py`) cherche la phrase entière dans le message, mais elle ne
+parcourt que ses profils de contrôle ; aucun ne pousse la phrase à son maximum.
+
+### 26.39.2 La mesure, sur toute la grille
+
+Parcours des **18 522 profils** de la grille complète (`cogs.finder_flow.compute_selection`, catalogue réel,
+44 s), en relevant la longueur de `selection.explanation` — le texte même que la carte affiche :
+
+| Mode | Phrase la plus longue |
+|---|---|
+| Peu importe le prix | **320 caractères** |
+| Qualité/Prix | 169 |
+| Haut de gamme | 167 |
+| Budget personnalisé | 150 |
+| Économique | 138 |
+
+Le maximum de la grille est donc **320 caractères**, soit **704 de marge** avant la coupe : elle ne mord
+**jamais** avec le catalogue du 2026-10-13. La phrase gagnante (mode « Peu importe le prix », 35/40) est la
+plus verbeuse du moteur — elle énumère trois règles de départage —, ce qui explique qu'elle tienne le haut du
+tableau dans les cinq modes.
+
+### 26.39.3 Le verrou, deux fois plus rapide que la grille
+
+`tests/test_justification.py` (deux tests, ~1 s) rejoue la garantie sans attendre 44 secondes :
+
+- **Grille resserrée** (celle du comparateur de données, 420 profils — elle atteint elle aussi 320) : la
+  phrase la plus longue doit tenir dans **la moitié** de la limite (512), et le **message réellement produit**
+  (`results_embeds`) doit porter cette phrase **en entier** — c'est la coupe qui est vérifiée là, pas le
+  moteur. Le test refuse de passer si la phrase mesurée descend sous 200 caractères : il vérifie qu'il mesure
+  encore quelque chose.
+- **Pire cas construit**, indépendant de toute grille : le libellé le plus long du catalogue (42 caractères,
+  « ATK Blazing Sky U2 / U2 Plus / U2 Ultimate »), `reference` au maximum (`MAX_SCORE` = 40) et la zone la
+  plus large possible (une souris par entrée du catalogue). Seul nombre encore variable : l'indice de
+  performance de « Haut de gamme », que le test **verrouille à un chiffre** (`MAX_PERFORMANCE_INDEX`), faute
+  de quoi la borne ne serait plus bornée.
+
+**Contre-épreuves** (4 mutations, toutes détectées) : phrase du mode « Peu importe le prix » allongée de
+300 caractères → **2 échecs** ; coupe rendue agressive (`explanation[:100]`) → **1 échec** (le champ ne porte
+plus la phrase entière) ; libellé de souris de 600 caractères ajouté au catalogue → **2 échecs** ; indice de
+performance passé à deux chiffres → **1 échec** (le verrou du pire cas).
+
+**Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
+côtés)**, **738 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
+(un fichier de tests et des documents) : **rien à envoyer** sur le serveur.

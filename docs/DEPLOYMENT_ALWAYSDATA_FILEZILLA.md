@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.32).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.33).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 735 passed
+.venv/bin/python -m pytest -q                      # attendu : 738 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2313,6 +2313,24 @@ effacé, le rappel « 0 = … » effacé, et `config.py` qui apprend une variabl
 
 **Fichiers à envoyer** : **aucun** (un fichier d'exemple et un test). Détail : §26.38 de
 `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.33 Mise à jour du 2026-10-13 (24e) : la justification du choix, mesurée sur toute la grille
+
+Question restée ouverte : le bloc « 🧭 Pourquoi ce choix ? » est un champ d'embed, donc limité à 1 024
+caractères par Discord, et le code applique `explanation[:1024]` par prudence. Cette coupe pouvait-elle mordre ?
+Parcours des **18 522 profils** de la grille complète (44 s) : la phrase la plus longue fait **320 caractères**,
+en « Peu importe le prix » — **704 de marge**, la coupe ne mord jamais avec le catalogue du jour. Les quatre
+autres modes plafonnent à 169 (Qualité/Prix), 167 (Haut de gamme), 150 (Budget personnalisé) et 138
+(Économique).
+
+`tests/test_justification.py` rejoue la garantie en une seconde : grille resserrée (420 profils) **plus** lecture
+du message réel (le champ doit porter la phrase entière), et un pire cas construit indépendant de la grille
+(libellé le plus long du catalogue, meilleur score, zone la plus large). Quatre mutations sont détectées, dont
+une coupe rendue volontairement agressive : c'est le contrôle du message qui la voit.
+
+**Fichiers à envoyer** : **aucun** — un fichier de tests. Détail : §26.39 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 
