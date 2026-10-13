@@ -14,6 +14,7 @@ import json
 import sys
 from pathlib import Path
 
+import discord
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +50,18 @@ _FAKE_URLS = {
     key: (f"https://apercu.local/{_RAW_IMAGES[key]}" if _RAW_IMAGES.get(key) else None)
     for key in IMAGE_KEYS
 }
-flow.load_image_urls = lambda path, base_url=None: dict(_FAKE_URLS)  # type: ignore[assignment]
+
+
+def images_locales() -> None:
+    """Branche ces faux domaines sur le module du bot — à appeler **explicitement**.
+
+    Trouvé le 2026-10-13 : ce détournement était fait à l'import du fichier, donc le simple fait
+    d'importer l'outil (test, script, IDE) changeait la résolution des images du bot dans le même
+    processus — un test du bot échouait alors selon l'ordre d'exécution. L'outil, lui, l'appelle au
+    début de ``main()`` : rien ne change pour l'aperçu.
+    """
+    flow.load_image_urls = lambda path, base_url=None: dict(_FAKE_URLS)  # type: ignore[assignment]
+
 
 FONT_DIR = Path("/usr/share/fonts/truetype/dejavu")
 FONT_REG = FONT_DIR / "DejaVuSans.ttf"
@@ -214,21 +226,46 @@ def bandeau(draw, y: int, texte: str) -> int:
     return y + 28
 
 
+def _legende_etape(kind: str, session, complement: str) -> str:
+    """Légende d'un aperçu : « Étape n/N — … », lue dans la MÊME table que le titre de l'embed.
+
+    Une légende écrite à la main peut contredire l'embed qu'elle coiffe : trouvé le 2026-10-13 dans
+    l'aperçu « prix libre », légendé « Étape 5/5 » au-dessus d'un titre « Étape 4/4 ». Ici, numéro et
+    total viennent de ``cogs/finder_flow`` : impossible de les désaccorder.
+    """
+    numero = flow._step_number(kind, session)
+    total = flow._steps_total(session)
+    return f"Étape {numero}/{total} — {complement}"
+
+
+def etapes_du_parcours(session) -> list[tuple[str, discord.Embed, list[str], bool]]:
+    """Cartes de l'aperçu « parcours » : légende, embed, boutons, bouton principal.
+
+    Le parcours montré est celui de la **prise Claw** (le plus long : 5 étapes). Chaque légende est
+    dérivée de la table des étapes et de la même prise que l'embed qu'elle coiffe, donc une légende ne
+    peut pas annoncer un numéro que le titre ne dit pas (défaut corrigé le 2026-10-13, C43).
+    """
+    return [
+        ("Accueil — message persistant (public)", flow.banner_embed(), ["🖱️  Start Mouse Shape Finder"], True),
+        (_legende_etape("grip", session, "prise"),
+         flow.grip_step_embed(), ["Choisissez votre prise…"], False),
+        (_legende_etape("claw_variant", Grip.CLAW, "variante de Claw (aucun effet sur le score)"),
+         flow.claw_variant_step_embed(), ["Choisissez votre variante de Claw…"], False),
+        (_legende_etape("thenar", session, "thénar (arrière de la souris)"),
+         flow.thenar_step_embed(session.grip), ["Choisissez la taille de votre thénar…"], False),
+        (_legende_etape("measure", session, "mesures"),
+         flow.measure_step_embed(session), ["📏  Saisir mes mesures"], True),
+        (_legende_etape("budget", session, "budget"),
+         flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
+    ]
+
+
 def build_parcours() -> Image.Image:
     store = SessionStore(ttl_seconds=600)
     session = store.start(1)
     session.grip, session.hand_length_mm, session.hand_width_mm = Grip.CLAW, 200.0, 110.0
     session.thenar = Thenar.MOYENNE
-    etapes = [
-        ("Accueil — message persistant (public)", flow.banner_embed(), ["🖱️  Start Mouse Shape Finder"], True),
-        ("Étape 1/5 — prise", flow.grip_step_embed(), ["Choisissez votre prise…"], False),
-        ("Étape 2/5 — variante de Claw (aucun effet sur le score)",
-         flow.claw_variant_step_embed(), ["Choisissez votre variante de Claw…"], False),
-        ("Étape 3/5 — thénar (arrière de la souris)",
-         flow.thenar_step_embed(Grip.CLAW), ["Choisissez la taille de votre thénar…"], False),
-        ("Étape 4/5 — mesures", flow.measure_step_embed(session), ["📏  Saisir mes mesures"], True),
-        ("Étape 5/5 — budget", flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
-    ]
+    etapes = etapes_du_parcours(session)
     hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 52 + 28 + 16 for _, e, _, _ in etapes) + PAD
     canvas, draw = nouveau_canvas(hauteur)
     y = PAD
@@ -287,6 +324,22 @@ def draw_menu_options(draw, y: int, options, surligne: int | None = None, x: int
     return y + height + 16
 
 
+def etapes_du_prix_libre(session, selection) -> list[tuple[str, discord.Embed, list[str], bool]]:
+    """Cartes de l'aperçu « peu importe le prix » : l'étape budget, puis la ligne de résultat.
+
+    Le nombre d'options annoncé vient de ``flow.BUDGET_OPTIONS`` et le numéro d'étape de la table :
+    cette légende-ci avait annoncé « Étape 5/5 » au-dessus d'un titre « Étape 4/4 » (parcours Palm).
+    """
+    embeds = flow.results_embeds(session, selection)
+    return [
+        (_legende_etape("budget", session,
+                        f"budget : {len(flow.BUDGET_OPTIONS)} options, dont « Peu importe le prix »"),
+         flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
+        ("Résultat « Peu importe le prix » — le prix en tout petit",
+         embeds[0], [label for label, _ in _boutons_achat(selection)], True),
+    ]
+
+
 def build_prix_libre() -> Image.Image:
     """« Peu importe le prix » : la nouvelle option du menu, puis la ligne de résultat en petit prix."""
     store = SessionStore(ttl_seconds=600)
@@ -295,11 +348,7 @@ def build_prix_libre() -> Image.Image:
     session.thenar = Thenar.PETITE
     session.budget_mode = BudgetMode.PEU_IMPORTE_PRIX
     selection = flow.compute_selection(session)
-    embeds = flow.results_embeds(session, selection)
-    etapes = [("Étape 5/5 — budget : cinq options, dont « Peu importe le prix »", flow.budget_step_embed(session),
-               ["Choisissez votre gamme…"], False),
-              ("Résultat « Peu importe le prix » — le prix en tout petit",
-               embeds[0], [label for label, _ in _boutons_achat(selection)], True)]
+    etapes = etapes_du_prix_libre(session, selection)
     hauteur = PAD
     for _, embed, _, _ in etapes:
         hauteur += 28 + _embed_height(embed, LARGEUR - 4 * PAD) + 52 + 16
@@ -326,6 +375,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sortie-dossier", default=str(ROOT / "docs"),
                         help="dossier où écrire les aperçus (défaut : docs/)")
     args = parser.parse_args(argv)
+    images_locales()                       # les faux domaines d'aperçu, branchés ici et pas à l'import
     dossier = Path(args.sortie_dossier)
     dossier.mkdir(parents=True, exist_ok=True)
     for nom, image in (("apercu_parcours.png", build_parcours()), ("apercu_resultat.png", build_resultat()),

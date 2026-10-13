@@ -334,25 +334,21 @@ def _size_text(mouse) -> str:
     return " · ".join(parts)
 
 
-def _steps_total(session_or_grip) -> int:
-    """Nombre d'étapes : 3 en Fingertip (pas de thénar), 5 en Claw (variante en plus), 4 sinon."""
-    grip = getattr(session_or_grip, "grip", session_or_grip)
-    if grip is Grip.FINGERTIP:
-        return 3
-    if grip is Grip.CLAW:
-        return 5
-    return 4
-
-
 # Numéro d'étape par type, selon la prise : Claw insère « claw_variant » en 2, Fingertip saute le thénar.
 # Les clés sont EXACTEMENT les valeurs de ``step_kind()`` : c'est ce qui permet de numéroter l'étape
 # courante sans table parallèle (défaut trouvé le 2026-10-13 : la table disait « variant » là où
 # ``step_kind`` disait « claw_variant », et le titre de cette étape écrivait son numéro en dur).
+# Cette table est la SEULE source des numéros d'étapes : le total affiché (« Étape n/N ») en est le
+# plus grand numéro, il n'est pas réécrit ailleurs (même famille de défaut, corrigée en C42).
 STEP_NUMBERS = {
-    Grip.PALM: {"thenar": 2, "measure": 3, "budget": 4},
-    Grip.CLAW: {"claw_variant": 2, "thenar": 3, "measure": 4, "budget": 5},
-    Grip.FINGERTIP: {"measure": 2, "budget": 3},
+    Grip.PALM: {"grip": 1, "thenar": 2, "measure": 3, "budget": 4},
+    Grip.CLAW: {"grip": 1, "claw_variant": 2, "thenar": 3, "measure": 4, "budget": 5},
+    Grip.FINGERTIP: {"grip": 1, "measure": 2, "budget": 3},
 }
+
+# L'étape « prise » ouvre tous les parcours : c'est le numéro que la table lui donne pour les trois
+# prises. Elle n'affiche pas de dénominateur, la prise n'étant pas encore connue (voir grip_step_embed).
+GRIP_STEP_NUMBER = STEP_NUMBERS[Grip.PALM]["grip"]
 
 
 def _step_number(kind: str, session_or_grip) -> int:
@@ -369,6 +365,21 @@ def _step_number(kind: str, session_or_grip) -> int:
         etapes = ", ".join(numeros) if numeros else "aucune"
         raise ValueError(f"Étape « {kind} » inexistante en {prise} (étapes de cette prise : {etapes}).")
     return numeros[kind]
+
+
+def _steps_total(session_or_grip) -> int:
+    """Nombre d'étapes de la prise : le plus grand numéro de ``STEP_NUMBERS``.
+
+    Dérivé de la table, jamais écrit en clair : ajouter ou retirer une étape dans ``STEP_NUMBERS``
+    suffit alors à corriger le « /N » affiché. Un total écrit en dur formait une seconde table — et un
+    total faux reste plausible, donc invisible (même famille de défaut que C41).
+    """
+    grip = getattr(session_or_grip, "grip", session_or_grip)
+    numeros = STEP_NUMBERS.get(grip)
+    if not numeros:
+        prise = grip.label if isinstance(grip, Grip) else repr(grip)
+        raise ValueError(f"Prise « {prise} » : aucune étape déclarée, donc aucun total à afficher.")
+    return max(numeros.values())
 
 
 def _step_title(index: int, session_or_grip, label: str) -> str:
@@ -809,8 +820,10 @@ def banner_embed() -> discord.Embed:
 def grip_step_embed() -> discord.Embed:
     description = "\n\n".join(f"**{label}** — {desc}" for _, label, desc in GRIP_OPTIONS)
     embed = discord.Embed(
-        # Pas de dénominateur : le nombre d'étapes dépend de la prise choisie (3 en Fingertip, 4 sinon).
-        title="Étape 1 — Votre prise",
+        # Pas de dénominateur : le nombre d'étapes dépend de la prise choisie (3 en Fingertip,
+        # 4 en Palm, 5 en Claw) et la prise n'est pas encore connue à cette étape. Le numéro, lui,
+        # vient de la table (GRIP_STEP_NUMBER) : il n'est pas réécrit ici.
+        title=f"Étape {GRIP_STEP_NUMBER} — Votre prise",
         description=f"Quelle prise utilisez-vous le plus souvent ?\n\n{description}",
         color=COLOR,
     )

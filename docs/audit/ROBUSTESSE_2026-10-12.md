@@ -2510,3 +2510,90 @@ session et la classe de vue), et le titre lit désormais la table. Preuve dans l
 **Ce qui n'a pas changé** : aucun score, aucun seuil, aucune fenêtre, aucun libellé, aucune donnée, aucun
 prix, aucun lien. Une seule ligne de code a bougé (`_step_number`), dans un chemin que le parcours
 n'emprunte jamais.
+
+### 26.11 Le total des étapes était une seconde table, écrite en clair (C42)
+
+Corrigé juste après C41, en relisant le même affichage : l'étape suivante était le **dénominateur**.
+
+| Ce qui était écrit | Ce que ça produisait |
+|---|---|
+| `_steps_total()` recalculait le nombre d'étapes en clair — 3 en Fingertip, 5 en Claw, 4 sinon | un total séparé de la table des numéros : les deux pouvaient diverger |
+| `grip_step_embed()` écrivait `Étape 1` dans une chaîne | l'étape « prise » avait, elle aussi, son numéro hors table |
+
+Pourquoi c'est un défaut, alors que les valeurs étaient justes : le nombre affiché (« Étape n/**N** ») a
+maintenant **une seule source**, la table `STEP_NUMBERS`. Avant, un total faux serait resté **plausible**
+— personne ne voit qu'il manque une étape — et donc invisible ; ajouter une étape à la table n'aurait
+rien changé à l'affichage. C'est la même famille que C41, avec un défaut en moins : là, l'erreur était
+silencieuse de bout en bout.
+
+Ce qui a changé dans `cogs/finder_flow.py` :
+
+- la table porte l'étape « prise » (`"grip": 1` pour les trois prises) : elle décrit désormais **tout**
+  le questionnaire ;
+- `GRIP_STEP_NUMBER` (lue dans la table) remplace le `1` écrit dans le titre de l'étape 1 ;
+- `_steps_total()` renvoie le **plus grand numéro de la table** et lève une erreur lisible si la prise
+  est inconnue (au lieu de répondre « /4 » sans rien savoir) ;
+- le commentaire de `grip_step_embed` dit le bon nombre d'étapes par prise (3 / 4 / 5).
+
+Preuve par mutation : on ajoute une étape à `STEP_NUMBERS[Grip.PALM]`, le total **et** le titre réellement
+affiché suivent (`Étape 2/5` dans le titre du thénar). Remis sur l'ancien total écrit en clair, le test
+**échoue** — vérifié. Et comme la valeur affichée ne change pas, les trois aperçus régénérés sont
+**identiques à l'octet près**.
+
+### 26.12 Une légende d'aperçu pouvait contredire l'embed qu'elle coiffe (C43)
+
+Le document de validation livré (PNG) porte, au-dessus de chaque carte, une légende en petites capitales.
+Celle de `docs/apercu_prix_libre.png` annonçait :
+
+- **légende** : « ÉTAPE **5/5** — BUDGET : CINQ OPTIONS, DONT « PEU IMPORTE LE PRIX » » ;
+- **embed juste en dessous** : « Étape **4/4** — Budget et gamme » + « Palm Grip · Thénar Petite · 180 × 90 mm ».
+
+Deux causes : la légende était écrite à la main (le numéro du parcours **Claw** avait été recopié sur une
+carte du parcours **Palm**), et le nombre d'options (« cinq ») était recopié du menu. Le bot, lui, était
+juste : c'est le document qui mentait.
+
+Correction : les légendes de `tools/render_preview.py` sont dérivées de la **même table** que les titres
+(`_legende_etape`, qui appelle `_step_number` et `_steps_total`), chaque carte du parcours passe la prise
+de son propre embed, et le nombre d'options annoncé vient de `BUDGET_OPTIONS`. Aperçu régénéré :
+
+| Aperçu | Effet de la correction |
+|---|---|
+| `apercu_prix_libre.png` | la légende devient « ÉTAPE **4/4** — BUDGET : **5** OPTIONS, DONT « PEU IMPORTE LE PRIX » » ; **zone modifiée mesurée : y 22–33** sur 1 324 px (la ligne de légende, rien d'autre) |
+| `apercu_parcours.png` | **identique à l'octet près** (MD5 inchangé) — les légendes Claw étaient déjà justes |
+| `apercu_resultat.png` | **identique à l'octet près** (MD5 inchangé) |
+
+Preuve dans les deux sens : `test_les_legendes_d_apercu_suivent_le_titre_des_embeds` compare les légendes
+**réellement dessinées** (les fonctions qui les assemblent, pas une copie) aux titres des embeds, et
+verrouille le cas exact du défaut (parcours Palm : « Étape 4/4 — budget : 5 options »). Légende remise à
+la main comme avant, le test **échoue** — vérifié.
+
+### 26.13 Importer l'outil d'aperçu changeait le bot (C44)
+
+Trouvé en écrivant le test ci-dessus, et c'est le plus surprenant des trois : `tools/render_preview.py`
+branchait ses faux domaines d'images (`https://apercu.local/…`) sur le module du bot **au moment de
+l'import**, par une simple affectation en haut du fichier. Conséquence : le simple fait d'importer l'outil
+— dans un test, un script, un IDE — changeait la résolution des images **dans le même processus**. Le
+symptôme est apparu tout de suite : `test_without_image_base_url_no_image_is_attached_and_nothing_breaks`
+échouait **selon l'ordre d'exécution** des tests, ce qui rend une suite inutilisable pour juger une
+correction.
+
+Aucun effet en production (le bot n'importe jamais cet outil — vérifié), mais la règle est la même que
+partout ailleurs dans ce dépôt : un fichier ne doit rien changer tant qu'on ne lui demande rien.
+Correction : le détournement est maintenant une fonction explicite (`images_locales()`), appelée par
+`main()` au début de la génération. `test_importer_l_outil_d_apercu_ne_change_rien_au_bot` le verrouille :
+remis en effet de bord de l'import, il **échoue** — vérifié.
+
+### 26.14 Preuves d'exécution (38e passe, suite)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **538 passed** (535 avant cette suite : 3 tests ajoutés) |
+| Trois mutations volontaires (ancien code remis) | total en clair → **échoue** · légende à la main → **échoue** · effet de bord d'import → **échoue** |
+| Les huit états du questionnaire | numéro affiché = numéro de la table (C41) et légende d'aperçu = titre de l'embed (C43) |
+| `tools/render_preview.py` — aperçus régénérés | `parcours` et `resultat` **identiques à l'octet près** · `prix_libre` : seule la ligne de légende change (y 22–33) |
+| `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
+| `tools/privacy_scan.py` | 0 violation |
+
+**Ce qui n'a pas changé** : aucun score, aucun seuil, aucune fenêtre, aucun libellé affiché au membre, aucune
+donnée, aucun prix, aucun lien. Un total d'étapes dérivé de la table donne exactement les mêmes textes
+(les aperçus le prouvent) ; la seule image qui bouge est la légende d'un document de validation.

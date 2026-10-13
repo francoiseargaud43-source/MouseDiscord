@@ -1939,6 +1939,37 @@ d'habitude — **jamais `bot.py` à la main** : la tâche planifiée s'en charge
 
 **5. Rien à vérifier dans Discord** : le résultat affiché est identique à celui du §12.20.
 
+### 12.22 Mise à jour du 2026-10-13 (13e) : les numéros d'étapes n'ont plus qu'une seule source
+
+Quatre défauts trouvés en relisant le parcours et les outils, **aucun visible par un membre** :
+le numéro de l'étape de variante de Claw venait d'une deuxième table (`variant` au lieu de
+`claw_variant`, §26.9), le **total** des étapes était écrit en clair au lieu de se lire dans la même
+table (§26.11), l'aperçu livré `docs/apercu_prix_libre.png` annonçait « Étape 5/5 » au-dessus d'un titre
+« Étape 4/4 » (§26.12), et importer l'outil d'aperçu changeait la résolution des images du bot dans le
+même processus (§26.13). Les numéros d'étapes, les titres affichés et les légendes d'aperçu ont
+maintenant **une seule source**, vérifiée par trois tests.
+
+**1. Fichiers à envoyer (facultatifs)** — `cogs/finder_flow.py`, `tools/render_preview.py`,
+`tests/test_flow.py` et `docs/apercu_prix_libre.png`. Facultatifs au sens strict : **aucun texte affiché
+dans Discord ne change** (les trois aperçus régénérés le prouvent : deux sont identiques à l'octet près,
+le troisième ne change que sur sa propre légende). Envoyez-les pour que le serveur corresponde au dépôt.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 538 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : inutile (aucun texte affiché ne change) ; si vous envoyez les fichiers, redémarrer
+comme d'habitude — **jamais `bot.py` à la main** : la tâche planifiée s'en charge, sinon `pkill -f "bot.py"`.
+
+**5. Rien à vérifier dans Discord** : le parcours et le résultat affichés sont identiques à ceux du §12.21.
+
 ---
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)

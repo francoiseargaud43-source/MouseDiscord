@@ -285,17 +285,14 @@ def test_une_etape_qui_n_existe_pas_pour_la_prise_le_dit():
         flow._step_number("thenar", None)          # parcours sans prise : rien à numéroter
 
 
-def test_chaque_etape_affichee_porte_le_numero_de_la_table():
-    """Trouvé le 2026-10-13 en parcourant tous les états du parcours.
+def etats_du_questionnaire(store: SessionStore) -> list:
+    """Les huit états où le questionnaire affiche une étape : un par étape et par prise.
 
-    ``step_kind()`` renvoyait « claw_variant » là où la table des numéros disait « variant » : toute
-    numérotation de l'étape de variante levait donc un ``ValueError`` (personne ne l'appelait : le
-    titre écrivait son numéro **en dur**, deuxième source de vérité). Ici, chaque état possible est
-    traversé et les deux doivent dire la même chose : le numéro de la table existe, et il se retrouve
-    dans le titre réellement affiché par ``step_for``.
+    Chacun est numéroté en commentaire (position / total de sa prise) : ces huit états servent à
+    vérifier que la table des numéros, les titres affichés et les légendes d'aperçu disent la même
+    chose (C41 et C43).
     """
-    store = SessionStore(ttl_seconds=600)
-    etats = [
+    return [
         start_for(store, user_id=1, grip=Grip.PALM),                                  # thénar (2/4)
         start_for(store, user_id=2, grip=Grip.PALM, thenar=Thenar.MOYENNE),           # mesures (3/4)
         start_for(store, user_id=3, grip=Grip.PALM, thenar=Thenar.MOYENNE,
@@ -307,12 +304,94 @@ def test_chaque_etape_affichee_porte_le_numero_de_la_table():
         start_for(store, user_id=7, grip=Grip.FINGERTIP),                             # mesures (2/3)
         start_for(store, user_id=8, grip=Grip.FINGERTIP, length=180.0, width=90.0),   # budget (3/3)
     ]
-    for etat in etats:
+
+
+def test_chaque_etape_affichee_porte_le_numero_de_la_table():
+    """Trouvé le 2026-10-13 en parcourant tous les états du parcours.
+
+    ``step_kind()`` renvoyait « claw_variant » là où la table des numéros disait « variant » : toute
+    numérotation de l'étape de variante levait donc un ``ValueError`` (personne ne l'appelait : le
+    titre écrivait son numéro **en dur**, deuxième source de vérité). Ici, chaque état possible est
+    traversé et les deux doivent dire la même chose : le numéro de la table existe, et il se retrouve
+    dans le titre réellement affiché par ``step_for``.
+    """
+    store = SessionStore(ttl_seconds=600)
+    for etat in etats_du_questionnaire(store):
         kind = flow.step_kind(etat)
         assert kind in flow.STEP_NUMBERS[etat.grip], f"{kind} n'a pas de numéro : la table a divergé"
         numero = flow._step_number(kind, etat)
         titre = flow.step_for(etat)[0].title
         assert f"Étape {numero}/{flow._steps_total(etat)}" in titre, f"{kind} : {titre!r}"
+
+
+def test_le_total_des_etapes_se_lit_dans_la_meme_table_que_les_numeros(monkeypatch):
+    """Trouvé le 2026-10-13 en relisant l'affichage des étapes (même famille que C41).
+
+    Le total (« Étape n/N ») était écrit en clair — 3 en Fingertip, 5 en Claw, 4 sinon — à côté de la
+    table des numéros : deux sources de vérité pour le même nombre, et la seconde était **silencieuse**
+    (un total faux reste plausible : rien ne signale qu'une étape a été ajoutée ou retirée). Preuve par
+    mutation : on ajoute une étape à la table, le total ET le titre réellement affiché suivent.
+    """
+    for grip, numeros in flow.STEP_NUMBERS.items():
+        assert flow._steps_total(grip) == max(numeros.values()), grip
+        assert numeros["grip"] == flow.GRIP_STEP_NUMBER, grip     # toutes les prises commencent en 1
+    assert "Étape 1 — Votre prise" == flow.grip_step_embed().title  # étape 1 : pas de dénominateur
+
+    monkeypatch.setitem(flow.STEP_NUMBERS[Grip.PALM], "etape_en_plus", 5)
+    assert flow._steps_total(Grip.PALM) == 5                                  # le total suit la table…
+    assert "Étape 2/5" in flow.thenar_step_embed(Grip.PALM).title              # …et le titre affiché aussi
+    with pytest.raises(ValueError, match="aucune étape déclarée"):
+        flow._steps_total(None)                        # au lieu d'un « /4 » inventé de toutes pièces
+
+
+def test_les_legendes_d_apercu_suivent_le_titre_des_embeds():
+    """Trouvé le 2026-10-13 dans l'aperçu livré ``docs/apercu_prix_libre.png`` : sa légende annonçait
+    « Étape 5/5 — budget » au-dessus d'un embed titré « Étape 4/4 » (parcours Palm, budget en 4).
+
+    Les légendes de ce fichier d'aperçu sont désormais dérivées de la même table que les titres :
+    voici la garantie, sur les huit états du questionnaire.
+    """
+    from tools import render_preview                # import paresseux : cet outil a besoin de Pillow
+
+    def numero(texte: str) -> str:
+        """Numéro d'étape lu dans un titre ou une légende : « Étape 4/4 — … » → « Étape 4 »."""
+        return texte.split("Étape ", 1)[1].split("/", 1)[0].split(" —", 1)[0].strip()
+
+    store = SessionStore(ttl_seconds=600)
+    claw = start_for(store, user_id=20, grip=Grip.CLAW, variant=ClawVariant.RELACHEE,
+                     thenar=Thenar.MOYENNE, length=200.0, width=110.0)   # parcours complet : 5 étapes
+    palm = start_for(store, user_id=21, grip=Grip.PALM, thenar=Thenar.MOYENNE,
+                     length=180.0, width=90.0)                            # parcours Palm : 4 étapes
+    palm.budget_mode = BudgetMode.PEU_IMPORTE_PRIX
+    cartes_prix_libre = render_preview.etapes_du_prix_libre(palm, flow.compute_selection(palm))
+    cartes = render_preview.etapes_du_parcours(claw) + cartes_prix_libre
+    verifiees = 0
+    for legende, embed, _, _ in cartes:
+        if not embed.title.startswith("Étape "):        # cartes « Accueil » et « Résultat »
+            continue
+        verifiees += 1
+        assert numero(legende) == numero(embed.title), f"{legende!r} vs {embed.title!r}"
+    # 5 cartes d'étape pour le parcours Claw + 1 pour l'aperçu « prix libre » (Palm).
+    assert verifiees == 6
+    # Le cas exact du défaut : l'étape budget d'un parcours Palm est la 4/4, jamais la 5/5.
+    assert f"Étape {flow._step_number('budget', palm)}/{flow._steps_total(palm)} — " == "Étape 4/4 — "
+    legende_palm = cartes_prix_libre[0][0]
+    assert legende_palm.startswith("Étape 4/4 — budget : 5 options"), legende_palm
+
+
+def test_importer_l_outil_d_apercu_ne_change_rien_au_bot(monkeypatch):
+    """Trouvé le 2026-10-13 en écrivant le test ci-dessus : importer ``tools/render_preview.py``
+    branchait ses faux domaines d'images sur le module du bot. Le test « sans URL d'images » échouait
+    alors selon l'ordre d'exécution — un outil qui se contente d'être importé ne doit rien changer.
+    Le détournement est maintenant demandé explicitement (``images_locales()``, appelé par ``main``).
+    """
+    from tools import render_preview
+
+    monkeypatch.setattr("config.IMAGES_BASE_URL", "")
+    avant = flow.load_image_urls
+    assert callable(render_preview.images_locales)         # l'outil expose la bascule...
+    assert flow.load_image_urls is avant                   # ...mais l'import n'a rien rebranché
+    assert flow.grip_step_embed().image.url is None        # et le bot reste sans image
 
 
 @pytest.mark.asyncio
