@@ -2204,6 +2204,13 @@ la Xlite v4 Medium 13, la Xlite v4 Large 0 ; le détail et les souris qui repren
 §25.4. La différence entre les deux décisions est réelle : l'A9 Plus **redistribue** sans rien retirer à
 personne, le retrait des ruptures **raccourcit la liste de 78 profils**.
 
+**Coût de la troisième option** (écrire « en rupture » sur la ligne, mesuré aussi) : la plus longue ligne
+d'un résultat passerait de **102 à 116 caractères** avec « · en rupture de stock » (107 avec « · en
+rupture ») — la limite Discord d'un champ d'embed est de **1 024 caractères**, il n'y a donc aucune
+contrainte technique, seulement une ligne un peu plus longue à l'écran ; **1 682 places** sont concernées
+dans la grille complète (économie 1 121, alternative 459, idéale 102), soit exactement le nombre de places
+que ces quatre souris occupent.
+
 **3. Comment rejouer les deux mesures** — aucun catalogue de simulation n'est versionné (`/tmp` est
 volatil, il disparaît entre deux sessions) : les recettes qui les reconstituent sont donc écrites ici.
 

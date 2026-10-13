@@ -205,7 +205,9 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     l'U2 V2 Mini (236), la F1 V2 Ultimate (204). **Rien n'a été changé** : retirer une souris du classement,
     la faire passer après les autres ou écrire « en rupture » sur sa ligne sont trois décisions différentes,
     toutes visibles par les membres, et aucune n'a été tranchée. La question est posée telle quelle, avec
-    les chiffres. Détail : §25.4 et §25.6 de `ROBUSTESSE_2026-10-12.md`.
+    les chiffres. Le **coût de la troisième option** est mesuré lui aussi : marquer la ligne ferait passer la
+    plus longue ligne d'un résultat de **102 à 116 caractères** (limite Discord d'un champ : 1 024), pour
+    **1 682 places** concernées. Détail : §25.4 et §25.6 de `ROBUSTESSE_2026-10-12.md`.
 
 ## 9. Vérifications Discord
 
