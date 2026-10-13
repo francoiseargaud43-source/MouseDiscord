@@ -861,6 +861,8 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 
 ## 12. Mise à jour du bot après une modification sur GitHub
 
+> **Lire les « attendu : N passed » comme des repères datés.** Chaque section `12.x` décrit la mise à jour de son jour, avec le nombre de tests de ce jour-là : le compteur **augmente** au fil des mises à jour (391 → 395 → 403 → 409 → 488 aujourd'hui). Seul le compteur de la **dernière** section est le bon ; dans les sections plus anciennes, ce n'est pas une erreur si votre `pytest -q` affiche davantage de tests.
+
 ### 12.1 Ce qui ne doit JAMAIS être écrasé
 
 | Élément sur le serveur | Pourquoi le protéger |

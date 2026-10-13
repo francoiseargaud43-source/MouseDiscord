@@ -2243,3 +2243,6 @@ deux renvois concernés ont suivi (`AUDIT.md` point 18 → §25.4, plus le renvo
 2026-10-11 »), la suivante §6, et les deux renvois qui visaient ces ajouts
 (`AMELIORATIONS_MOTEUR_ET_RECHERCHE.md`, `tests/test_data.py`) ont été mis à jour ; le renvoi de
 `RAPPORT_FINAL.md` (« Sources consultées », écrit avant le 11) reste juste.
+Dans le guide de déploiement, une note en tête du §12 rappelle que les « attendu : N passed » de
+chaque section sont **datés** et que seul le dernier compte (`488`) est à jour — un `pytest -q`
+qui affiche plus de tests dans une section ancienne n'est pas une anomalie.
