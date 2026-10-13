@@ -47,7 +47,7 @@ et la nôtre d'une droite linéaire. Les deux méthodes convergent, ce qui valid
 
 La collection officielle <https://www.atk.store/fr-fr/collections/souris> liste **23 produits** (22 en stock).
 Croisées avec `data/mouse_db.json`, **8 souris encore vendues manquaient** : elles ont été ajoutées
-(sources ATK Store + EloShapes + revendeurs, cf. `docs/audit/CATALOGUE_ATK.md` §4).
+(sources ATK Store + EloShapes + revendeurs, cf. `docs/audit/CATALOGUE_ATK.md` §5).
 
 | Ajout | Dimensions (mm) | Poids | Bosse (EloShapes → schéma) | Prix store (USD) | Intérêt |
 |---|---|---|---|---|---|

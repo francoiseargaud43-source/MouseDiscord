@@ -1868,7 +1868,7 @@ champs n'entrent dans aucun barème) et il est désormais **mesuré**, pas suppo
 un prix réellement modifié → des écarts (et la souris modifiée apparaît dans les changements) ; deux
 catalogues différents → refus explicite.
 
-### 23.8 Une contradiction entre le message et le master prompt (signalée, non modifiée)
+### 23.7 Une contradiction entre le message et le master prompt (signalée, non modifiée)
 
 Dernier constat de la relecture : le master prompt — document **contractuel** — montre dans ses deux
 exemples de résultat un prix suivi de « (prix non vérifié) », et son croquis de code l'ajoute dès que
@@ -1888,7 +1888,7 @@ règle reste écrite, et l'arbitrage est porté au propriétaire (`AUDIT.md` C34
 le marqueur, ou retirer la règle du master prompt. Rien n'est modifié dans la ligne de prix sans sa
 réponse : c'est du texte visible, et ses décisions sur la concision du résultat sont explicites.
 
-### 23.7 Preuves d'exécution (34e passe)
+### 23.8 Preuves d'exécution (34e passe)
 
 | Contrôle | Résultat |
 |---|---|
@@ -1952,7 +1952,7 @@ vérifie pour chacun qu'aucune souris du classement ne passait sous le plafond.
 
 ### 24.2 Le marqueur « (prix non vérifié) » revient dans la ligne de prix (décision : « remettre »)
 
-**Le défaut** (§23.8, C34) : le master prompt montre « 74.90 € (prix non vérifié) », mais aucun appelant
+**Le défaut** (§23.7, C34) : le master prompt montre « 74.90 € (prix non vérifié) », mais aucun appelant
 n'activait plus le marqueur depuis le retrait de l'onglet « Détails » (2026-10-11). Un prix non attesté
 s'affichait donc **exactement** comme un prix vérifié.
 
@@ -2107,7 +2107,7 @@ sont identiques.
 - **Ce qui n'a pas changé** : aucun seuil, aucun barème, aucune fenêtre, aucun libellé de place, aucune
   cote, aucun poids, aucune prise. Seules des données de prix (et leurs sources) et trois tests ont bougé.
 
-### 25.5 Mesuré mais non modifié : quatre souris en rupture de stock
+### 25.4 Mesuré mais non modifié : quatre souris en rupture de stock
 
 La relecture des liens a aussi rapporté la **disponibilité**. À la date du 2026-10-13, **quatre souris du
 catalogue ne peuvent pas être achetées** : la **VXE MAD R** (produit entier), l'**ATK Fierce X** (produit
@@ -2125,6 +2125,24 @@ Ce que ces ruptures pèsent, sur la grille statistique (**18 522 profils**, 51 5
 | Pulsar Xlite v4 Medium | 12 | 0,1 % |
 | **Total** | **1 614 places sur 51 504 (3,1 %)** | — |
 
+**Ce que coûterait un retrait — mesuré le 2026-10-13** (même outil, **grille complète et non la grille
+statistique** : 27 170 profils) : sortir les quatre souris du classement changerait **1 682 profils sur
+27 170 (6,19 %)** — place idéale 102, alternative 557, économie 1 517 —, **aucune place gagnée, 78 places
+perdues**, et les listes reconstruites ne montrent **jamais deux fois la même coque** (1 635 sur 1 682 ;
+47 retombent sur le repli documenté, coque distincte impossible). Qui reprend la place : ATK A9 Plus 2.0
+(315 fois), VXE R1 (256), ATK U2 V2 Mini (236), ATK F1 V2 Ultimate (204), ATK A9 Mini (98). Le détail par
+souris : **MAD R 1 517** places occupées avant, **Fierce X 152**, **Xlite v4 Medium 13**, **Xlite v4 Large
+0** (sur cette grille, la Large n'occupait aucune place — d'où son absence du tableau de la grille
+statistique ci-dessus, qui la compte 180 fois). Les deux grilles mesurent donc la même réalité avec deux
+échantillons de profils différents : 1 614 places sur la grille statistique (18 522 profils), 1 682 profils
+touchés sur la grille complète.
+
+Pour rendre cette mesure possible, `tools/db_effect.py` a reçu une option **`--retrait`** : l'outil
+**refusait** jusqu'ici de comparer deux catalogues qui ne listent pas les mêmes souris (garde-fou : la
+comparaison ne voudrait rien dire), il accepte désormais **une simulation de retrait** (catalogue après =
+sous-ensemble strict) et affiche le poids des souris sorties et qui reprend leur place. Un catalogue
+**enrichi** reste refusé dans tous les cas — deux tests le verrouillent (`tests/test_db_effect.py`).
+
 **Rien n'a été changé**, et c'est volontaire : un membre qui lit « VXE MAD R — 41,95 € » sur une des trois
 lignes du résultat ne peut pas l'acheter aujourd'hui. Trois réponses sont possibles et elles n'ont pas le
 même effet — **retirer** la souris du classement (elle sort aussi le jour où elle revient), la **classer
@@ -2133,11 +2151,11 @@ sans toucher au classement, mais la ligne s'allonge). Aucune n'a été tranchée
 question est posée avec ces chiffres (point ouvert 18 de `AUDIT.md`), et rien n'est appliqué sans réponse —
 c'est la règle du projet (le moteur ne bouge que sur demande explicite, et une donnée ne s'invente pas).
 
-### 25.4 Preuves d'exécution (37e passe)
+### 25.5 Preuves d'exécution (37e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **412 passed** (409 avant la passe : 3 tests ajoutés) |
+| `pytest -q` | **486 passed** à la clôture de la passe (412 au moment des trois tests de prix, puis +74 cas venus du garde paramétré sur les renvois de section, §25.3) |
 | `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
 | `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places 23 140 (85,17 %) · 2 places 1 287 · 1 place 182 · 0 place 2 561 · repli « même coque » 631 · match idéal partiel 3 118 · ordre non garanti 70 (0,26 %) |
 | `tools/db_effect.py --avant` (grille complète) | 6 058 profils changent (22,30 %) · **0 place gagnée, 91 perdue** |
@@ -2154,3 +2172,74 @@ Les trois tests ajoutés à `tests/test_data.py` :
 3. `test_chaque_prix_de_souris_est_date_par_une_source` — **aucun prix sans source de prix datée**, et
    la note de prix doit dire **quand** elle a été relevée. C'est le contrôle qui manquait : les six
    écarts du 13 sont exactement ce qu'il interdit désormais.
+
+### 25.6 Après la 37e passe : les deux décisions laissées au propriétaire sont chiffrées (2026-10-13)
+
+La 37e passe a laissé deux questions ouvertes au propriétaire (`AUDIT.md` §8, points 16 et 18). Les deux
+sont maintenant accompagnées d'un **effet mesuré**, pour que la décision se prenne sur des chiffres et non
+sur une impression — **aucune des deux n'est appliquée** : le moteur, les données et les messages sont
+inchangés.
+
+**1. Prix de l'ATK A9 Plus (point 16)** — si la souris prenait le prix de la variante que son lien ouvre
+(**27,95 €** au lieu des 45,00 € du cahier des charges) :
+
+| Mesure (grille complète, 27 170 profils) | Résultat |
+|---|---|
+| Profils dont au moins une place change | **3 556 (13,09 %)** |
+| Places modifiées | idéale **1 491** · alternative **2 711** · économie **1 790** |
+| Places gagnées / perdues | **0 / 0** — aucune liste ne s'allonge ni ne raccourcit |
+| Listes reconstruites | 3 016 **sans deux fois la même coque** · 540 avec le repli documenté |
+
+Les trois nombres de places dépassent 3 556 parce qu'une même liste peut changer sur deux places — ce sont
+des **places**, pas des profils. Qui reprend la place : l'A9 Plus elle-même dans **1 487** listes (elle
+remonte), l'A9 Ultimate 114, l'A9 Air 27, l'A9 Mini 11.
+
+**2. Sort des quatre souris en rupture (point 18)** — si elles sortaient du classement : **1 682 profils
+(6,19 %)** changent, **0 place gagnée, 78 perdues**, la MAD R occupait 1 517 places avant, la Fierce X 152,
+la Xlite v4 Medium 13, la Xlite v4 Large 0 ; le détail et les souris qui reprennent la place sont au
+§25.4. La différence entre les deux décisions est réelle : l'A9 Plus **redistribue** sans rien retirer à
+personne, le retrait des ruptures **raccourcit la liste de 78 profils**.
+
+**3. Comment rejouer les deux mesures** — aucun catalogue de simulation n'est versionné (`/tmp` est
+volatil, il disparaît entre deux sessions) : les recettes qui les reconstituent sont donc écrites ici.
+
+```bash
+# 1) prix de l'A9 Plus ramené à celui de sa variante (27,95 €)
+.venv/bin/python - <<'RECETTE'
+import json, pathlib
+entrees = json.loads(pathlib.Path("data/mouse_db.json").read_text(encoding="utf-8"))
+for entree in entrees:
+    if entree["id"] == "atk_a9_plus":
+        entree["price_eur"] = 27.95
+pathlib.Path("/tmp/sim_a9plus_2795.json").write_text(
+    json.dumps(entrees, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+RECETTE
+.venv/bin/python tools/db_effect.py --avant data/mouse_db.json --apres /tmp/sim_a9plus_2795.json --grille complete
+
+# 2) les quatre souris en rupture sorties du classement
+.venv/bin/python - <<'RECETTE'
+import json, pathlib
+entrees = json.loads(pathlib.Path("data/mouse_db.json").read_text(encoding="utf-8"))
+retirees = {"vxe_mad_r", "atk_fierce_x", "pulsar_xlite_v4_medium", "pulsar_xlite_v4_large"}
+gardees = [entree for entree in entrees if entree["id"] not in retirees]
+assert len(entrees) - len(gardees) == len(retirees)
+pathlib.Path("/tmp/sim_sans_ruptures.json").write_text(
+    json.dumps(gardees, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+RECETTE
+.venv/bin/python tools/db_effect.py --avant data/mouse_db.json --apres /tmp/sim_sans_ruptures.json \
+    --grille complete --retrait
+```
+
+**4. Ce que cette mesure a ajouté au dépôt** : l'option `--retrait` de `tools/db_effect.py` (une
+simulation de retrait se mesure désormais sans banc jetable) et **deux tests** qui la verrouillent
+(`tests/test_db_effect.py` : un retrait mesuré, un catalogue enrichi toujours refusé). Suite complète
+après ces ajouts : **488 passed**.
+
+**5. Deux numéros de section remis dans l'ordre** (même date) : dans ce journal, « Preuves d'exécution »
+suivait une section portant un numéro plus petit que le sien (§23.7 après §23.8, §25.4 après §25.5) — les
+deux paires ont été renumérotées pour que l'ordre du fichier corresponde à l'ordre des numéros, et les
+deux renvois concernés ont suivi (`AUDIT.md` point 18 → §25.4, plus le renvoi interne du C34). Le
+`CATALOGUE_ATK.md` portait de son côté **deux sections « 4 »** : la seconde est devenue §5 (« Ajouts du
+2026-10-11 »), la suivante §6, et les deux renvois qui visaient ces ajouts
+(`AMELIORATIONS_MOTEUR_ET_RECHERCHE.md`, `tests/test_data.py`) ont été mis à jour ; le renvoi de
+`RAPPORT_FINAL.md` (« Sources consultées », écrit avant le 11) reste juste.

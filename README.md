@@ -449,6 +449,7 @@ MouseDiscord/
 │   ├── qa_flow_matrix.py     # Banc d'essai du parcours : toute la grille de profils passe par le moteur
 │   ├── flow_effect.py        # Effet d'une modification du CODE des trois places : avant/après mesuré
 │   ├── db_effect.py          # Effet d'une modification des DONNÉES : deux catalogues, mêmes profils
+│   │                         #   (--retrait : mesure aussi le retrait de souris, catalogue réduit)
 │   ├── recommendation_stats.py # Combien de fois chaque souris est recommandée (rapport dans docs/audit/)
 │   ├── render_preview.py     # Aperçu PNG du parcours et du résultat, sans lancer le bot
 │   ├── privacy_scan.py       # Contrôle statique de confidentialité (0 violation attendue)
@@ -480,6 +481,7 @@ python tools/qa_flow_matrix.py       # banc d'essai du parcours (27 170 profils,
 python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (720 profils)
 python tools/flow_effect.py          # effet d'une modification du CODE des trois places (avant/après)
 python tools/db_effect.py --avant ancien_mouse_db.json   # effet d'une modification des DONNÉES
+python tools/db_effect.py --avant data/mouse_db.json --apres catalogue_reduit.json --retrait  # retrait de souris
 python tools/image_corpus_check.py  # doublons d'un corpus d'images (identité vérifiable avant mesure)
 python tools/image_identity_check.py --reference IMG --candidate IMG  # même coque ? (silhouettes)
 python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md
@@ -502,7 +504,9 @@ python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOM
   `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré.
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
-  ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés.
+  ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**
+  (`--retrait`, catalogue après = sous-ensemble) est mesurée — places occupées par les souris sorties et
+  qui reprend leur place — tandis qu'un catalogue **enrichi** reste refusé dans tous les cas.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 
 **Ce que les tests ne couvrent pas** : une vraie connexion Discord. Les vérifications suivantes doivent être faites à la main

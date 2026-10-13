@@ -61,7 +61,7 @@ Consultées le 2026-10-10 (pages complètes ou extraits de recherche selon la so
 - Tiers : Meckeys (Z1 Series), MaxGaming (Y9 Ultimate), FPSTools (Y9 Ultimate), MouseMetric (Fierce X), notice ATK U2 V2 Ultimate (manuals.plus).
 - Non utilisé comme donnée : Reddit (anecdotique).
 
-## 4. Ajouts du 2026-10-11 — produits encore vendus (atk.store)
+## 5. Ajouts du 2026-10-11 — produits encore vendus (atk.store)
 
 Passe complète sur la collection officielle (23 produits, 22 en stock) le **2026-10-11** : les 8 souris encore vendues
 absentes du catalogue ont été ajoutées. Méthode et analyse : `docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md`.
@@ -104,7 +104,7 @@ concernées, dont la **Fierce X** (fingertip), les **U2 Mini / U2 V2 Mini** (fin
 courte est la Pulsar X2 CrazyLight Mini (115,6 mm) ; la `vxe_v3` (116,6 mm) reste la première souris « Small » du
 catalogue : elle comble le manque de formes compactes pour les mains de moins de ~175 mm.
 
-## 5. Ce qu'il reste à faire pour élargir le catalogue
+## 6. Ce qu'il reste à faire pour élargir le catalogue
 
 1. Extraire les fiches produits complètes (statut de disponibilité, prix **EUR**) sur les 36 souris du catalogue
    (les prix du store sont en USD : à documenter auprès d'un revendeur européen, jamais par conversion).

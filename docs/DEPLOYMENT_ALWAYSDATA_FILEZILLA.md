@@ -1648,7 +1648,8 @@ sinon `pkill -f "bot.py"`.
 ```
 cogs/finder_flow.py                  (décisif : le résidu de guillemets retiré)
 data/mouse_db.json                   (décisif : source fusionnée, trois statuts de cotes)
-tools/db_effect.py                   (facultatif : NOUVEAU, mesure l'effet d'un changement de données)
+tools/db_effect.py                   (facultatif : NOUVEAU, mesure l'effet d'un changement de données,
+                                      et d'un retrait de souris avec --retrait)
 tests/test_code_hygiene.py           (facultatif : NOUVEAU, hygiène du code livré)
 tests/test_db_effect.py              (facultatif : NOUVEAU, verrouille le comparateur de données)
 tests/test_data.py                   (facultatif : doublon de source et statuts, contrôlés dans les deux sens)
@@ -1823,7 +1824,7 @@ aucun libellé. Le moteur est identique — seules les données d'achat et trois
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 412 passed
+.venv/bin/python -m pytest -q                      # attendu : 488 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 ```
@@ -1846,6 +1847,41 @@ sinon `pkill -f "bot.py"`.
 **Retour arrière** : remettre l'ancien `data/mouse_db.json` **et** l'ancien `data/commercial_links.json`
 par FileZilla, puis `pkill -f "bot.py"`. Les deux vont ensemble : les prix et les liens qui les ouvrent ont
 été corrigés dans le même mouvement.
+
+---
+
+### 12.20 Mesure du 2026-10-13 (11e) : deux décisions du propriétaire chiffrées (le bot ne change pas)
+
+**Ce que change cette mise à jour** : **rien dans le parcours du bot**. Les deux décisions laissées au
+propriétaire par la 37e passe (le prix de l'ATK A9 Plus, le sort des quatre souris en rupture) sont
+désormais **mesurées** sur la grille complète, mais **aucune n'est appliquée** : le catalogue, les liens
+d'achat, le moteur et les messages sont **identiques** à la mise à jour §12.19.
+
+| Décision en attente | Effet mesuré (grille complète, 27 170 profils) |
+|---|---|
+| **A9 Plus à 27,95 €** (le prix de la variante que son lien ouvre) | **3 556 profils (13,09 %)** changent d'au moins une place · idéale 1 491 · alternative 2 711 · économie 1 790 · **0 place gagnée, 0 perdue** |
+| **Retrait des 4 souris en rupture** (MAD R, Fierce X, Xlite v4 Medium et Large) | **1 682 profils (6,19 %)** changent d'au moins une place · **0 place gagnée, 78 perdues** |
+
+Détail, commandes de reproduction et commentaire : `docs/audit/ROBUSTESSE_2026-10-12.md` §25.6.
+
+**1. Fichiers à envoyer (facultatifs)** — `tools/db_effect.py` (nouvelle option `--retrait`) et
+`tests/test_db_effect.py` (deux tests). Ce sont des **outils de mesure** : le bot ne les exécute jamais.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 488 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : inutile — aucune ligne livrée au bot n'a changé. Si les deux fichiers facultatifs ont
+été envoyés, un redémarrage ne change rien non plus (aucun code du bot n'y touche).
+
+**5. Rien à vérifier dans Discord** : le résultat affiché est exactement celui décrit au §12.19.
 
 ---
 

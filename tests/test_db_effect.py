@@ -1,9 +1,10 @@
 """Le comparateur de données (``tools/db_effect.py``) doit prouver ce qu'il annonce.
 
-Deux exigences, dans les deux sens : deux catalogues identiques ne peuvent produire **aucun** écart
-(sinon l'outil inventerait des changements), et une modification réelle doit en produire (sinon
-l'outil ne prouverait rien). Les deux catalogues de test sont écrits dans un dossier temporaire :
-le dépôt n'est jamais modifié.
+Trois exigences, dans les deux sens : deux catalogues identiques ne peuvent produire **aucun** écart
+(sinon l'outil inventerait des changements), une modification réelle doit en produire (sinon
+l'outil ne prouverait rien), et une simulation de retrait (option ``retrait=True``) doit peser les
+souris sorties **sans** accepter pour autant un catalogue enrichi. Les catalogues de test sont
+écrits dans un dossier temporaire : le dépôt n'est jamais modifié.
 """
 from __future__ import annotations
 
@@ -50,6 +51,36 @@ def test_un_prix_modifie_change_bien_des_profils(tmp_path):
     assert "atk_zero" in " ".join(rapport.changes)
     # Le classement reste dans les trois places : aucune place ne se perd ni ne s'ajoute.
     assert rapport.place_gagnee == 0 and rapport.place_perdue == 0
+
+
+def test_un_retrait_se_mesure_avec_le_mode_retrait(tmp_path):
+    """Retirer une souris : l'option ``retrait`` pèse les places qu'elle occupait au lieu de refuser."""
+    avant = _catalogue(modifie=False, dossier=tmp_path)
+    entrees = json.loads(avant.read_text(encoding="utf-8"))
+    gardees = [entree for entree in entrees if entree["id"] != "vxe_mad_r"]
+    reduit = tmp_path / "catalogue_reduit.json"
+    reduit.write_text(json.dumps(gardees, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    rapport = db_effect.comparer(avant, reduit, "mini", retrait=True)
+    assert rapport.retirees == ["vxe_mad_r"]
+    assert rapport.changes, "aucun changement détecté alors que la VXE MAD R a été retirée"
+    assert rapport.places_retirees > 0, "la souris retirée n'occupait aucune place : rien n'est mesuré"
+    assert rapport.par_souris_retiree.get("vxe_mad_r") == rapport.places_retirees
+    # Retirer une souris ne peut pas ajouter de place : la liste ne s'allonge jamais.
+    assert rapport.place_gagnee == 0
+
+
+def test_le_mode_retrait_refuse_un_catalogue_enrichi(tmp_path):
+    """``retrait`` ne sert qu'à retirer : un catalogue qui ajoute une souris reste refusé."""
+    avant = _catalogue(modifie=False, dossier=tmp_path)
+    entrees = json.loads(avant.read_text(encoding="utf-8"))
+    copie = dict(entrees[0])
+    copie["id"] = "copie_de_test"
+    entrees.append(copie)
+    enrichi = tmp_path / "catalogue_enrichi.json"
+    enrichi.write_text(json.dumps(entrees, ensure_ascii=False, indent=2), encoding="utf-8")
+    with pytest.raises(ValueError, match="mêmes souris"):
+        db_effect.comparer(avant, enrichi, "mini", retrait=True)
 
 
 def test_l_outil_refuse_deux_catalogues_qui_ne_lisent_pas_les_memes_souris(tmp_path):

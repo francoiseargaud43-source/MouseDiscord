@@ -168,9 +168,14 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     44,90 €. Rien ne prouve, en l'état, que « A9 Plus » (la variante vendue 27,95 €) et « A9 Plus 2.0 »
     (les 45,00 € du cahier des charges) soient le même produit : peut-être une édition antérieure, un
     autre capteur. **Le prix du catalogue n'a donc pas été changé** ; une source d'observation datée du
-    2026-10-13 a été ajoutée pour garder la trace, et la question est posée. Si le propriétaire confirme
-    qu'il s'agit du même produit, l'A9 Plus passe à 27,95 € — effet à mesurer avant application, la
-    souris étant sur 26,0 % des profils. Détail : §7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`.
+    2026-10-13 a été ajoutée pour garder la trace, et la question est posée. **L'effet est mesuré** (grille
+    complète, 27 170 profils, mesure du 2026-10-13) : si l'A9 Plus passait à 27,95 €, **3 556 profils
+    (13,09 %)** changeraient d'au moins une place — place idéale 1 491, alternative 2 711, économie 1 790
+    (une liste peut changer sur deux places) —, **0 place gagnée, 0 perdue**, 3 016 listes reconstruites
+    sans deux fois la même coque et 540 avec le repli documenté. Autrement dit, cette décision **redistribue
+    le classement sans jamais raccourcir une liste** ; elle est donc moins risquée que le retrait des
+    ruptures (point 18). Détail et commande : §25.6 de `ROBUSTESSE_2026-10-12.md`. Source :
+    §7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`.
 17. ~~**Cohérence entre le prix annoncé et le prix réellement ouvert par le lien**~~ **Tranché le
     2026-10-13 (37e passe)** : le prix d'une souris est **le prix de la page que son lien ouvre**, relevé
     chez le marchand le jour de la conclusion (`products/<handle>.js?country=FR` chez atk.store,
@@ -192,10 +197,15 @@ Fichiers modifiés ou créés (voir `RAPPORT_FINAL.md` pour la liste complète) 
     été recâblé vers un coloris en stock (GHOST Ultimate, U2 V2 Ultimate, Y9 Ultimate, U2 Mini). Mesure sur
     la grille statistique (18 522 profils) : ces quatre souris occupent **1 614 places sur 51 504**
     (3,1 %) — la MAD R à elle seule en occupe 1 317 (7,1 % des profils), la Xlite v4 Large 180, la
-    Fierce X 105, la Xlite v4 Medium 12. **Rien n'a été changé** : retirer une souris du classement, la
-    faire passer après les autres ou écrire « en rupture » sur sa ligne sont trois décisions différentes,
+    Fierce X 105, la Xlite v4 Medium 12. **L'effet d'un retrait est mesuré** (grille complète, 27 170
+    profils, option `--retrait` du comparateur) : les sortir du classement changerait **1 682 profils
+    (6,19 %)** — place idéale 102, alternative 557, économie 1 517 —, avec **0 place gagnée et 78 places
+    perdues** : la MAD R occupe 1 517 places avant, la Fierce X 152, la Xlite v4 Medium 13, la Xlite v4
+    Large aucune sur cette grille. Les places libérées vont à l'A9 Plus 2.0 (315 fois), la VXE R1 (256),
+    l'U2 V2 Mini (236), la F1 V2 Ultimate (204). **Rien n'a été changé** : retirer une souris du classement,
+    la faire passer après les autres ou écrire « en rupture » sur sa ligne sont trois décisions différentes,
     toutes visibles par les membres, et aucune n'a été tranchée. La question est posée telle quelle, avec
-    les chiffres. Détail : §25.5 de `ROBUSTESSE_2026-10-12.md`.
+    les chiffres. Détail : §25.4 et §25.6 de `ROBUSTESSE_2026-10-12.md`.
 
 ## 9. Vérifications Discord
 

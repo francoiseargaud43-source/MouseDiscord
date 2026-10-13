@@ -11,6 +11,12 @@ Usage :
     .venv/bin/python tools/db_effect.py --avant /tmp/mouse_db_avant.json --grille rapide
     .venv/bin/python tools/db_effect.py --avant /tmp/mouse_db_avant.json --grille mini
     .venv/bin/python tools/db_effect.py --avant ancienne.json --exemples 5
+    .venv/bin/python tools/db_effect.py --avant data/mouse_db.json --apres /tmp/sans_rupture.json --retrait
+
+Deux catalogues qui ne listent pas les mêmes souris ne se comparent pas : l'outil refuse (une souris
+absente d'un côté fausserait tout). L'option ``--retrait`` lève ce refus **pour une simulation de
+retrait** uniquement (catalogue APRÈS = sous-ensemble strict du précédent) : elle mesure alors le
+poids des souris sorties (places occupées avant, par souris et au total) et qui reprend leur place.
 
 L'outil n'écrit rien dans le dépôt (les catalogues sont copiés dans un dossier temporaire), ne
 modifie aucune donnée et ne touche pas au réseau. Sortie : nombre de profils comparés, nombre de
@@ -69,6 +75,13 @@ class Rapport:
     autre_forme: int = 0
     place_gagnee: int = 0
     place_perdue: int = 0
+    retirees: list[str] = field(default_factory=list)                  # mode --retrait seulement
+    par_souris_retiree: dict[str, int] = field(default_factory=dict)   # places occupées avant
+    remplacants: dict[str, int] = field(default_factory=dict)          # qui reprend la place
+
+    @property
+    def places_retirees(self) -> int:
+        return sum(self.par_souris_retiree.values())
 
     @property
     def taux(self) -> float:
@@ -105,8 +118,13 @@ def _libelle(grip, length, width, thenar, mode, budget) -> str:
             f"mode={nom_mode} budget={budget if budget is not None else '—'}")
 
 
-def comparer(chemin_avant: Path | str, chemin_apres: Path | str, grille_nom: str = "complete") -> Rapport:
-    """Compare les trois places des deux catalogues sur toute la grille. Ne modifie aucun fichier."""
+def comparer(chemin_avant: Path | str, chemin_apres: Path | str, grille_nom: str = "complete", *,
+             retrait: bool = False) -> Rapport:
+    """Compare les trois places des deux catalogues sur toute la grille. Ne modifie aucun fichier.
+
+    Avec ``retrait=True``, le catalogue APRÈS peut être un **sous-ensemble strict** du précédent :
+    l'écart mesure alors ce que pèsent les souris sorties (et qui reprend leur place).
+    """
     prise, longueurs, largeurs, thenars, modes, budgets = grille(grille_nom)
     combinaisons = [
         (grip, length, width, thenar, mode, budget)
@@ -127,17 +145,28 @@ def comparer(chemin_avant: Path | str, chemin_apres: Path | str, grille_nom: str
         catalogue_avant = load_catalog(temporaires[0])
         catalogue_apres = load_catalog(temporaires[1])
         par_id = {m.id: m for m in catalogue_avant}
-        if set(par_id) != {m.id for m in catalogue_apres}:
+        ids_avant = set(par_id)
+        ids_apres = {m.id for m in catalogue_apres}
+        retirees = sorted(ids_avant - ids_apres)
+        ajoutees = sorted(ids_apres - ids_avant)
+        if (retirees or ajoutees) and not (retrait and retirees and not ajoutees):
             raise ValueError("les deux catalogues ne contiennent pas les mêmes souris")
 
         resultats_avant = _places(temporaires[0], combinaisons)
         resultats_apres = _places(temporaires[1], combinaisons)
 
-    rapport = Rapport(profils=len(combinaisons))
+    rapport = Rapport(profils=len(combinaisons), retirees=retirees)
     for cas, avant, apres in zip(combinaisons, resultats_avant, resultats_apres):
+        identifiants_avant = {identifiant for identifiant, _ in avant}
+        for identifiant, _pourcentage in avant:                     # poids réel des souris sorties
+            if identifiant in rapport.retirees:
+                rapport.par_souris_retiree[identifiant] = rapport.par_souris_retiree.get(identifiant, 0) + 1
         if avant == apres:
             continue
         rapport.changes.append(f"{_libelle(*cas)} : {avant} → {apres}")
+        for identifiant, _pourcentage in apres:                     # qui reprend la place laissée libre
+            if identifiant not in identifiants_avant:
+                rapport.remplacants[identifiant] = rapport.remplacants.get(identifiant, 0) + 1
         # Nature du changement : même coque ou vraie autre forme, place gagnée ou perdue.
         if len(apres) > len(avant):
             rapport.place_gagnee += 1
@@ -165,12 +194,22 @@ def main() -> int:
     analyseur.add_argument("--apres", default=str(flux.MOUSE_DB_PATH), help="catalogue APRÈS (défaut : le dépôt)")
     analyseur.add_argument("--grille", choices=("complete", "rapide", "mini"), default="complete")
     analyseur.add_argument("--exemples", type=int, default=8, help="nombre d'exemples affichés")
+    analyseur.add_argument("--retrait", action="store_true",
+                           help="simulation de retrait : autorise un catalogue APRÈS réduit (sous-ensemble)")
     options = analyseur.parse_args()
 
-    rapport = comparer(options.avant, options.apres, options.grille)
+    rapport = comparer(options.avant, options.apres, options.grille, retrait=options.retrait)
     print(f"Grille « {options.grille} » — profils comparés : {rapport.profils}")
+    if rapport.retirees:
+        detail = ", ".join(f"{identifiant} {n}" for identifiant, n in
+                           sorted(rapport.par_souris_retiree.items(), key=lambda item: -item[1]))
+        print(f"Souris retirées : {len(rapport.retirees)} ({', '.join(rapport.retirees)})")
+        print(f"Places qu'elles occupaient AVANT : {rapport.places_retirees} — {detail or 'aucune place'}")
     print(f"Profils dont le résultat change : {len(rapport.changes)} ({rapport.taux:.2f} %)")
     if rapport.changes:
+        if rapport.remplacants:
+            top = sorted(rapport.remplacants.items(), key=lambda item: (-item[1], item[0]))[:5]
+            print("  places reprises par : " + ", ".join(f"{identifiant} {n}" for identifiant, n in top))
         print("  par place : " + ", ".join(f"{place} {n}" for place, n in sorted(rapport.par_place.items())))
         print(f"  place gagnée : {rapport.place_gagnee} · place perdue : {rapport.place_perdue}")
         print(f"  nouvelle liste sans deux fois la même coque : {rapport.autre_forme}")

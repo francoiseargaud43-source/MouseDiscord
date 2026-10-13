@@ -19,7 +19,7 @@ NEW_ATK_IDS = [
     "atk_u2_v2_ultimate", "atk_u2_v2_mini", "atk_zero", "atk_duckbill", "atk_a9_ultimate", "atk_a9_air", "atk_a9_mini",
 ]
 # Ajouts du 2026-10-11 : souris ATK/VXE actuellement vendues sur atk.store, absentes du catalogue
-# (recherche « produits encore vendus » ; sources ATK Store + EloShapes, voir docs/audit/CATALOGUE_ATK.md §4).
+# (recherche « produits encore vendus » ; sources ATK Store + EloShapes, voir docs/audit/CATALOGUE_ATK.md §5).
 STORE_2026_10_11_IDS = [
     "vxe_v3", "vxe_r1", "vxe_mad_r", "vxe_x3", "atk_u2_mini", "atk_a9_nb", "atk_f1_v2", "atk_u2",
 ]
