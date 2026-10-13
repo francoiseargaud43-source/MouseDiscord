@@ -2464,11 +2464,37 @@ possible depuis le nettoyage du §26.7). Aucune mesure, aucun chiffre publié n'
 changement : seul le message d'erreur change. Verrouillé par `tests/test_db_effect.py`,
 `tests/test_image_identity_check.py` et `tests/test_flow_effect.py` (nouveau).
 
-### 26.9 Preuves d'exécution (38e passe)
+### 26.9 Le parcours numérotait son étape de variante avec deux tables
+
+En parcourant **tous les états possibles du questionnaire** (9 états : aucune prise, Palm, Claw, Claw avec
+variante, Claw complet, Palm avec thénar, Palm complet, Fingertip, Fingertip complet), une divergence est
+apparue :
+
+- `step_kind()` — qui décide de l'étape à afficher — renvoie `claw_variant` ;
+- `STEP_NUMBERS` — qui porte les numéros d'étape — utilisait la clé `variant`.
+
+Conséquence : `_step_number("claw_variant", Grip.CLAW)` levait un `ValueError` (« Étape « claw_variant »
+inexistante en Claw Grip »), et l'étape de variante échappait à toute numérotation automatique — son
+titre écrivait **`2` en dur** (`_step_title(2, Grip.CLAW, …)`), deuxième source de vérité pour la même
+information : le jour où la table change, le titre aurait menti sans que rien ne le signale. Aucun membre
+ne voyait d'erreur (le titre était juste, et le parcours n'appelle jamais `_step_number` pour cette
+étape), mais c'était le même piège que le §26.4 : une incohérence invisible qui attend.
+
+**Corrigé le 2026-10-13** : une seule orthographe partout (`claw_variant`, comme le `custom_id`, la clé de
+session et la classe de vue), et le titre lit désormais la table. Preuve dans les deux sens :
+
+- les **trois aperçus régénérés après la correction sont identiques à l'octet près** (MD5) : rien n'a
+  changé pour le membre ;
+- le nouveau `tests/test_flow.py::test_chaque_etape_affichee_porte_le_numero_de_la_table` parcourt les
+  huit états du parcours, exige que le numéro de la table existe **et** se retrouve dans le titre
+  affiché ; remis volontairement sur l'ancienne clé (`variant`), il **échoue** — vérifié.
+
+### 26.10 Preuves d'exécution (38e passe)
 
 | Contrôle | Résultat |
 |---|---|
-| `pytest -q` | **534 passed** (488 avant la passe : 46 tests ajoutés — code, validation, fichiers hostiles, outils) |
+| `pytest -q` | **535 passed** (488 avant la passe : 47 tests ajoutés — code, validation, fichiers hostiles, outils) |
+| Les 9 états du questionnaire, numérotés par la table | 0 écart de numéro ; aperçus régénérés identiques à l'octet près |
 | Outils à mauvais chemin (3 cas) | messages lisibles, code 2 — plus aucune trace Python |
 | Inventaire du dépôt (balayage AST + citations) | 0 code mort, 0 outil orphelin, 2 documents orphelins désormais listés ; 4 fichiers retirés (1,4 Mo) |
 | `tools/render_preview.py` — les trois aperçus régénérés après la passe | **identiques à l'octet près** aux PNG livrés (MD5) : la passe n'a rien changé de **visible** |

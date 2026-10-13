@@ -276,13 +276,43 @@ def test_une_etape_qui_n_existe_pas_pour_la_prise_le_dit():
     """
     assert flow._step_number("thenar", Grip.PALM) == 2
     assert flow._step_number("measure", Grip.FINGERTIP) == 2
-    assert flow._step_number("variant", Grip.CLAW) == 2
+    assert flow._step_number("claw_variant", Grip.CLAW) == 2
     with pytest.raises(ValueError, match="thenar.*Fingertip"):
         flow.thenar_step_embed(Grip.FINGERTIP)
-    with pytest.raises(ValueError, match="variant.*Palm"):
-        flow._step_number("variant", Grip.PALM)
+    with pytest.raises(ValueError, match="claw_variant.*Palm"):
+        flow._step_number("claw_variant", Grip.PALM)
     with pytest.raises(ValueError, match="inexistante"):
         flow._step_number("thenar", None)          # parcours sans prise : rien à numéroter
+
+
+def test_chaque_etape_affichee_porte_le_numero_de_la_table():
+    """Trouvé le 2026-10-13 en parcourant tous les états du parcours.
+
+    ``step_kind()`` renvoyait « claw_variant » là où la table des numéros disait « variant » : toute
+    numérotation de l'étape de variante levait donc un ``ValueError`` (personne ne l'appelait : le
+    titre écrivait son numéro **en dur**, deuxième source de vérité). Ici, chaque état possible est
+    traversé et les deux doivent dire la même chose : le numéro de la table existe, et il se retrouve
+    dans le titre réellement affiché par ``step_for``.
+    """
+    store = SessionStore(ttl_seconds=600)
+    etats = [
+        start_for(store, user_id=1, grip=Grip.PALM),                                  # thénar (2/4)
+        start_for(store, user_id=2, grip=Grip.PALM, thenar=Thenar.MOYENNE),           # mesures (3/4)
+        start_for(store, user_id=3, grip=Grip.PALM, thenar=Thenar.MOYENNE,
+                  length=180.0, width=90.0),                                          # budget (4/4)
+        start_for(store, user_id=4, grip=Grip.CLAW),                                  # variante (2/5)
+        start_for(store, user_id=5, grip=Grip.CLAW, variant=ClawVariant.RELACHEE),    # thénar (3/5)
+        start_for(store, user_id=6, grip=Grip.CLAW, variant=ClawVariant.RELACHEE,
+                  thenar=Thenar.MOYENNE, length=180.0, width=90.0),                   # budget (5/5)
+        start_for(store, user_id=7, grip=Grip.FINGERTIP),                             # mesures (2/3)
+        start_for(store, user_id=8, grip=Grip.FINGERTIP, length=180.0, width=90.0),   # budget (3/3)
+    ]
+    for etat in etats:
+        kind = flow.step_kind(etat)
+        assert kind in flow.STEP_NUMBERS[etat.grip], f"{kind} n'a pas de numéro : la table a divergé"
+        numero = flow._step_number(kind, etat)
+        titre = flow.step_for(etat)[0].title
+        assert f"Étape {numero}/{flow._steps_total(etat)}" in titre, f"{kind} : {titre!r}"
 
 
 @pytest.mark.asyncio

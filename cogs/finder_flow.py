@@ -344,10 +344,13 @@ def _steps_total(session_or_grip) -> int:
     return 4
 
 
-# Numéro d'étape par type, selon la prise : Claw insère « variante » en 2, Fingertip saute le thénar.
+# Numéro d'étape par type, selon la prise : Claw insère « claw_variant » en 2, Fingertip saute le thénar.
+# Les clés sont EXACTEMENT les valeurs de ``step_kind()`` : c'est ce qui permet de numéroter l'étape
+# courante sans table parallèle (défaut trouvé le 2026-10-13 : la table disait « variant » là où
+# ``step_kind`` disait « claw_variant », et le titre de cette étape écrivait son numéro en dur).
 STEP_NUMBERS = {
     Grip.PALM: {"thenar": 2, "measure": 3, "budget": 4},
-    Grip.CLAW: {"variant": 2, "thenar": 3, "measure": 4, "budget": 5},
+    Grip.CLAW: {"claw_variant": 2, "thenar": 3, "measure": 4, "budget": 5},
     Grip.FINGERTIP: {"measure": 2, "budget": 3},
 }
 
@@ -817,7 +820,7 @@ def grip_step_embed() -> discord.Embed:
 def claw_variant_step_embed() -> discord.Embed:
     description = "\n\n".join(f"**{label}** — {desc}" for _, label, desc in CLAW_VARIANT_OPTIONS)
     embed = discord.Embed(
-        title=_step_title(2, Grip.CLAW, "Votre variante de Claw"),
+        title=_step_title(_step_number("claw_variant", Grip.CLAW), Grip.CLAW, "Votre variante de Claw"),
         description=(
             "Les trois variantes de Claw ne placent pas la bosse au même endroit.\n\n"
             f"{description}\n\n"
