@@ -1687,6 +1687,71 @@ publiées : le retour arrière n'a d'effet que sur le nettoyage de source et tro
 
 ---
 
+### 12.18 Mise à jour du 2026-10-13 (9e) : trois décisions du propriétaire (résultat visible)
+
+**Ce que change cette mise à jour** (audit complet : `docs/audit/ROBUSTESSE_2026-10-12.md` §24) — ce sont des
+changements **visibles**, donc à déployer ensemble :
+
+1. **L'ordre des pourcentages est garanti** : une place n'affiche plus un meilleur pourcentage que la place
+   du dessus (idéal ≥ alternative ≥ économie). La contrainte s'applique au **choix de la souris**, jamais au
+   score : **le match idéal ne change sur aucun profil**. Mesure avant/après sur 24 609 profils : 2 046 →
+   **84 profils** (0,31 %) où l'ordre n'est pas garanti — ce sont les profils où le plafond ne laisse **aucun**
+   candidat (grande main, budget serré) ; la place reste alors remplie (jamais de trou dans le résultat).
+   Deuxième place changée sur 1 615 profils, troisième sur 1 976 ; aucune place perdue ni gagnée.
+2. **« (prix non vérifié) » revient à côté du prix** des souris dont le prix n'est pas attesté (Scyrox V6
+   74,90 € et ATK A9 Plus 2.0 45,00 €), dans les trois places **et** dans la petite ligne de prix du mode
+   « Peu importe le prix » : **16,09 % des profils** l'affichent.
+3. **Le pied de message ne renvoie plus à un bloc disparu** : « Comment lire ce résultat » (bloc supprimé le
+   2026-10-11) devient **« 🧭 Pourquoi ce choix ? »**, et le renvoi n'apparaît que si ce bloc est bien dans le
+   message.
+
+**1. Fichiers à glisser dans `~/MouseDiscord`** (conflits : **Écraser**, jamais « Synchroniser »)
+
+```
+cogs/finder_flow.py                  (DÉCISIF : ordre des pourcentages, marqueur de prix, pied de message)
+tools/qa_flow_matrix.py              (facultatif : contrôle du marqueur et de l'ordre)
+tools/flow_effect.py                 (facultatif : compare un changement de moteur avant/après)
+tests/test_flow.py                   (facultatif : 4 tests nouveaux sur les trois décisions)
+README.md                            (facultatif : ordre garanti et prix signalés décrits)
+docs/audit/ROBUSTESSE_2026-10-12.md  (facultatif : §24, l'audit complet de la passe)
+docs/audit/AUDIT.md                  (facultatif : C27 et C34 fermés, points ouverts 13 et 14 tranchés)
+docs/MASTER_PROMPT_AZEMOUSE.md       (facultatif : §7.7, les deux règles de présentation)
+docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md (facultatif : rapport régénéré)
+docs/audit/matrice_profils.md        (facultatif : matrices régénérées)
+docs/apercu_resultat.png             (facultatif : aperçu régénéré)
+```
+
+`data/mouse_db.json`, `utils/`, `bot.py`, `assets/` et `data/commercial_links.json` **ne changent pas** :
+cette mise à jour ne touche ni les prix, ni les liens, ni les cotes.
+
+**2. Rien à ajouter au `.env`** — aucune nouvelle variable.
+
+**3. Contrôle (SSH)**
+
+```bash
+cd ~/MouseDiscord
+.venv/bin/python -m pytest -q                      # attendu : 407 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+```
+
+**4. Redémarrage** : comme d'habitude, **jamais `bot.py` à la main** — la tâche planifiée s'en charge ;
+sinon `pkill -f "bot.py"`.
+
+**5. Vérification en 60 secondes dans Discord** — trois regards suffisent :
+
+1. Parcours **Palm**, main **180 × 90**, **Économique** : les pourcentages descendent bien — **ATK Z1 V2
+   Ultra 75 %**, **ATK A9 Mini 75 %**, **ATK GHOST Ultimate 75 %** (avant cette mise à jour, la première
+   ligne affichait 63 % sous une deuxième ligne à 75 %).
+2. Parcours **Palm**, main **200 × 110**, **Haut de gamme** : la troisième ligne (ATK A9 Plus 2.0) affiche
+   **« 45,00 € (prix non vérifié) »** — le marqueur revient.
+3. En bas du message privé, le pied de page dit **« … expliqué dans le bloc « 🧭 Pourquoi ce choix ? » »**,
+   et non plus « Comment lire ce résultat ».
+
+**Retour arrière** : remettre l'ancien `cogs/finder_flow.py` par FileZilla, puis `pkill -f "bot.py"`. Le
+retour arrière remet l'ancienne sélection des 2e et 3e places et masque de nouveau le marqueur de prix —
+les prix, les liens et les cotes ne sont pas concernés.
+
 ---
 
 ## 13. Installation sans FileZilla (option avancée, non vérifiée sur l'hébergement)

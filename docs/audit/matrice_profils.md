@@ -56,7 +56,7 @@ Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = matc
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | ATK Z1 V2 Ultra (30/40) | ATK Phantom Ultimate (35/40) | 6 candidat(s) | Économique : ATK Z1 V2 Ultra est la moins chère parmi les 6 souris à 5 pts ou moins du meilleur score (35/40). |
+| Économique | ATK Z1 V2 Ultra (30/40) | ATK A9 Mini (30/40) | 6 candidat(s) | Économique : ATK Z1 V2 Ultra est la moins chère parmi les 6 souris à 5 pts ou moins du meilleur score (35/40). |
 | Qualité/Prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Rapport qualité/prix : meilleur rapport points/€, seule souris dans la zone de tolérance. Indicateur provisoire, pas un score qualité-prix validé. |
 | Haut de gamme | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2), seule souris dans la zone de tolérance. Le prix n'entre pas dans le classement. |
 | Peu importe le prix | ATK Phantom Ultimate (35/40) | ATK Z1 V2 Ultra (30/40) | 1 candidat(s) | Forme d'abord : ATK Phantom Ultimate est la souris dont la forme colle le mieux à votre main, seule souris dans la zone de tolérance. À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |

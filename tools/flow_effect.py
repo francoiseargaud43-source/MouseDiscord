@@ -85,6 +85,9 @@ def main() -> int:
     pire_baisse_exemple = ""
     economies_perdues: list[str] = []
     troisieme_avant_gagnee: list[str] = []
+    troisiemes_changees: list[str] = []
+    ordre_avant: list[str] = []                 # profils où le % remontait d'une place à l'autre
+    ordre_apres: list[str] = []
 
     for grip, length, width, thenar in itertools.product(
         banc.GRIPS, banc._lengths(args.rapide), banc._widths(args.rapide), banc.THENARS
@@ -117,6 +120,12 @@ def main() -> int:
 
                 if montrees(anciennes)[:1] != montrees(nouvelles)[:1]:
                     ideaux_changes.append(ou)
+                if montrees(anciennes)[2:3] != montrees(nouvelles)[2:3]:
+                    troisiemes_changees.append(ou)
+                for places, compteur in ((anciennes, ordre_avant), (nouvelles, ordre_apres)):
+                    montrees_ici = [s for s in places if s is not None]
+                    if any(b.total > a.total for a, b in zip(montrees_ici, montrees_ici[1:])):
+                        compteur.append(ou)
                 if montrees(anciennes)[1:2] != montrees(nouvelles)[1:2]:
                     alternatives_changees.append(ou)
                     avant_alt, apres_alt = anciennes[1], nouvelles[1]
@@ -134,6 +143,9 @@ def main() -> int:
 
     print(f"Profils comparés : {profils}")
     print(f"Match idéal : {len(ideaux_changes)} profil(s) changé(s)")
+    print(f"Troisième place : {len(troisiemes_changees)} profil(s) changé(s)"
+          + (f"  ·  ex. {troisiemes_changees[0]}" if troisiemes_changees else ""))
+    print(f"Ordre des pourcentages violé AVANT : {len(ordre_avant)} · APRÈS : {len(ordre_apres)}")
     print(f"Alternative : {len(alternatives_changees)} profil(s) changé(s)"
           + (f"  ·  ex. {alternatives_changees[0]}" if alternatives_changees else ""))
     print("Places remplies AVANT : " + " · ".join(f"{n} place(s) : {places_avant[n]}" for n in (0, 1, 2, 3)))

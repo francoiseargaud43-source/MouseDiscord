@@ -27,9 +27,16 @@ Contrôles effectués, profil par profil :
   meilleure souris restante sous le titre « 🔎 Autre piste » ; dans tous les cas elle porte le bon
   libellé : « 💸 L'économie » si elle est moins chère que tout ce qui est affiché,
   « ➕ L'autre option » sinon (décision du propriétaire du 2026-10-12) ;
+- **ordre garanti des pourcentages** (décision du propriétaire, 2026-10-13) : le pourcentage affiché
+  ne remonte jamais d'une place à l'autre — la deuxième ne dépasse pas le match idéal, la troisième ne
+  dépasse pas la deuxième ;
+- **prix non attesté annoncé** : une souris dont le prix n'est pas `verified` affiche « (prix non
+  vérifié) » à côté de son prix (décision du propriétaire, 2026-10-13) ;
 - comptage, sans le compter comme une faute, des profils où DEUX places montrent la même coque :
   c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance ne
-  contient que des variantes de la coque retenue — il est mesuré, pas supposé.
+  contient que des variantes de la coque retenue — il est mesuré, pas supposé ;
+- comptage, sans le compter comme une faute, des profils où le plafond d'ordre n'a laissé aucun
+  candidat : la place reste alors remplie (jamais de trou) et le pourcentage peut remonter.
 """
 from __future__ import annotations
 
@@ -71,7 +78,7 @@ def message_text(embeds) -> str:
 
 
 def check_result_message(session, selection, embeds, ideal, alternative, economy,
-                         repli_coque=None, etiquette="") -> list[str]:
+                         repli_coque=None, etiquette="", repli_ordre=None) -> list[str]:
     """Contrôles du CONTENU du message : chaque souris montrée doit l'être avec ses vrais chiffres.
 
     Les trois places sont passées **par rôle** (et non en liste filtrée) : quand l'alternative est
@@ -82,6 +89,19 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
     if ideal is None and alternative is None and economy is None:
         return problems
     texte = message_text(embeds)
+    # Ordre garanti (décision du propriétaire, 2026-10-13) : le pourcentage ne remonte JAMAIS d'une
+    # place à l'autre. Le moteur l'obtient en plafonnant chaque place par celle du dessus ; le seul
+    # cas où il ne peut pas (plafond ne laissant aucun candidat) est compté en « repli », pas
+    # sanctionné — comme le repli de coque.
+    plafond_ordre = alternative.total if alternative is not None else (ideal.total if ideal is not None else None)
+    for premier, second, nom in ((ideal, alternative, "l'alternative"), (alternative, economy, "l'économie")):
+        if premier is None or second is None or second.total <= premier.total:
+            continue
+        ligne = f"{etiquette} : {nom} ({second.mouse.label} {second.total}) mieux notée que la place du dessus ({premier.mouse.label} {premier.total})"
+        if repli_ordre is not None:
+            repli_ordre.append(ligne)
+        else:                                       # pragma: no cover - appel direct hors banc
+            problems.append(ligne)
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
     # La tolérance vient du MOTEUR (`mode_tolerance`), jamais d'une valeur recopiée : si la
     # tolérance d'un mode change, le banc d'essai change avec lui (sinon il vérifierait
@@ -171,12 +191,22 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
                 # comme un meilleur candidat pour cette place.
                 if _same_shell(ideal, autre) or (alternative is not None and _same_shell(alternative, autre)):
                     continue
+                # Même plafond que le moteur (décision du 2026-10-13) : une souris mieux notée que la
+                # deuxième place n'est pas un candidat légitime pour la troisième, elle ne compte donc
+                # pas comme un meilleur candidat — sinon le banc reprocherait au moteur d'appliquer la
+                # règle d'ordre.
+                if plafond_ordre is not None and autre.total > plafond_ordre:
+                    continue
                 if autre.total >= reference - ECONOMY_SLOT_TOLERANCE_POINTS \
                         and autre.mouse.price_eur < plancher:
                     problems.append(f"troisième place plus chère qu'une autre option de sa fenêtre : {mouse.label}")
                     break
         if mouse.price_eur is not None and prix_fr(mouse.price_eur) not in texte:
             problems.append(f"prix absent ou faux pour {mouse.label} : attendu {prix_fr(mouse.price_eur)}")
+        # Prix non attesté : le message doit le dire (décision du propriétaire, 2026-10-13 — le
+        # marqueur existait dans le code mais aucun appelant ne l'activait depuis le 2026-10-11).
+        if mouse.price_status != "verified" and "prix non vérifié" not in texte:
+            problems.append(f"prix non vérifié affiché sans le dire : {mouse.label}")
         if session.budget_mode is BudgetMode.CUSTOM and mouse.price_eur is not None \
                 and session.max_budget_eur is not None and mouse.price_eur > session.max_budget_eur:
             problems.append(f"{mouse.label} ({mouse.price_eur} €) au-dessus du budget {session.max_budget_eur} €")
@@ -214,7 +244,10 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
         problems.append("justification du choix absente du message")
 
     if alternative is not None and _same_shell(ideal, alternative):
-        zone = [s for s in selection.ranked[1:] if s.total >= reference - tolerance]
+        # Le plafond d'ordre fait partie de la règle : une souris d'une autre coque qui dépasse le
+        # match idéal (donc écartée par le moteur) ne compte pas comme « autre coque disponible ».
+        zone = [s for s in selection.ranked[1:]
+                if s.total >= reference - tolerance and s.total <= (ideal.total if ideal is not None else 0)]
         if any(not _same_shell(ideal, s) for s in zone):
             problems.append("alternative de la même coque alors qu'une autre coque est disponible")
     # Repli documenté : deux places peuvent montrer la même coque quand la zone n'offre rien d'autre.
@@ -301,6 +334,7 @@ def run(fast: bool) -> int:
     partials = 0
     places = {0: 0, 1: 0, 2: 0, 3: 0}          # nombre de places réellement remplies dans le message
     same_shell_slots: list[str] = []            # profils où deux places partagent la même coque (repli)
+    ordre_repli: list[str] = []                 # profils où le plafond d'ordre n'a laissé aucun candidat
     for grip, length, width, thenar in itertools.product(
         GRIPS, _lengths(fast), _widths(fast), THENARS
     ):
@@ -329,7 +363,8 @@ def run(fast: bool) -> int:
                 places[len([s for s in (ideal, alternative, economy) if s is not None])] += 1
                 problems.extend(f"{where} : {p}"
                                 for p in check_result_message(session, selection, embeds, ideal, alternative,
-                                                             economy, same_shell_slots, where))
+                                                             economy, same_shell_slots, where,
+                                                             repli_ordre=ordre_repli))
                 if ideal is None:
                     empties.append(where)
                 else:
@@ -354,6 +389,8 @@ def run(fast: bool) -> int:
     print(f"Profils où le match idéal est partiel (boutons non documentés) : {partials}")
     print(f"Profils où deux places montrent la même coque (repli documenté) : {len(same_shell_slots)}"
           + (f"  ·  ex. {same_shell_slots[0]}" if same_shell_slots else ""))
+    print(f"Profils où l'ordre des pourcentages n'est pas garanti (plafond sans candidat) : {len(ordre_repli)}"
+          + (f"  ·  ex. {ordre_repli[0]}" if ordre_repli else ""))
     print("Places remplies dans le résultat : "
           + " · ".join(f"{n} place(s) : {places[n]}" for n in (0, 1, 2, 3))
           + f"  (3 places = {100 * places[3] / cases:.2f} % des profils)" if cases else "")

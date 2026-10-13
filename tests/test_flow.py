@@ -1217,3 +1217,118 @@ async def test_expired_notice_is_an_orange_embed_with_the_restart_button():
     assert kwargs["embed"].title == "⏱️ Session expirée"
     assert isinstance(kwargs["view"], flow.StartView)
     assert kwargs["ephemeral"] is True
+
+
+# ---------------------------------------------------------------------------
+# Décisions du propriétaire du 2026-10-13 : ordre des pourcentages, marqueur de prix, pied de message
+# ---------------------------------------------------------------------------
+def _trois_places(mode, budget=None, grip=Grip.PALM, longueur=180.0, largeur=90.0,
+                  thenar=Thenar.PETITE):
+    """Résultat du moteur pour un profil donné : session, sélection et trois places."""
+    session = flow.FinderSession(user_id=1)
+    session.budget_mode = mode
+    session.max_budget_eur = budget if mode is BudgetMode.CUSTOM else None
+    session.grip = grip
+    session.hand_length_mm = longueur
+    session.hand_width_mm = largeur
+    session.thenar = None if grip is Grip.FINGERTIP else thenar
+    if grip is Grip.CLAW:
+        session.claw_variant = ClawVariant.RELACHEE
+    selection = flow.compute_selection(session)
+    return session, selection, flow.result_slots(selection)
+
+
+def test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre():
+    """Ordre garanti (décision du propriétaire, 2026-10-13) : idéal ≥ alternative ≥ économie.
+
+    Avant, le mode Économique pouvait afficher une deuxième place mieux notée que le « match idéal » —
+    c'est la règle du mode (le match idéal y est la souris la MOINS CHÈRE de la zone) : **1 622 profils
+    (6,0 %)** sur la grille complète, et la troisième place dépassait la deuxième sur 24 à 128 profils
+    selon le mode. Le membre lisait alors un « idéal » moins bien noté que la ligne du dessous.
+    """
+    from utils.matcher import compatibility_percent
+
+    cas = [
+        (None, None), (BudgetMode.ECONOMIQUE, None), (BudgetMode.QUALITE_PRIX, None),
+        (BudgetMode.HAUT_DE_GAMME, None), (BudgetMode.PEU_IMPORTE_PRIX, None),
+        (BudgetMode.CUSTOM, 300.0), (BudgetMode.CUSTOM, 45.0), (BudgetMode.CUSTOM, 15.0),
+    ]
+    profils = 0
+    replis: list[str] = []
+    for mode, budget in cas:
+        for grip in (Grip.PALM, Grip.CLAW, Grip.FINGERTIP):
+            for longueur, largeur in ((150.0, 85.0), (160.0, 70.0), (180.0, 90.0),
+                                      (200.0, 110.0), (225.0, 85.0)):
+                _, selection, (ideal, alternative, economy) = _trois_places(mode, budget, grip,
+                                                                            longueur, largeur)
+                montrees = [score for score in (ideal, alternative, economy) if score is not None]
+                if not montrees:
+                    continue
+                profils += 1
+                pourcentages = [compatibility_percent(score) for score in montrees]
+                if pourcentages == sorted(pourcentages, reverse=True):
+                    continue
+                # Repli documenté (règle du 2026-10-12 : jamais de trou dans le résultat) : il ne peut
+                # s'appliquer que si AUCUNE souris du classement ne passe sous le plafond. Le test le
+                # VÉRIFIE au lieu de le tolérer — sinon le repli masquerait une vraie régression.
+                montrees_ids = {score.mouse.id for score in montrees}
+                for place in range(1, len(montrees)):
+                    plafond = montrees[place - 1].total
+                    if montrees[place].total <= plafond:
+                        continue
+                    candidats = [score for score in selection.ranked[1:]
+                                 if score.mouse.id not in montrees_ids and score.total <= plafond]
+                    assert candidats == [], (
+                        f"{mode}/{grip}/{longueur}x{largeur} : le plafond laissait "
+                        f"{[(c.mouse.label, c.total) for c in candidats]}")
+                    replis.append(f"{mode}/{grip}/{longueur}x{largeur} place {place + 1}")
+    assert profils >= 100, f"trop peu de profils contrôlés ({profils}) : le contrôle ne prouve rien"
+    assert len(replis) <= profils * 0.02, f"trop de replis d'ordre ({len(replis)} sur {profils})"
+
+
+def test_le_match_ideal_ne_change_pas_avec_la_regle_d_ordre():
+    """La règle d'ordre ne touche JAMAIS le match idéal : elle plafonne les places du dessous.
+
+    Mesuré sur la grille complète dans `docs/audit/ROBUSTESSE_2026-10-12.md` §24 : 0 profil sur
+    24 609 change de match idéal ; seules les 2e et 3e places bougent (1 615 et 1 976 profils).
+    """
+    for mode, budget in ((BudgetMode.ECONOMIQUE, None), (BudgetMode.CUSTOM, 45.0)):
+        _, selection, (ideal, _, _) = _trois_places(mode, budget)
+        assert ideal is not None and ideal.mouse.id == selection.ranked[0].mouse.id
+
+
+def test_a_prix_non_verifie_le_message_le_dit():
+    """Marqueur de prix (décision du propriétaire, 2026-10-13) : le message ne fait pas passer un prix
+
+    non attesté pour un prix vérifié. Le master prompt le montrait dans ses exemples, mais l'onglet
+    « Détails » qui le portait a été retiré le 2026-10-11 : plus rien ne l'affichait (16 % des profils).
+    """
+    # Profil où le catalogue affiche bien une souris à prix non attesté (Scyrox V6, prix du cahier
+    # des charges : la boutique du fabricant vend en dollars, jamais convertis).
+    session, selection, _ = _trois_places(None, None, Grip.PALM, 160.0, 70.0)
+    embeds = flow.results_embeds(session, selection)
+    texte = "\n".join((embed.description or "") + "".join(f.value for f in embed.fields) for embed in embeds)
+    montrees = [s for s in flow.result_slots(selection) if s is not None]
+    attendues = [s for s in montrees if s.mouse.price_status != "verified"]
+    assert attendues, "aucune souris à prix non attesté dans ce profil : le test ne prouverait rien"
+    for score in attendues:
+        assert f"{score.mouse.price_eur:.2f}".replace(".", ",") + " € (prix non vérifié)" in texte
+    for score in (s for s in montrees if s.mouse.price_status == "verified"):
+        assert "(prix non vérifié)" not in flow._price_text(score, verified_hint=True)
+
+
+def test_le_pied_de_message_ne_renvoie_plus_a_un_bloc_disparu():
+    """Le renvoi « Comment lire ce résultat » (bloc supprimé le 2026-10-11) est corrigé (C27).
+
+    Le pied de page renvoie désormais au bloc qui EXISTE — « 🧭 Pourquoi ce choix ? » — et seulement
+    quand ce bloc est bien dans le message : sur un parcours incomplet, il n'y a aucun renvoi.
+    """
+    assert "Comment lire ce résultat" not in flow.SCORE_DISCLAIMER
+    session, selection, _ = _trois_places(BudgetMode.QUALITE_PRIX)
+    embeds = flow.results_embeds(session, selection)
+    assert "Pourquoi ce choix ?" in embeds[-1].footer.text
+    assert "Comment lire ce résultat" not in embeds[-1].footer.text
+    # Parcours incomplet (aucune mesure) : aucun renvoi, puisque le bloc n'est pas affiché.
+    incomplet = flow.FinderSession(user_id=1)
+    incomplet.grip = Grip.PALM
+    assert flow.results_embeds(incomplet, selection)[0].footer.text == flow.SCORE_DISCLAIMER

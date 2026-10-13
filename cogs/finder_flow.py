@@ -99,9 +99,13 @@ COLOR = BORDEAUX
 COLOR_EXPIRED = discord.Color.orange()           # seule exception à la charte (session expirée)
 
 SCORE_DISCLAIMER = (
-    "Score géométrique provisoire : ni une probabilité d'achat ni une validation biomécanique. "
-    "Le calcul est expliqué dans le bloc « Comment lire ce résultat », plus bas."
+    "Score géométrique provisoire : ni une probabilité d'achat ni une validation biomécanique."
 )
+# Renvoi vers un bloc qui EXISTE. Le pied de page est posé sur le dernier bloc du message, et le bloc
+# « Pourquoi ce choix ? » vit dans les repères de taille : la phrase ne dit donc aucune direction
+# (« plus bas » était faux, et le bloc « Comment lire ce résultat » n'existe plus depuis le
+# 2026-10-11). Correction autorisée par le propriétaire le 2026-10-13 (point ouvert C27).
+EXPLANATION_REFERENCE = " Le calcul est expliqué dans le bloc « 🧭 Pourquoi ce choix ? »."
 BUTTON_LABEL_MAX = 80
 
 # Affichage : noms français des positions de bosse et des hauteurs de boutons (le catalogue garde
@@ -382,12 +386,12 @@ def _recap(session: FinderSession) -> str:
 def _price_text(score: MouseScore, *, verified_hint: bool = False) -> str:
     """Prix lisible. ``verified_hint`` ajoute « (prix non vérifié) » quand le prix n'est pas attesté.
 
-    **Ce marqueur n'est plus demandé par aucun appelant** depuis le retrait de l'onglet « Détails »
-    (2026-10-11, demande du propriétaire : résultat le plus concis possible) : le prix d'une souris
-    non vérifiée s'affiche donc aujourd'hui comme un prix vérifié. Le master prompt, lui, montre
-    « 74.90 € (prix non vérifié) » dans ses exemples de résultat — la contradiction est consignée
-    (`docs/audit/AUDIT.md` C34) et son arbitrage appartient au propriétaire. Ne pas supprimer ce
-    paramètre sans la réponse : c'est la trace de la règle écrite.
+    Le marqueur est **actif dans le résultat** depuis la décision du propriétaire du 2026-10-13 : le
+    master prompt le montre dans ses exemples (« 74.90 € (prix non vérifié) »), mais l'onglet
+    « Détails » qui le portait a été retiré le 2026-10-11 et aucun appelant ne l'activait plus — un
+    prix non attesté s'affichait donc exactement comme un prix vérifié, sur 17 % des résultats. Les
+    lignes de place l'activent désormais (`_slot_text`), y compris la petite ligne de prix du mode
+    « Peu importe le prix », où c'est le seul endroit où le prix apparaît.
     """
     mouse = score.mouse
     if mouse.price_eur is None:
@@ -486,7 +490,7 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
     if weight:
         parts.append(weight)
     if mode is not BudgetMode.PEU_IMPORTE_PRIX:
-        parts.append(_price_text(score))
+        parts.append(_price_text(score, verified_hint=True))
     parts.append(f"**{compatibility_percent(score)} %**")
     shape = SHAPE_LINE_LABELS.get(mouse.shape)
     if shape:
@@ -494,7 +498,7 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None) -> str:
     line = " · ".join(parts)
     if mode is not BudgetMode.PEU_IMPORTE_PRIX:
         return line
-    small = f"-# 💰 {_price_text(score)} — sans effet sur ce classement"
+    small = f"-# 💰 {_price_text(score, verified_hint=True)} — sans effet sur ce classement"
     components = _components_text(mouse)
     if components:
         small += f" · ⚙️ {components}"
@@ -517,7 +521,12 @@ def _price_or_inf(score: MouseScore) -> float:
 #     forme ; si rien n'existe, la variante est conservée (jamais moins de résultats qu'avant) ;
 #   • l'ÉCONOMIE dispose de sa propre fenêtre (±5 points) : une option moins chère mérite d'être montrée
 #     même si elle perd quelques points, à condition d'être strictement moins chère que les deux autres
-#     et, si possible, d'une autre coque.
+#     et, si possible, d'une autre coque ;
+#   • ORDRE GARANTI (décision du propriétaire, 2026-10-13) : le pourcentage ne remonte jamais d'une
+#     place à l'autre — la 2e ne dépasse pas le match idéal, la 3e ne dépasse pas la 2e. La règle
+#     s'applique à la sélection de chaque place (``sous_plafond``), pas à l'affichage : le score n'est
+#     jamais retouché, c'est la souris choisie qui change. Repli documenté : si le plafond ne laisse
+#     aucun candidat, la place reste remplie (jamais de trou) et le banc compte ces profils.
 ALTERNATIVE_EXTENSION_POINTS = 5
 ECONOMY_SLOT_TOLERANCE_POINTS = 5
 # Dernier palier (décision du propriétaire, 2026-10-12) : quand ni « l'économie » ni « l'autre option »
@@ -580,7 +589,36 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # Le meilleur profil ; à égalité, la moins chère.
         return max(candidates, key=lambda score: (score.total, -_price_or_inf(score))) if candidates else None
 
+    def sous_plafond(candidates: list[MouseScore], plafond: int) -> list[MouseScore]:
+        """Candidats d'une place : jamais mieux notés que la place du dessus (décision du 2026-10-13).
+
+        Le pourcentage affiché ne remonte donc jamais d'une ligne à l'autre : la deuxième place ne
+        peut pas dépasser le match idéal, la troisième ne peut pas dépasser la deuxième. Avant, cela
+        arrivait — **1 622 profils (6,0 %)** montraient une deuxième place mieux notée que le match
+        idéal (en mode Économique, le match idéal est la souris la MOINS CHÈRE de la zone : une souris
+        mieux notée mais plus chère le dépassait donc en deuxième ligne), et la troisième place
+        dépassait la deuxième sur 24 à 128 profils selon le mode. Le membre lisait alors un « idéal »
+        moins bien noté que la ligne du dessous : cela ressemble à une erreur de calcul.
+
+        Filtre STRICT : quand le plafond ne laisse aucun candidat dans la fenêtre de la place, le
+        moteur élargit sa recherche SOUS le plafond (classement entier) avant de renoncer à l'ordre —
+        voir les derniers paliers de chaque place. Le seul cas où l'ordre cède est celui où aucune
+        souris du classement ne passe sous le plafond : la place reste alors remplie (règle du
+        2026-10-12 : jamais de trou dans le résultat) et le banc d'essai compte ces profils sous le nom
+        « ordre non garanti » — mesuré, jamais supposé.
+
+        Le plafond porte sur les points du barème (sur 40) : comme le pourcentage affiché est
+        proportionnel à ces points (``compatibility_percent`` = points × 100 / 40, arrondi), il ne peut
+        pas remonter quand les points ne remontent pas — la garantie vaut donc aussi pour le nombre
+        affiché, sans second plafond. Vérifié sur la grille complète : 84 violations en points = 84 en
+        pourcentages, aucune divergence.
+        """
+        return [score for score in candidates if score.total <= plafond]
+
     ideal_price = _price_or_inf(ideal)
+    plafond_ideal = ideal.total
+    zone = sous_plafond(zone, plafond_ideal)
+    distinct_zone = [score for score in zone if not_same_shell(score)]
     if distinct_zone:
         # Cas normal : une autre coque est déjà dans la zone du mode. On préfère la moins chère
         # (c'est le rôle de cette place) ; à défaut, la mieux notée de la zone.
@@ -593,6 +631,7 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # chère. Sans candidat, on reprend la zone telle quelle : jamais moins de résultats qu'avant.
         extension = [score for score in ordered[1:]
                      if in_window(score, ALTERNATIVE_EXTENSION_POINTS) and not_same_shell(score)]
+        extension = sous_plafond(extension, plafond_ideal)
         alternative = best_match([score for score in extension if _price_or_inf(score) <= ideal_price]) \
             or best_match(zone)
 
@@ -603,7 +642,7 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # montrée sous le titre « 🔎 Autre piste » (``third_slot_title``) — le résultat ne comporte
         # jamais de trou au milieu, et son pourcentage dit à lui seul que la piste est loin.
         restants = [score for score in ordered[1:] if not_same_shell(score)]
-        alternative = best_match(restants)
+        alternative = best_match(sous_plafond(restants, plafond_ideal)) or best_match(restants)
 
     # (3) La troisième place : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``)
     # qui est vraiment moins chère que les deux autres (« l'économie ») ; **à défaut**, depuis la
@@ -614,9 +653,14 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
     shown_ids = {ideal.mouse.id}
     if alternative is not None:
         shown_ids.add(alternative.mouse.id)
+    # Plafond de la troisième place : le score de la DEUXIÈME (ou du match idéal si elle manque),
+    # par la même règle d'ordre (décision du propriétaire, 2026-10-13).
+    plafond_economie = alternative.total if alternative is not None else plafond_ideal
     economy_window = [score for score in ordered[1:] if in_window(score, ECONOMY_SLOT_TOLERANCE_POINTS)]
-    candidates = [score for score in sorted(economy_window, key=lambda s: (_price_or_inf(s), -s.total))
-                  if score.mouse.id not in shown_ids]
+    candidates = sous_plafond(
+        [score for score in sorted(economy_window, key=lambda s: (_price_or_inf(s), -s.total))
+         if score.mouse.id not in shown_ids],
+        plafond_economie)
 
     # Elle doit être moins chère que TOUT ce qui est déjà à l'écran : une souris plus chère que le
     # match idéal ne serait pas « l'économie », et une souris au même prix que l'alternative
@@ -658,8 +702,11 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # promesse exagérée. Le budget reste la règle : en Budget personnalisé, le classement ne
         # contient déjà que des souris conformes au plafond (``evaluate_mouse`` les écarte sinon).
         restants = [score for score in ordered[1:] if score.mouse.id not in shown_ids]
-        autre_coque = [score for score in restants if other_shell(score)]
-        economy = best_match(autre_coque or restants)
+        sous_plafond_restants = sous_plafond(restants, plafond_economie)
+        autre_coque = [score for score in sous_plafond_restants if other_shell(score)]
+        # Dernier recours (ordre non garanti, compté par le banc) : aucune souris du classement ne
+        # passe sous le plafond de la deuxième place — la ligne reste remplie quand même.
+        economy = best_match(autre_coque or sous_plafond_restants) or best_match(restants)
     return ideal, alternative, economy
 
 
@@ -995,7 +1042,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         main = _image(main, image_key)
 
     if session.grip is None or not session.has_measures:
-        # Parcours incomplet : rien à expliquer, et surtout aucune valeur inventée.
+        # Parcours incomplet : rien à expliquer, et surtout aucune valeur inventée — et donc aucun
+        # renvoi vers un bloc qui n'est pas là.
         main.set_footer(text=SCORE_DISCLAIMER)
         return [main]
 
@@ -1012,7 +1060,9 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     buttons = _buttons_guide_embed(session)
     if buttons is not None:
         embeds.append(buttons)
-    embeds[-1].set_footer(text=SCORE_DISCLAIMER)
+    # Le renvoi n'est ajouté que si le bloc « Pourquoi ce choix ? » est bien dans le message.
+    embeds[-1].set_footer(
+        text=SCORE_DISCLAIMER + (EXPLANATION_REFERENCE if dimensions is not None else ""))
     return embeds
 
 

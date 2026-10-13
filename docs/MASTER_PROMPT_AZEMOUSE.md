@@ -356,6 +356,19 @@ largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inve
 
 `ranked` = 2 premiers de la zone ordonnée, `pending` = `pending` + (modes à prix : `eligible` sans prix). `explanation` = phrase type fournie par `_explanation()`.
 
+### 7.7 Présentation du résultat : ordre garanti et prix non vérifié (décisions du 2026-10-13)
+
+- **Ordre garanti** : le pourcentage ne remonte jamais d'une place à l'autre (idéal ≥ alternative ≥
+  économie). La contrainte s'applique au **choix de la souris** dans `result_slots` (`sous_plafond`),
+  jamais au score : le match idéal n'est jamais retouché. Repli documenté et compté par le banc d'essai :
+  quand le plafond ne laisse aucun candidat (grande main à budget serré), la place reste remplie — jamais
+  de trou — et le pourcentage peut alors remonter (84 profils sur 27 170, 0,31 %).
+- **Prix non vérifié affiché** : une souris dont le prix n'est pas attesté (`price_status != "verified"`)
+  affiche « (prix non vérifié) » à côté de son prix, dans les trois places **et** dans la petite ligne de
+  prix du mode « Peu importe le prix » (seul endroit où le prix apparaît dans ce mode). Deux souris sont
+  concernées : Scyrox V6 et ATK A9 Plus 2.0. Ne jamais présenter un prix du cahier des charges comme un
+  prix vérifié.
+
 ### 7.5 Cas de non-régression (à garder en tests)
 
 Main `180×90 mm`, **Palm** → cibles `118.8–123.8` (L) et `55.6–59.6` (W prise) :
@@ -759,7 +772,10 @@ def _recap(session):
   - Alternative conditionnelle (voir §6.2 P10)
   - `add_field("🧭 Pourquoi ce choix ?", selection.explanation, inline=False)`
   - Si `pending` : `add_field("⏳ À vérifier (non classées)", _pending_text(pending), inline=False)` **ou** si `len(pending)>8`, n'afficher que le compte : `f"{len(pending)} souris non évaluables (données incomplètes) — détails dans la matrice."`
-  - `set_footer(text=SCORE_DISCLAIMER)` — garder tel quel
+  - `set_footer(text=SCORE_DISCLAIMER)` — le texte de l'avertissement est conservé ; **le renvoi
+    qu'il contenait a été corrigé le 2026-10-13** : il pointait vers « Comment lire ce résultat », un
+    bloc supprimé le 2026-10-11. Il renvoie désormais au bloc qui existe (« 🧭 Pourquoi ce choix ? »)
+    et seulement quand ce bloc est dans le message (voir §7.7)
   - `set_image` avec la clé choisie par `_choose_result_image` (ex. `illustration_hump_mid`)
   - **Ne pas mettre plus de 4 fields** (limite cognitive et mobile).
 
@@ -829,10 +845,16 @@ Aucun autre fichier ne lit `thenar` pour calculer.
   jamais recommandée. La coque `atk_x1` ne lui partage que ses **cotes** (127 × 64 × 40 mm, comme l'ATK
   X1 V2 Ultra Max) : sa bosse n'est pas propagée, celle de l'X1 étant elle-même contestée par une source
   tierce. Exception documentée et testée ; rien n'est deviné en attendant une source publiée.
-- **Ordre des pourcentages** : mesuré le 2026-10-12 (34e passe) — en mode Économique, le match idéal étant
-  la souris la moins chère de la zone, sa deuxième place affiche parfois un pourcentage supérieur
-  (1 622 profils sur 27 170, 6,0 %) ; une troisième place peut aussi dépasser la deuxième (24 à 128
-  profils selon le mode). Titres et prix restent exacts ; l'ordre n'est pas garanti par le moteur.
+- **Ordre des pourcentages** : ~~non garanti~~ **tranché le 2026-10-13 (35e passe)** — l'ordre est
+  **garanti** (idéal ≥ alternative ≥ économie), la contrainte porte sur le choix de la souris et jamais
+  sur le score (§7.7). Mesure avant/après : 2 046 → **84 profils** (0,31 %) où le plafond ne laisse aucun
+  candidat, la place restant alors remplie (jamais de trou) ; le match idéal ne change jamais.
+- **Marqueur « prix non vérifié »** : ~~absent du résultat~~ **tranché le 2026-10-13 (35e passe)** — le
+  marqueur est affiché à côté du prix des souris non attestées (Scyrox V6, ATK A9 Plus 2.0), dans les
+  trois places et dans la petite ligne du mode « Peu importe le prix » : **16,09 % des profils**.
+- **Pied de message** : ~~renvoi mort vers « Comment lire ce résultat »~~ **corrigé le 2026-10-13**, avec
+  l'autorisation du propriétaire : le renvoi pointe vers « 🧭 Pourquoi ce choix ? », et seulement quand ce
+  bloc est affiché (C27 de `docs/audit/AUDIT.md`).
 - **Thème Discord clair** : tester la lisibilité (embed bordeaux sur fond clair reste OK, mais vérifier).
 
 ---

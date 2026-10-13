@@ -1899,3 +1899,108 @@ réponse : c'est du texte visible, et ses décisions sur la concision du résult
 | `tools/flow_effect.py --rapide` | « aucun changement » : le résidu retiré ne changeait rien de visible |
 | `tools/privacy_scan.py` | 0 violation |
 | `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
+
+---
+
+## 24. Trente-cinquième passe : trois décisions du propriétaire (ordre des pourcentages, marqueur de prix, pied de message)
+
+Après la publication de l'audit (§23), trois points ouverts ont été soumis au propriétaire, qui a tranché
+le **2026-10-13**. Cette passe les met en œuvre, mesure chaque effet et verrouille chaque règle par un
+test. Deux d'entre eux touchent un **texte visible** et un **rôle de place** : le moteur est modifié là où
+la décision l'autorise, et nulle part ailleurs.
+
+### 24.1 Ordre des pourcentages garanti (décision : « garantir l'ordre »)
+
+**Le défaut mesuré** (§23.5) : le pourcentage affiché pouvait **remonter** d'une place à l'autre.
+En mode **Économique**, le match idéal est la souris la **moins chère** de la zone de tolérance (c'est la
+règle du mode) : une souris mieux notée mais plus chère le dépassait donc en deuxième ligne — **1 622
+profils (6,0 %)**. La troisième place dépassait la deuxième sur 24 à 128 profils selon le mode. Le membre
+lisait alors un « match idéal » moins bien noté que la ligne du dessous : cela ressemble à une erreur de
+calcul, et cela abîme la confiance dans tout le résultat.
+
+**La règle appliquée** : une place ne peut pas afficher un meilleur score que la place du dessus. Elle est
+appliquée **à la sélection** de la souris (`sous_plafond` dans `result_slots`, `cogs/finder_flow.py`), pas à
+l'affichage : **aucun score n'est retouché**, c'est le choix de la souris qui change. Le match idéal, lui,
+n'est jamais touché.
+
+**Effet mesuré** (`tools/flow_effect.py`, grille complète, code d'avant = `41d741d`) :
+
+| Mesure (24 609 profils avec au moins une place) | Avant | Après |
+|---|---:|---:|
+| Profils où un pourcentage remonte d'une place à l'autre | **2 046** | **84** (0,34 %) |
+| Match idéal changé | — | **0** |
+| Deuxième place changée | — | 1 615 |
+| Troisième place changée | — | 1 976 |
+| Places remplies (0 / 1 / 2 / 3) | 0 · 182 · 1 196 · 23 231 | **0 · 182 · 1 196 · 23 231** (identique) |
+| Profils où deux places montrent la même coque | 2 010 | **1 864** (moins de doublons de coque) |
+| Pire baisse de score pour la deuxième place | — | 10 points (profil où elle dépassait le match idéal) |
+| Économie gagnée / perdue | — | 0 / 0 |
+
+**Le plafond porte sur les points du barème (sur 40), et cela garantit aussi le pourcentage affiché** :
+le pourcentage est proportionnel à ces points (`compatibility_percent` = points × 100 / 40, arrondi), il ne
+peut donc pas remonter quand les points ne remontent pas. Le contrôle du banc d'essai, en points, couvre
+exactement le nombre affiché — vérifié sur la grille complète : **84 violations en points = 84 en
+pourcentages**, aucune divergence (un second plafond serait une ligne de code de plus pour la même règle).
+
+**Le repli restant (84 profils, 0,31 %)** est documenté et vérifié, pas toléré en silence : quand le plafond
+ne laisse **aucun** candidat — grande main à budget serré, où la fenêtre ne contient plus une seule souris
+sous le score de la place du dessus —, la place reste **remplie** (règle du 2026-10-12 : jamais de trou dans
+le résultat) et le pourcentage peut alors remonter. Exemple mesuré : main 225 × 85, mode Économique, match
+idéal ATK U2 V2 Ultimate (10/40) — la seule souris abordable restante est mieux notée (20/40). Le banc
+d'essai **compte** ces profils (« ordre non garanti : 84 ») et le test `test_le_pourcentage_ne_remonte_…`
+vérifie pour chacun qu'aucune souris du classement ne passait sous le plafond.
+
+### 24.2 Le marqueur « (prix non vérifié) » revient dans la ligne de prix (décision : « remettre »)
+
+**Le défaut** (§23.8, C34) : le master prompt montre « 74.90 € (prix non vérifié) », mais aucun appelant
+n'activait plus le marqueur depuis le retrait de l'onglet « Détails » (2026-10-11). Un prix non attesté
+s'affichait donc **exactement** comme un prix vérifié.
+
+**La règle appliquée** : la ligne de place affiche « (prix non vérifié) » dès que `price_status` n'est pas
+`verified` — dans les trois places, **et** dans la petite ligne de prix du mode « Peu importe le prix » (le
+seul endroit où le prix apparaît dans ce mode). Deux souris du catalogue sont concernées : **Scyrox V6**
+(74,90 € du cahier des charges ; la boutique du fabricant vend en dollars, jamais convertis) et
+**ATK A9 Plus 2.0** (45,00 € du cahier des charges, relevé revendeur à 44,90 € conservé).
+
+**Effet mesuré** (grille complète) : **4 373 places** portent le marqueur, soit **16,09 % des profils**
+(contre 0 % auparavant). Lisibilité mobile : la ligne la plus longue portant le marqueur mesure
+**79 caractères** — sous la plus longue ligne de place du catalogue (87 caractères, ATK U2), et le banc
+d'essai contrôle les limites Discord sur les 27 170 profils (**0 problème**).
+
+### 24.3 Le pied de message ne renvoie plus à un bloc disparu (décision : « corriger la phrase »)
+
+Le pied de page disait « Le calcul est expliqué dans le bloc « Comment lire ce résultat », plus bas » : ce
+bloc **n'existe plus** depuis le 2026-10-11 (C27). Le texte est gelé par le master prompt, d'où le signalement
+plutôt qu'une correction unilatérale — le propriétaire a autorisé la correction le 2026-10-13.
+
+**La règle appliquée** : le pied de page renvoie au bloc qui existe, **« 🧭 Pourquoi ce choix ? »**, et
+seulement quand ce bloc est dans le message. Sur un parcours incomplet (aucune mesure, donc aucun bloc
+d'explication), le pied de page reste le simple avertissement de score. La phrase ne dit plus aucune
+direction (« plus bas » était faux : le pied de page est posé sur le dernier bloc, l'explication est
+au-dessus).
+
+### 24.4 Ce que la passe a aussi vérifié
+
+- **Les cinq profils de référence** du README et du guide de déploiement sont inchangés, mais leur ordre est
+  désormais cohérent : Palm 180 × 90 Qualité/Prix → Phantom 88 % · Z1 V2 75 % · A9 Mini 75 % ;
+  Palm 180 × 90 Économique → Z1 V2 75 % · A9 Mini 75 % · GHOST Ultimate 75 % (la Z1 affichait 63 % contre
+  75 % pour sa deuxième ligne avant la passe) ; Palm 200 × 110 Haut de gamme → A9 Ultimate 88 % ·
+  X1 V2 Ultra Max 88 % · A9 Plus 2.0 88 % · (prix non vérifié) ; Claw 180 × 100 pincée → ZERO 100 % ·
+  X2A v3 100 % · MAD R 88 % ; budget 25 € / main 150 × 65 → V3 50 % · U2 38 % · R1 25 %.
+- **Aucun trou nouveau** : les places remplies sont identiques au profil près (le repli « jamais de trou »
+  reste en place, et il est lui aussi plafonné par l'ordre quand un candidat existe).
+- **Deux places sur la même coque** : 2 010 → 1 864 profils (grille du parcours) et 1 339 → 1 274
+  (grille statistique, 18 522 profils) — la règle d'ordre réduit mécaniquement les répétitions de coque.
+- **Rapports régénérés** : `docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`,
+  `docs/audit/matrice_profils.md` et les trois aperçus PNG (`docs/apercu_*.png`, dont le résultat).
+
+### 24.5 Preuves d'exécution (35e passe)
+
+| Contrôle | Résultat |
+|---|---|
+| `pytest -q` | **407 passed** (403 avant la passe : 4 tests ajoutés — ordre garanti, match idéal intact, marqueur de prix, pied de message) |
+| `pyflakes` (bot, config, cogs, utils, tests, tools) | 0 avertissement |
+| `tools/qa_flow_matrix.py` (27 170 profils) | **0 problème** · 3 places 23 231 (85,50 %) · 2 places 1 196 · 1 place 182 · 0 place 2 561 · repli « même coque » 645 · match idéal partiel 3 118 · **ordre non garanti 84 (0,31 %)** |
+| `tools/flow_effect.py --avant 41d741d` (24 609 profils) | match idéal **0 profil changé** · alternative 1 615 · troisième place 1 976 · **ordre violé 2 046 → 84** · places remplies identiques |
+| `tools/privacy_scan.py` | 0 violation |
+| `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
