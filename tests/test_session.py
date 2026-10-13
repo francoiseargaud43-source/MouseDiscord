@@ -2,6 +2,7 @@
 import json
 
 import pytest
+from unittest.mock import MagicMock
 
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar
 from utils.session import (
@@ -475,3 +476,86 @@ def test_retirer_un_parcours_inconnu_ne_change_rien():
 
     assert store.lookup(vivant.session_id, 42) == (vivant, LOOKUP_OK)
     assert len(store) == 1
+
+
+# ---------------------------------------------------------------------------
+# 52e passe (2026-10-13) : les décisions jamais prises de `SessionStore`
+# ---------------------------------------------------------------------------
+def test_oublier_un_parcours_deja_parti_ne_change_rien():
+    """`discard` reçoit des identifiants du dehors (clic tardif, parcours purgé) : un inconnu s'ignore.
+
+    Sans la garde, l'appel retirerait un parcours qui n'existe plus — et surtout il **écrirait** le
+    fichier d'état pour rien, à chaque clic d'un vieux message.
+    """
+    store = SessionStore(ttl_seconds=60, clock=FakeClock())
+    vivant = store.start(1)
+    ecritures = MagicMock()
+    store._save = ecritures                   # l'écriture du fichier d'état est surveillée
+
+    store.discard("parcours-jamais-vu")
+    store.discard(None)
+
+    ecritures.assert_not_called()             # rien n'a bougé : rien n'est réécrit
+    assert len(store) == 1
+    assert store.lookup(vivant.session_id, 1)[1] == LOOKUP_OK
+
+
+def test_oublier_un_membre_sans_parcours_ne_change_rien():
+    """`discard_user` sur un membre qui n'a rien en cours : aucun effet, aucune écriture.
+
+    (Point d'entrée conservé pour l'API : le bot ne l'appelle pas lui-même, mais une commande
+    d'exploitation ou un test peut le faire — l'invariant vaut pour les deux.)
+    """
+    store = SessionStore(ttl_seconds=60, clock=FakeClock(), path=None)
+    vivant = store.start(1)
+    ecritures = MagicMock()
+    store._save = ecritures
+
+    store.discard_user(2)          # membre inconnu
+
+    ecritures.assert_not_called()
+    assert len(store) == 1
+    assert store.lookup(vivant.session_id, 1)[1] == LOOKUP_OK
+
+
+ORDER_INVERSE = {"version": 1, "sessions": [
+    {"session_id": "recent", "user_id": 1, "age_seconds": 5, "grip": "claw"},
+    {"session_id": "ancien", "user_id": 1, "age_seconds": 300, "grip": "palm"},
+]}
+
+
+def test_la_relecture_garde_le_parcours_le_plus_recent_meme_lu_en_second(tmp_path):
+    """L'ordre du fichier ne décide pas : c'est l'âge qui tranche, dans les deux sens de lecture.
+
+    Le cas symétrique (`DEUX_VIVANTS`, le plus récent lu en second) était testé ; celui-ci est l'autre
+    moitié de la même décision — la seconde entrée lue ne doit pas voler la main à la première.
+    """
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(json.dumps(ORDER_INVERSE), encoding="utf-8")
+
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+
+    assert store.current(1)[0].session_id == "recent"
+    assert store.lookup("ancien", 1) == (None, LOOKUP_INACTIVE)
+    assert len(store) == 2
+
+
+def test_retirer_un_parcours_non_actif_ne_derange_pas_le_parcours_vivant(tmp_path):
+    """`_remove` d'un parcours qui n'a PAS la main : le suivi du membre ne bouge pas.
+
+    Deux vivants d'un membre, on retire l'ancien : le nouveau reste actif. Sans cette garantie, la purge
+    périodique (qui retire des parcours expirés, souvent les anciens) pourrait détacher le parcours
+    vivant de son membre — le clic suivant ne retrouverait plus rien.
+    """
+    chemin = tmp_path / "sessions.json"
+    chemin.write_text(json.dumps(DEUX_VIVANTS), encoding="utf-8")      # « ancien », « recent », « autre »
+    store = SessionStore(ttl_seconds=1800, path=chemin)
+    assert store.current(1)[0].session_id == "recent"
+
+    store.discard("ancien")                    # l'inactif du membre 1, pas le vivant
+
+    assert store.current(1)[0].session_id == "recent"          # le suivi n'a pas bougé
+    assert store.lookup("recent", 1)[1] == LOOKUP_OK
+    assert store.lookup("ancien", 1)[1] == LOOKUP_INACTIVE
+    assert len(store) == 2                                     # « recent » + « autre » (membre 2)
+

@@ -20,7 +20,7 @@ import os
 import runpy
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from discord.ext import commands
@@ -193,3 +193,26 @@ def test_lancer_le_fichier_avec_une_configuration_invalide_refuse_de_demarrer(
     assert "Configuration invalide" in caplog.text
     assert "SESSION_TTL_SECONDS doit être supérieur à 0" in caplog.text
     assert "Traceback" not in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_setup_hook_ne_demarre_pas_deux_fois_la_purge_periodique(monkeypatch):
+    """Démarrage appelé deux fois dans le même processus : la purge ne repart pas.
+
+    Branche jamais prise avant cette passe (`if not self._purge_sessions.is_running()` — cas « elle
+    tourne déjà »). Sans cette garde, `tasks.loop.start()` lève « Task is already running » et l'erreur
+    remonterait dans le démarrage du bot — au pire moment, puisque c'est la reprise après incident.
+    """
+    parcours = MouseBot(sessions_path=None)
+    monkeypatch.setattr(MouseBot, "load_extension", AsyncMock())   # déjà chargée au premier passage
+
+    try:
+        await parcours.setup_hook()
+        assert parcours._purge_sessions.is_running()
+
+        await parcours.setup_hook()          # ne lève pas : la purge n'est pas relancée
+        assert parcours._purge_sessions.is_running()
+    finally:
+        parcours._purge_sessions.cancel()
+        await parcours.close()
+

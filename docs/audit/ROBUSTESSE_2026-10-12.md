@@ -3573,3 +3573,56 @@ une source change (sur une copie temporaire : aucun fichier du dépôt n'est éc
 
 **Mesure** : 715 tests verts, `pyflakes` 0, `privacy_scan` 0 violation. **Rien à envoyer sur le serveur** :
 l'outil, un test et trois images de documentation.
+
+## 26.36 52e passe — la couverture de **branches**, une décision à la fois (2026-10-13)
+
+### 26.36.1 Ce que la couverture de lignes ne dit pas
+
+Le §26.31 annonçait **1 655 instructions, 0 non exécutée**. Une instruction peut être exécutée sans que
+**l'autre** chemin d'une décision ne le soit jamais : `couverture de branches` (`coverage run --branch`)
+compte les 508 décisions du périmètre. Mesure du 2026-10-13 : **22 branches jamais prises**, toutes dans
+quatre fichiers — dont **aucune n'était un défaut visible** : c'étaient des cas que le catalogue
+d'aujourd'hui ne produit plus (aucune souris sans longueur ni largeur, aucune souris sans capteur, aucune
+souris sans poids) ou des relectures défensives. Une branche jamais prise est un piège pour le code futur,
+et souvent une garantie annoncée mais non vérifiée.
+
+### 26.36.2 Les vingt-deux, une par une
+
+| Fichier | Décision jamais prise | Ce qu'en fait la 52e passe |
+|---|---|---|
+| `bot.py` 61 | `setup_hook` appelé alors que la purge tourne déjà | **test** : démarrage rejoué deux fois dans le même processus, la purge ne repart pas (sinon « Task is already running ») |
+| `session.py` 243, 248 | `discard` / `discard_user` sur un identifiant ou d'un membre inconnus | **2 tests**, avec l'écriture du fichier d'état **surveillée** : rien ne bouge ⇒ rien n'est réécrit (et non plus seulement « rien ne change », qui ne prouvait pas l'absence d'écriture) |
+| `session.py` 332 | Fichier d'état lu avec les deux parcours dans l'ordre inverse | **test** : c'est l'âge qui tranche, pas l'ordre du fichier |
+| `session.py` 361 | `_remove` d'un parcours qui n'a pas la main | **test** : purger l'ancien ne détache pas le vivant |
+| `finder_flow` 330, 332 | Souris sans longueur, puis sans largeur | **test** sur les formateurs (`_size_text`) — une cote absente disparaît, jamais « None » |
+| `finder_flow` 400 | Rappel d'un parcours où rien n'est encore répondu | **test** : le récapitulatif est vide, il n'invente rien |
+| `finder_flow` 495-501 | Souris sans capteur / fréquence / switchs / MCU | **test** sur `atk_u2`, dont le MCU manque vraiment (onze souris du catalogue) |
+| `finder_flow` 525, 531 | Souris sans poids documenté / sans forme connue | **test** sur les formateurs (poids absent ⇒ pas de séparateur orphelin) |
+| `finder_flow` 540 | Ligne « Peu importe le prix » sans composant documenté | **test** : pas de « ⚙️ » orphelin |
+| `finder_flow` 691, 1077, 1081, 1085 | Résultat réduit à **une seule place** (cas réel : 1 086 profils de la grille complète) | **test** : une seule ligne affichée, aucune place vide ; et **contre-épreuve** sur la garde d'illustration |
+| `finder_flow` 1096, 1105 | `_dimensions_embed` / `_buttons_guide_embed` qui déclinent | **test de garde** (voir ci-dessous) |
+| `finder_flow` 1252 | Le membre revalide la **même** prise | **test** : le thénar et la variante ne sont pas effacés (l'autre sens l'était déjà) |
+
+### 26.36.3 Les deux branches « impossibles par construction », gardées et testées
+
+`results_embeds` sort plus tôt quand la prise ou les mesures manquent : au moment d'empiler les blocs,
+`_dimensions_embed` et `_buttons_guide_embed` **ne peuvent pas** renvoyer ``None`` aujourd'hui — c'est
+prouvé par un test dédié (les deux blocs sont présents pour les trois prises, vraies souris du catalogue).
+Les deux gardes du rendu restent donc pour ce qui viendra après (une règle qui supprimerait un bloc) et
+sont testées **comme gardes** : en simulant un bloc qui décline, on vérifie que la carte n'empile pas de
+bloc absent et que le **pied de message ne renvoie pas** à un bloc disparu — le défaut exact corrigé le
+2026-10-13 (§24.3, C27).
+
+### 26.36.4 Une mutation survivante qui a mené à une garantie réelle
+
+Sur les quatorze mutations de cette passe, **une a survécu** : remplacer `if image_key:` par `if True:`
+dans `results_embeds` ne change rien à l'affichage (`_image` ignore une clé absente)… mais fait relire
+`assets/images.json` une fois de plus **par résultat**, alors que le projet n'a **aucun cache** (le
+chargement est à chaud partout). La garantie était donc mesurable autrement : un test compare le nombre de
+lectures du fichier des images entre deux parcours identiques, l'un avec une souris illustrée, l'autre avec
+une souris dont la hauteur de boutons est « Inconnu » en Fingertip — **une lecture de moins**, et la
+mutation redevient détectable. Les quatorze mutations échouent désormais (14 × « 1 failed »).
+
+**Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
+côtés)**, **732 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
+(des tests et des documents seulement) : **rien à envoyer** sur le serveur.

@@ -1859,3 +1859,240 @@ async def test_une_interaction_deja_repondue_recoit_l_etape_par_le_suivi():
     await flow._show_private(inter, content="étape suivante")
     inter.followup.send.assert_awaited_once_with(ephemeral=True, content="étape suivante")
     assert not inter.response.edit_message.await_count
+
+# ---------------------------------------------------------------------------
+# 52e passe (2026-10-13) : les décisions jamais prises, une par une
+# ---------------------------------------------------------------------------
+def _mouse_du_catalogue(identifiant: str):
+    """Une **souris réelle** du catalogue : ces tests ne s'inventent pas d'exemplaire."""
+    from config import MOUSE_DB_PATH
+    from utils.catalog import load_catalog
+
+    return next(mouse for mouse in load_catalog(MOUSE_DB_PATH) if mouse.id == identifiant)
+
+
+def _score_reel(identifiant: str, grip=Grip.PALM):
+    """Un score **calculé par le vrai moteur** sur une souris réelle (main 180 × 90 mm)."""
+    from utils.matcher import HandMeasure, evaluate_mouse
+
+    return evaluate_mouse(_mouse_du_catalogue(identifiant), HandMeasure(180.0, 90.0), grip, None, None)
+
+
+def _session_prete(grip=Grip.PALM, length=180.0, width=90.0, mode=BudgetMode.QUALITE_PRIX, thenar=None):
+    """Un parcours complet, prêt pour le rendu du résultat."""
+    session = SessionStore(ttl_seconds=600).start(1)
+    session.grip, session.hand_length_mm, session.hand_width_mm = grip, length, width
+    session.budget_mode = mode
+    session.thenar = thenar
+    return session
+
+
+def test_les_reperes_de_taille_ne_montrent_que_les_cotes_documentees():
+    """`_size_text` : une cote absente disparaît de la ligne — aucun « None », aucun séparateur orphelin.
+
+    Les deux cotes sont obligatoires au catalogue aujourd'hui ; ce test verrouille le contrat du
+    formateur et exerce la branche « cote absente », jamais prise jusqu'ici.
+    """
+    assert flow._size_text(_mouse_du_catalogue("atk_phantom_ultimate")) == \
+        "long. 119,7 mm · larg. 62,5 mm (coque)"
+    assert flow._size_text(SimpleNamespace(length_mm=None, width_max_mm=63.5)) == "larg. 63,5 mm (coque)"
+    assert flow._size_text(SimpleNamespace(length_mm=None, width_max_mm=None)) == ""
+
+
+def test_la_ligne_des_composants_ne_montre_que_ce_qui_est_documente():
+    """`_components_text` : un champ absent ne s'affiche pas — et ne dit jamais « None ».
+
+    `atk_u2` est une souris réelle dont le **MCU** n'est documenté nulle part (onze souris du catalogue
+    sont dans ce cas) : sa ligne technique s'arrête à ce qui existe.
+    """
+    u2 = _mouse_du_catalogue("atk_u2")
+    assert not u2.mcu                          # la prémisse du test : la donnée manque vraiment
+    attendu = " · ".join([u2.sensor, f"{u2.polling_hz:,}".replace(",", " ") + " Hz", u2.switches])
+    assert flow._components_text(u2) == attendu
+    assert "None" not in flow._components_text(u2)
+    assert flow._components_text(
+        SimpleNamespace(sensor=None, polling_hz=None, switches=None, mcu=None)) == ""
+
+
+def test_une_ligne_de_place_sans_poids_ni_forme_connus_reste_lisible():
+    """Garde-fou du formateur : jamais de séparateur en double ni de champ vide quand une donnée manque.
+
+    Trente-six souris sur trente-six ont un poids et une forme au catalogue (vérifié le 2026-10-13) :
+    cette branche protège l'affichage du jour où ce ne sera plus vrai.
+    """
+    score = SimpleNamespace(total=30, is_partial=False,
+                            mouse=SimpleNamespace(label="Souris sans fiche", price_eur=59.95,
+                                                  price_status="verified", weight_g=None, shape=None))
+
+    assert flow._slot_text(score) == "**Souris sans fiche** · 59,95 € · **75 %**"
+
+
+def test_le_mode_prix_libre_sans_composants_documentes_ne_pose_pas_de_ligne_technique():
+    """« Peu importe le prix » ajoute la petite ligne des composants… quand il y en a.
+
+    Sans composant documenté, la ligne de prix reste seule : pas de « ⚙️ » orphelin.
+    """
+    score = SimpleNamespace(total=30, is_partial=False,
+                            mouse=SimpleNamespace(label="Souris muette", price_eur=59.95,
+                                                  price_status="owner_spec_unverified", weight_g=54.0,
+                                                  shape="Symmetrical", sensor=None, polling_hz=None,
+                                                  switches=None, mcu=None))
+
+    ligne = flow._slot_text(score, BudgetMode.PEU_IMPORTE_PRIX)
+    assert ligne == ("**Souris muette** · 54 g · **75 %** · Symétrique\n"
+                     "-# 💰 59,95 € (prix non vérifié) — sans effet sur ce classement")
+    assert "⚙️" not in ligne
+
+
+def test_un_resultat_a_une_seule_place_n_affiche_pas_de_lignes_vides():
+    """Cas réel (1 086 profils de la grille complète) : un seul candidat classable.
+
+    La carte ne porte alors que le match idéal — ni alternative, ni économie, ni champ vide. Les deux
+    branches « place absente » du rendu n'étaient jamais exercées.
+    """
+    ideal = _score_reel("atk_phantom_ultimate")
+    choix = selection.select([ideal], BudgetMode.QUALITE_PRIX, top_n=3)
+
+    assert flow.result_slots(choix) == (ideal, None, None)
+    embeds = flow.results_embeds(_session_prete(), choix)
+    assert [f.name for f in embeds[0].fields] == ["🥇 Le match idéal"]
+    assert embeds[0].description.startswith("✋ **Palm Grip**")
+
+
+def test_une_souris_fingertip_sans_hauteur_de_boutons_connue_n_impose_pas_d_illustration():
+    """En Fingertip, seule la hauteur des boutons peut illustrer le résultat.
+
+    Quand elle n'est pas documentée, aucune image n'est posée : c'est la branche « pas d'illustration »
+    du rendu, jamais exercée avant cette passe. `atk_u2_mini` est une souris réelle dont les boutons sont
+    « Inconnu » (cas de treize souris du catalogue en Fingertip).
+    """
+    score = _score_reel("atk_u2_mini", grip=Grip.FINGERTIP)
+    assert score.mouse.button_height == "Inconnu"
+    assert flow.result_image_key(score, Grip.FINGERTIP) is None
+
+    choix = selection.select([score], BudgetMode.QUALITE_PRIX, top_n=3)
+    embeds = flow.results_embeds(_session_prete(grip=Grip.FINGERTIP), choix)
+    assert all("image" not in embed.to_dict() for embed in embeds)
+
+
+def test_une_souris_sans_illustration_n_entraine_aucune_lecture_du_fichier_des_images(monkeypatch):
+    """Contre-épreuve du test précédent : la garde `if image_key` évite une lecture de fichier inutile.
+
+    Trouvé le 2026-10-13 (52e passe) par une mutation **survivante** : remplacer la garde par `if True:`
+    ne changeait pas l'affichage (`_image` ignore une clé absente), mais faisait relire `images.json`
+    une fois de plus par résultat — et il n'y a **aucun cache** dans le projet. La garantie est donc
+    mesurable : deux parcours identiques (Fingertip, une seule souris classable), l'un avec une souris
+    illustrée (`atk_a9_plus`, boutons « Mid » documentés), l'autre avec une souris dont les boutons sont
+    « Inconnu » (`atk_u2_mini`).
+    """
+    appels = []
+    vrai = flow.load_image_urls
+
+    def compte(path, base_url=None):
+        appels.append(path)
+        return vrai(path, base_url)
+
+    monkeypatch.setattr(flow, "load_image_urls", compte)
+
+    def lectures(identifiant: str) -> int:
+        appels.clear()
+        score = _score_reel(identifiant, grip=Grip.FINGERTIP)
+        choix = selection.select([score], BudgetMode.QUALITE_PRIX, top_n=3)
+        flow.results_embeds(_session_prete(grip=Grip.FINGERTIP), choix)
+        return len(appels)
+
+    avec = lectures("atk_a9_plus")        # boutons documentés : le résultat porte une illustration
+    sans = lectures("atk_u2_mini")        # boutons « Inconnu » : aucune illustration pour elle
+    assert sans == avec - 1, (
+        "une souris sans illustration ne doit entraîner AUCUNE lecture du fichier des images "
+        f"(avec : {avec}, sans : {sans})")
+
+
+def test_le_resultat_complet_porte_toujours_les_deux_blocs_d_explication():
+    """Pourquoi deux gardes du rendu ne peuvent pas être fausses — dites ici plutôt que supposées.
+
+    `results_embeds` sort plus tôt quand la prise ou les mesures manquent : au moment de construire les
+    blocs, `_dimensions_embed` et `_buttons_guide_embed` ne peuvent donc **jamais** renvoyer ``None``
+    (prise connue + mesures saisies). Vérifié sur les trois prises, avec les vraies souris du catalogue.
+    """
+    for grip in Grip:
+        session = _session_prete(grip=grip)
+        selection = flow.compute_selection(session)
+        titres = [embed.title for embed in flow.results_embeds(session, selection)]
+        assert "📐 Vos repères de taille" in titres, grip
+        assert "🖱️ La hauteur des boutons" in titres, grip
+
+
+@pytest.mark.asyncio
+async def test_rechoisir_la_meme_prise_ne_remet_pas_a_zero_le_thenar():
+    """Le membre revalide la prise qu'il avait déjà choisie (branche jamais prise du sélecteur).
+
+    Changer de prise remet à zéro la variante et le thénar — ils en dépendent. Revalider la **même**
+    prise ne doit rien effacer : sinon un simple retour en arrière ferait perdre les réponses.
+    """
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, 99, grip=Grip.CLAW, length=180, width=90,
+                        thenar=Thenar.GRANDE, variant=ClawVariant.RELACHEE)
+    inter = make_interaction(store=store)
+    view = flow.GripView()
+
+    select_values(view.children[0], "claw")            # la même prise
+    await view.children[0].callback(inter)
+    assert (session.grip, session.thenar, session.claw_variant) == (
+        Grip.CLAW, Thenar.GRANDE, ClawVariant.RELACHEE)
+
+    select_values(view.children[0], "palm")            # une autre prise : les dépendances tombent
+    await view.children[0].callback(inter)
+    assert (session.grip, session.thenar, session.claw_variant) == (Grip.PALM, None, None)
+
+
+def test_le_recapitulatif_ne_montre_que_les_reponses_deja_donnees():
+    """`_recap` : une ligne de rappel, jamais de trou comblé par une valeur par défaut.
+
+    Au tout début du parcours, aucune réponse n'existe : le rappel doit être vide plutôt qu'afficher
+    « prise inconnue » ou des mesures inventées (branche « rien de répondu », jamais prise jusqu'ici).
+    """
+    vierge = SessionStore(ttl_seconds=600).start(1)
+    assert flow._recap(vierge) == ""
+
+    vierge.grip = Grip.PALM
+    vierge.hand_length_mm, vierge.hand_width_mm = 175.0, 82.5
+    assert flow._recap(vierge) == "✋ **Palm Grip**  •  📏 **175 × 82,5 mm**"
+
+
+def test_un_bloc_qui_ne_peut_pas_etre_construit_ne_ressert_pas_de_renvoi_mort(monkeypatch):
+    """Gardes défensives de `results_embeds` : les deux branches « bloc absent ».
+
+    Le test précédent prouve qu'aujourd'hui ces branches ne peuvent pas s'ouvrir (prise connue +
+    mesures saisies ⇒ les deux blocs existent toujours). Celui-ci verrouille le comportement du
+    **rendu** pour le jour où un bloc déclinera de se construire — p. ex. une nouvelle règle qui
+    supprime les repères de taille : la carte ne doit pas garder un renvoi vers un bloc absent. C'est
+    exactement le défaut corrigé le 2026-10-13 (le pied de message renvoyait à « Comment lire ce
+    résultat », un bloc disparu depuis le 2026-10-11).
+    """
+    session = _session_prete()
+    selection = flow.compute_selection(session)
+
+    monkeypatch.setattr(flow, "_dimensions_embed", lambda *a, **k: None)
+    monkeypatch.setattr(flow, "_buttons_guide_embed", lambda *a, **k: None)
+    embeds = flow.results_embeds(session, selection)
+
+    titres = [embed.title for embed in embeds]
+    assert "📐 Vos repères de taille" not in titres
+    assert "🖱️ La hauteur des boutons" not in titres
+    assert flow.EXPLANATION_REFERENCE not in embeds[-1].footer.text, (
+        "le pied de message renvoie au bloc « 🧭 Pourquoi ce choix ? », qui n'existe plus")
+
+    # Retour à la normale : les deux blocs reviennent, avec le renvoi dans le pied de message.
+    monkeypatch.undo()
+    revenus = [embed.title for embed in flow.results_embeds(session, selection)]
+    assert "📐 Vos repères de taille" in revenus and "🖱️ La hauteur des boutons" in revenus
+
+
+def test_le_renvoi_du_pied_ne_s_affiche_que_quand_l_explication_est_presente():
+    """Le pendant du test précédent, dans l'autre sens : bloc présent ⇒ renvoi présent."""
+    session = _session_prete()
+    selection = flow.compute_selection(session)
+    embeds = flow.results_embeds(session, selection)
+    assert flow.EXPLANATION_REFERENCE in embeds[-1].footer.text
+

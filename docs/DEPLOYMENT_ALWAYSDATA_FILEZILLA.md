@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.29).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.30).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 715 passed
+.venv/bin/python -m pytest -q                      # attendu : 732 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2146,7 +2146,8 @@ passe de 676 (valeur du jour du §12.23) à **697**.
 
 Le §12.23 (point 8) annonçait une couverture de **99 %** — onze lignes non exécutées, toutes justifiées
 (sous-processus, thénar en pause). Ces onze lignes ont été mesurées une par une : **la couverture du
-périmètre mesuré est maintenant de 100 %** (1 655 instructions, 0 non exécutée), et le travail a mis au
+périmètre mesuré est maintenant de 100 %** (1 655 instructions, 0 non exécutée ; depuis, les **508
+décisions** du même périmètre sont mesurées elles aussi — §12.30), et le travail a mis au
 jour un défaut visible pour l'exploitant.
 
 1. **Le message de `FINDER_CHANNEL_ID` ne disait pas quoi corriger** : c'était le seul des quatre messages
@@ -2248,6 +2249,31 @@ images, modules du message) et un test la recoupe : un aperçu plus vieux que le
 refusé, avec la commande à relancer. Les trois aperçus sont régénérés.
 
 Le compteur ci-dessus passe de 709 à **715** tests.
+
+---
+
+### 12.30 Mise à jour du 2026-10-13 (21e) : les décisions jamais prises, mesurées une par une
+
+**Aucun fichier du bot n'est touché** : des tests et des documents. **Rien à envoyer** sur le serveur.
+
+La couverture disait les **lignes** (100 % depuis la 47e passe), pas les **chemins** : 22 décisions
+n'étaient jamais prises dans un sens. Aucune n'était un défaut visible — le catalogue d'aujourd'hui ne
+produit plus ces cas (plus une souris sans longueur, sans largeur, sans capteur ni sans poids) — mais
+c'étaient des garanties annoncées sans preuve, dans les endroits qui protègent les données :
+
+- `discard` / `discard_user` sur un identifiant ou un membre inconnus : rien ne bouge, et un test vérifie
+  désormais que le **fichier d'état n'est pas réécrit** pour rien ;
+- la relecture du fichier d'état garde le parcours **le plus récent**, quel que soit l'ordre des lignes ;
+- purger un ancien parcours ne détache pas le parcours vivant du membre ;
+- un démarrage rejoué ne relance pas la purge périodique (« Task is already running ») ;
+- le résultat réduit à **une seule place** (1 086 profils réels) n'affiche aucune ligne vide ;
+- le pied de message ne renvoie jamais à un bloc absent (garde testée en simulant un bloc qui décline).
+
+Une **mutation a survécu** et a mené à une garantie réelle : la garde d'illustration évite une relecture de
+`assets/images.json` à chaque résultat sans image — mesurée par un test qui compte les lectures.
+
+**Mesure** : **1 655 instructions et 508 branches, 0 manquante des deux côtés (100 %)**, **732** tests,
+14 mutations → 1 échec chacune. Le compteur ci-dessus passe de 715 à **732** tests.
 
 ---
 
