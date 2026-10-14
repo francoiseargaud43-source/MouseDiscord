@@ -2448,7 +2448,7 @@ suivis du dépôt ; voici ce qui est sorti, ce qui reste, et pourquoi.
   nommés par la documentation et par le code.
 - **Aucun code mort** : un balayage AST de `utils/*.py`, `cogs/*.py`, `bot.py` et `config.py` ne trouve
   ni fonction, ni classe, ni constante jamais référencée — 0 candidat.
-- Les **15 outils** de `tools/` sont tous cités par le README, un document ou un test ; les **26 fichiers
+- Les **16 outils** de `tools/` sont tous cités par le README, un document ou un test ; les **26 fichiers
   de tests** sont tous exécutés (`pytest.ini` : `testpaths = tests`) ; les **27 documents** du dossier
   `docs/` sont tous atteignables depuis le README.
 - Deux documents n'étaient atteignables depuis nulle part (`LISTE_LIENS_SPONSORISES_2026-10-11.md` et
@@ -4575,3 +4575,78 @@ banc complet : **0 problème**, 21 736 profils, compteurs inchangés (3 109 · 1
 
 **Fichiers à envoyer** : **aucun** (un outil et des documents).
 
+---
+
+## 26.55 68e passe — le banc a publié 10 678 problèmes pour un moteur que le dépôt n'avait pas (2026-10-14)
+
+**Ce qui a été trouvé.** Le banc publie un compteur « Profils où l'ordre des pourcentages n'est pas
+garanti (plafond sans candidat) », qui valait **28** — exact, et lu dans les journaux : 84 à la
+35e passe, 70 à la 37e, **28** depuis la 48e (§26.32 ; le chiffre suit les prix du catalogue). En balayant la grille
+complète par un autre chemin, on trouvait **9 768 profils sur 21 736 (45 %)** dont les totaux des trois
+places ne descendaient pas, avec un motif récurrent **`t1 == t3 > t2`** — par exemple `palm/140x60` toutes
+gammes : les places affichaient 50 % / 38 % / 50 % au lieu de 50 % / 50 % / 38 %. Deux mesures
+incompatibles sur le même code livré : l'une des deux mentait.
+
+**Ce n'était pas le banc, et ce n'était pas le moteur.** Le banc relancé publiait **10 678 problèmes**
+(dont 9 768 replis d'ordre) — impossible avec le code du dépôt, qui produit **0 problème**. Le coupable
+était un fichier **`.pyc`** : `cogs/__pycache__/finder_flow.cpython-311.pyc` contenait un `result_slots`
+qui renvoyait `(ideal, economy, alternative)`, c'est-à-dire l'ordre **muté** d'un essai de la 67e passe
+(l'échange des deux dernières places). La source avait bien été remise à l'identique, mais avec **la même
+taille (81 250 octets) et dans la même seconde** : l'en-tête du bytecode (mtime + taille inscrits)
+correspondait toujours à la source, donc Python chargeait le **code muté**, sans un mot. `git status`
+disait l'arbre propre ; le fichier livré était juste ; le moteur exécuté ne l'était pas.
+
+Le décompte de départ est net : **37 des 65 `.pyc`** du bac étaient dans cet état, dont le moteur
+(`cogs/finder_flow.py`) et `utils/models.py`. Le diagnostic tient en une instruction désassemblée :
+
+```text
+result_slots, au décalage 1376 — périmé : LOAD_FAST 'economy' · actuel : LOAD_DEREF 'alternative'
+(le tuple renvoyé n'était pas dans le même ordre : ideal, economy, alternative vs ideal, alternative, economy)
+```
+
+Conséquence pratique : **toute mesure faite dans cet état portait sur un autre moteur que celui du
+dépôt** — le banc, mais aussi la couverture, les compteurs de places et les attentes d'un test neuf. C'est
+la raison pour laquelle un « défaut » massif a pu être cru pendant une passe entière.
+
+**Ce qui a été corrigé.**
+
+- `tools/check_bytecode.py` (seizième outil) distingue trois situations, parce qu'elles n'ont pas la même
+  conséquence : **périmé sans effet** (l'en-tête ne correspond plus → Python recompile, fichier inoffensif),
+  **périmé utilisé** (l'en-tête correspond mais le code diffère → Python charge le `.pyc`, cas dangereux) et
+  **orphelin** (plus de source). Sortie 1 s'il existe un « périmé utilisé », 2 sur une entrée invalide,
+  `--purge` pour nettoyer, `--dossier` pour contrôler un autre dossier.
+- Le banc **refuse de mesurer** dans ce cas (`verifier_bytecode`, appelée par `run()`) : phrase sur la sortie
+  d'erreur, code 2, et la commande qui répare. Un banc qui mesure un autre code que le code livré ne vaut
+  rien : mieux vaut ne pas mesurer et le dire.
+- Propreté au passage : les artefacts de couverture (`.coverage`, `coverage.xml`, `htmlcov/`) sont
+  désormais ignorés par Git — le fichier `.coverage` traînait en « non suivi » après chaque mesure.
+- Deux pièges du contrôle lui-même ont été trouvés en l'écrivant, tous deux verrouillés par un test :
+  comparer les écritures (`repr`) d'un `frozenset` dépend du **hachage des chaînes**, donc change à chaque
+  exécution ; et `compile()` sans `dont_inherit=True` **hérite** des `from __future__ import annotations` de
+  l'outil, ce qui déclarait « périmé » tout module qui n'a pas cet import.
+
+**Preuves.**
+
+- Piège rejoué sur le moteur réel (mutation de l'ordre, source remise à l'identique) : le contrôle rend
+  « périmé utilisé » (code 1), **deux tests passent au rouge** et le banc répond « mesure refusée » (code 2).
+  Après `--purge` : contrôle 0, tests verts, banc **0 problème**.
+- Mutation de l'ordre des deux dernières places dans `result_slots` : le test de parcours complet la
+  **détecte maintenant** (1 rouge) alors qu'il restait vert — ses attentes sont désormais écrites en clair
+  (`PLACES_ATTENDUES`) au lieu d'être redemandées à la fonction qu'il vérifie.
+- Grille complète relancée sur le code livré : **0 problème**, et les compteurs sont **identiques** à ceux
+  publiés par la 67e passe — **21 736** profils · sans résultat **2 067** · match idéal partiel **3 109** ·
+  même coque **1 748** · replis d'ordre **28** · places 2 067 / 182 / 793 / **18 694** · « prix non
+  vérifié » **1 684** · limite Discord la plus remplie **78/100** (description d'option).
+
+**Ce que la correction ne change pas.** Aucune ligne du bot, aucun texte affiché : l'outil **mesure** et le
+banc **vérifie avant de mesurer**. Le banc reste à ~70 secondes pour la grille complète.
+
+**Verrou.** Cinq tests neufs : `test_aucun_bytecode_perime_n_est_charge_dans_le_depot`,
+`test_le_controle_du_bytecode_reconnait_le_piege_et_le_prouve` (il vérifie que Python rend bien l'ancien
+code : la preuve, pas la déduction), `test_la_purge_rend_le_code_livre`,
+`test_le_controle_ne_signale_pas_un_ensemble_de_constantes` et
+`test_le_banc_refuse_de_mesurer_sur_un_bytecode_perime` (sur un dossier piégé : un test ne touche jamais au
+code livré). Les deux listes du contrat des outils (`tests/test_tools_usage_errors.py`) accueillent le
+seizième outil : entrée invalide → phrase + code 2, option inconnue nommée, `--help` sans écriture.
+
+**Fichiers à envoyer** : **aucun** (un outil, des documents, et les tests).

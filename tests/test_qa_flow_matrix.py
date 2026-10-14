@@ -18,10 +18,11 @@ sys.path.insert(0, str(ROOT))
 
 from cogs.finder_flow import compute_selection, result_slots, results_embeds, third_slot_title  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
+from tests.test_code_hygiene import _paquet_avec_bytecode_perime  # noqa: E402
 from tools.qa_flow_matrix import (check_embed_limits, check_result_message, check_view_limits,
                                   deux_places_meme_coque, grille,
                                   message_text, places_au_prix_non_verifie,
-                                  profile)  # noqa: E402
+                                  profile, verifier_bytecode)  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
@@ -345,3 +346,23 @@ def test_le_banc_releve_la_limite_la_plus_remplie_du_passage():
     finally:
         banc_mod.MARGES.clear()
         banc_mod.MARGES.update(sauvegarde)
+
+
+def test_le_banc_refuse_de_mesurer_sur_un_bytecode_perime(tmp_path, monkeypatch):
+    """Un banc qui mesure un autre code que le code livré ne vaut rien : il doit refuser la mesure.
+
+    Défaut trouvé le 2026-10-14 (68e passe, C90) : une mutation d'essai de `result_slots` a survécu
+    dans le `.pyc` (source remise à l'identique : même taille, même seconde), et le banc a publié
+    10 678 problèmes — dont « 9 768 profils » où l'ordre des pourcentages n'était pas garanti — sur un
+    moteur que le dépôt n'avait pas. Le refus est vérifié sur un dossier piégé plutôt que sur le dépôt
+    lui-même : un test ne modifie jamais le code livré, et la garde doit tenir dans les deux cas.
+    """
+    assert verifier_bytecode() is None, "le dépôt lui-même doit être propre"
+
+    _paquet_avec_bytecode_perime(tmp_path)
+    monkeypatch.setattr("tools.qa_flow_matrix.ROOT", tmp_path)
+
+    refus = verifier_bytecode()
+
+    assert refus is not None and "mesure refusée" in refus
+    assert "check_bytecode.py --purge" in refus

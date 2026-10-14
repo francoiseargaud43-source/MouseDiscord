@@ -447,6 +447,8 @@ MouseDiscord/
 │   └── illustrations/        # Les 15 assets ImageUse (T01–T15), à publier en https (voir REPORTE_DESIGN.md)
 ├── tools/
 │   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
+│   ├── check_bytecode.py     # Python charge-t-il bien le CODE LIVRÉ ? (bytecode périmé utilisé, résidus,
+│   │                         #   orphelins ; `--purge` nettoie — le banc refuse de mesurer sans ce contrôle)
 │   ├── check_links.py        # Chaque lien d'achat ouvre-t-il le modèle ET le prix publiés ? (réseau requis)
 │   │                         #   code 0 cohérent · 1 écart · 2 rien n'a pu être vérifié (réseau bloqué)
 │   ├── build_mouse_db.py     # Génère le catalogue v2 à partir des données sourcées
@@ -490,6 +492,7 @@ python -m pyflakes bot.py config.py cogs utils tests tools
 python tools/privacy_scan.py          # contrôle statique de confidentialité (0 violation attendue)
 python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
 python tools/qa_flow_matrix.py       # banc d'essai du parcours (21 736 profils, 0 problème attendu)
+python tools/check_bytecode.py       # Python charge-t-il bien le code livré ? (0 bytecode périmé utilisé)
 python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (576 profils)
 python tools/flow_effect.py          # effet d'une modification du CODE des trois places (avant/après)
 python tools/db_effect.py --avant ancien_mouse_db.json   # effet d'une modification des DONNÉES
@@ -518,6 +521,12 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).
 - `tests/test_ai_bundle.py` : contenu du pack IA (`tools/build_ai_bundle.py`) — fichiers attendus, **aucun secret** (`.env`, `state/`, liens d'affiliation), liste des identifiants existants.
 - `tests/test_flow.py` : parcours complet 1/4 à 4/4 avec interactions simulées (édition de message, erreurs de saisie, affichage du score, section « à vérifier »), charte d'embeds, limites Discord des embeds, refus des détails internes (`pts`), thénar stocké mais sans effet sur le score, illustrations branchées, lien manquant → « Liens à venir ».
+- `tests/test_parcours_complet.py` : **les trois prises parcourues de bout en bout**, avec les vraies
+  callbacks (`StartView` → `GripView` → `ClawVariantView` → `ThenarView` → `MeasureModal` → `BudgetView`) —
+  l'étape Palm était couverte, Claw (5 étapes, la variante AVANT le thénar) et Fingertip (3 étapes, jamais
+  de thénar) ne l'étaient pas. Les titres d'étape attendus sont écrits en clair, et les **trois places du
+  résultat sont figées** (souris, pourcentage, prix) au lieu d'être redemandées au moteur : c'est ce qui
+  fait échouer le test si deux places s'échangent (défaut trouvé le 2026-10-14, §26.55 du ROBUSTESSE).
 - `tests/test_code_hygiene.py` : hygiène du code livré — aucun résidu de guillemets (le défaut trouvé le
   2026-10-12, invisible à la compilation), aucun `print` dans le bot (il ne laisserait aucune trace dans
   `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré. Depuis le 2026-10-13, il refuse
@@ -557,7 +566,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_catalog_hardening.py` : catalogue hostile (valeurs numériques, booléens, listes, dictionnaires, chaînes) refusé au chargement avec un message clair, jamais au milieu d'une réponse d'interaction.
 - `tests/test_build_mouse_db_guard.py` : garde-fou du générateur (`tools/build_mouse_db.py`) — il refuse d'écraser le catalogue réel et n'écrit qu'avec `--force`, en une seule fois.
 - `tests/test_doc_coherence.py` : chaque pourcentage des documents doit correspondre à l'ensemble cité (« N sur M ») — le contrôle qui a rattrapé C48, limites comprises — et **aucun fichier publiant une mesure** (README, `data/`, code, tests) ne peut resservir un chiffre déclaré périmé par le journal (le chiffre périmé de la paire U2 — 178, présenté comme un nombre de profils —, retiré deux fois : des documents en 58e passe, de deux docstrings en 63e).
-- `tests/test_tools_usage_errors.py` : **le contrat d'erreur des quinze outils** (phrase sur la sortie d'erreur, code 2, jamais de trace Python), leur aide, et l'invariant `main(argv=None)` qui rend ce contrôle possible — c'est lui qui a rattrapé C50 ; il garde aussi les **deux artefacts générés** (le rapport statistique doit être celui de la grille complète, la matrice des profils doit correspondre au script relancé).
+- `tests/test_tools_usage_errors.py` : **le contrat d'erreur des seize outils** (phrase sur la sortie d'erreur, code 2, jamais de trace Python), leur aide, et l'invariant `main(argv=None)` qui rend ce contrôle possible — c'est lui qui a rattrapé C50 ; il garde aussi les **deux artefacts générés** (le rapport statistique doit être celui de la grille complète, la matrice des profils doit correspondre au script relancé).
 - `tests/test_image_corpus_check.py` : les groupes de doublons d'un corpus d'images (une même photo circulait sous huit noms de modèles) sont signalés, les fichiers non-image ignorés.
 - `tests/test_image_identity_check.py` : rattachement d'une image sans nom imprimé à une image nommée par sa silhouette (mise dans le même sens, deux verdicts bornés, refus de trancher).
 - `tests/test_measure_button_height.py` : mesure exacte sur une vue orthographique synthétique, classe estimée par les références étalonnées, et vue en perspective **refusée** (aucune valeur produite).

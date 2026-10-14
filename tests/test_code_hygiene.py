@@ -10,9 +10,16 @@ a dû être réécrit : écrire le motif en toutes lettres terminait la chaîne 
 from __future__ import annotations
 
 import ast
+import os
+import py_compile
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))     # les outils du dépôt s'importent comme des modules
+
+import check_bytecode  # noqa: E402  (contrôle de fraîcheur du bytecode, 68e passe)
+
 FICHIERS_PY = sorted(
     [*ROOT.glob("cogs/*.py"), *ROOT.glob("utils/*.py"), *ROOT.glob("tools/*.py"),
      *ROOT.glob("tests/*.py"), ROOT / "bot.py"]
@@ -185,3 +192,95 @@ def test_le_controle_de_verification_sait_reconnaitre_un_test_creux(tmp_path):
 
     assert len(signales) == 1 and "test_qui_ne_verifie_rien" in signales[0]
 
+
+# ---------------------------------------------------------------------------
+# Bytecode : Python exécute-t-il bien le code LIVRÉ ?
+# ---------------------------------------------------------------------------
+def _paquet_avec_bytecode_perime(dossier: Path) -> tuple[Path, Path]:
+    """Reproduit le piège du 2026-10-14 : la source change, le ``.pyc`` reste « valide ».
+
+    Un module est compilé normalement, puis sa source est réécrite **avec la même taille** et on lui
+    rend sa date de modification : l'en-tête du ``.pyc`` correspond toujours, donc Python continue de
+    charger l'ancien code. C'est exactement ce qui est arrivé à ``cogs/finder_flow.py`` quand la
+    source d'une mutation d'essai a été remise à l'identique — même taille, même seconde.
+    """
+    paquet = dossier / "paquet"
+    paquet.mkdir()
+    (paquet / "__init__.py").write_text("", encoding="utf-8")
+    source = paquet / "moteur.py"
+    source.write_text("def places():\n    return 'ideal', 'economie', 'alternative'\n", encoding="utf-8")
+    py_compile.compile(str(source), doraise=True)
+    etat = source.stat()
+    source.write_text("def places():\n    return 'ideal', 'alternative', 'economie'\n", encoding="utf-8")
+    os.utime(source, (etat.st_atime, etat.st_mtime))
+    return source, next((paquet / "__pycache__").glob("moteur.*.pyc"))
+
+
+def _charge(racine: Path):
+    """Importe ``paquet.moteur`` depuis ``racine`` et rend le module (nettoyé après usage)."""
+    import importlib
+
+    sys.path.insert(0, str(racine))
+    importlib.invalidate_caches()
+    try:
+        for nom in ("paquet.moteur", "paquet"):
+            sys.modules.pop(nom, None)
+        return importlib.import_module("paquet.moteur")
+    finally:
+        sys.path.remove(str(racine))
+
+
+def test_aucun_bytecode_perime_n_est_charge_dans_le_depot():
+    """Le contrôle de référence : Python doit charger le code livré, dans le dépôt tel qu'il est.
+
+    Défaut trouvé le 2026-10-14 (68e passe, C90) : le banc a publié 10 678 problèmes et « 9 768
+    profils » où l'ordre des pourcentages n'était pas garanti, alors que le moteur livré n'en
+    produisait **aucun** — un ``.pyc`` gardait la mutation d'essai de ``result_slots``. Sans ce
+    contrôle, la mesure suivante repartait sur le même moteur fantôme.
+    """
+    perimes = check_bytecode.dangereux(check_bytecode.controle(ROOT))
+
+    assert perimes == [], ("bytecode périmé chargé par Python : "
+                           + ", ".join(f"{d.chemin} (source {d.source})" for d in perimes)
+                           + " — lancez `python tools/check_bytecode.py --purge`")
+
+
+def test_le_controle_du_bytecode_reconnait_le_piege_et_le_prouve(tmp_path):
+    """Le contrôle nomme le ``.pyc`` périmé utilisé, et Python rend bien l'ancien code."""
+    _, pyc = _paquet_avec_bytecode_perime(tmp_path)
+
+    diagnostic = check_bytecode.examine(pyc)
+
+    assert diagnostic.statut == check_bytecode.PERIME_UTILISE, diagnostic
+    assert diagnostic.source is not None and diagnostic.source.name == "moteur.py"
+    assert "moteur" in check_bytecode.phrase_de_synthese([diagnostic])
+    # La preuve que le piège est réel : Python exécute le .pyc, pas la source livrée.
+    assert _charge(tmp_path).places() == ("ideal", "economie", "alternative")
+
+
+def test_la_purge_rend_le_code_livre(tmp_path):
+    """Après purge, Python recompile la source : le code exécuté redevient celui du fichier."""
+    _, pyc = _paquet_avec_bytecode_perime(tmp_path)
+
+    retires = check_bytecode.purge(check_bytecode.controle(tmp_path))
+
+    assert [chemin.name for chemin in retires] == [pyc.name]
+    assert not pyc.exists()
+    assert _charge(tmp_path).places() == ("ideal", "alternative", "economie")
+    assert check_bytecode.dangereux(check_bytecode.controle(tmp_path)) == []
+
+
+def test_le_controle_ne_signale_pas_un_ensemble_de_constantes(tmp_path):
+    """Contre-épreuve du faux positif trouvé en écrivant le contrôle : un ``frozenset`` n'est pas un écart.
+
+    ``repr()`` d'un ensemble dépend de l'ordre d'itération, donc du hachage des chaînes, qui change à
+    chaque exécution : comparer les écritures déclarait « périmé » un module pourtant identique.
+    """
+    source = tmp_path / "constantes.py"
+    source.write_text("STATUTS = frozenset({'verified', 'unknown', 'owner_spec_unverified'})\n",
+                      encoding="utf-8")
+    py_compile.compile(str(source), doraise=True)
+
+    diagnostic = check_bytecode.examine(next((tmp_path / "__pycache__").glob("constantes.*.pyc")))
+
+    assert diagnostic.statut == check_bytecode.A_JOUR, diagnostic

@@ -513,7 +513,36 @@ def grille(fast: bool):
         for mode in MODES:
             for budget in (_budgets(fast) if mode is BudgetMode.CUSTOM else [None]):
                 yield grip, length, width, thenar, mode, budget
+def verifier_bytecode() -> str | None:
+    """Refuse la mesure si Python chargerait un code **différent** de celui qui est livré.
+
+    Défaut trouvé le 2026-10-14 (68e passe, C90) : le banc a publié **10 678 problèmes**, dont
+    « 9 768 profils » où l'ordre des pourcentages n'était pas garanti, alors que le moteur livré n'en
+    produisait aucun. La faute n'était pas dans le moteur mais dans un fichier ``.pyc`` : une mutation
+    d'essai avait échangé les deux variables de retour de ``result_slots``, la source avait été remise
+    à l'identique — **même taille, même seconde** — et Python continuait donc de charger le code muté.
+    Toute la mesure portait sur un autre moteur que celui du dépôt, sans le moindre signe extérieur.
+
+    Un banc qui mesure un autre code que le code livré ne vaut rien : mieux vaut refuser la mesure et
+    le dire, avec la commande qui répare. Le contrôle lui-même vit dans ``tools/check_bytecode.py``.
+    """
+    try:
+        from check_bytecode import controle, dangereux
+    except ImportError:                                     # pragma: no cover - outil déplacé
+        return None
+    perimes = dangereux(controle(ROOT))
+    if not perimes:
+        return None
+    coupables = ", ".join(str(d.source) for d in perimes[:5])
+    return (f"mesure refusée : Python chargerait un bytecode périmé ({coupables}) — "
+            "lancez `python tools/check_bytecode.py --purge`, puis relancez le banc")
+
+
 def run(fast: bool) -> int:
+    gene = verifier_bytecode()
+    if gene is not None:
+        print(gene, file=sys.stderr)
+        return 2
     cases = 0
     problems: list[str] = []
     empties: list[str] = []

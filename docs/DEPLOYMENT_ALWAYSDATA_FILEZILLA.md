@@ -2102,13 +2102,14 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.47).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.48).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 798 passed
+.venv/bin/python -m pytest -q                      # attendu : 812 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
+.venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
 .venv/bin/python tools/recommendation_stats.py --sortie /tmp/stats.md \
   && diff /tmp/stats.md docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md && echo "statistiques identiques"
@@ -2622,6 +2623,30 @@ jamais ces outils).
   contenu réel → 1 877 problèmes, vraies limites → 0. Aucun texte affiché modifié ; le banc passe de 61 à
   **70 secondes**. Le compteur du contrôle ci-dessus passe de 795 à **798** tests. Détail : §26.54 de
   `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.48 Mise à jour du 2026-10-14 (39e) : Python chargeait un autre moteur que le code livré
+
+**Fichiers à envoyer** : **aucun** — un outil neuf, un contrôle de plus dans le banc, et des documents.
+**Redémarrage** : inutile.
+
+- Le banc d'essai a publié **10 678 problèmes**, dont « **9 768 profils** » où l'ordre des pourcentages
+  n'était pas garanti, alors que le code livré n'en produit **aucun**. Cause : une mutation d'essai de
+  `result_slots` (échange des deux dernières places) avait **survécu dans le fichier `.pyc`** de
+  `cogs/finder_flow.py`. La source remise à l'identique — **même taille, même seconde** — laissait l'en-tête
+  du bytecode valide, donc Python chargeait le code muté : `git status` disait l'arbre propre, le fichier
+  livré était juste, le moteur exécuté ne l'était pas. **37 des 65 `.pyc`** du bac étaient dans cet état.
+- Corrigé : `tools/check_bytecode.py` (seizième outil) sépare le bytecode **périmé sans effet** (Python
+  recompile), **périmé utilisé** (le cas dangereux) et **orphelin**, avec `--purge` et `--dossier`. Le banc
+  **refuse de mesurer** quand Python chargerait un autre code que le code livré (`verifier_bytecode`).
+- **À faire sur l'hébergement, une fois après un envoi par FileZilla** : `.venv/bin/python
+  tools/check_bytecode.py` — attendu « aucun bytecode périmé utilisé ». Le cas dangereux peut arriver là
+  aussi : FileZilla peut conserver la date de modification des fichiers envoyés, exactement comme le bac.
+- Cinq tests neufs ; le piège rejoué sur le moteur réel donne un contrôle à 1, **deux tests rouges** et un
+  banc qui répond « mesure refusée » (code 2). Compteurs de la grille complète **inchangés** (21 736 profils,
+  0 problème, 28 replis d'ordre). Le compteur du contrôle ci-dessus passe de 798 à **812** tests. Détail :
+  §26.55 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

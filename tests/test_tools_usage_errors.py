@@ -39,8 +39,9 @@ FRAGMENT_OPTION_INCONNUE = "unrecognized arguments"
 # donc argparse la nomme. Les autres disent d'abord ce qui manque (« the following arguments are
 # required: … »), ce qui est tout aussi juste — le contrat vérifié reste le même.
 SANS_ARGUMENT_OBLIGATOIRE = [
-    "build_ai_bundle", "build_mouse_db", "check_deployment", "compare_profiles", "flow_effect",
-    "image_corpus_check", "privacy_scan", "qa_flow_matrix", "recommendation_stats", "render_preview",
+    "build_ai_bundle", "build_mouse_db", "check_bytecode", "check_deployment", "compare_profiles",
+    "flow_effect", "image_corpus_check", "privacy_scan", "qa_flow_matrix", "recommendation_stats",
+    "render_preview",
 ]
 
 # Entrée invalide « métier » : le chemin d'un fichier ou d'un dossier qui n'existe pas.
@@ -58,6 +59,7 @@ CAS_ENTREE_INVALIDE = [
      "dossier de destination introuvable"),
     ("db_effect", lambda d: ["--avant", str(d / "absent.json"), "--grille", "mini"],
      "catalogue introuvable (AVANT)"),
+    ("check_bytecode", lambda d: ["--dossier", str(d / "dossier-absent")], "dossier introuvable"),
 ]
 
 
