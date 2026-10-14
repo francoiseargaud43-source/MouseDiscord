@@ -284,3 +284,29 @@ def test_le_controle_ne_signale_pas_un_ensemble_de_constantes(tmp_path):
     diagnostic = check_bytecode.examine(next((tmp_path / "__pycache__").glob("constantes.*.pyc")))
 
     assert diagnostic.statut == check_bytecode.A_JOUR, diagnostic
+
+
+def test_l_etiquette_de_gamme_du_catalogue_n_est_lue_par_aucun_module_du_bot():
+    """`budget_tier` classe le catalogue : le bot ne la lit nulle part — ni au tri, ni à l'affichage.
+
+    Défaut trouvé le 2026-10-14 : le README annonçait ce champ comme un « départage visuel » et le
+    constat d'audit le disait « conservé et **affiché** pour information ». Vérifié sur le code livré :
+    aucun module du bot ne le lit. Le seul endroit qui le touche est le schéma (`utils/catalog.py`, qui
+    le valide) et la dataclass (`utils/models.py`, qui le porte) ; le récapitulatif affiche la gamme
+    choisie par le membre, pas l'étiquette de la souris. Le contrôle tient le document et le code
+    ensemble : le jour où le bot s'en servira, ce test tombera et forcera la mise à jour du README.
+    """
+    lecteurs_autorises = {"utils/catalog.py", "utils/models.py"}
+    lecteurs = {
+        chemin.relative_to(ROOT).as_posix()
+        for chemin in FICHIERS_DU_BOT
+        if "budget_tier" in chemin.read_text(encoding="utf-8")
+    }
+    assert lecteurs == lecteurs_autorises, (
+        "un module du bot lit `budget_tier` : mettre le README à jour et élargir ce contrôle — "
+        f"lecteurs trouvés : {sorted(lecteurs)}"
+    )
+    # et le document doit dire la même chose que ce contrôle
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "aucun module du bot ne la lit" in readme
+    assert "départage visuel uniquement" not in readme

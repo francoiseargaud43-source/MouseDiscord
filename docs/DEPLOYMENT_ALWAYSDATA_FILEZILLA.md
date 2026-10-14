@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.53).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.54).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 822 passed
+.venv/bin/python -m pytest -q                      # attendu : 823 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2743,6 +2743,23 @@ Les documents, les tests et les aperçus accompagnent.
   et une passe qui occupe plusieurs sections doit dire « (suite) » ou « Complément de la Ne ». Deux
   mutations rejouées : 1 rouge chacune. Le compteur du contrôle ci-dessus passe de 820 à **822** tests.
 - Aucun changement pour le bot : ni code, ni texte, ni image. Détail : §26.60 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.54 Mise à jour du 2026-10-14 (45e) : une étiquette de catalogue décrite comme affichée
+
+**Fichiers à envoyer** : **aucun**. **Redémarrage** : inutile.
+
+- Le champ `budget_tier` du catalogue ne sert à rien au bot : vérifié sur le code livré, **aucun module
+  ne le lit** (seuls le schéma et la dataclass le touchent). Or le README le présentait comme un
+  « départage visuel » et le constat d'audit le disait « conservé et **affiché** pour information ».
+  Les deux documents disent maintenant la vérité : étiquette de gamme du catalogue, jamais lue.
+- Pas question d'ajouter une ligne à l'écran pour honorer la phrase fausse : le propriétaire a demandé le
+  résultat le plus concis possible — c'est le document qui s'aligne, pas le bot.
+- **Contrôle neuf** (`tests/test_code_hygiene.py`) : seuls `utils/catalog.py` et `utils/models.py`
+  peuvent contenir `budget_tier`, et le README doit porter la phrase vraie. Mutation rejouée (lecture
+  plausible ajoutée au moteur) : 1 rouge. Le compteur du contrôle ci-dessus passe de 822 à **823** tests.
+- Aucun changement pour le bot : ni code, ni donnée, ni pixel. Détail : §26.61 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

@@ -308,7 +308,7 @@ pour un statut `verified`.
 | `price_eur` | Prix en euros. `null` = inconnu : exclu des modes à prix, autorisé en Haut de Gamme et en « Peu importe le prix ». |
 | `price_status` | `verified`, `owner_spec_unverified` ou `unknown`. Un prix `verified` exige un prix. |
 | `price_note` | Précision (date, devise d'origine…). |
-| `budget_tier` | `Économique`, `Qualité-Prix`, `Haut de Gamme` (étiquette, départage visuel uniquement). |
+| `budget_tier` | `Économique`, `Qualité-Prix`, `Haut de Gamme` — étiquette de gamme du catalogue : **aucun module du bot ne la lit**, ni au tri ni à l'affichage (l'ancien départage par cette étiquette a été retiré du tri ; contrôle : `tests/test_code_hygiene.py`). |
 | `weight_g`, `sensor`, `polling_hz` | Caractéristiques documentées. `polling_hz` ≥ 8000 et capteur `PAW3950`/`PAW3955` (variantes) comptent pour le mode Haut de Gamme. |
 | `shape` | `Symmetrical` / `Ergonomic` : affichée tout à droite de la ligne du match idéal et de l'alternative (« Symétrique » / « Ergonomique »). |
 | `switches`, `mcu` | Switchs et microcontrôleur documentés (`Nordic 54H20`, `54L15`, `54LM20`, `nRF52840`…). Servent au départage du mode « Peu importe le prix » : capteur > MCU > switchs > fréquence. Un champ vide n'est jamais deviné. |

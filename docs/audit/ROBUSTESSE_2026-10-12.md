@@ -4906,3 +4906,48 @@ un numéro en chiffres.
 
 **Ce que la correction ne change pas.** Aucun code, aucun texte du bot, aucun chiffre de mesure. Suite de
 tests : 820 → **822**. **Fichiers à envoyer** : **aucun**.
+
+---
+
+## 26.61 74e passe — une étiquette de catalogue à qui deux documents prêtaient un rôle (2026-10-14)
+
+**Ce qui a été trouvé.** En vérifiant, champ par champ, que le catalogue est complet là où le bot
+l'affiche, un champ ressort : `budget_tier`. Deux documents lui prêtent un rôle :
+
+- le **README** le décrit comme « étiquette, **départage visuel uniquement** » ;
+- le **constat d'audit** (§2, « Départage par `budget_tier` ») dit : « il ne servait que d'étiquette ; il
+  est conservé et **affiché** pour information ».
+
+Vérification faite sur le code livré : `budget_tier` n'est lu **nulle part** par le bot. Le seul code qui
+le touche est le schéma (`utils/catalog.py`, qui valide sa valeur) et la dataclass (`utils/models.py`, qui
+le porte). Le tri ne l'utilise plus depuis longtemps, et l'affichage non plus : le récapitulatif du
+parcours affiche la gamme **choisie par le membre** (`session.budget_mode`), pas l'étiquette de la souris.
+« Conservé et affiché » était donc faux depuis le retrait du départage — et personne ne pouvait le voir,
+puisque rien ne reliait cette phrase à l'usage réel du champ.
+
+**Pourquoi ce n'est pas une raison de l'afficher.** Le propriétaire a demandé « le résultat le plus
+concis possible » : ajouter une ligne « Gamme » sous prétexte qu'un document la promet serait une
+régression. C'est le **document** qui s'aligne sur le code, pas l'inverse.
+
+**Ce qui a été corrigé.**
+
+- Le README dit le rôle réel : étiquette de gamme du catalogue, **aucun module du bot ne la lit**, ni au
+  tri ni à l'affichage — et il cite le contrôle qui le prouve.
+- Le constat d'audit est corrigé sur place, avec une note datée qui explique ce qui était faux et ce que
+  la vérification a montré.
+- La phrase sur la dérivation par bande de prix (`docs/AMELIORATIONS_MOTEUR_ET_RECHERCHE.md` §I4) n'est
+  **pas** touchée : ce document est une proposition datée qui dit elle-même « c'est une règle nouvelle, à
+  valider ou remplacer par tes prix réels ».
+
+**Verrou.** Un contrôle neuf (`tests/test_code_hygiene.py`) : sur tout le code du bot (`cogs/`, `utils/`,
+`bot.py`), seuls `utils/catalog.py` (schéma) et `utils/models.py` (dataclass) peuvent contenir
+`budget_tier` ; en plus, le README doit dire « aucun module du bot ne la lit » et ne plus dire
+« départage visuel uniquement ». Le jour où le bot s'en servira, le test tombe et force la mise à jour du
+document — dans ce sens-là.
+
+**Mutation jouée** : ajouter une lecture plausible du champ dans le moteur (`if mouse.budget_tier:
+parts.append(...)`, au milieu de la ligne descriptive) → **1 rouge**. Moteur restauré, `git diff -- cogs/`
+vide, bytecode purgé.
+
+**Ce que la correction ne change pas.** Aucun code, aucun texte affiché, aucune donnée : seul le rôle
+*décrit* du champ change de statut. Suite de tests : 822 → **823**. **Fichiers à envoyer** : **aucun**.
