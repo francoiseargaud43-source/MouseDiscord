@@ -113,3 +113,23 @@ def test_un_catalogue_illisible_est_signale_sans_trace(tmp_path, monkeypatch, ca
         db_effect.main()
     assert sortie.value.code == 2
     assert "illisible ou incohérent" in capsys.readouterr().err
+
+
+def test_les_outils_partagent_la_grille_du_banc_et_la_mini_ne_duplique_rien():
+    """Une seule définition de grille pour les trois outils — et la mini tient son compte.
+
+    Deux défauts corrigés le 2026-10-14 : `db_effect` recopiait la règle fautive du banc (thénar itéré
+    en Fingertip) — « 27 170 profils » pour 21 736 entrées distinctes — et sa grille « mini » annonçait
+    **150** profils en en produisant **180** (Fingertip compté deux fois). Le seul test qui la regardait
+    exigeait « au moins 100 profils » : il ne pouvait pas voir l'écart.
+    """
+    import qa_flow_matrix as banc
+
+    from utils.models import Grip, Thenar
+
+    for nom, rapide in (("complete", False), ("rapide", True)):
+        assert list(db_effect.profils(nom)) == list(banc.grille(rapide)), nom
+    mini = list(db_effect.profils("mini"))
+    assert len(mini) == 150, f"la docstring annonce 150 profils, la grille en produit {len(mini)}"
+    assert len(set(mini)) == len(mini), "profil mesuré deux fois dans la grille minimale"
+    assert {e[3] for e in mini if e[0] is Grip.FINGERTIP} == {Thenar.PETITE}

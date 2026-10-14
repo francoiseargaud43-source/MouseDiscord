@@ -46,24 +46,46 @@ from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 
 
 def _mini() -> tuple[list, list, list, list, list, list]:
-    """Grille minimale (150 profils) : pour les tests, sans attendre la grille complète.
+    """Grille minimale (**150 profils réels**) : pour les tests, sans attendre la grille complète.
 
     Trois prises, trois longueurs, deux largeurs, deux thénars et quatre modes (dont deux budgets
     personnalisés) : assez large pour qu'une modification de données se voie — un test qui ne
     mesurerait aucun changement ne prouverait rien (``tests/test_db_effect.py`` vérifie les deux cas).
+
+    Elle en produisait **180** jusqu'au 2026-10-14 : le profil Fingertip était itéré pour ses deux
+    thénars alors que le parcours n'y pose pas la question (`session.thenar = None` dans les deux cas),
+    donc mesuré deux fois. 40 profils fantômes sur 180 — 22 % —, invisibles parce que le seul test qui
+    la regarde exige « au moins 100 profils ».
     """
     return ([Grip.PALM, Grip.CLAW, Grip.FINGERTIP], [170.0, 180.0, 200.0], [90.0, 110.0],
             [Thenar.PETITE, Thenar.GRANDE],
             [None, BudgetMode.ECONOMIQUE, BudgetMode.HAUT_DE_GAMME, BudgetMode.CUSTOM], [30.0, 60.0])
 
 
-def grille(nom: str) -> tuple[list, list, list, list, list, list]:
-    """(prises, longueurs, largeurs, thénars, modes, budgets) — « complete » par défaut."""
-    if nom == "mini":
-        return _mini()
-    rapide = nom == "rapide"
-    return (banc.GRIPS, banc._lengths(rapide), banc._widths(rapide), banc.THENARS,
-            banc.MODES, banc._budgets(rapide))
+def profils(nom: str):
+    """Les profils comparés, un par entrée **distincte** : la grille du banc, ou la minimale.
+
+    « complete » et « rapide » sont **la grille de `tools/qa_flow_matrix.py`**, sans copie : deux
+    définitions d'une même grille finissent par diverger. C'était le cas ici — l'outil recopiait la
+    règle fautive du banc (thénar itéré en Fingertip), donc « 27 170 profils » pour **21 736 entrées
+    distinctes** (5 434 doublons, 20 %), corrigé le 2026-10-14 (61e passe).
+
+    « mini » sert aux tests : mêmes règles (thénar toujours demandé en Palm et en Claw, jamais en
+    Fingertip) et 150 profils, le chiffre de sa docstring.
+    """
+    if nom != "mini":
+        yield from banc.grille(nom == "rapide")
+        return
+    prise, longueurs, largeurs, thenars, modes, budgets = _mini()
+    for grip, length, width, thenar in itertools.product(prise, longueurs, largeurs, thenars):
+        if grip is Grip.FINGERTIP:
+            if thenar is not thenars[0]:
+                continue                  # question non posée : un seul profil par taille
+        elif thenar is None:
+            continue                      # le thénar est toujours demandé hors Fingertip
+        for mode in modes:
+            for budget in (budgets if mode is BudgetMode.CUSTOM else [None]):
+                yield grip, length, width, thenar, mode, budget
 
 
 @dataclass
@@ -125,14 +147,7 @@ def comparer(chemin_avant: Path | str, chemin_apres: Path | str, grille_nom: str
     Avec ``retrait=True``, le catalogue APRÈS peut être un **sous-ensemble strict** du précédent :
     l'écart mesure alors ce que pèsent les souris sorties (et qui reprend leur place).
     """
-    prise, longueurs, largeurs, thenars, modes, budgets = grille(grille_nom)
-    combinaisons = [
-        (grip, length, width, thenar, mode, budget)
-        for grip, length, width, thenar in itertools.product(prise, longueurs, largeurs, thenars)
-        if grip is Grip.CLAW or thenar is not None   # même règle de grille que le banc d'essai
-        for mode in modes
-        for budget in (budgets if mode is BudgetMode.CUSTOM else [None])
-    ]
+    combinaisons = list(profils(grille_nom))
     if not combinaisons:                                     # pragma: no cover - garde-fou
         raise ValueError("grille vide : la comparaison ne prouverait rien")
 

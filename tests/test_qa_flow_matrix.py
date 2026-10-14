@@ -16,8 +16,8 @@ sys.path.insert(0, str(ROOT))
 
 from cogs.finder_flow import compute_selection, result_slots, results_embeds, third_slot_title  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
-from tools.qa_flow_matrix import (check_result_message, deux_places_meme_coque, message_text,
-                                  places_au_prix_non_verifie)  # noqa: E402
+from tools.qa_flow_matrix import (check_result_message, deux_places_meme_coque, grille,
+                                  message_text, places_au_prix_non_verifie)  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.models import BudgetMode, Grip, Thenar  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
@@ -178,3 +178,24 @@ def test_le_compteur_de_coque_partagee_regarde_toutes_les_paires():
     # Même souris montrée deux fois (jamais censé arriver) : c'est déjà un problème signalé ailleurs,
     # mais le compteur de coque doit, lui aussi, le voir.
     assert deux_places_meme_coque((a, score("a", "coque_1"), None)) is True
+
+
+def test_la_grille_du_banc_ne_contient_aucun_profil_duplique():
+    """Défaut réel du 2026-10-14 : le banc itérait les trois thénars **aussi en Fingertip**.
+
+    Le parcours n'y pose pas la question (`session.thenar = None`), donc les trois itérations
+    produisaient la même entrée moteur : 5 434 des 27 170 profils annoncés (20,0 %) étaient le même
+    profil mesuré trois fois. Chaque pourcentage « sur 27 170 » portait un dénominateur gonflé d'un
+    cinquième. Ce test tient les deux grilles : **aucun doublon**, et les tailles attendues.
+    """
+    for rapide, attendu in ((True, 576), (False, 21736)):
+        profils = list(grille(rapide))
+        assert len(profils) == attendu, f"grille {'rapide' if rapide else 'complète'} : {len(profils)}"
+        assert len(set(profils)) == len(profils), "profil mesuré deux fois dans la grille"
+    # La règle du parcours, écrite noir sur blanc : thénar demandé en Palm et en Claw, jamais en
+    # Fingertip — et un seul profil Fingertip par couple taille/prise.
+    complet = list(grille(False))
+    assert {e[3] for e in complet if e[0] is Grip.FINGERTIP} == {None}
+    assert {e[3] for e in complet if e[0] is Grip.PALM} == {Thenar.PETITE, Thenar.MOYENNE, Thenar.GRANDE}
+    assert None in {e[3] for e in complet if e[0] is Grip.CLAW}          # cas « thénar non répondu »
+    assert sum(1 for e in complet if e[0] is Grip.FINGERTIP) == 2717

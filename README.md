@@ -489,8 +489,8 @@ pytest -q
 python -m pyflakes bot.py config.py cogs utils tests tools
 python tools/privacy_scan.py          # contrôle statique de confidentialité (0 violation attendue)
 python tools/compare_profiles.py     # régénère docs/audit/matrice_profils.md
-python tools/qa_flow_matrix.py       # banc d'essai du parcours (27 170 profils, 0 problème attendu)
-python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (720 profils)
+python tools/qa_flow_matrix.py       # banc d'essai du parcours (21 736 profils, 0 problème attendu)
+python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (576 profils)
 python tools/flow_effect.py          # effet d'une modification du CODE des trois places (avant/après)
 python tools/db_effect.py --avant ancien_mouse_db.json   # effet d'une modification des DONNÉES
 python tools/db_effect.py --avant data/mouse_db.json --apres catalogue_reduit.json --retrait  # retrait de souris
@@ -562,7 +562,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_image_identity_check.py` : rattachement d'une image sans nom imprimé à une image nommée par sa silhouette (mise dans le même sens, deux verdicts bornés, refus de trancher).
 - `tests/test_measure_button_height.py` : mesure exacte sur une vue orthographique synthétique, classe estimée par les références étalonnées, et vue en perspective **refusée** (aucune valeur produite).
 - `tests/test_measure_grip_width.py` : largeur au capteur depuis une vue de dessus, précision et cas limites.
-- `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes, comptage des places au prix non attesté, et le comptage des **coques partagées** — toutes les paires de places, comme le rapport statistique : jusqu'au 2026-10-14, les deux outils annonçaient deux chiffres différents pour la même phrase) — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.
+- `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes, comptage des places au prix non attesté, et le comptage des **coques partagées** — toutes les paires de places, comme le rapport statistique : jusqu'au 2026-10-14, les deux outils annonçaient deux chiffres différents pour la même phrase — et la **grille elle-même** : ses 21 736 entrées (576 en grille réduite) sont figées **sans doublon**, le même jour où 5 434 profils Fingertip mesurés trois fois faussaient tout pourcentage « sur 27 170 ») — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
 - `tests/test_liens_achat.py` : **les 36 liens d'achat ouverts un par un** — le tableau §8.1 de
   `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` est relu contre `data/commercial_links.json` (handle

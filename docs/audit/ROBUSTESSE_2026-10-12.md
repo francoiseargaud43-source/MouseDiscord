@@ -4243,4 +4243,103 @@ jouée — revenir aux seules paires formées avec le premier élément → **1 
 **Mesure** : **788 tests verts** (787 avant, un test neuf), `pyflakes` 0, `privacy_scan` 0 violation,
 banc complet : 0 problème. Aucun fichier du bot n'est touché (l'outil et un test).
 
+**Une précision, avant de lire le chiffre de 2 004.** Il porte sur la grille d'alors, qui comptait des
+doublons — c'est le défaut trouvé juste après, §26.49. Le chiffre exact à retenir pour « deux places, une
+coque » sur la grille complète **dédoublonnée** est **1 748**, et les **2 004** d'alors se décomposent
+ainsi : 1 748 profils réels, plus **256 profils Fingertip comptés une fois de trop** (chacun d'eux était
+mesuré trois fois). Vérifié en rejouant le compteur sur les deux grilles (§26.49).
+
 **Fichiers à envoyer** : **aucun** (un outil et des documents).
+
+## 26.49 62e passe — le banc mesurait chaque profil Fingertip trois fois, et deux outils recopiaient sa grille (2026-10-14)
+
+**Ce qui a été trouvé.** En rejouant la concordance des cinq compteurs (§26.48), un détail saute aux yeux
+dans le code du banc : la grille itère les trois tailles de thénar **pour toutes les prises**, y compris
+Fingertip, où le parcours ne pose pourtant pas la question — l'étape est sautée, et `compute_selection`
+reçoit `session.thenar = None` dans les trois cas.
+
+```python
+for grip, length, width, thenar in itertools.product(GRIPS, longueurs, largeurs, THENARS):
+    if grip is not Grip.CLAW and thenar is None:
+        continue                      # avant : Fingertip passait trois fois
+```
+
+Les trois itérations produisaient donc la **même entrée moteur**, mesurée trois fois, et publiée comme
+trois profils. Compté sur la clé que reçoit le moteur :
+
+```
+ANCIENNE grille : 27 170 itérations · 21 736 entrées moteur distinctes · 5 434 doublons (20,0 %)
+NOUVELLE grille : 21 736 itérations · 21 736 entrées moteur distinctes · 0 doublon (0,0 %)
+```
+
+Conséquence : tout pourcentage publié « sur 27 170 » — y compris ceux des §26.42, §26.44 et §26.48 —
+portait un dénominateur gonflé d'un cinquième, et les profils Fingertip pesaient trois fois leur poids
+réel dans les compteurs.
+
+**Défaut de famille, trouvé dans la foulée.** `tools/db_effect.py` et `tools/flow_effect.py` doivent
+passer « **exactement la même grille** » que le banc (c'est écrit dans leur propre documentation) : ils en
+tenaient chacun une **copie**, règle fautive comprise. La correction du banc les aurait donc fait diverger
+en silence — deux outils auraient continué de compter 27 170 profils pendant que le banc en comptait
+21 736. `flow_effect` recopiait même la règle une troisième fois, ligne par ligne
+(`session.thenar = thenar if grip is not Grip.FINGERTIP else None`).
+
+**Défaut secondaire.** La grille « mini » de `db_effect` (celle des tests) annonçait **150 profils** dans
+sa docstring et en produisait **180** — le même défaut, à l'échelle de la grille : quarante profils
+fantômes, 22 %. Le seul test qui la regardait exigeait « au moins 100 profils »
+(`tests/test_db_effect.py`) : il ne pouvait pas voir l'écart, et la docstring ne se rejouait pas.
+
+**Ce qui a été corrigé.** La grille du banc devient un **générateur public**, `grille(fast)`, avec la règle
+du parcours écrite noir sur blanc : thénar **toujours demandé** en Palm et en Claw (le cas « non répondu »
+restant testé en Claw), **jamais** en Fingertip — un seul profil par couple taille/prise. Les trois outils
+le consomment ; plus aucune copie de la règle ne subsiste dans le dépôt. La grille « mini » passe par la
+même règle et retombe sur ses **150 profils** documentés. Bilan des tailles :
+
+| Grille | Avant | Après |
+|---|---|---|
+| Banc complet | 27 170 itérations (21 736 utiles) | **21 736** entrées distinctes |
+| Banc `--rapide` | 720 itérations (576 utiles) | **576** entrées distinctes |
+| `db_effect --grille rapide` | 720 itérations | **576** entrées distinctes |
+| `db_effect --grille mini` | 180 (annoncés 150) | **150**, documentés |
+
+**Effet sur les compteurs publiés** (banc complet, grille corrigée ; **0 problème** dans les cinq cas) :
+
+| Compteur | Ancienne grille | Grille corrigée |
+|---|---|---|
+| Profils partiels | — | 3 109 |
+| Repli de coque | 2 004 | **1 748** (8,04 %) |
+| Ordre des pourcentages violé | — | 28 |
+| Places remplies 0 / 1 / 2 / 3 | — | 2 067 · 182 · 793 · 18 694 (**86,00 %** de 3 places) |
+| Prix non vérifié | — | 1 684 (7,75 %) |
+
+Le banc `--rapide` affiche 576 profils, **0** sans résultat, coque 61, ordre 0, trois places pour les
+576 (100 %), prix non vérifié 92 (15,97 %) ; `flow_effect --rapide` compare **576** profils des deux
+côtés et n'annonce **0** changement de place ; `db_effect --grille complete` (fichier contre lui-même)
+compare **21 736** profils pour **0** changement.
+
+**Ce que la correction ne dit pas.** L'écart 2 004 → 1 748 (256 profils) **n'est pas** une régression : les
+256 venaient des profils Fingertip comptés trois fois, et le taux de repli reste le même que celui de la
+grille du rapport (8,04 % contre 7,38 % — deux grilles différentes, deux taux proches). De même, le banc
+annonce **28** profils où l'ordre des pourcentages cède, quand le rapport en annonce **24** sur sa propre
+grille : deux grilles, deux chiffres, aucun défaut.
+
+**Ce qui a été vérifié ailleurs.** La grille du rapport statistique (`tools/recommendation_stats.py`,
+18 522 profils) filtrait déjà ce cas (`thenar is not Thenar.MOYENNE`) : ses 18 522 entrées sont **toutes
+distinctes** — vérifié, et c'est la raison pour laquelle la concordance des cinq compteurs du §26.48 tenait
+déjà sur cette grille. Aucune autre construction de grille n'existe dans le dépôt (`itertools.product`
+n'apparaît que dans les trois outils).
+
+**Verrou.** Deux tests neufs.
+`tests/test_qa_flow_matrix.py::test_la_grille_du_banc_ne_contient_aucun_profil_duplique` fige les deux
+tailles (**576** et **21 736**), l'absence de doublon, et la règle du parcours (thénar `None` en Fingertip,
+les trois tailles en Palm, le cas `None` conservé en Claw).
+`tests/test_db_effect.py::test_les_outils_partagent_la_grille_du_banc_et_la_mini_ne_duplique_rien` fige la
+grille « mini » à **150** profils et l'identité des grilles outils ↔ banc. Trois mutations jouées, trois
+rouges : garde Fingertip retiré du banc → 1 échec ; même retrait dans la grille « mini » → 1 échec ; copie
+locale reprenant la règle fautive → 1 échec. (Une copie **fidèle** passe le test : c'est bien la
+divergence qu'il garde, pas la manière d'écrire la grille.)
+
+**Mesure** : **790 tests verts** (788 avant, deux tests neufs), `pyflakes` 0, `privacy_scan` 0 violation,
+banc complet **0 problème**, rapport statistique inchangé. Aucun fichier du bot n'est touché (deux outils,
+deux tests, des documents).
+
+**Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).

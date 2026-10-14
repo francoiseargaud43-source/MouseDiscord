@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.41).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.42).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 788 passed
+.venv/bin/python -m pytest -q                      # attendu : 790 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2508,6 +2508,28 @@ jamais ces outils).
   complète, il passe de 1 260 à **2 004** (7,4 %, même taux). « Problèmes détectés » reste à **0**.
 - Verrou : un test du banc fige la sémantique (mutation → 1 échec). Le compteur du contrôle ci-dessus passe
   de 787 à **788** tests. Détail : §26.48 de `ROBUSTESSE_2026-10-12.md`.
+
+### 12.42 Mise à jour du 2026-10-14 (33e) : le banc mesurait chaque profil Fingertip trois fois
+
+**Fichiers à envoyer** : **aucun** — deux outils, deux tests et des documents. **Redémarrage** : inutile.
+
+- Le banc d'essai construisait ses profils en itérant les trois tailles de thénar **aussi en Fingertip**,
+  où le parcours ne pose pas la question (`session.thenar = None`) : les trois itérations donnaient la
+  **même entrée moteur**. Compté : **27 170 itérations pour 21 736 entrées distinctes** — 5 434 doublons,
+  20,0 % —, donc tout pourcentage publié « sur 27 170 » portait un dénominateur gonflé d'un cinquième.
+- `tools/db_effect.py` et `tools/flow_effect.py`, qui doivent passer « exactement la même grille » que le
+  banc, en tenaient chacun une **copie** (règle fautive comprise) : les trois outils consomment désormais le
+  générateur public `grille(fast)` du banc, et plus aucune copie de la règle ne subsiste.
+- Défaut secondaire : la grille « mini » de `db_effect` annonçait **150 profils** et en produisait **180**.
+  Elle en produit bien **150** aujourd'hui (le seul test qui la regardait exigeait « au moins 100 profils »).
+- Compteurs du banc sur la grille corrigée (**0 problème**) : 3 109 profils au match idéal partiel, repli de
+  coque **1 748** (contre 2 004 avant dédoublonnage — les 256 en trop étaient des profils Fingertip comptés
+  trois fois, pas une régression), ordre des pourcentages 28, places 2 067 · 182 · 793 · 18 694 (86,00 %),
+  prix non vérifié 1 684 (7,75 %). Banc `--rapide` : **576** profils (avant 720), 100 % à trois places.
+- Verrou : deux tests neufs (grille du banc sans doublon ni 576/21 736 ; grille « mini » à 150 et identité
+  des grilles outils ↔ banc). Trois mutations jouées, **trois rouges**. Le compteur du contrôle ci-dessus
+  passe de 788 à **790** tests. Les deux documents ne changent pas. Détail : §26.49 de
+  `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

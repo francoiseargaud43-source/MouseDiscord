@@ -363,6 +363,28 @@ def check_embed_limits(embeds) -> list[str]:
     return problems
 
 
+def grille(fast: bool):
+    """Les entrées du banc : un profil **distinct** par itération, dans l'ordre d'affichage.
+
+    Règle du parcours : le thénar est **toujours demandé** en Palm et en Claw, et **jamais** en
+    Fingertip (l'étape est sautée — `step_kind`). Le banc suit cette règle pour construire ses entrées.
+
+    Défaut corrigé le 2026-10-14 (61e passe) : la boucle itérait les trois tailles de thénar **aussi**
+    en Fingertip, où le parcours force `session.thenar = None`. Les trois itérations produisaient donc
+    la **même entrée moteur** : 5 434 des 27 170 profils annoncés — 20,0 % — étaient le même profil
+    mesuré trois fois, et chaque pourcentage publié « sur 27 170 » portait un dénominateur gonflé
+    d'un cinquième. Le garde-fou de `tests/test_qa_flow_matrix.py` refuse désormais toute entrée
+    dupliquée.
+    """
+    for grip, length, width, thenar in itertools.product(GRIPS, _lengths(fast), _widths(fast), THENARS):
+        if grip is Grip.FINGERTIP:
+            if thenar is not None:
+                continue            # question non posée : un seul profil par couple taille/prise
+        elif grip is not Grip.CLAW and thenar is None:
+            continue                # le thénar est toujours demandé en Palm ; en Claw, None reste testé
+        for mode in MODES:
+            for budget in (_budgets(fast) if mode is BudgetMode.CUSTOM else [None]):
+                yield grip, length, width, thenar, mode, budget
 def run(fast: bool) -> int:
     cases = 0
     problems: list[str] = []
@@ -372,54 +394,47 @@ def run(fast: bool) -> int:
     places = {0: 0, 1: 0, 2: 0, 3: 0}          # nombre de places réellement remplies dans le message
     same_shell_slots: list[str] = []            # profils où deux places partagent la même coque (repli)
     ordre_repli: list[str] = []                 # profils où le plafond d'ordre n'a laissé aucun candidat
-    for grip, length, width, thenar in itertools.product(
-        GRIPS, _lengths(fast), _widths(fast), THENARS
-    ):
-        if grip is not Grip.CLAW and thenar is None:
-            continue                       # le thénar est toujours demandé hors Fingertip
-        for mode in MODES:
-            budgets = _budgets(fast) if mode is BudgetMode.CUSTOM else [None]
-            for budget in budgets:
-                cases += 1
-                where = f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}"
-                session = profile(mode, budget)
-                session.grip = grip
-                session.hand_length_mm = length
-                session.hand_width_mm = width
-                session.thenar = thenar if grip is not Grip.FINGERTIP else None
-                if grip is Grip.CLAW:
-                    session.claw_variant = ClawVariant.RELACHEE
-                try:
-                    selection = compute_selection(session)
-                    embeds = results_embeds(session, selection)
-                except Exception as exc:  # noqa: BLE001 - le banc d'essai doit tout attraper
-                    problems.append(f"{where} : EXCEPTION {type(exc).__name__} : {exc}")
+    for grip, length, width, thenar, mode, budget in grille(fast):
+        cases += 1
+        where = f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}"
+        session = profile(mode, budget)
+        session.grip = grip
+        session.hand_length_mm = length
+        session.hand_width_mm = width
+        session.thenar = thenar if grip is not Grip.FINGERTIP else None
+        if grip is Grip.CLAW:
+            session.claw_variant = ClawVariant.RELACHEE
+        try:
+            selection = compute_selection(session)
+            embeds = results_embeds(session, selection)
+        except Exception as exc:  # noqa: BLE001 - le banc d'essai doit tout attraper
+            problems.append(f"{where} : EXCEPTION {type(exc).__name__} : {exc}")
+            continue
+        problems.extend(f"{where} : {p}" for p in check_embed_limits(embeds))
+        ideal, alternative, economy = result_slots(selection)
+        places[len([s for s in (ideal, alternative, economy) if s is not None])] += 1
+        problems.extend(f"{where} : {p}"
+                        for p in check_result_message(session, selection, embeds, ideal, alternative,
+                                                     economy, same_shell_slots, where,
+                                                     repli_ordre=ordre_repli))
+        if ideal is None:
+            empties.append(where)
+        else:
+            if ideal.is_partial:
+                partials += 1
+            marques_prix += places_au_prix_non_verifie((ideal, alternative, economy))
+            for score in (ideal, alternative, economy):
+                if score is None:
                     continue
-                problems.extend(f"{where} : {p}" for p in check_embed_limits(embeds))
-                ideal, alternative, economy = result_slots(selection)
-                places[len([s for s in (ideal, alternative, economy) if s is not None])] += 1
-                problems.extend(f"{where} : {p}"
-                                for p in check_result_message(session, selection, embeds, ideal, alternative,
-                                                             economy, same_shell_slots, where,
-                                                             repli_ordre=ordre_repli))
-                if ideal is None:
-                    empties.append(where)
-                else:
-                    if ideal.is_partial:
-                        partials += 1
-                    marques_prix += places_au_prix_non_verifie((ideal, alternative, economy))
-                    for score in (ideal, alternative, economy):
-                        if score is None:
-                            continue
-                        if not 0 <= score.total <= MAX_SCORE:
-                            problems.append(f"{where} : total {score.total} hors barème")
-                    if alternative is not None and alternative.mouse.id == ideal.mouse.id:
-                        problems.append(f"{where} : alternative identique au match idéal")
-                    if economy is not None and economy.mouse.id in {
-                        ideal.mouse.id,
-                        alternative.mouse.id if alternative else None,
-                    }:
-                        problems.append(f"{where} : économie déjà montrée plus haut")
+                if not 0 <= score.total <= MAX_SCORE:
+                    problems.append(f"{where} : total {score.total} hors barème")
+            if alternative is not None and alternative.mouse.id == ideal.mouse.id:
+                problems.append(f"{where} : alternative identique au match idéal")
+            if economy is not None and economy.mouse.id in {
+                ideal.mouse.id,
+                alternative.mouse.id if alternative else None,
+            }:
+                problems.append(f"{where} : économie déjà montrée plus haut")
     print(f"Profils testés : {cases}")
     print(f"Profils sans aucun résultat : {len(empties)}")
     for where in empties[:15]:

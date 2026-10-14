@@ -28,7 +28,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import qa_flow_matrix as banc  # noqa: E402  (réutilise la grille du banc d'essai)
 from cogs.finder_flow import compute_selection, result_slots  # noqa: E402
-from utils.models import BudgetMode, ClawVariant, Grip  # noqa: E402
+from utils.models import ClawVariant, Grip  # noqa: E402
 from utils.selection import _same_shell  # noqa: E402
 
 
@@ -97,57 +97,52 @@ def main(argv: list[str] | None = None) -> int:
     ordre_avant: list[str] = []                 # profils où le % remontait d'une place à l'autre
     ordre_apres: list[str] = []
 
-    for grip, length, width, thenar in itertools.product(
-        banc.GRIPS, banc._lengths(args.rapide), banc._widths(args.rapide), banc.THENARS
-    ):
-        if grip is not Grip.CLAW and thenar is None:
+    # La grille vient du banc d'essai, sans copie : une seule définition pour les trois outils.
+    # La grille vient du banc d'essai, sans copie : une seule définition, pour les trois outils.
+    for grip, length, width, thenar, mode, budget in banc.grille(args.rapide):
+        session = banc.profile(mode, budget)
+        session.grip = grip
+        session.hand_length_mm = length
+        session.hand_width_mm = width
+        session.thenar = thenar          # la grille donne déjà None en Fingertip (testé au banc)
+        if grip is Grip.CLAW:
+            session.claw_variant = ClawVariant.RELACHEE
+        selection = compute_selection(session)
+        anciennes = ancien.result_slots(selection)
+        nouvelles = result_slots(selection)
+        if all(score is None for score in anciennes + nouvelles):
             continue
-        for mode in banc.MODES:
-            budgets = banc._budgets(args.rapide) if mode is BudgetMode.CUSTOM else [None]
-            for budget in budgets:
-                session = banc.profile(mode, budget)
-                session.grip = grip
-                session.hand_length_mm = length
-                session.hand_width_mm = width
-                session.thenar = thenar if grip is not Grip.FINGERTIP else None
-                if grip is Grip.CLAW:
-                    session.claw_variant = ClawVariant.RELACHEE
-                selection = compute_selection(session)
-                anciennes = ancien.result_slots(selection)
-                nouvelles = result_slots(selection)
-                if all(score is None for score in anciennes + nouvelles):
-                    continue
-                profils += 1
-                ou = f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}"
-                places_avant[len(montrees(anciennes))] += 1
-                places_apres[len(montrees(nouvelles))] += 1
-                if meme_coque(anciennes):
-                    meme_coque_avant += 1
-                if meme_coque(nouvelles):
-                    meme_coque_apres += 1
+        profils += 1
+        ou = f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}"
+        places_avant[len(montrees(anciennes))] += 1
+        places_apres[len(montrees(nouvelles))] += 1
+        if meme_coque(anciennes):
+            meme_coque_avant += 1
+        if meme_coque(nouvelles):
+            meme_coque_apres += 1
 
-                if montrees(anciennes)[:1] != montrees(nouvelles)[:1]:
-                    ideaux_changes.append(ou)
-                if montrees(anciennes)[2:3] != montrees(nouvelles)[2:3]:
-                    troisiemes_changees.append(ou)
-                for places, compteur in ((anciennes, ordre_avant), (nouvelles, ordre_apres)):
-                    montrees_ici = [s for s in places if s is not None]
-                    if any(b.total > a.total for a, b in zip(montrees_ici, montrees_ici[1:])):
-                        compteur.append(ou)
-                if montrees(anciennes)[1:2] != montrees(nouvelles)[1:2]:
-                    alternatives_changees.append(ou)
-                    avant_alt, apres_alt = anciennes[1], nouvelles[1]
-                    if avant_alt is not None and apres_alt is not None:
-                        baisse = avant_alt.total - apres_alt.total
-                        if baisse > pire_baisse:
-                            pire_baisse = baisse
-                            pire_baisse_exemple = (f"{ou} : {avant_alt.mouse.label} {avant_alt.total}/40 → "
-                                                   f"{apres_alt.mouse.label} {apres_alt.total}/40")
-                if anciennes[2] is not None and nouvelles[2] is None:
-                    economies_perdues.append(f"{ou} : {anciennes[2].mouse.label} "
-                                             f"(déjà montrées : {montrees(anciennes)[:2]})")
-                if anciennes[2] is None and nouvelles[2] is not None:
-                    troisieme_avant_gagnee.append(ou)
+        if montrees(anciennes)[:1] != montrees(nouvelles)[:1]:
+            ideaux_changes.append(ou)
+        if montrees(anciennes)[2:3] != montrees(nouvelles)[2:3]:
+            troisiemes_changees.append(ou)
+        for places, compteur in ((anciennes, ordre_avant), (nouvelles, ordre_apres)):
+            montrees_ici = [s for s in places if s is not None]
+            if any(b.total > a.total for a, b in zip(montrees_ici, montrees_ici[1:])):
+                compteur.append(ou)
+        if montrees(anciennes)[1:2] != montrees(nouvelles)[1:2]:
+            alternatives_changees.append(ou)
+            avant_alt, apres_alt = anciennes[1], nouvelles[1]
+            if avant_alt is not None and apres_alt is not None:
+                baisse = avant_alt.total - apres_alt.total
+                if baisse > pire_baisse:
+                    pire_baisse = baisse
+                    pire_baisse_exemple = (f"{ou} : {avant_alt.mouse.label} {avant_alt.total}/40 → "
+                                           f"{apres_alt.mouse.label} {apres_alt.total}/40")
+        if anciennes[2] is not None and nouvelles[2] is None:
+            economies_perdues.append(f"{ou} : {anciennes[2].mouse.label} "
+                                     f"(déjà montrées : {montrees(anciennes)[:2]})")
+        if anciennes[2] is None and nouvelles[2] is not None:
+            troisieme_avant_gagnee.append(ou)
 
     print(f"Profils comparés : {profils}")
     print(f"Match idéal : {len(ideaux_changes)} profil(s) changé(s)")
