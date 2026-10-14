@@ -2228,7 +2228,7 @@ rapport **de la grille complète (18 522 profils)**, contenait en réalité un r
 modifier à la main : relancer le script », portait les mêmes anciens noms sur 34 lignes.
 
 Les deux sont régénérés sur le catalogue du jour (rapport : 18 522 profils, 252 profils sans résultat,
-1 262 replis de coque ; matrice : 34 lignes alignées), et deux tests empêchent le retour : le rapport doit
+1 262 replis de coque — **1 367 depuis le 2026-10-14**, §12.36 ; matrice : 34 lignes alignées), et deux tests empêchent le retour : le rapport doit
 annoncer la grille **comptée**, la matrice doit être **le script relancé**.
 
 Le compteur ci-dessus passe de 707 à **709** tests.
@@ -2388,9 +2388,10 @@ documentation et des outils.
 - **Le catalogue** : l'ATK Blazing Sky U2 / U2 Plus / U2 Ultimate et l'ATK U2 V2 Ultimate ont des cotes
   publiées identiques (123,7 × 64,6 × 39,1 mm) — donc **une seule coque** — mais le champ `shell_id` était
   vide. La règle « deux places du résultat ne montrent jamais la même coque » (votre décision du 2026-10-12)
-  ne pouvait donc pas s'appliquer : **178 profils sur 27 170** montraient les deux dans le même résultat. La
-  coque est enregistrée (`shell_id = atk_u2`), avec sa source datée ; ces profils prennent maintenant une
-  souris d'une autre coque. Le fichier est relu **à chaque interaction** : aucun redémarrage nécessaire.
+  ne pouvait donc pas s'appliquer : **235 profils sur 27 170 (0,86 %)** — 207 sur la grille du rapport
+  (18 522) — montraient les deux dans le même résultat. La coque est enregistrée (`shell_id = atk_u2`),
+  avec sa source datée ; **175 profils (0,64 %)** changent de résultat et prennent une souris d'une autre
+  coque, 0 place gagnée, 0 perdue. Le fichier est relu **à chaque interaction** : aucun redémarrage nécessaire.
 - **Le moteur** (`cogs/finder_flow.py`) : en corrigeant la coque, trois profils sur 18 270 ont montré un
   « match idéal » moins bien noté que la ligne du dessous — précisément ce que votre décision du
   2026-10-13 a supprimé (la garantie d'ordre, pour laquelle vous aviez autorisé une modification du

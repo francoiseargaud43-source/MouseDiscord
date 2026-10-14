@@ -3916,10 +3916,24 @@ sur EloShapes) — et leurs propres notes l'écrivaient : « partage la coque et
 Ultimate ». Le champ `shell_id` était pourtant **vide** des deux côtés. La préférence de coque ne pouvait donc
 pas s'appliquer à cette paire : elle s'affichait deux fois.
 
-Mesure (`tools/db_effect.py --avant <catalogue d'avant> --grille complete`, 27 170 profils) : **178 profils
-(0,66 %)** montraient l'U2 et l'U2 V2 Ultimate dans le même résultat. La coque enregistrée, ces 178 profils
-prennent une souris d'une autre coque (`atk_a9_plus` 32, `atk_zero` 28, `atk_a9_mini` 20, `atk_u2_v2_mini` 16,
-`pulsar_xlite_v4_medium` 8…) ; aucun repli ne s'ajoute là où la préférence intervient.
+Mesure, en deux comptages distincts — « montrer les deux ensemble » et « changer de résultat » ne sont
+pas la même chose (chiffres refaits le 2026-10-14, avec le moteur livré, catalogue d'avant conservé) :
+
+| Mesure (coque non enregistrée → enregistrée) | 27 170 profils (banc, `db_effect`) | 18 522 profils (rapport) |
+|---|---|---|
+| L'U2 **et** l'U2 V2 Ultimate dans le même résultat | **235** → 124 | **207** → 105 |
+| Profils dont le résultat **change** | **175 (0,64 %)** | 156 (0,85 %) |
+
+L'instrument officiel (`tools/db_effect.py --avant <catalogue d'avant> --grille complete`) : **175 profils**
+changent, **0 place gagnée, 0 perdue**, et **aucune** des 175 nouvelles listes ne montre deux fois la même
+coque ; les places libérées sont reprises par `atk_a9_plus` 32, `atk_zero` 28, `atk_a9_mini` 20,
+`atk_u2_v2_mini` 16, `pulsar_xlite_v4_medium` 8… Le **178** qui a circulé un instant était le même comptage
+avec le **moteur d'avant le palier de la 2e place** : la mesure refaite ici est celle du moteur livré, et
+c'est elle qui fait foi.
+
+Les 105 (18 522) et 124 (27 170) restants ne sont pas un défaut : c'est le **repli documenté** — quand aucune
+autre souris ne convient, la deuxième place reprend la liste complète plutôt que de laisser un trou, comme
+pour les autres paires du §26.34.2.
 
 **Une règle générale, écrite dans le test** : deux souris dont les **trois** cotes publiées sont identiques ne
 peuvent pas être deux coques. Neuf groupes de jumelles existent dans le catalogue ; huit partageaient déjà
@@ -3928,7 +3942,7 @@ leur `shell_id`, le neuvième était cette paire. Le verrou
 cotes identiques sans coque commune, ou coque commune avec des cotes qui divergent (déjà couvert par les
 invariants de bosse et de boutons).
 
-### 26.42.2 Ce que la correction a révélé : 178 profils, puis 3 de plus
+### 26.42.2 Ce que la correction a révélé : trois profils sur 18 270, puis les paliers
 
 Le remplissage du `shell_id` a fait tomber `test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre`
 (garantie de la décision du 2026-10-13) sur un profil : **mode Économique, main 225 × 85, prise Palm**. Le
@@ -3952,11 +3966,15 @@ sous le plafond (1 364 → 1 367) — le prix de la garantie d'ordre, mesuré.
 
 ### 26.42.3 Contre-épreuves
 
-| Mutation | Détectée par |
+| Mutation jouée | Tests rouges (mesuré le 2026-10-14, `--ignore=tests/test_apercus.py`) |
 |---|---|
-| `shell_id` retiré de l'ATK U2 (l'état d'avant) | **3 tests** de `tests/test_data.py` (l'invariant, le profil réel, la source déclarante) |
-| Palier intermédiaire retiré de la 2e place | `tests/test_flow.py::test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre` + le test synthétique du palier |
-| Coque U2 pointée vers un autre `shell_id` que sa jumelle | l'invariant des cotes identiques |
+| `shell_id` retiré des deux entrées U2 (l'état d'avant) | **4** : `test_data.py::test_aucune_source_ne_declare_un_champ_resté_vide` (la source déclare un champ vide), `::test_deux_entrees_de_meme_cote_partagent_la_meme_coque`, `::test_la_coque_u2_change_le_resultat_sur_deux_profils_reels`, `::test_le_repli_de_coque_reste_sous_le_plafond_du_match_ideal` |
+| Palier intermédiaire retiré de la 2e place (résultat d'avant) | **3** : `test_flow.py::test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre`, `::test_alternative_ne_depasse_jamais_le_plafond_quand_une_souris_passe_dessous`, `test_data.py::test_le_repli_de_coque_reste_sous_le_plafond_du_match_ideal` |
+| Coque de l'ATK U2 pointée ailleurs que sur sa jumelle (`atk_u2_bis`) | **3** : `test_data.py::test_deux_entrees_de_meme_cote_partagent_la_meme_coque` + les deux profils réels |
+
+Les catalogues mutants sont restaurés **octet à octet** (md5 vérifié après chaque essai) ; les aperçus ne sont
+pas pris en compte dans ces comptes (leur empreinte couvre le catalogue et le code, donc toute mutation les
+fait rougir — c'est leur rôle, pas une contre-épreuve ciblée).
 
 **Fichiers à envoyer** : **`data/mouse_db.json`** (le catalogue est relu à chaque interaction — aucun
 redémarrage nécessaire) et **`cogs/finder_flow.py`** (le palier de la 2e place). Les trois aperçus, le rapport
@@ -3964,3 +3982,62 @@ et la matrice sont régénérés (documentation et développement seulement).
 
 **Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
 côtés)**, **780 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation, `qa_flow_matrix` 0 problème.
+
+## 26.43 58e passe — un chiffre publié qui ne se rejouait pas (2026-10-14)
+
+### 26.43.1 Ce qui n'allait pas
+
+La 57e passe a publié, dans les **notes du catalogue** (visibles dans la traçabilité de la donnée), la phrase :
+« 48 profils sur 18 522 montraient l'U2 et l'U2 V2 Ultimate côte à côte avant la correction ». Ce chiffre
+**n'était rejouable par aucun outil** : c'était un compteur intermédiaire, ni versionné ni reproductible — et
+il était faux (voir le tableau ci-dessous). Le dépôt s'interdit d'écrire un nombre qu'on ne peut pas remesurer :
+c'est exactement le défaut des 50e et 51e passes, sous une autre forme.
+
+Même famille, dans les documents de la même passe : « **178 profils (0,66 %)** montraient l'U2 et l'U2 V2
+Ultimate dans le même résultat ». Deux erreurs en une : 178 était le nombre de profils dont le **résultat
+change** (pas ceux qui montrent les deux), et ce nombre était celui du **moteur d'avant le palier de la 2e
+place** — périmé au moment même où il était écrit.
+
+### 26.43.2 Les mesures, refaites et distinguées
+
+Deux comptages différents, mesurés le 2026-10-14 avec le moteur livré et un catalogue d'avant conservé :
+
+| Mesure (coque non enregistrée → enregistrée) | 18 522 profils (rapport) | 27 170 profils (banc, `db_effect`) |
+|---|---|---|
+| L'U2 **et** l'U2 V2 Ultimate dans le même résultat | **207** → 105 | **235** → 124 |
+| Profils dont le résultat **change** | 156 (0,85 %) | **175 (0,64 %)** |
+
+- Instrument officiel pour le second comptage : `tools/db_effect.py --avant <catalogue d'avant> --grille
+  complete` → 175 profils, **0 place gagnée, 0 perdue**, **aucune** des 175 nouvelles listes ne montre deux
+  fois la même coque ; les places libérées sont reprises par `atk_a9_plus` 32, `atk_zero` 28, `atk_a9_mini` 20,
+  `atk_u2_v2_mini` 16, `pulsar_xlite_v4_medium` 8…
+- Premier comptage : script de comptage des places (`compute_selection` + `result_slots`), sur les deux
+  grilles, catalogue d'avant **et** catalogue livré, moteur figé dans les deux sens.
+- Les 105 / 124 restants sont le **repli documenté** (aucune autre souris ne convient : la deuxième place
+  reprend la liste complète plutôt que de laisser un trou), pas un défaut — chiffre désormais cité avec la
+  mesure qui le produit.
+
+**Ce qui est corrigé** : la donnée porte la mesure datée (207 → 105 sur la grille du rapport), les documents
+distinguent les deux comptages et ne citent plus 178, et la note ne contient plus de nombre non rejouable.
+Date de la donnée alignée sur celle des artefacts générés (`2026-10-14`, jour de l'enregistrement) ; la date de
+l'**arbitrage** du propriétaire (« deux places ne montrent jamais la même coque ») reste le **2026-10-13**, et
+les documents ne confondent plus les deux.
+
+### 26.43.3 Deux défauts trouvés en corrigeant, et tenus
+
+1. **Un test dupliqué, donc muet.** L'invariant des cotes identiques
+   (`test_data.py::test_deux_entrees_de_meme_cote_partagent_la_meme_coque`) existait **deux fois** sous le même
+   nom : la seconde définition écrasait la première, et pytest n'en exécutait qu'une — c'est pour cela que le
+   total restait à 780 malgré l'ajout. Le doublon est retiré, la version conservée est enrichie (comparaison au
+   dixième via `COTES_MM`, `None` traité comme « coque inconnue » et non comme égalité, échappatoire explicite
+   par `conflicts`). Pyflakes a signalé la redéfinition aussitôt.
+2. **La couverture, remesurée après la consolidation** (1 655 instructions et 508 branches, **0 manquante**
+   des deux côtés) : un test déplacé ou dupliqué ne change jamais le compte en silence.
+
+**Contre-épreuves rejouées sur la version consolidée** (catalogue et moteur restaurés **octet à octet**, md5
+vérifié) : `shell_id` retiré des deux entrées U2 → **4 rouges** ; palier de la 2e place retiré → **3 rouges** ;
+coque de l'U2 pointée ailleurs (`atk_u2_bis`) → **3 rouges**. Voir le tableau du §26.42.3.
+
+**Fichiers à envoyer** : `data/mouse_db.json` (notes et dates corrigées, **aucun** changement de comportement —
+mesuré : 0 profil de différence avant/après sur les deux grilles) et `cogs/finder_flow.py` (palier de la
+2e place, inchangé depuis le commit précédent hors commentaire daté).

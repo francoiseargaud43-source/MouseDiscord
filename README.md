@@ -538,10 +538,12 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_data.py` (suite) : **invariants de coque** — deux souris dont les trois cotes publiées sont
   identiques (au dixième : longueur, largeur maximale, hauteur) ne peuvent pas être deux coques : neuf
   groupes de jumelles au catalogue, dont un (ATK Blazing Sky U2 / U2 V2 Ultimate) est resté sans `shell_id`
-  jusqu'au 2026-10-14 — **178 profils sur 27 170** montraient alors les deux dans le même résultat, contre
-  la règle « deux places ne montrent jamais la même coque ». Deux profils réels tiennent les deux sens de
-  la règle : la préférence de coque quand une autre coque passe sous le plafond, le repli quand il n'y en a
-  aucune.
+  jusqu'au 2026-10-14 : **235 profils sur 27 170 (0,86 %)** montraient alors les deux dans le même résultat
+  (207 sur les 18 522 du rapport) et **175 (0,64 %)** changent de résultat après l'enregistrement de la
+  coque — contre la règle « deux places ne montrent jamais la même coque ». Deux profils réels tiennent les
+  deux sens de la règle : la préférence de coque quand une autre coque passe sous le plafond, le repli quand
+  il n'y en a aucune. Cotes identiques et coques distinctes ne passent que si l'écart est **consigné** dans
+  `conflicts` — un silence n'est jamais une preuve.
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
   ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**
