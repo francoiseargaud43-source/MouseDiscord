@@ -37,7 +37,7 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | 2/4 – 3/5. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4 – 4/5. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
 | 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, **Peu importe le prix**, Budget personnalisé (→ modal prix max) |
-| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, troisième place — « 💸 L'économie », « ➕ L'autre option » ou « 🔎 Autre piste » — pourcentages **ordonnés du haut vers le bas** et prix non attestés **signalés** depuis le 2026-10-13), les deux dernières lignes étant remplies **dès que le budget le permet** depuis le 2026-10-12 — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
+| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, troisième place — « 💸 L'économie », « ➕ L'autre option » ou « 🔎 Autre piste » — pourcentages **ordonnés du haut vers le bas** et prix non attestés **signalés** depuis le 2026-10-13), les deux dernières lignes étant remplies **dès que le budget le permet** depuis le 2026-10-12 — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite » ou « Moyenne »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -72,7 +72,7 @@ dans l'ordre de l'outil de référence (Oblivity) :
 | Bloc | Contenu | Image |
 |---|---|---|
 | 📐 Vos repères de taille | longueur cible, largeur de prise, score `/40 — %`, la souris retenue « en clair », le pourquoi du choix | T12 |
-| 🖐️ Un arrière étroit pour votre thénar | seulement si le thénar est « Petite » (jamais en Fingertip) | T13 |
+| 🖐️ Un arrière étroit pour votre thénar | si le thénar est « Petite » ou « Moyenne » (jamais en Fingertip) | T13 |
 | ⛰️ La bosse et la forme | où placer la bosse (**selon la variante de Claw déclarée**), quelle forme de coque convient (symétrique / ergonomique) et la forme de la souris retenue ; absent en Fingertip | T14 ou T07 |
 | 🦾 Votre variante de Claw | la variante déclarée (ou les trois à titre indicatif si le parcours a été ouvert sans cette étape) | T04, T05 ou T06 |
 | 🖱️ La hauteur des boutons | niveau conseillé (Palm : hauts ; Claw : bas ; Fingertip : médians à bas) | T01, T02 ou T03 |
@@ -215,7 +215,7 @@ Deux façons de renseigner une image (elles peuvent cohabiter) :
 | `step2_measure` | Étape 3/4 — main mesurée à la règle | `T11_mesurer_la_main.png` |
 | `step3_budget` | Étape 4/4 — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
 | `illustration_mouse_dimensions` | Repères de taille du résultat | `T12_souris_longueur_largeur.png` |
-| `illustration_rear_narrow` | Résultat, si thénar « Petite » (indicatif) | `T13_arriere_etroit.png` |
+| `illustration_rear_narrow` | Résultat, si thénar « Petite » ou « Moyenne » (indicatif) | `T13_arriere_etroit.png` |
 | `illustration_grip_relaxed` | Étape « variante de Claw » (illustration générique de l'étape) et résultat quand la variante choisie est « Claw relâchée » | `T04_griffe_relachee.png` |
 | `illustration_hump_mid` | Résultat — bosse centrale de la souris retenue, et conseil « bosse au milieu ou à l'avant » (Palm) | `T14_bosse_centrale.png` |
 | `illustration_hump_front` | Résultat — bosse avant / Mid-Front de la souris retenue | `T15_bosse_avant.png` |
@@ -542,10 +542,11 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_reverse_engineering.py` : **le moteur est-il encore celui de la preuve primaire ?** Les **10
   sorties datées de `Reverse/`** (l'outil d'origine, trois prises × trois tailles de main) sont relues par les
   tests : plages cibles au dixième de millimètre, règles de bosse et de hauteur des boutons, conseil de bosse
-  des trois variantes de Claw, arrière étroit et méthode de mesure de la largeur. La règle du thénar garde son
-  **écart assumé et daté** (l'outil d'origine conseille l'arrière étroit au thénar petit *et* moyen ; le bot le
-  réserve à « Petite », comme le prescrit `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 — le test refuse que l'un des
-  deux bouge sans l'autre).
+  des trois variantes de Claw, arrière étroit et méthode de mesure de la largeur. L'**écart du thénar a été
+  refermé le 2026-10-14** (décision du propriétaire) : l'outil d'origine conseille l'arrière étroit au thénar
+  petit *et* moyen et ne dit rien pour un grand ; le bot faisait de même pour « Petite » seulement, il suit
+  maintenant la référence pour les deux, et `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 le dit — le test refuse que
+  le prompt et le code divergent.
 - `tests/test_data.py` (suite) : **invariants de coque** — deux souris dont les trois cotes publiées sont
   identiques (au dixième : longueur, largeur maximale, hauteur) ne peuvent pas être deux coques : neuf
   groupes de jumelles au catalogue, dont un (ATK Blazing Sky U2 / U2 V2 Ultimate) est resté sans `shell_id`

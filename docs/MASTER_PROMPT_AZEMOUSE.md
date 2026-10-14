@@ -138,7 +138,7 @@ python tools/privacy_scan.py
 | T07 | `T07_bosse_arriere.png` | Profil souris, bosse arrière jaune désaxée | **Bosse arrière (Rear)** | **Nouvelle** `illustration_hump_rear` |
 | T14 | `T14_bosse_centrale.png` | Profil souris, bosse centrale jaune | **Bosse centrale (Mid)** | **Nouvelle** `illustration_hump_mid` |
 | T15 | `T15_bosse_avant.png` | Profil souris, bosse avant jaune | **Bosse avant (Front / Mid-Front)** | **Nouvelle** `illustration_hump_front` |
-| T13 | `T13_arriere_etroit.png` | Vue de dessous souris, arrière étroit jaune | **Arrière étroit (Narrow Rear)** — lien avec thénar Small | **Nouvelle** `illustration_rear_narrow` |
+| T13 | `T13_arriere_etroit.png` | Vue de dessous souris, arrière étroit jaune | **Arrière étroit (Narrow Rear)** — lien avec thénar Small ou Medium | **Nouvelle** `illustration_rear_narrow` |
 | T04 | `T04_griffe_relachee.png` | Photo main « Relaxed Claw Grip » + contour jaune | **Claw variante : relâchée** | **Nouvelle** `illustration_grip_relaxed` |
 | T05 | `T05_griffe_agressive.png` | Photo main « Aggressive Claw Grip » | **Claw variante : agressive** | **Nouvelle** `illustration_grip_aggressive` |
 | T06 | `T06_griffe_pince.png` | Photo main « Pincer Claw Grip » | **Claw variante : pince** | **Nouvelle** `illustration_grip_pincer` |
@@ -404,7 +404,7 @@ Si tu réintroduis l'étape thénar (pour utiliser `T10` et coller au parcours c
 - **Stockage uniquement** : `session.thenar = Small|Medium|Large` (ajoute le champ à `FinderSession`).
 - **Affichage** : récap `Thénar : Moyenne` dans `recap` et dans le résultat, section « Profil ».
 - **Zéro effet** sur : équations, seuils, points, score, classement, exclusion. Ne pas inventer de bonus « arrière étroit » automatique.
-- Illustrations : `T10` pour la sélection, `T13_arriere_etroit` pour l'explication « Si thénar Small → arrière étroit conseillé » **à titre informatif uniquement**, avec disclaimer « Recommandation morphologique indicative, non prise en compte dans le score ».
+- Illustrations : `T10` pour la sélection, `T13_arriere_etroit` pour l'explication « Si thénar Small ou Medium → arrière étroit conseillé » **à titre informatif uniquement**, avec disclaimer « Recommandation morphologique indicative, non prise en compte dans le score ».
 - Tests antérieurs ont prouvé qu'aucune source ne définit de règle thénar→dimensions. **Ne pas en inventer.**
 
 ---

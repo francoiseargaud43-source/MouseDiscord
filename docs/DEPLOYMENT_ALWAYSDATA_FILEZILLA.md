@@ -1123,7 +1123,7 @@ Aucun `!setup_finder` n'est nécessaire : le texte et le bouton du message d'acc
 > boutons interactifs pouvaient cesser de répondre après un redémarrage du bot (« AzeMouse n'a pas répondu à
 > temps »). Le résultat ne porte plus que les boutons d'achat — des **liens** gérés par Discord, qui fonctionnent
 > toujours. Le contenu de l'ancien onglet « Détails » n'est pas perdu : il s'affiche **dans le même message, plus
-> bas**, en petits blocs illustrés (repères de taille, arrière étroit si thénar « Petite », bosse, variantes de
+> bas**, en petits blocs illustrés (repères de taille, arrière étroit si thénar « Petite » ou « Moyenne », bosse, variantes de
 > Claw, hauteur des boutons). Un résultat affiché **avant** la mise à jour garde ses anciens boutons : relancez un
 > test pour obtenir un message à jour.
 >
@@ -1560,6 +1560,8 @@ sinon `pkill -f "bot.py"` (le service repart au prochain passage de la tâche).
    « 🥈 L'alternative » Z1 V2 Ultra 59,95 €, « ➕ L'autre option » A9 Mini 59,95 €.
 2. Faire un parcours en **Claw pincée**, thénar **Petite**, 180 × 100, Qualité/Prix : le bloc « 🖐️ Un arrière
    étroit pour votre thénar » doit commencer par « Votre éminence thénar est **petite** ».
+   Refaire le même parcours en thénar **Moyenne** (décision du 2026-10-14) : le bloc est là, et sa phrase
+   dit « **de taille moyenne** ». En thénar **Grande**, le bloc est absent (la référence n'en donne pas).
 3. Le reste du message ne bouge pas d'un caractère : ni score, ni prix, ni libellé de place.
 
 ---
@@ -2102,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.48).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.49).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 812 passed
+.venv/bin/python -m pytest -q                      # attendu : 813 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2372,9 +2374,10 @@ mais plus rien ne disait que le code continue de dire la même chose que la réf
 `tests/test_reverse_engineering.py` (35 tests, un tiers de seconde) referme la boucle : plages cibles
 reproduites à 0,05 mm sur les 10 profils, règles de bosse et de hauteur des boutons, conseil de bosse des
 trois variantes de Claw, arrière étroit, et la méthode de mesure de la largeur (« souris retournée, au niveau
-du capteur »). L'écart connu est **écrit** au lieu de dormir : l'outil d'origine conseille l'arrière étroit au
-thénar petit **et** moyen, le bot le réserve à « Petite » — c'est ce que demande le prompt de référence
-(§7.6), et le test refuse désormais que l'un des deux change sans l'autre.
+du capteur »). L'écart du thénar a été **refermé le 2026-10-14** : l'outil d'origine conseille l'arrière étroit
+au thénar petit **et** moyen et n'en donne aucun pour un grand ; le bot faisait de même pour « Petite »
+seulement, il suit maintenant la référence pour les deux (prompt §7.6 mis à jour le même jour), et le test
+refuse que le prompt et le code divergent.
 
 Sept mutations ont été tentées : cinq sont détectées par ce fichier ; les deux autres (un dix-millième sur la
 pente de longueur, un demi-millimètre sur le correctif d'estimation) le sont par `tests/test_matcher.py` —
@@ -2647,6 +2650,30 @@ jamais ces outils).
   banc qui répond « mesure refusée » (code 2). Compteurs de la grille complète **inchangés** (21 736 profils,
   0 problème, 28 replis d'ordre). Le compteur du contrôle ci-dessus passe de 798 à **812** tests. Détail :
   §26.55 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.49 Mise à jour du 2026-10-14 (40e) : l'arrière étroit suit la référence (thénar moyen)
+
+**Fichiers à envoyer** : `cogs/finder_flow.py` **seul** (texte de l'étape thénar et bloc du résultat).
+**Redémarrage** : **oui** (un texte affiché change) — la tâche planifiée s'en charge, ou `pkill -f "bot.py"`.
+Les documents, les tests et les aperçus accompagnent.
+
+- Décision du propriétaire (2026-10-14) : le bot suit la **référence** (`Reverse/`, dix sorties du
+  2026-10-11). Elle conseille l'arrière étroit au thénar **petit et moyen** et n'en dit **rien** pour un
+  grand ; le bot réservait le bloc à « Petite » (écart assumé jusqu'ici).
+- Conséquence **visible** : un membre au thénar **Moyenne** reçoit maintenant le bloc « 🖐️ Un arrière étroit
+  pour votre thénar » (5 blocs au lieu de 4), avec la phrase accordée — « est **de taille moyenne** » au
+  lieu de « est **petite** ». Un thénar **Grande** garde le message d'avant, et un parcours **Fingertip**
+  n'a jamais ce bloc (la prise ne pose pas la question).
+- Le texte de l'**étape thénar** disait « un grand thénar est soutenu par un arrière marqué » : aucune
+  sortie de la référence ne porte cette phrase, il disait donc plus que la référence. Il annonce maintenant
+  la règle entière.
+- **Rien d'autre ne bouge** : aucun score, aucun classement, aucun prix, aucun pourcentage. Grille complète
+  relancée après le changement : compteurs **identiques** (21 736 profils, 0 problème, 28 replis d'ordre,
+  places 2 067/182/793/18 694). Trois attentes de `tests/test_flow.py` mises à jour, un test neuf, aperçus
+  régénérés. Le compteur du contrôle ci-dessus passe de 812 à **813** tests. Détail : §26.56 de
+  `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

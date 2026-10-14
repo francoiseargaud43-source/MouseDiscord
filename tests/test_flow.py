@@ -465,8 +465,10 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert isinstance(kwargs["view"], flow.ResultsView)
     # Aucun bouton interactif : seuls des liens d'achat, ou le rappel désactivé « Liens à venir ».
     assert all(getattr(c, "url", None) or getattr(c, "disabled", False) for c in kwargs["view"].children)
-    # La recommandation (courte) puis les blocs d'explication, plus bas (ici : Palm sans thénar).
-    assert len(kwargs["embeds"]) == 4
+    # La recommandation (courte) puis les blocs d'explication, plus bas : ici Palm **thénar moyen**, donc
+    # quatre blocs — repères, arrière étroit (le conseil de la référence pour Petite ET Moyenne, depuis
+    # la décision du 2026-10-14), bosse et hauteur des boutons.
+    assert len(kwargs["embeds"]) == 5
     main, guide = kwargs["embeds"][0], kwargs["embeds"][1]
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
@@ -514,7 +516,7 @@ async def test_un_fichier_de_liens_casse_ne_prive_pas_le_membre_de_son_resultat(
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.ResultsView)
-    assert len(kwargs["embeds"]) == 4                       # le résultat, entier
+    assert len(kwargs["embeds"]) == 5                       # le résultat, entier (thénar moyen)
     ideal = next(v for k, v in fields_of(kwargs["embeds"][0]).items() if "match idéal" in k)
     assert "ATK Phantom Ultimate" in ideal                  # la recommandation est bien là
     placeholders = [c for c in kwargs["view"].children if getattr(c, "disabled", False)]
@@ -538,7 +540,12 @@ async def test_result_never_mentions_the_excluded_mice():
 
 
 def test_result_sections_follow_the_reference_tool_order():
-    """Recommandation, puis repères de taille, bosse et boutons — comme l'outil de référence."""
+    """Recommandation, puis repères de taille, arrière étroit, bosse et boutons — l'ordre de la référence.
+
+    Le bloc « arrière étroit » vient juste après les repères, comme la section « Rear Design » de
+    l'outil d'origine (qui la place entre la taille et la bosse) ; pour le thénar moyen de ce scénario
+    il est là depuis la décision du 2026-10-14.
+    """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
@@ -546,6 +553,7 @@ def test_result_sections_follow_the_reference_tool_order():
     assert [e.title for e in embeds] == [
         "🎯 Votre recommandation",
         "📐 Vos repères de taille",
+        "🖐️ Un arrière étroit pour votre thénar",
         "⛰️ La bosse et la forme",
         "🖱️ La hauteur des boutons",
     ]
@@ -970,21 +978,48 @@ def test_thenar_never_changes_the_recommendation():
     assert flow.compute_selection(palm).ranked[0].total == 35
 
 
-def test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration(monkeypatch):
-    """Thénar « Petite » : un paragraphe dédié, illustré (T13), affiché plus bas dans le message."""
+def test_thenar_petite_ou_moyenne_ajoute_le_paragraphe_arriere_etroit(monkeypatch):
+    """Thénar « Petite » **et** « Moyenne » : un paragraphe dédié, illustré (T13), accordé au thénar.
+
+    Décision du propriétaire du 2026-10-14 : le bot suit la référence, qui conseille l'arrière étroit
+    aux deux thénars (« on the smaller side » / « average sized ») et n'en dit rien pour un grand.
+    Un grand thénar garde donc le message d'avant, sans ce bloc.
+    """
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
-    store = SessionStore(ttl_seconds=600)
-    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.PETITE)
-    session.budget_mode = BudgetMode.QUALITE_PRIX
-    embeds = flow.results_embeds(session, flow.compute_selection(session))
-    narrow = next(e for e in embeds if "arrière étroit" in e.title)
-    assert "arrière étroit" in narrow.title
-    assert "pilule" in narrow.description
-    # Règle « zéro effet » : le paragraphe dit lui-même que le thénar ne modifie pas le score.
-    assert "ne modifie pas le score" in narrow.description
-    assert narrow.image is not None and "T13_arriere_etroit" in narrow.image.url
-    # Le bloc « comment lire ce résultat » garde l'illustration des repères de taille.
-    assert "T12_souris_longueur_largeur" in embeds[1].image.url
+
+    def resultat(thenar):
+        store = SessionStore(ttl_seconds=600)
+        session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=thenar)
+        session.budget_mode = BudgetMode.QUALITE_PRIX
+        return flow.results_embeds(session, flow.compute_selection(session))
+
+    for thenar, accord in ((Thenar.PETITE, "**petite**"), (Thenar.MOYENNE, "**de taille moyenne**")):
+        embeds = resultat(thenar)
+        narrow = next(e for e in embeds if "arrière étroit" in e.title)
+        assert "arrière étroit" in narrow.title
+        assert "pilule" in narrow.description
+        assert accord in narrow.description, f"thénar {thenar.label} : phrase non accordée"
+        # Règle « zéro effet » : le paragraphe dit lui-même que le thénar ne modifie pas le score.
+        assert "ne modifie pas le score" in narrow.description
+        assert narrow.image is not None and "T13_arriere_etroit" in narrow.image.url
+        # Le bloc « comment lire ce résultat » garde l'illustration des repères de taille.
+        assert "T12_souris_longueur_largeur" in embeds[1].image.url
+
+    # Aucun conseil d'arrière pour un grand thénar : la référence n'en donne pas.
+    assert not any("arrière étroit" in e.title for e in resultat(Thenar.GRANDE))
+
+
+def test_l_etape_thenar_annonce_la_regle_de_la_reference_entierement():
+    """Le texte de l'étape dit la règle telle quelle : petit ou moyen → arrière étroit, rien pour un grand.
+
+    L'ancien texte affirmait qu'« un grand thénar est soutenu par un arrière marqué » — une phrase
+    qu'aucune sortie de la référence ne porte (la section « Rear Design » y est absente pour un grand
+    thénar). Corrigé le 2026-10-14 en même temps que le bloc du résultat.
+    """
+    description = flow.thenar_step_embed(Grip.PALM).description
+    assert "un petit ou un moyen thénar" in description
+    assert "aucune consigne d'arrière" in description
+    assert "soutenu par un arrière marqué" not in description
 
 
 def test_step_illustrations_are_branched_when_image_base_url_is_set(monkeypatch):
@@ -1281,8 +1316,10 @@ def test_third_slot_prefers_another_shell_over_a_variant_of_a_shown_mouse():
     """Décision du 2026-10-12 appliquée à la troisième place : « deux places ne montrent jamais la
     même coque ». Quand la moins chère des options restantes est une variante d'une coque déjà
     affichée, la place prend la moins chère des coques DIFFÉRENTES — mesuré sur la grille de
-    référence : 1 338 profils concernés, surcoût médian +4,00 € (61 % sous +10 €), et 837 profils où
-    aucune autre coque n'existe dans la fenêtre (là, la variante reste la seule option)."""
+    référence (18 522 profils, 16 050 à trois places) le 2026-10-14 : **1 684 profils** concernés,
+    surcoût médian **+4,00 €** (69 % sous +10 €), et **761** profils où aucune autre coque n'existe
+    dans la fenêtre (là, la variante reste la seule option). Les valeurs d'origine (1 338 / 837)
+    dataient du 2026-10-12, avant la mise à jour des prix ; elles sont re-mesurées, jamais recopiées."""
     ideal = _fake_score("ideal", 30, 20.0, shell_id="s1")
     alternative = _fake_score("alternative", 29, 45.0, shell_id="s2")
     variante = _fake_score("variante", 28, 41.95, shell_id="s2")   # même coque que l'alternative

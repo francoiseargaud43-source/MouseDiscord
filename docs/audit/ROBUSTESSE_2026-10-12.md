@@ -4650,3 +4650,71 @@ code livré). Les deux listes du contrat des outils (`tests/test_tools_usage_err
 seizième outil : entrée invalide → phrase + code 2, option inconnue nommée, `--help` sans écriture.
 
 **Fichiers à envoyer** : **aucun** (un outil, des documents, et les tests).
+
+---
+
+## 26.56 69e passe — trois citations périmées, et l'arrière étroit rendu à la référence (2026-10-14)
+
+Cette passe a rouvert les deux pistes que la chasse laissait de côté (« feu vert » du propriétaire du
+2026-10-14) et a vérifié chaque chiffre cité par le code et par les tests.
+
+### 26.56.1 Trois chiffres cités en commentaire ne se rejouaient plus
+
+Les commentaires du moteur et un docstring de test mesuraient l'effet des décisions du 2026-10-12/13
+(prix et catalogue d'alors). Le catalogue a bougé depuis (prix de l'ATK, coque de l'U2, grille du banc
+dédoublonnée). Mesure refaite le 2026-10-14 avec un script qui **recopie la logique** de `result_slots` et
+vérifie, profil par profil, que sa reconstitution rend les **mêmes objets** que le moteur (0 divergence sur
+les deux grilles — la mesure décrit donc le comportement réel) :
+
+| Citation | Valeur écrite | Valeur mesurée le 2026-10-14 |
+|---|---|---|
+| `utils`/moteur : « 84 violations en points = 84 en pourcentages » | 84 | **28 = 28** (grille du banc, 21 736 profils) |
+| Moteur : marqueur « boutons non documentés » | 8 187 places sur 27 170 | **9 788 places** (2e : 4 478 · 3e : 5 310) |
+| Moteur (`result_slots`) et `tests/test_flow.py` : troisième place | 2 175 / 1 338 / 837 | **2 445 / 1 684 / 761** |
+
+Détail de la troisième ligne : sur la grille de référence (18 522 profils, 16 050 à **trois** places),
+**2 445** profils (15,23 % des trois places) montrent une variante d'une coque déjà affichée, dont
+**1 684** avec une autre coque disponible dans la fenêtre (surcoût médian **+4,00 €**, **69 %** sous
++10 €) et **761** sans aucune autre coque — la variante y reste la seule option à montrer. Les valeurs
+d'origine dataient du 2026-10-12, avant la mise à jour des prix et le dédoublonnage de la grille.
+
+Les trois citations portent désormais leur date de mesure (« re-mesuré le 2026-10-14 ») : un chiffre qui
+suit les prix ne se recopie pas, il se rejoue.
+
+### 26.56.2 L'arrière étroit : l'écart avec la référence est refermé
+
+**Ce que dit la preuve primaire** (`Reverse/`, les dix sorties datées du 2026-10-11) : la section
+« Rear Design » y conseille le « Narrow Rear » pour un thénar **Small** (« since your thenar muscles are
+on the smaller side ») **et Medium** (« are average sized »), et **disparaît** pour un thénar Large. Le bot,
+lui, réservait le bloc à « Petite », comme le prescrivait `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 — un écart
+assumé, consigné et gravé par un test.
+
+**Ce qui a été corrigé** (décision du propriétaire du 2026-10-14 : le bot suit la référence) :
+
+- `_narrow_rear_embed(thenar)` prend le thénar déclaré et **accorde sa phrase** (« est **petite** » /
+  « est **de taille moyenne** ») ;
+- le bloc s'affiche pour **Petite et Moyenne** (Palm et Claw), **jamais** en Fingertip, et **jamais** pour
+  un grand thénar — dont la référence ne dit rien ;
+- le texte de l'**étape thénar** disait « un grand thénar est soutenu par un arrière marqué » : **aucune
+  sortie de la référence ne porte cette phrase** (la section y est absente pour un grand thénar). Il dit
+  maintenant la règle entière : « un petit ou un moyen thénar préfère un arrière étroit… la référence ne
+  donne aucune consigne d'arrière pour un grand thénar » ;
+- `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 dit « Si thénar Small **ou Medium** → arrière étroit conseillé »
+  (et son tableau d'assets avec), le README, le guide de déploiement et l'audit suivent.
+
+**Preuves.** Le bloc est mesuré sur le message réel : présent pour Petite et Moyenne en Palm et en Claw,
+absent pour Grande, pour « aucun thénar » et en Fingertip. Trois attentes de `tests/test_flow.py` mises à
+jour (le résultat d'un profil thénar moyen passe de 4 à 5 blocs — c'est le seul changement visible pour un
+membre) et un test neuf (`test_l_etape_thenar_annonce_la_regle_de_la_reference_entierement`). L'aperçu livré
+a été régénéré (empreinte `4424655928a7`) : le bloc apparaît à sa place, entre les repères de taille et la
+bosse, comme la section « Rear Design » de la référence.
+
+**Ce que la correction ne change pas.** Aucun score, aucun classement, aucun prix : la règle « le thénar ne
+modifie pas le score » reste entière. La grille complète est relancée après le changement avec des compteurs
+**identiques** (21 736 profils · 0 problème · 2 067 sans résultat · 3 109 partiels · 1 748 même coque ·
+28 replis d'ordre · places 2 067/182/793/18 694 · 1 684 « prix non vérifié » · limite Discord la plus
+remplie 78/100). Couverture rejouée : **1 656 instructions / 508 branches, 100 %**.
+
+**Fichiers à envoyer** : `cogs/finder_flow.py` **seul** (le texte de l'étape et le bloc du résultat vivent
+là). Les documents, les tests et les aperçus accompagnent; **redémarrage** du bot nécessaire (texte affiché
+modifié) — la tâche planifiée s'en charge, ou `pkill -f "bot.py"`.

@@ -26,9 +26,11 @@ le protocole de validation, `AUDIT.md` et le master prompt. Détail : §26.53 de
 | `test_stale_grip_menu_cannot_write_into_new_session` | `test_old_message_never_breaks_a_running_parcours` | Renommage du 2026-10-13 (`04324d0`) : un vieux message ne casse plus un parcours en cours. |
 | `test_thenar_is_stored_and_not_scored` | `test_thenar_selection_stores_value_and_moves_to_measures` | Le thénar a été implémenté (2026-10-11, `a4a8ba7`) et la vérification s'est scindée en deux : stockage (ci-contre) et barème (ci-dessous). |
 | `test_thenar_not_affecting_score` | `test_thenar_never_changes_the_score` | Même scission ; le second nom est celui du master prompt, le test vivant est dans `tests/test_matcher.py`, doublé par `test_thenar_never_changes_the_recommendation`. |
-| `test_thenar_petite_adds_a_purely_informative_narrow_rear_note` | `test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration` | Renommage du 2026-10-11 (`a4a8ba7`) : la note est un paragraphe illustré, pas une ligne informative. |
+| `test_thenar_petite_adds_a_purely_informative_narrow_rear_note` | `test_thenar_petite_ou_moyenne_ajoute_le_paragraphe_arriere_etroit` | Renommage du 2026-10-11 (`a4a8ba7`) : la note est un paragraphe illustré, pas une ligne informative. Renommé une seconde fois le 2026-10-14 : le test couvre désormais Petite **et** Moyenne. |
+| `test_thenar_petite_adds_a_narrow_rear_paragraph_with_its_illustration` | `test_thenar_petite_ou_moyenne_ajoute_le_paragraphe_arriere_etroit` | Le nom parlait de « Petite » seulement, ce qui n'est plus la règle. |
 | `test_thenar_step` | `test_grip_selection_edits_message_to_thenar_step` | Nom proposé dans le master prompt avant l'implémentation ; le test livré porte le nom du parcours (`tests/test_flow.py`). |
 | `test_expired_session_informs_user` | `test_expired_session_informs_user_privately` | Citation tronquée dans `AUDIT.md` : le test a toujours dit « privément ». |
+| `test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference` | `test_l_arriere_etroit_suit_la_reference_pour_petite_et_moyenne` | Écart refermé le 2026-10-14 : le bot suit la référence (arrière étroit conseillé à Petite ET Moyenne) ; l'ancien nom disait le contraire, il ne pouvait pas rester. |
 
 Les deux rapports **datés** (`RAPPORT_FINAL.md` du 2026-10-10, `REPORTE_DESIGN.md` du 2026-10-11) citent
 les noms de la suite de leur jour et gardent donc leurs citations : le premier est le rapport de migration

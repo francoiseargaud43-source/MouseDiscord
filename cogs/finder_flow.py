@@ -516,8 +516,10 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None, *, partial_hin
     ``partial_hint`` ajoute « boutons non documentés » à la fin de la ligne (décision du propriétaire,
     2026-10-13) : la note complète du bloc « 📐 Vos repères de taille » n'est écrite que pour le match
     idéal, donc une souris au score partiel en 2e ou 3e place affichait son pourcentage — calculé SANS
-    le critère des boutons, donc sous-estimé — sans que rien ne le dise (**8 187 places** sur 27 170
-    profils, mesuré le 2026-10-13). Le marqueur ne touche ni le score ni le classement.
+    le critère des boutons, donc sous-estimé — sans que rien ne le dise (**9 788 places** : 4 478 en 2e
+    et 5 310 en 3e, re-mesuré le 2026-10-14 sur les 21 736 profils du banc ; la valeur d'origine,
+    8 187 places sur la grille de 27 170, datait d'avant son dédoublonnage). Le marqueur ne touche ni
+    le score ni le classement.
     """
     mouse = score.mouse
     parts = [f"**{mouse.label}**"]
@@ -647,8 +649,9 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         Le plafond porte sur les points du barème (sur 40) : comme le pourcentage affiché est
         proportionnel à ces points (``compatibility_percent`` = points × 100 / 40, arrondi), il ne peut
         pas remonter quand les points ne remontent pas — la garantie vaut donc aussi pour le nombre
-        affiché, sans second plafond. Vérifié sur la grille complète : 84 violations en points = 84 en
-        pourcentages, aucune divergence.
+        affiché, sans second plafond. Vérifié sur la grille complète le 2026-10-14 : **28 violations en
+        points = 28 en pourcentages**, aucune divergence (84 à la 35e passe : le chiffre suit les prix
+        du catalogue, il est re-mesuré, jamais recopié).
         """
         return [score for score in candidates if score.total <= plafond]
 
@@ -736,9 +739,10 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # Aucune souris moins chère que le plafond : décision du propriétaire (2026-10-12), la place
         # reste remplie par l'option la MOINS CHÈRE de la fenêtre du mode — donc « un peu plus chère »
         # au minimum possible. À prix comparable, une autre coque passe devant : mesuré sur la grille
-        # de référence, 2 175 profils (15,84 % des trois places) montraient une variante d'une coque
-        # déjà affichée, dont 1 338 avec une autre coque disponible (surcoût médian +4,00 €, 61 % sous
-        # +10 €) et 837 sans aucune autre coque dans la fenêtre.
+        # de référence (18 522 profils, 16 050 à trois places) le 2026-10-14, 2 445 profils (15,23 %
+        # des trois places) montrent une variante d'une coque déjà affichée, dont **1 684** avec une
+        # autre coque disponible dans la fenêtre (surcoût médian +4,00 €, 69 % sous +10 €) et **761**
+        # sans aucune autre coque — la variante y reste donc la seule option à montrer.
         autre_coque = [score for score in candidates if other_shell(score)]
         economy = (autre_coque or candidates)[0]
     if economy is None:
@@ -859,8 +863,9 @@ def thenar_step_embed(grip: Grip = Grip.PALM) -> discord.Embed:
     embed = discord.Embed(
         title=_step_title(_step_number("thenar", grip), grip, "Votre éminence thénar"),
         description=(
-            "Votre réponse indique l'arrière de souris qui vous convient : un petit thénar préfère un "
-            "arrière étroit, un grand thénar est soutenu par un arrière marqué.\n\n"
+            "Votre réponse indique l'arrière de souris qui vous convient : un petit ou un moyen thénar "
+            "préfère un arrière étroit, en « pilule » ; la référence ne donne aucune consigne d'arrière "
+            "pour un grand thénar.\n\n"
             "**Information seule : le thénar ne modifie pas le score** (recommandation morphologique "
             "indicative, non prise en compte dans le calcul)."
         ),
@@ -961,13 +966,22 @@ def _dimensions_embed(session: FinderSession, ideal: MouseScore,
     return _image(embed, "illustration_mouse_dimensions")
 
 
-def _narrow_rear_embed() -> discord.Embed:
-    """Bloc « arrière étroit », affiché seulement si le thénar déclaré est « Petite » (Palm/Claw)."""
+def _narrow_rear_embed(thenar: Thenar = Thenar.PETITE) -> discord.Embed:
+    """Bloc « arrière étroit », affiché pour un thénar « Petite » **ou** « Moyenne » (Palm/Claw).
+
+    La référence (`Reverse/`, les dix sorties datées de l'outil d'origine) conseille le « Narrow
+    Rear » pour ces **deux** thénars — « since your thenar muscles are on the smaller side » (petite)
+    et « are average sized » (moyenne) — et ne dit **rien** pour un grand thénar. Le bot, lui,
+    réservait le bloc à « Petite » (écart assumé, écrit dans `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6).
+    Décision du propriétaire du 2026-10-14 : le bot suit la référence, et la phrase s'accorde au
+    thénar déclaré. Aucun effet sur le score : c'est un repère morphologique, comme le bloc le dit.
+    """
+    precision = "petite" if thenar is Thenar.PETITE else "de taille moyenne"
     embed = discord.Embed(
         title="🖐️ Un arrière étroit pour votre thénar",
         description=(
-            "Votre éminence thénar est **petite** : un arrière étroit, en « pilule », laisse la main se "
-            "poser sans forcer.\n\n"
+            f"Votre éminence thénar est **{precision}** : un arrière étroit, en « pilule », laisse la "
+            "main se poser sans forcer.\n\n"
             "**Information seule** : le thénar ne modifie pas le score — c'est un repère "
             "morphologique, pas un critère de calcul."
         ),
@@ -1056,7 +1070,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     ni score, ni badge, ni terme technique.
 
     Puis les blocs de compréhension, dans l'ordre de l'outil de référence : repères de taille,
-    arrière (thénar « Petite »), bosse — et ses trois variantes en Claw —, hauteur des boutons.
+    arrière (thénar « Petite » ou « Moyenne »), bosse — et ses trois variantes en Claw —, hauteur
+    des boutons.
     Chaque bloc porte son illustration (assets/images.json) ; aucun n'est affiché « pour rien ».
     """
     main = discord.Embed(title="🎯 Votre recommandation", color=COLOR)
@@ -1106,8 +1121,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     dimensions = _dimensions_embed(session, ideal, selection.explanation)
     if dimensions is not None:
         embeds.append(dimensions)
-    if session.thenar is Thenar.PETITE and session.grip is not Grip.FINGERTIP:
-        embeds.append(_narrow_rear_embed())
+    if session.thenar in (Thenar.PETITE, Thenar.MOYENNE) and session.grip is not Grip.FINGERTIP:
+        embeds.append(_narrow_rear_embed(session.thenar))
     hump = _hump_guide_embed(session, ideal)
     if hump is not None:
         embeds.append(hump)

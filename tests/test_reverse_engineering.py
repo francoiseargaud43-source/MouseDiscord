@@ -16,7 +16,7 @@ Small/Medium/Large) et exige que le moteur les reproduise **exactement** :
 | « Hump Placement: Mid-to-Front / Mid-to-Back » | `HUMP_IDEAL` (bosse ignorée en Fingertip, où la section est absente) |
 | « Button Height: Elevated / Low / Mid-to-Low » | `BUTTON_IDEAL` |
 | « Relaxed Claw → prominent back hump », « Aggressive → prominent middle hump », « Pincer → back hump and less curvature » | `CLAW_HUMP_GUIDE` |
-| « Narrow Rear » pour Small **et** Medium, rien pour Large | `_narrow_rear_embed` : **Petite seulement** — écart **assumé et daté** (voir plus bas) |
+| « Narrow Rear » pour Small **et** Medium, rien pour Large | `_narrow_rear_embed` : **Petite et Moyenne** — écart refermé le 2026-10-14 (voir plus bas) |
 | Largeur « measured with the mouse upside down, at the sensor position » | `grip_width_for_scoring()` : correctif d'estimation, documenté comme provisoire |
 
 **Les fichiers de référence ne sont jamais modifiés** : ils sont la preuve. Seul le moteur bouge.
@@ -29,10 +29,11 @@ Contre-épreuves du 2026-10-13 : pente +0,0001 et correctif 3,0 → 3,5 mm déte
 base Fingertip +0,1, ancienne règle de boutons en Claw ({Low, Mid}), bosse Palm {Rear}, perte de « flancs »
 dans la variante pincée et arrière étroit ouvert au thénar moyen → détectés **ici**.
 
-Écart connu, écrit ici pour qu'il ne se perde pas : l'outil d'origine conseille l'arrière étroit au thénar
-**Petite *ou* Moyenne** ; le bot ne l'affiche que pour **Petite**, et le `MASTER_PROMPT_AZEMOUSE.md` §7.6
-le prescrit ainsi (« Si thénar Small → arrière étroit conseillé »). Le test ci-dessous **grave les deux
-règles** : il refuse que le code s'écarte du prompt, et il refuse que le prompt devienne silencieux.
+Écart **refermé** le 2026-10-14 (décision du propriétaire) : l'outil d'origine conseille l'arrière étroit au
+thénar **Petite *ou* Moyenne** et ne dit rien pour un grand thénar ; le bot réservait le bloc à « Petite »,
+comme le prescrivait alors `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6. Le prompt et le code disent maintenant la
+même chose, et le test ci-dessous **grave les trois** : la référence conseille bien deux thénars, le prompt
+le dit, et le message affiché le fait (avec la phrase accordée au thénar déclaré).
 """
 from __future__ import annotations
 
@@ -279,12 +280,15 @@ def test_les_trois_variantes_de_claw_suivent_la_bosse_decrirte_par_la_reference(
     assert "flancs" in flow.CLAW_HUMP_GUIDE[ClawVariant.PINCEE][0]
 
 
-def test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference():
-    """Écart **assumé et daté** : la référence conseille l'arrière étroit à Petite *et* Moyenne.
+def test_l_arriere_etroit_suit_la_reference_pour_petite_et_moyenne():
+    """La référence conseille l'arrière étroit à Petite *et* Moyenne : le bot fait désormais pareil.
 
-    Le bot ne l'affiche que pour **Petite**, comme le prescrit `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6.
-    Deux garanties sont gravées ici : le code s'en tient au prompt, et le prompt continue de le dire —
-    si l'un des deux change sans l'autre, ce test tombe.
+    Écart **refermé le 2026-10-14** (décision du propriétaire) : le bot réservait le bloc à « Petite »
+    alors que les dix sorties de `Reverse/` le conseillent aussi au thénar moyen (« since your thenar
+    muscles are average sized ») et n'en donnent **aucun** pour un grand thénar. Trois garanties sont
+    gravées ici : la référence conseille bien deux thénars, le prompt le dit, et le message affiché le
+    fait — avec la phrase accordée au thénar déclaré. Si l'un des trois bouge sans les autres, ce test
+    tombe.
     """
     conseils = {ref["thenar"] for ref in REFERENCES if ref["arriere"]}
     assert conseils == {"Small", "Medium"}, "la référence doit conseiller l'arrière étroit pour Small ET Medium"
@@ -296,9 +300,10 @@ def test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference():
             assert ref["arriere"] == "Narrow Rear", ref["nom"]
 
     prompt = (ROOT / "docs" / "MASTER_PROMPT_AZEMOUSE.md").read_text(encoding="utf-8")
-    assert "Si thénar Small → arrière étroit conseillé" in prompt, "la règle du prompt a changé : réviser le bloc"
+    assert "Si thénar Small ou Medium → arrière étroit conseillé" in prompt, \
+        "la règle du prompt a changé : réviser le bloc"
 
-    # Le code, mesuré sur le message réel : l'arrière étroit pour « Petite » seulement, jamais en Fingertip.
+    # Le code, mesuré sur le message réel : l'arrière étroit pour Petite ET Moyenne, jamais en Fingertip.
     def session_pour(grip: Grip, thenar: Thenar | None) -> FinderSession:
         session = FinderSession(user_id=1)
         session.grip = grip
@@ -310,7 +315,7 @@ def test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference():
 
     titre = "🖐️ Un arrière étroit pour votre thénar"
     assert flow._narrow_rear_embed() is not None               # le bloc existe (jamais supprimé par erreur)
-    for thenar, attendu in ((Thenar.PETITE, True), (Thenar.MOYENNE, False), (Thenar.GRANDE, False)):
+    for thenar, attendu in ((Thenar.PETITE, True), (Thenar.MOYENNE, True), (Thenar.GRANDE, False)):
         session = session_pour(Grip.PALM, thenar)
         embeds = flow.results_embeds(session, flow.compute_selection(session))
         affiche = titre in [embed.title for embed in embeds]
@@ -318,6 +323,14 @@ def test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference():
     fingertip = flow.results_embeds(session_pour(Grip.FINGERTIP, None),
                                     flow.compute_selection(session_pour(Grip.FINGERTIP, None)))
     assert titre not in [embed.title for embed in fingertip]  # la prise ne pose pas la question du thénar
+    # Chaque phrase parle du thénar déclaré, jamais de l'autre (un bloc « petite » pour un thénar moyen
+    # serait un contresens : c'est exactement ce que la première version du correctif risquait).
+    assert "**petite**" in (flow._narrow_rear_embed(Thenar.PETITE).description or "")
+    assert "**de taille moyenne**" in (flow._narrow_rear_embed(Thenar.MOYENNE).description or "")
+    # Aucun conseil d'arrière pour un grand thénar : la référence n'en donne pas (section absente).
+    grande = [embed.title for embed in flow.results_embeds(session_pour(Grip.PALM, Thenar.GRANDE),
+                                                           flow.compute_selection(session_pour(Grip.PALM, Thenar.GRANDE)))]
+    assert titre not in grande
 
 
 def test_la_largeur_de_prise_est_le_correctif_documente_dans_l_attente_d_une_mesure():
