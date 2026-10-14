@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.51).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.52).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 817 passed
+.venv/bin/python -m pytest -q                      # attendu : 820 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2706,6 +2706,24 @@ Les documents, les tests et les aperçus accompagnent.
   par pixel** (vérifié sur les 620 × 3545, 620 × 4973 et 620 × 1324).
 - Un test neuf refuse le retour des trois (liseré recopié, constante morte). Le compteur du contrôle
   ci-dessus passe de 816 à **817** tests. Détail : §26.58 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.52 Mise à jour du 2026-10-14 (43e) : le partage des liens d'achat disait onze, il y en a douze
+
+**Fichiers à envoyer** : **aucun**. **Redémarrage** : inutile.
+
+- Le §7.2/§7.3 de `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` annonçait « onze » et « treize »
+  liens ; le compte lu dans `data/commercial_links.json` est **12 liens qui figent une variante, 12 qui
+  n'en figent pas**. La **F1 V2** était rangée du mauvais côté depuis le commit `a2bdb5c` (47e passe,
+  2026-10-13) — le même commit qui avait figé sa variante sans mettre les comptes à jour.
+- Corrigé : titres à douze, ligne déplacée, **identifiant sur chaque ligne** du §7.3, note datée sous le
+  tableau, et le résumé de `data/commercial_links.json` (« les ONZE liens » → douze).
+- **Trois contrôles neufs** (`tests/test_liens_achat.py`) relient les deux tableaux aux liens : le partage
+  doit être exact des deux côtés, et chaque titre annoncer le nombre de ses lignes. Deux mutations
+  rejouées : 1 rouge (titre), 2 rouges (mauvaise place). Le compteur du contrôle ci-dessus passe de 817 à
+  **820** tests.
+- Aucun changement pour le bot : ni lien, ni prix, ni texte. Détail : §26.59 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

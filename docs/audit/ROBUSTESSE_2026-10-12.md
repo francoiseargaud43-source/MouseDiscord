@@ -4795,3 +4795,46 @@ compteur. Suite de tests : 816 → **817**.
 
 **Fichiers à envoyer** : **aucun** (le bot ne change pas d'un pixel ; les aperçus livrés, eux, sont
 régénérés à l'identique).
+
+---
+
+## 26.59 71e passe — un partage qui annonçait des comptes faux depuis vingt-quatre passages (2026-10-14)
+
+**Ce qui a été trouvé.** Le document qui décrit la relecture des liens d'achat partage les liens de la
+boutique ATK en deux tableaux : « §7.2 Les **onze** liens qui figent une variante » et « §7.3 Les
+**treize** liens ATK sans variante figée ». Le compte réel, lu dans `data/commercial_links.json`, est
+**12 et 12**. La souris **F1 V2** était rangée du mauvais côté : son lien fige bel et bien une variante
+(`variant=47006581096666`, « Ultra Max 2.0 / Black »).
+
+**D'où vient l'erreur.** `git log -S "47006581096666"` la date : le commit `a2bdb5c` (47e passe,
+2026-10-13) a **figé la variante du F1 V2** — c'était la correction voulue, la note de la souris
+annonçait ce coloris. Mais les deux titres et la place de la ligne n'ont pas suivi : le décompte « onze »
+décrivait l'état **d'avant** la correction, et il est resté écrit tel quel pendant **vingt-quatre
+passages**, jusque dans le résumé en tête de `data/commercial_links.json` (« les ONZE liens qui figent une
+variante »). Deux documents affirmaient donc un fait faux, et rien ne pouvait le dire : aucun contrôle ne
+reliait ces deux tableaux aux liens.
+
+**Ce qui a été corrigé.**
+
+- Les deux titres disent **douze** ; le F1 V2 quitte le §7.3 et entre au §7.2 avec l'état daté du tableau
+  (variante figée ce jour-là, prix revenu à 40,95 € le 2026-10-14 — déjà consigné au §7.7).
+- Chaque ligne du §7.3 porte son **identifiant** (`| \`atk_u2\` — ATK Blazing Sky U2 | …`) : le partage
+  devient lisible par une machine, il ne dépend plus d'un nom de modèle recopié à la main.
+- Le résumé de `data/commercial_links.json` dit **douze**, avec la raison de l'écart.
+- Une note datée sous le §7.3 raconte l'erreur, le commit qui l'a créée et le contrôle qui la ferme.
+
+**Verrou.** Trois contrôles neufs dans `tests/test_liens_achat.py` :
+
+1. les identifiants du §7.2 sont **exactement** les liens `atk.store` qui figent une variante (12) ;
+2. ceux du §7.3 sont **exactement** les autres (12) ;
+3. le titre de chaque tableau annonce le nombre de ses lignes (en chiffres ou en toutes lettres).
+
+**Mutations jouées** (les deux rejouent le défaut d'origine, document sauvegardé puis restauré) :
+
+| Mutation | Résultat |
+| --- | --- |
+| Le titre du §7.2 redevient « onze » | **1 rouge** : le contrôle du titre |
+| La ligne du F1 V2 regagne le §7.3 | **2 rouges** : le partage et le titre |
+
+**Ce que la correction ne change pas.** Aucun lien, aucun prix, aucun texte du bot, aucun pixel. Suite de
+tests : 817 → **820**. **Fichiers à envoyer** : **aucun**.

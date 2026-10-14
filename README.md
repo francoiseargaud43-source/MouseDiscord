@@ -582,7 +582,10 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   et variante figée) et `data/mouse_db.json` (prix publié), dans les deux sens ; une note qui annonce
   « la variante que le bouton ouvre » exige un lien qui la fige ; la **liste de travail**
   (`docs/LISTE_LIENS_SPONSORISES_2026-10-11.md`) doit envoyer sur la page que le bouton ouvre, pas sur
-  l'ancienne (deux lignes y renvoyaient encore le 2026-10-13) ; et `tools/check_links.py` est essayé hors
+  l'ancienne (deux lignes y renvoyaient encore le 2026-10-13) ; le partage du §7.2/§7.3 (« liens qui
+  figent une variante » / « liens qui n'en figent pas ») doit correspondre exactement à ce que portent les
+  liens — c'est ce contrôle qui a rattrapé la F1 V2, rangée du mauvais côté pendant vingt-quatre
+  passages ; et `tools/check_links.py` est essayé hors
   réseau sur une fausse boutique (cohérent, variante disparue, prix changé, fiche en dollars, réseau
   bloqué) — c'est ce test qui a rattrapé le statut composé mal reconnu.
 

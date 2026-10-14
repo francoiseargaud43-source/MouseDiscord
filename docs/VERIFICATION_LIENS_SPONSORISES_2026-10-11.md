@@ -191,7 +191,7 @@ au propriétaire.
 Chaque correction est écrite dans la `price_note` de la souris (ancien prix, nouveau prix, prix normal,
 date) et **tracée par une source datée du 2026-10-13** dans `data/mouse_db.json`.
 
-### 7.2 Les onze liens qui figent une variante
+### 7.2 Les douze liens qui figent une variante
 
 | id | Variante figée | Libellé réel au 2026-10-13 | Prix | Verdict |
 | --- | --- | --- | --- | --- |
@@ -206,6 +206,7 @@ date) et **tracée par une source datée du 2026-10-13** dans `data/mouse_db.jso
 | `atk_ghost_ultimate` | `47320425595098` | GHOST **Ultimate** / Silver | 68,95 € | ✅ recâblé (Black épuisé) |
 | `atk_y9_ultimate` | `47178929897690` | Y9 **Ultimate** / Pink | 59,95 € | ✅ recâblé (White épuisé) |
 | `atk_u2_v2_ultimate` | `47201864974554` | U2 V2 **Ultimate** / Lake Green | 59,95 € | ✅ recâblé (White épuisé) |
+| `atk_f1_v2` | `47006581096666` | F1 V2 **Ultra Max 2.0** / Black | **41,95 €** (catalogue 40,95 €) | ⚠️ **variante figée ce jour-là** (déjà citée au §7.1 ; le prix est revenu à 40,95 € le 2026-10-14, §7.7) |
 
 **Les trois liens recâblés** gardent le **même prix** : seul le coloris change, pour qu'un clic
 n'atterrisse jamais sur une page où l'on ne peut pas acheter :
@@ -213,26 +214,35 @@ n'atterrisse jamais sur une page où l'on ne peut pas acheter :
 `atk_y9_ultimate` → `47178929897690` (Pink). `docs/audit/LIENS_AFFILIES_2026-10-12.md` porte les trois
 nouvelles URL.
 
-### 7.3 Les treize liens ATK sans variante figée
+### 7.3 Les douze liens ATK sans variante figée
 
 Pour ceux-là, le lien ouvre la page : l'annonce doit donc valoir le prix le moins cher affiché
-(« à partir de »). Tous ont été relus le 2026-10-13.
+(« à partir de »). Tous ont été relus le 2026-10-13, et **chacun porte son identifiant** depuis le 2026-10-14 : ce
+partage « fige une variante / n'en fige pas » n'était vérifiable par aucune machine — c'est précisément
+ce qui a laissé passer l'erreur corrigée ci-dessous.
 
 | Souris | Annoncé | Page du 2026-10-13 | Verdict |
 | --- | --- | --- | --- |
-| ATK Blazing Sky U2 | 22,95 € | 22,95 € (normal 28,95 €) | ✅ |
-| ATK Blazing Sky U2 Mini | 77,95 € | 77,95 € | ✅ (blanc en rupture, rose en stock) |
-| ATK Blazing Sky ZERO | 63,95 € | 63,95 € | ✅ |
-| ATK Blazing Sky Z1 V2 (« Ultimate ») | 59,95 € | 59,95 € (normal 73,95 €) | ✅ |
-| ATK Blazing Sky Phantom | 91,95 € | 91,95 € (normal 109,95 €) | ✅ |
-| ATK FIERCE X | 69,95 € | 69,95 € | ✅ (produit en rupture de stock) |
-| VXE Dragonfly R1 | 13,95 € | 13,95 € | ✅ |
-| VXE Dragonfly V3 | 13,95 € | 13,95 € | ✅ |
-| VXE Dragonfly X3 | 27,95 € | 27,95 € | ✅ |
-| ATK Dragonfly A9 NB | 72,95 € | **73,95 €** | ❌ **prix corrigé** |
-| ATK Blazing Sky Duckbill | 81,95 € | **82,95 €** | ❌ **prix corrigé** |
-| ATK Blazing Sky F1 V2 | 40,95 € | **41,95 €** | ❌ **prix corrigé** |
-| VXE MAD R | 40,95 € | **41,95 €** | ❌ **prix corrigé** |
+| `atk_u2` — ATK Blazing Sky U2 | 22,95 € | 22,95 € (normal 28,95 €) | ✅ |
+| `atk_u2_mini` — ATK Blazing Sky U2 Mini | 77,95 € | 77,95 € | ✅ (blanc en rupture, rose en stock) |
+| `atk_zero` — ATK Blazing Sky ZERO | 63,95 € | 63,95 € | ✅ |
+| `atk_z1_ultra` — ATK Blazing Sky Z1 V2 (« Ultimate ») | 59,95 € | 59,95 € (normal 73,95 €) | ✅ |
+| `atk_phantom_ultimate` — ATK Blazing Sky Phantom | 91,95 € | 91,95 € (normal 109,95 €) | ✅ |
+| `atk_fierce_x` — ATK FIERCE X | 69,95 € | 69,95 € | ✅ (produit en rupture de stock) |
+| `vxe_r1` — VXE Dragonfly R1 | 13,95 € | 13,95 € | ✅ |
+| `vxe_v3` — VXE Dragonfly V3 | 13,95 € | 13,95 € | ✅ |
+| `vxe_x3` — VXE Dragonfly X3 | 27,95 € | 27,95 € | ✅ |
+| `atk_a9_nb` — ATK Dragonfly A9 NB | 72,95 € | **73,95 €** | ❌ **prix corrigé** |
+| `atk_duckbill` — ATK Blazing Sky Duckbill | 81,95 € | **82,95 €** | ❌ **prix corrigé** |
+| `vxe_mad_r` — VXE MAD R | 40,95 € | **41,95 €** | ❌ **prix corrigé** |
+
+**Correction du 2026-10-14 (71e passe).** Ce partage annonçait « onze » et « treize » ; il devait dire
+**douze et douze**. Le 47e passage (commit `a2bdb5c`, 2026-10-13) a **figé la variante du F1 V2**
+(`47006581096666`) — c'était la correction voulue, la note de la souris annonçait ce coloris — mais les
+deux titres et la place de la souris n'ont pas suivi : elle figurait toujours parmi les liens « sans
+variante figée » alors que son lien en figeait une. Aucun contrôle ne reliait ces tableaux aux liens,
+donc personne ne pouvait le voir. C'est fait désormais (`tests/test_liens_achat.py`, test du partage), et
+les deux titres disent le compte lu dans `data/commercial_links.json` : **12 figés, 12 libres**.
 
 ### 7.4 Les dix liens Pulsar et les deux liens Scyrox
 

@@ -9,7 +9,9 @@ modèle ». La vérification avait été faite à la main, page par page, et con
 - l'**A9 NB** était à 73,95 € le matin, 72,95 € l'après-midi ;
 - la note de l'**A9 Air** nommait un coloris (« Shadow White », celui d'un revendeur) que le bouton
   n'ouvre pas, et celle de la **F1 V2** affirmait que le bouton ouvre « Ultra Max 2.0 / Black » alors
-  qu'aucune variante n'était figée — la page ouvre une souris, mais elle en vend trois.
+  qu'aucune variante n'était figée — la page ouvre une souris, mais elle en vend trois (la correction a
+  **figé** cette variante ; le partage du §7.2/§7.3 est resté en arrière jusqu'au 2026-10-14, voir le
+  test du partage plus bas).
 
 Deux choses sont verrouillées ici : le **tableau §8.1** (lu par les deux bouts, contre
 `data/commercial_links.json` et `data/mouse_db.json`) et **l'outil** `tools/check_links.py`, essayé hors
@@ -93,6 +95,48 @@ def test_le_tableau_nomme_le_handle_et_la_variante_que_chaque_lien_ouvre():
         else:
             assert figée and figée.group(1) == variante, \
                 f"{identifiant} : le lien ne fige pas la variante {variante} annoncée"
+
+
+def _bloc(numero: str) -> str:
+    """Le texte d'une sous-section « ### 7.N … », jusqu'à la sous-section suivante."""
+    texte = DOC.read_text(encoding="utf-8")
+    début = texte.index(f"### {numero} ")
+    suite = texte.find("\n### ", début + 1)
+    return texte[début:suite if suite != -1 else len(texte)]
+
+
+def _identifiants_du_bloc(numero: str) -> set[str]:
+    """Les identifiants cités en tête de ligne d'un tableau « | `id` | … » ou « | `id` — Nom | … »."""
+    return set(re.findall(r"^\| `([a-z0-9_]+)`", _bloc(numero), re.M))
+
+
+MOTS_NOMBRES = {10: "dix", 11: "onze", 12: "douze", 13: "treize", 14: "quatorze", 15: "quinze", 16: "seize"}
+
+
+def test_le_partage_des_liens_qui_figent_une_variante_suit_les_donnees():
+    """§7.2 liste les liens ATK qui figent une variante, §7.3 ceux qui n'en figent pas — et rien d'autre.
+
+    Défaut trouvé le 2026-10-14 : le commit `a2bdb5c` (47e passe) a **figé** la variante du F1 V2 sans
+    mettre à jour ce partage. La souris est donc restée annoncée « sans variante figée » alors que son
+    lien en figeait une (et le titre du §7.2 disait « onze » au lieu de douze). Aucun contrôle ne reliait
+    ces tableaux aux liens, donc personne ne pouvait le voir ; celui-ci le fait.
+    """
+    atk = {k: v for k, v in LIENS.items() if not k.startswith("_") and "atk.store" in v}
+    figées = {k for k, v in atk.items() if "variant=" in v}
+    libres = set(atk) - figées
+    assert len(atk) == 24 and len(figées) == len(libres) == 12
+    assert _identifiants_du_bloc("7.2") == figées, "le §7.2 ne liste pas exactement les liens qui figent une variante"
+    assert _identifiants_du_bloc("7.3") == libres, "le §7.3 ne liste pas exactement les liens sans variante figée"
+
+
+@pytest.mark.parametrize("numero", ["7.2", "7.3"])
+def test_le_titre_de_chaque_partage_annonce_le_nombre_de_lignes(numero):
+    """Un titre qui annonce « onze » au-dessus de douze lignes (ou l'inverse) ferait échouer ce test."""
+    bloc = _bloc(numero)
+    lignes = len(_identifiants_du_bloc(numero))
+    titre = bloc.splitlines()[0]
+    annoncé = MOTS_NOMBRES[lignes]
+    assert str(lignes) in titre or annoncé in titre, f"titre : {titre!r} pour {lignes} lignes"
 
 
 def test_le_prix_publie_est_celui_de_la_boutique_et_la_monnaie_est_dite():
