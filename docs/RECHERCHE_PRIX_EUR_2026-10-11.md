@@ -111,6 +111,25 @@ plus la valeur retenue quand la boutique officielle publie un prix. Restent à r
 officielle, la règle étant maintenant connue : **Z1**, **Y9 Ultimate** et **GHOST Extreme**
 (voir `docs/audit/ROBUSTESSE_2026-10-12.md` §9.5.4 et §10.3).
 
+## 5 ter. Addendum du 2026-10-14 : deux « à partir de » de ce relevé étaient le prix d'une autre édition
+
+Ce relevé est **conservé tel quel** : c'est une observation datée du 2026-10-11. Mais quatre lignes du
+tableau du §1 ne se relisent plus sans risquer l'erreur, et deux d'entre elles ont causé un vrai bug
+(corrigé les 12 et 13 octobre, §7 de `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`) :
+
+| Ligne du §1 | Ce que les relectures suivantes ont montré | Valeur retenue au catalogue |
+|---|---|---|
+| ATK A9 Ultimate « dès 41,95 € » | 41,95 € est le prix de l'édition « Ultra Max 2.0 / Black » **de la même page**, pas celui de la variante que le bouton d'achat ouvre (« Ultimate / Black ») | **59,95 €** (corrigé le 2026-10-13) |
+| ATK Blazing Sky Y9 « dès 41,95 € » | même piège d'édition ; la variante figée par le bouton est « Y9 Ultimate / Pink » (l'édition « / White », épuisée, a été quittée le 2026-10-13) | **59,95 €** (corrigé le 2026-10-12) |
+| ATK Blazing Sky F1 V2 « dès 41,95 € » | la fiche vend trois éditions ; la variante figée est « Ultra Max 2.0 / Black », et la promotion de la boutique fait **osciller son prix d'un euro** | **40,95 €** (relevé du 2026-10-14 ; 41,95 € les 12 et 13) |
+| ATK Blazing Sky Duckbill « 81,95 € » | même oscillation d'un euro | **81,95 €** (relevé du 2026-10-14 ; 82,95 € la veille) |
+
+**Leçon, écrite pour la prochaine relecture** : un « à partir de » est le prix le plus bas de la **page**,
+pas celui du **modèle** — et un prix de boutique peut osciller deux fois dans la même semaine. Le lien
+d'achat fige une variante : c'est son prix qui compte, jamais le minimum de la page. Les valeurs courantes
+vivent dans `data/mouse_db.json` et dans le tableau du §8.1 de
+`docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` ; le détail des relevés du 14 octobre est au §7.7.
+
 ## 6. Sources consultées (2026-10-11)
 
 - Store ATK : `/fr-fr/collections/souris` (redirection), fiche F1 V3, fiche Z1, fiche Duckbill, `products.json` de la collection « mice ».

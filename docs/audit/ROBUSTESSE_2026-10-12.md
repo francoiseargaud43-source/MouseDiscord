@@ -1593,7 +1593,7 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 |---|---|
 | Le pied de message renvoie au bloc « Comment lire ce résultat », **qui n'existe plus** dans le résultat actuel (les explications vivent dans « 🧭 Pourquoi ce choix ? » et les blocs illustrés). Renvoi mort, visible par le membre. | Le master prompt dit **« `set_footer(text=SCORE_DISCLAIMER)` — garder tel quel »** : le texte est verrouillé volontairement. **Signalé au propriétaire** ; un mot de sa part et le renvoi est corrigé. |
 | L'emoji 🔎 sert à deux choses : le titre « 🔎 Autre piste » et le champ « 🔎 *souris* en clair » du bloc des repères. | Collision bénigne, **verrouillée par un test** (`tests/test_flow.py`) : la changer est une décision de libellé, pas un bug. Signalée. |
-| Les entrées de la coque A9 « large » divergeaient de **0,5 mm** en largeur (63,5 mm propriétaire et fabricant / 64,0 mm EloShapes). | **Tranché à la 33e passe** (§21.6) : la fiche officielle ATK relue le 2026-10-12 annonce « 125 x 63.5 x 40 mm », le fabricant prime et le propriétaire a mesuré 63,5 mm sur la sienne — la coque est alignée à 63,5 mm, l'écart reste écrit dans `conflicts`. Deux invariants le verrouillent désormais (cohérence exacte des cotes d'une même coque, conflit obligatoire si un écart subsiste). |
+| Les entrées de la coque A9 « large » divergeaient de **0,5 mm** en largeur (63,5 mm propriétaire et fabricant / 64,0 mm EloShapes). | **Tranché à la 33e passe** (§22.2) : la fiche officielle ATK relue le 2026-10-12 annonce « 125 x 63.5 x 40 mm », le fabricant prime et le propriétaire a mesuré 63,5 mm sur la sienne — la coque est alignée à 63,5 mm, l'écart reste écrit dans `conflicts`. Deux invariants le verrouillent désormais (cohérence exacte des cotes d'une même coque, conflit obligatoire si un écart subsiste). |
 | La **VXE X3** partage la coque de l'ATK X1 V2 Ultra Max sans hériter de sa bosse ni de ses boutons. | Exception **nommée et testée** depuis le 2026-10-12 : la bosse de l'X1 est contestée par une source tierce, et rien ne prouve que la X3 (gamme VXE, switchs Omron, puce Broadcom) reprenne les siens. |
 | `grip_width_mm` reste `null` pour les 36 souris : la confiance « élevée » n'est donc atteignable par personne (la largeur de prise est estimée « coque − 3 mm »). | La mesure de la largeur de prise exige une photo retournée, calibrée : c'est une **campagne** à part entière, pas un correctif d'audit. Déjà documenté (`docs/audit/MESURE_BOUTONS_2026-10-12.md`). |
 | Un salon verrouillé (`LOCK_FINDER_CHANNEL=true`) : les réponses **éphémères** d'interaction ne dépendent pas du droit « Envoyer des messages », mais un repli par `followup` en dépendrait. | Déjà écrit noir sur blanc dans le guide de déploiement §8.3 (« à confirmer lors de votre test manuel »). Rien à corriger dans le code : le repli est journalisé, jamais silencieux. |
@@ -1612,7 +1612,7 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 | `tools/flow_effect.py --rapide` | « aucun changement » (0 profil modifié, 0 point perdu) |
 | `tools/check_deployment.py` | 1 erreur, **attendue** : `.env` absent de cet atelier (le serveur l'a) |
 | Registre d'audit | `docs/audit/AUDIT.md` : cinq constats consignés (C23 provenance non vérifiable, C24 statut `verified`, C25 valeurs vides, C26 documentation de la 3ᵉ place, C27 renvoi mort du pied de message) |
-| Diff des valeurs du catalogue | 36 souris × 30 champs comparés **avant/après** : seuls `conflicts` (2 souris) changent à cette étape — **aucune cote, aucun prix, aucun score** (les deux corrections de la 33e passe, qui changent bel et bien des cotes, sont décrites et mesurées au §21.6) |
+| Diff des valeurs du catalogue | 36 souris × 30 champs comparés **avant/après** : seuls `conflicts` (2 souris) changent à cette étape — **aucune cote, aucun prix, aucun score** (les deux corrections de la 33e passe, qui changent bel et bien des cotes, sont décrites et mesurées au §22.1 et au §22.2) |
 
 ### 21.5 Les huit invariants ajoutés (les bugs corrigés ne peuvent plus revenir)
 
@@ -1628,11 +1628,11 @@ troisième place : les trois y sont (« 💸 », « ➕ », « 🔎 »), comme d
 5. `test_deux_entrees_de_la_meme_coque_ne_divergent_pas_hors_tolerance` — une même coque ne peut pas
    annoncer deux largeurs à plus de 0,5 mm d'écart.
 6. `test_aucune_source_ne_declare_un_champ_resté_vide` — une source qui déclare un champ (c'est une preuve)
-   ne peut pas pointer une valeur absente : c'était le cas de la hauteur des deux Scyrox (§21.6).
+   ne peut pas pointer une valeur absente : c'était le cas de la hauteur des deux Scyrox (§22.1).
 7. `test_deux_entrees_de_la_meme_coque_publient_les_memes_cotes` — une coque publie exactement les mêmes
    cotes ; un écart n'est admis que s'il est **consigné** dans `conflicts`.
 8. `test_la_note_de_l_x1_ne_contredit_pas_ses_champs` — une fiche ne peut pas annoncer « non renseigné » un
-   champ qui porte une valeur (§21.6).
+   champ qui porte une valeur (§22.3).
 
 ---
 
@@ -4127,3 +4127,46 @@ par `tests/test_reverse_engineering.py::test_l_arriere_etroit_reste_reserve_au_t
 
 **Fichiers à envoyer** : `data/mouse_db.json` — et `cogs/finder_flow.py` si le §12.36 n'est pas encore en
 ligne (le même fichier de données porte les deux mises à jour).
+
+## 26.46 61e passe — les numéros de section cités, relus par un test (2026-10-14)
+
+**Ce qui a été trouvé.** Ce document cite quatre fois « 21.6 » : l'arbitrage de largeur de la coque A9
+(dans le tableau des constats de la 32e passe), les hauteurs des deux Scyrox, la note de l'X1 V2, et le
+renvoi depuis le tableau des preuves de la 32e passe (« les deux corrections de la 33e passe, qui changent
+bel et bien des cotes, sont décrites et mesurées au 21.6 »). Or **il n'y a pas de section 21.6** : la
+section 21 (32e passe) s'arrête à 21.5, et le travail visé est devenu la **section 22** (33e passe). Ces
+renvois avaient été écrits quand la 33e passe devait être une sous-section de la 32e ; la renumérotation a
+laissé les numéros derrière elle, et rien ne relisait les numéros cités — même famille que le « §7.5 »
+déjà occupé, corrigé la veille.
+
+**Ce qui a été corrigé.** Les quatre renvois visent leur vraie cible : **§22.2** (largeur de la coque A9),
+**§22.1 et §22.2** (les deux corrections qui changent des cotes), **§22.1** (hauteurs Scyrox), **§22.3**
+(note de l'X1 V2).
+
+**Le verrou qui manquait.**
+`tests/test_doc_references.py::test_chaque_numero_de_section_cite_existe_dans_le_document_qu_il_vise`
+relit désormais **tous** les renvois `§N.M` et `C##` de 59 fichiers (documents, README, tests) et exige
+que le numéro existe dans le document visé. Trois plages sont contrôlées, parce qu'elles sont **sans
+ambiguïté** dans ce dépôt : `§19.x`–`§26.x` n'existent que dans ce fichier, `§12.x` que dans le guide de
+déploiement, et les constats `C##` que dans `AUDIT.md`. Contre-épreuves jouées : renommer `### 22.1` →
+**1 échec** ; renommer `### 12.38` → **1 échec** ; casser une citation de constat dans
+`tests/test_data.py` (56 → 99) → **1 échec** (fichiers restaurés, md5 vérifié). Amusant, le test a d'abord échoué
+sur **son propre commentaire**, qui citait « 21.6 » pour raconter le bug : il est écrit sans « § » pour
+ne pas se dénoncer — la règle balaie ce fichier comme les autres.
+
+**Deuxième défaut, même famille : un relevé daté qui se relit mal.**
+`docs/RECHERCHE_PRIX_EUR_2026-10-11.md` annonce « ATK A9 Ultimate dès 41,95 € » et « ATK Blazing Sky Y9
+dès 41,95 € ». Les relectures des 12 et 13 octobre ont prouvé que ces 41,95 € étaient le prix de l'édition
+« Ultra Max 2.0 » **de la même page** : les deux modèles valent **59,95 €** au catalogue. Le relevé, lui,
+n'en disait rien — un lecteur pouvait reprendre le « à partir de » comme un prix de modèle et refaire
+exactement le bug corrigé. Le document est **conservé tel quel** (c'est une observation datée : la
+convention du dépôt est de l'annoter, pas de le réécrire) et reçoit une section **§5 ter** datée du
+2026-10-14 : les quatre lignes devenues trompeuses (A9 Ultimate et Y9 pour le piège d'édition, F1 V2 et
+Duckbill pour l'oscillation d'un euro) y sont mises face à la valeur retenue, chacune datée, avec la leçon
+écrite pour la prochaine relecture — « un *à partir de* est le prix le plus bas de la **page**, pas du
+**modèle** ».
+
+**Mesure** : **785 tests verts** (784 avant, un test neuf), `pyflakes` 0, `privacy_scan` 0 violation.
+Aucun fichier du bot n'est touché : cette passe ne change que des documents et un fichier de tests.
+
+**Fichiers à envoyer** : **aucun** (documents et tests).

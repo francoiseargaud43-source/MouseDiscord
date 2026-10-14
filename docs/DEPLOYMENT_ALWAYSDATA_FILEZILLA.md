@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.38).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.39).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 784 passed
+.venv/bin/python -m pytest -q                      # attendu : 785 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2464,6 +2464,21 @@ catalogue est relu à chaque interaction.
   (les trois lieux sont solidaires — en corriger un seul fait rougir la suite) ; les trois aperçus PNG et la
   matrice sont régénérés sur le catalogue corrigé (empreinte des aperçus : `49d119ea3409`). Suite
   complète : **784 passed**. Détail : §7.7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` et §26.45 de
+  `ROBUSTESSE_2026-10-12.md`.
+
+### 12.39 Mise à jour du 2026-10-14 (30e) : les numéros de section cités sont vérifiés par un test
+
+**Fichiers à envoyer** : **aucun** — des documents et un fichier de tests. **Redémarrage** : inutile.
+
+- Le document de robustesse citait quatre fois « 21.6 » : cette section n'existe pas (la 32e passe s'arrête
+  à 21.5 ; le travail visé est devenu la **section 22**, la 33e passe). Les renvois sont corrigés et,
+  surtout, **vérifiés par un test** : tous les `§N.M` et `C##` cités par les documents et les tests doivent
+  exister dans le document visé. Trois mutations → 1 échec chacune.
+- Le relevé de prix du 2026-10-11 annonçait « A9 Ultimate dès 41,95 € » et « Y9 dès 41,95 € » : c'était le
+  prix d'une **autre édition** de la même page, comme les relectures des 12 et 13 octobre l'ont établi (les
+  deux modèles valent 59,95 €). Le relevé reste conservé tel quel — c'est une observation datée — et reçoit
+  un **§5 ter** daté qui met face à face les quatre lignes devenues trompeuses et la valeur retenue.
+- Le compteur du contrôle ci-dessus passe de 784 à **785** tests (un test neuf). Détail : §26.46 de
   `ROBUSTESSE_2026-10-12.md`.
 
 ---

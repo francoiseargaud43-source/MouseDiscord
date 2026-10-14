@@ -90,6 +90,47 @@ def test_no_citation_of_nonexistent_audit_section():
 
 
 # ---------------------------------------------------------------------------
+# Renvois de section : un numéro cité doit exister (2026-10-14, 61e passe)
+# ---------------------------------------------------------------------------
+# Deux renvois morts trouvés à la relecture : le « 7.5 » cité par le tableau 8.1 désignait une section
+# déjà occupée par un autre sujet (« le point ouvert : le prix de l'A9 Plus »), et quatre renvois vers
+# « 21.6 » — écrits quand la 33e passe devait être une sous-section de la 32e — pointaient dans le vide
+# depuis que ce passage est devenu la section 22 (ce commentaire les cite sans « § » pour ne pas se
+# dénoncer lui-même : la règle ci-dessous balaie ce fichier comme les autres). Le lecteur qui suit un
+# renvoi tombait sur une section inexistante, ou sur la mauvaise. Aucun test ne relisait les numéros cités : ce contrôle le fait, sur les trois
+# plages sans ambiguïté du dépôt — « §19.x » à « §26.x » n'existent que dans ROBUSTESSE_2026-10-12.md,
+# « §12.x » que dans le guide de déploiement, et « C## » que dans AUDIT.md.
+
+
+def _sections(rel: str) -> set[str]:
+    return set(re.findall(r"^#{2,3} (\d{1,2}\.\d+)", _read(rel), re.M))
+
+
+def test_chaque_numero_de_section_cite_existe_dans_le_document_qu_il_vise():
+    robustesse = _sections("docs/audit/ROBUSTESSE_2026-10-12.md")
+    deploiement = {n for n in _sections("docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md") if n.startswith("12.")}
+    constats = set(re.findall(r"^\| (C\d+) \|", _read("docs/audit/AUDIT.md"), re.M))
+
+    fichiers = sorted([p.relative_to(ROOT).as_posix() for p in (ROOT / "docs").rglob("*.md")]
+                      + [p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").rglob("*.py")]
+                      + ["README.md"])
+    morts = []
+    for rel in fichiers:
+        texte = _read(rel)
+        for majeur, mineur in re.findall(r"§(\d{1,2})\.(\d+)", texte):
+            numero = f"{majeur}.{mineur}"
+            if int(majeur) >= 19 and numero not in robustesse:
+                morts.append(f"{rel} → §{numero} (absent de ROBUSTESSE_2026-10-12.md)")
+            elif majeur == "12" and rel != "docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md" and numero not in deploiement:
+                morts.append(f"{rel} → §{numero} (absent du guide de déploiement)")
+        if rel != "docs/audit/AUDIT.md":
+            for code in re.findall(r"(?<![A-Za-z0-9])C(\d{2,3})(?!\d)", texte):
+                if f"C{code}" not in constats:
+                    morts.append(f"{rel} → C{code} (absent de docs/audit/AUDIT.md)")
+    assert morts == [], "renvois de section morts : " + " ; ".join(morts)
+
+
+# ---------------------------------------------------------------------------
 # Règles du moteur recopiées dans les documents normatifs (2026-10-12)
 # ---------------------------------------------------------------------------
 # Bug de la 28e passe : quatre documents (dont ce README et le prompt de référence) annonçaient
