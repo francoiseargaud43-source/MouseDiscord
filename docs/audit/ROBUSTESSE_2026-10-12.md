@@ -4121,6 +4121,8 @@ L'arrière étroit reste réservé au thénar « Petite » alors que l'outil de 
 « Moyenne » : écart **assumé**, consigné (prompt §7.6, `docs/REVERSE_ENGINEERING_OBLIVITY.md` §3) et gravé
 par `tests/test_reverse_engineering.py::test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference`.
 
+**Troisième défaut, dans le catalogue ATK documenté.** `docs/audit/CATALOGUE_ATK.md` sert d'état du catalogue : sa ligne Duckbill annonçait encore **82,95 €** (le prix du 13, resté après le retour du 14) et celle de l'A9 Ultimate donnait l'édition « Ultra Max 2.0 » de la même page à 41,95 €. Les deux ont été relues **en direct** le 2026-10-14 (`products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse.json?country=FR`, `updated_at` 2026-10-13T21:13, heure du Pacifique) : « Ultra Max 2.0 / Black » = **40,95 €** (prix normal 63,95 €), « Ultimate / Black » = **59,95 €** (inchangé, la variante du catalogue), et la fiche porte le tag `atk-deal-active` — la promotion est bien la cause de l'oscillation. Les deux lignes sont corrigées et datées, la chronologie de l'en-tête reçoit la relecture du 14 ; aucune donnée du catalogue ne change (l'édition « Ultra Max 2.0 » de la page A9 n'est pas au catalogue, seul son affichage documentaire bougeait).
+
 **Couverture rejouée le même jour** (`coverage run --branch --source=cogs,utils,bot.py,config.py -m pytest -q`) : **1 552 instructions / 484 branches**, 0 manquante des deux côtés — 
 le périmètre est écrit ici pour que le chiffre se rejoue.
 
