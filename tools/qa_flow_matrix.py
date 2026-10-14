@@ -92,6 +92,21 @@ def message_text(embeds) -> str:
     return "\n".join(morceaux)
 
 
+def deux_places_meme_coque(places) -> bool:
+    """Vrai dès que **deux** des places affichées partagent une coque.
+
+    Le repli documenté peut concerner **n'importe quelle paire** : le match idéal et l'alternative,
+    l'alternative et l'économie, ou le match idéal et l'économie (quand la deuxième place a trouvé une
+    autre coque et que la troisième reprend celle du match idéal). Ne regarder que les paires formées
+    avec le match idéal sous-comptait : sur la grille du rapport, 966 profils contre **1 367** pour le
+    rapport statistique, qui examine, lui, toutes les paires (`itertools.combinations`). Défaut corrigé
+    le 2026-10-14 (61e passe) : le banc compte désormais la même chose que le rapport, avec le libellé
+    qu'il publie déjà.
+    """
+    affichees = [s for s in places if s is not None]
+    return any(_same_shell(premier, second) for premier, second in itertools.combinations(affichees, 2))
+
+
 def check_result_message(session, selection, embeds, ideal, alternative, economy,
                          repli_coque=None, etiquette="", repli_ordre=None) -> list[str]:
     """Contrôles du CONTENU du message : chaque souris montrée doit l'être avec ses vrais chiffres.
@@ -273,7 +288,7 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
             problems.append("alternative de la même coque alors qu'une autre coque est disponible")
     # Repli documenté : deux places peuvent montrer la même coque quand la zone n'offre rien d'autre.
     # On le compte pour le suivre (aucune règle n'est cassée), au lieu de le passer sous silence.
-    if repli_coque is not None and any(_same_shell(ideal, s) for s in (alternative, economy) if s is not None):
+    if repli_coque is not None and deux_places_meme_coque((ideal, alternative, economy)):
         repli_coque.append(etiquette)
     identifiants = [s.mouse.id for s in (ideal, alternative, economy) if s is not None]
     if len(identifiants) != len(set(identifiants)):

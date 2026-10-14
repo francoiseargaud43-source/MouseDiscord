@@ -16,7 +16,8 @@ sys.path.insert(0, str(ROOT))
 
 from cogs.finder_flow import compute_selection, result_slots, results_embeds, third_slot_title  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
-from tools.qa_flow_matrix import check_result_message, message_text, places_au_prix_non_verifie  # noqa: E402
+from tools.qa_flow_matrix import (check_result_message, deux_places_meme_coque, message_text,
+                                  places_au_prix_non_verifie)  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.models import BudgetMode, Grip, Thenar  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
@@ -145,3 +146,35 @@ def test_le_compteur_du_prix_non_verifie_ne_compte_que_les_places_affichees():
     assert places_au_prix_non_verifie((atteste, atteste, atteste)) == 0
     assert places_au_prix_non_verifie((None, None, None)) == 0
     assert places_au_prix_non_verifie((non_atteste, non_atteste, non_atteste)) == 3
+
+
+def test_le_compteur_de_coque_partagee_regarde_toutes_les_paires():
+    """Défaut réel du 2026-10-14 : le banc ne comptait que les paires formées avec le match idéal.
+
+    Sa phrase, elle, parle de « deux places » — et le rapport statistique, sur la même grille, comptait
+    **1 367** profils là où le banc en annonçait **966** : la paire (alternative, économie), réelle quand
+    la deuxième place a trouvé une autre coque et que la troisième reprend celle du match idéal, était
+    ignorée. Ce test fige la règle : **toute** paire de places affichées compte.
+    """
+    from utils.matcher import STATUS_SCORED, MouseScore, ScoreBreakdown
+
+    def score(ident: str, coque: str | None) -> MouseScore:
+        souris = SimpleNamespace(label=ident, id=ident, shell_id=coque, length_mm=120.0,
+                                 width_max_mm=60.0, hump_position="Inconnu", button_height="Inconnu",
+                                 price_eur=49.9, price_status="verified", shape="Symmetrical")
+        return MouseScore(mouse=souris, grip=Grip.PALM, status=STATUS_SCORED, breakdown=ScoreBreakdown())
+
+    a, b, c = score("a", "coque_1"), score("b", "coque_2"), score("c", "coque_3")
+    # Cas que le banc ratait : seule la paire (alternative, économie) partage une coque.
+    assert deux_places_meme_coque((a, b, c)) is False
+    alt_eco = score("c2", "coque_2")
+    assert deux_places_meme_coque((a, b, alt_eco)) is True
+    # Les autres paires comptent aussi, et une place vide ne compte jamais.
+    ideal_eco = score("c3", "coque_1")
+    assert deux_places_meme_coque((a, b, ideal_eco)) is True
+    assert deux_places_meme_coque((a, score("b2", "coque_1"), None)) is True
+    assert deux_places_meme_coque((a, None, None)) is False
+    assert deux_places_meme_coque((None, None, None)) is False
+    # Même souris montrée deux fois (jamais censé arriver) : c'est déjà un problème signalé ailleurs,
+    # mais le compteur de coque doit, lui aussi, le voir.
+    assert deux_places_meme_coque((a, score("a", "coque_1"), None)) is True

@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.40).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.41).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 787 passed
+.venv/bin/python -m pytest -q                      # attendu : 788 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2493,6 +2493,21 @@ catalogue est relu à chaque interaction.
   contre-épreuve sur fichier temporaire. Mutation — réintroduire deux écritures d'affilée — **2 échecs**.
 - Le compteur du contrôle ci-dessus passe de 785 à **787** tests. Détail : §26.47 de
   `ROBUSTESSE_2026-10-12.md`.
+
+### 12.41 Mise à jour du 2026-10-14 (32e) : le banc d'essai et le rapport comptent enfin la même chose
+
+**Fichiers à envoyer** : **aucun** — un outil et des documents. **Redémarrage** : inutile (le bot n'exécute
+jamais ces outils).
+
+- Le banc d'essai (`tools/qa_flow_matrix.py`) publie « Profils où deux places montrent la même coque (repli
+  documenté) », mais ne comptait que les paires formées **avec le match idéal** : la paire (alternative,
+  économie) était ignorée. Le rapport statistique en publiait donc un autre chiffre pour la même phrase —
+  **1 367** contre **966** sur la grille du rapport.
+- Corrigé : le compteur examine **toutes** les paires (`deux_places_meme_coque`), comme le rapport. Sur la
+  grille du rapport, le banc donne désormais **1 367** — exactement le chiffre du rapport ; sur la grille
+  complète, il passe de 1 260 à **2 004** (7,4 %, même taux). « Problèmes détectés » reste à **0**.
+- Verrou : un test du banc fige la sémantique (mutation → 1 échec). Le compteur du contrôle ci-dessus passe
+  de 787 à **788** tests. Détail : §26.48 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

@@ -333,7 +333,10 @@ Preuve que les canaris mordent : chaque table vidée d'une valeur fait échouer 
 ### 8.7 Le vrai motif pour lequel « ce sont toujours les mêmes souris » (mesuré)
 
 Le banc d'essai compte désormais, sans le compter comme une faute, les profils où **deux places du
-résultat montrent la même coque** : **4 555 profils sur 27 170 (16,8 %)**. C'est le repli documenté de
+résultat montrent la même coque** : **4 555 profils sur 27 170 (16,8 %)**.
+
+> **Note du 2026-10-14 (61e passe)** : ce relevé garde sa date, mais deux choses ont changé depuis. Le compteur du banc **ne regardait que les paires formées avec le match idéal**, alors que sa phrase parle de « deux places » : la paire (alternative, économie) — réelle quand la 2e place a trouvé une autre coque et que la 3e reprend celle du match idéal — n'était pas comptée (mesuré le 2026-10-14 : **966 au lieu de 1 367** sur la grille du rapport). Il est corrigé : le banc et le rapport statistique comptent désormais la même chose, la concordance est vérifiée sur la grille du rapport (**1 367** des deux côtés). Et le catalogue a beaucoup bougé depuis la 13e passe : rejoué sur celui du jour, le compteur donne **2 004 profils sur 27 170 (7,4 %)**.
+ C'est le repli documenté de
 `result_slots()` — quand la zone de tolérance du mode ne contient que des variantes de la coque
 retenue, la deuxième place reprend la même coque au lieu de disparaître. Les familles concernées sur
 la grille de contrôle :
@@ -4200,3 +4203,38 @@ lecture, une écriture sur un **autre** nom, une écriture sur une autre méthod
 Aucun fichier du bot n'est touché.
 
 **Fichiers à envoyer** : **aucun** (un fichier de tests et des documents).
+
+## 26.48 61e passe (suite) — le banc comptait une chose et en annonçait une autre (2026-10-14)
+
+**Ce qui a été trouvé.** En vérifiant que les chiffres publiés se rejouent, le compte est bon pour
+l'ordre des pourcentages (**24** profils sur la grille du rapport, exactement ce qu'annoncent les §26.42
+et §12.36) — mais pas pour le repli de coque : le rapport statistique publie **1 367** profils où deux
+places montrent la même coque, et le banc d'essai, interrogé sur la **même grille**, en annonçait **966**.
+La cause est dans le banc, pas dans le rapport : il ne testait que les paires formées **avec le match
+idéal** —
+
+```python
+any(_same_shell(ideal, s) for s in (alternative, economy) if s is not None)
+```
+
+— alors que sa propre phrase parle de « **deux places** ». La paire (alternative, économie) existe
+pourtant en vrai : la 2e place a trouvé une autre coque, et la 3e reprend celle du match idéal. Le
+rapport, lui, examine toutes les paires (`itertools.combinations`). Deux outils, une même phrase, deux
+mesures : la famille des chiffres qui ne veulent pas dire la même chose selon qui les produit.
+
+**Ce qui a été corrigé.** Le banc passe par une fonction nommée et testable,
+`deux_places_meme_coque(places)`, qui examine **toutes** les paires — le libellé publié était juste, c'est
+le compteur qui était en retard. Vérification directe de la correction : sur la grille du rapport
+(18 522 profils), le banc donne désormais **1 367** — le chiffre exact du rapport. Sur la grille complète
+(27 170), il passe de **1 260** à **2 004** (7,4 %, le même taux que la grille du rapport : 7,38 %), et
+« Problèmes détectés » reste à **0** (le compteur n'est pas une faute — c'est le repli documenté).
+
+**Verrou.** `tests/test_qa_flow_matrix.py::test_le_compteur_de_coque_partagee_regarde_toutes_les_paires`
+fige la sémantique sur des profils fabriqués : la paire (alternative, économie) compte, comme les deux
+autres, une place vide ne compte jamais, et la même souris affichée deux fois est vue aussi. Mutation
+jouée — revenir aux seules paires formées avec le premier élément → **1 échec**.
+
+**Mesure** : **788 tests verts** (787 avant, un test neuf), `pyflakes` 0, `privacy_scan` 0 violation,
+banc complet : 0 problème. Aucun fichier du bot n'est touché (l'outil et un test).
+
+**Fichiers à envoyer** : **aucun** (un outil et des documents).
