@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.34).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.35).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 740 passed
+.venv/bin/python -m pytest -q                      # attendu : 776 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2354,6 +2354,29 @@ démasque par la **ponctuation finale** de la phrase).
 
 **Fichiers à envoyer** : **aucun** — un fichier de tests renommé et des documents. Détail : §26.40 de
 `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.35 Mise à jour du 2026-10-13 (26e) : la preuve primaire du moteur relue par les tests
+
+Le moteur a été vérifié, le 2026-10-11, sur **10 sorties de l'outil d'origine** conservées dans `Reverse/`
+(trois prises, longueurs 150/180/210 mm, largeurs 75/90/110 mm, thénar petit/moyen/grand). Ces fichiers
+étaient cités par trois documents et **relus par aucun test** : les constantes étaient tenues au chiffre près,
+mais plus rien ne disait que le code continue de dire la même chose que la référence.
+
+`tests/test_reverse_engineering.py` (35 tests, un tiers de seconde) referme la boucle : plages cibles
+reproduites à 0,05 mm sur les 10 profils, règles de bosse et de hauteur des boutons, conseil de bosse des
+trois variantes de Claw, arrière étroit, et la méthode de mesure de la largeur (« souris retournée, au niveau
+du capteur »). L'écart connu est **écrit** au lieu de dormir : l'outil d'origine conseille l'arrière étroit au
+thénar petit **et** moyen, le bot le réserve à « Petite » — c'est ce que demande le prompt de référence
+(§7.6), et le test refuse désormais que l'un des deux change sans l'autre.
+
+Sept mutations ont été tentées : cinq sont détectées par ce fichier ; les deux autres (un dix-millième sur la
+pente de longueur, un demi-millimètre sur le correctif d'estimation) le sont par `tests/test_matcher.py` —
+les fichiers de référence sont arrondis au dixième de millimètre et ne peuvent pas les distinguer. Cette
+limite est écrite dans le fichier de tests, pour qu'on ne lui fasse pas dire plus qu'il ne mesure.
+
+**Fichiers à envoyer** : **aucun** — un fichier de tests. Détail : §26.41 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

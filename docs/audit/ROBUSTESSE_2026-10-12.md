@@ -3827,3 +3827,71 @@ passe précédente, phrase de justification allongée de 300 (2 échecs).
 **Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
 côtés)**, **740 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
 (un fichier de tests renommé, des tests et des documents) : **rien à envoyer** sur le serveur.
+
+## 26.41 56e passe — la preuve primaire du moteur est relue par les tests (2026-10-13)
+
+### 26.41.1 Ce qui était cité sans être vérifié
+
+Le dossier `Reverse/` garde les **10 sorties datées du 2026-10-11** de l'outil d'origine, saisies profil par
+profil pendant le reverse engineering : trois prises (Palm, Claw, Fingertip), longueurs 150/180/210 mm,
+largeurs 75/90/110 mm, thénar Small/Medium/Large. C'est **sur elles** que les équations du moteur et les
+règles de forme ont été vérifiées — `docs/REVERSE_ENGINEERING_OBLIVITY.md` s'ouvre sur « Écart nul
+partout », `docs/audit/AUDIT.md` les cite nommément, et `utils/matcher.py` porte leurs règles en commentaire.
+
+**Aucun test ne les relisait.** Ce n'était pas un trou de couverture (les 508 branches étaient prises, les
+constantes tenues au chiffre près par `tests/test_matcher.py`) : c'était un trou de **sens**. Rien ne disait
+plus que le code continue de *vouloir dire* la même chose que la référence — qu'une règle recopiée dans un
+commentaire n'a pas été réécrite ailleurs, que le conseil affiché aux membres suit toujours l'outil
+d'origine, que la méthode de mesure annoncée est bien celle qu'on applique.
+
+### 26.41.2 Ce que la référence dit, et ce que le verrou exige
+
+`tests/test_reverse_engineering.py` **lit les 10 fichiers** (jamais écrits : la preuve ne se réécrit pas) et
+exige que le moteur les reproduise :
+
+| Ce que dit le fichier de référence | Ce que le test exige du moteur | Résultat du 2026-10-13 |
+|---|---|---|
+| « Optimal Mouse Length: 118.8mm - 123.8mm » (ou « max. 123.8mm ») | `compute_target_ranges()` à 0,05 mm | **exact sur les 10 profils** |
+| « Optimal Mouse Width: 55.6mm - 59.6mm » | même fonction ; la largeur ne dépend pas de la prise, la **base** change en Fingertip (53,3 contre 54,4 ⇒ 1,1 mm d'écart) | **exact** |
+| « Hump Placement: Mid-to-Front » (Palm), « Mid-to-Back » (Claw), section **absente** en Fingertip | `HUMP_IDEAL` — et la bosse **non notée** en Fingertip | **conforme** |
+| « Button Height: Elevated / Low / Mid-to-Low » | `BUTTON_IDEAL` (la règle alignée le 2026-10-12) | **conforme** |
+| « Relaxed → prominent back hump », « Aggressive → middle hump », « Pincer → back hump and less curvature on the sides » | `CLAW_HUMP_GUIDE` et les textes des trois variantes | **conforme** |
+| « Narrow Rear » pour Small **et** Medium, rien pour Large | `_narrow_rear_embed` : Petite seulement (prompt §7.6) | **écart assumé** (voir ci-dessous) |
+| « measured with the mouse upside down, at the sensor position » | `grip_width_for_scoring()` : mesure prioritaire, correctif de 3 mm sinon | **conforme** |
+
+Un **premier test** vérifie que les 10 fichiers sont lisibles **et complets** (10 profils, trois prises, les
+sections attendues, trois dossiers sans minimum de longueur) : sans lui, renommer une section dans un fichier
+de référence rendrait les autres tests **muets** au lieu de les faire échouer — le piège exact que ce fichier
+existe pour fermer.
+
+### 26.41.3 L'écart qui devait être écrit pour ne pas se perdre
+
+L'outil d'origine conseille l'arrière étroit au thénar **petit et moyen** ; le bot ne l'affiche que pour
+**« Petite »**, comme le prescrit `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 (« Si thénar Small → arrière étroit
+conseillé »). Personne n'avait confronté les deux textes. Ce n'est pas un défaut à corriger sans décision :
+c'est un **écart assumé**, désormais **gravé** — le test vérifie la règle de la référence, la phrase du
+prompt, et le **message réellement produit** pour les trois thénars (affiché pour Petite, absent pour Moyenne
+et Grande, jamais en Fingertip). Si l'un des deux bouge sans l'autre, le test tombe.
+
+### 26.41.4 Contre-épreuves : sept mutations, et la résolution de la preuve
+
+| Mutation | Détectée par |
+|---|---|
+| Base de largeur Fingertip 47,3 → 47,4 | **ce fichier** (4 échecs) |
+| Bosse idéale en Palm `{Front, Mid}` → `{Rear}` | **ce fichier** (4 échecs) |
+| Ancienne règle de boutons en Claw `{Low}` → `{Low, Mid}` | **ce fichier** (3 échecs) |
+| La Claw pincée perd la mention des flancs plats | **ce fichier** (1 échec) |
+| Arrière étroit ouvert au thénar moyen | **ce fichier** (1 échec) |
+| Pente de longueur 0,2633 → 0,2634 | `tests/test_matcher.py` (2 échecs) |
+| Correctif d'estimation 3,0 → 3,5 mm | `tests/test_matcher.py` (2 échecs) |
+
+Les deux dernières sont le fait le plus instructif de la passe : **la preuve primaire est arrondie au
+dixième de millimètre**. Une variation de 0,0001 sur la pente ne déplace la borne que de 0,018 mm à 210 mm de
+main — sous l'arrondi, donc invisible dans les fichiers, et c'est normal. La limite est **écrite dans le
+fichier de tests**, avec ce qu'elle implique : les sorties de référence tiennent le **sens** des règles, les
+constantes exactes sont tenues par `test_matcher`. Un verrou qui prétendrait le contraire mentirait sur ce
+qu'il mesure.
+
+**Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
+côtés)**, **776 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
+(un fichier de tests et des documents) : **rien à envoyer** sur le serveur.

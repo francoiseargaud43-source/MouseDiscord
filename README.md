@@ -528,6 +528,13 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   grille resserrée (420 profils) comme sur un pire cas construit (libellé le plus long du catalogue, meilleur
   score, zone la plus large) ; la phrase connue la plus longue fait 320 caractères sur les 18 522 profils de la
   grille complète, la coupe de 1 024 n'a donc jamais mordu, et le message réel doit porter la phrase **entière**.
+- `tests/test_reverse_engineering.py` : **le moteur est-il encore celui de la preuve primaire ?** Les **10
+  sorties datées de `Reverse/`** (l'outil d'origine, trois prises × trois tailles de main) sont relues par les
+  tests : plages cibles au dixième de millimètre, règles de bosse et de hauteur des boutons, conseil de bosse
+  des trois variantes de Claw, arrière étroit et méthode de mesure de la largeur. La règle du thénar garde son
+  **écart assumé et daté** (l'outil d'origine conseille l'arrière étroit au thénar petit *et* moyen ; le bot le
+  réserve à « Petite », comme le prescrit `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 — le test refuse que l'un des
+  deux bouge sans l'autre).
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
   ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**
