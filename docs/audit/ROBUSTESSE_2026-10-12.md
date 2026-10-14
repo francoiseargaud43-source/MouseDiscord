@@ -4498,7 +4498,7 @@ test inexistant → **2 échecs** ; nom vivant inscrit comme retiré → **2 éc
 de fichier → **vert**. Une première version du contrôle excusait un nom mort **en fin de phrase** : c'est
 la mutation qui l'a montré, la règle a été retirée.
 
-**Mesure** : **795 tests verts** (792 avant, trois tests neufs), `pyflakes` 0, `privacy_scan` 0 violation,
+**Mesure** : **795 tests verts** (792 avant : deux contrôles neufs, plus un paramétrage — le nouveau registre entre dans les contrôles par document), `pyflakes` 0, `privacy_scan` 0 violation,
 banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un registre et des documents).
 
 **Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).

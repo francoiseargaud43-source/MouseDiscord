@@ -2601,7 +2601,7 @@ jamais ces outils).
   vivants) et `test_le_registre_des_noms_retires_ne_contient_que_des_renvois_valides` (chaque renvoi vit,
   aucun nom retiré ne réapparaît). Mutations : nom mort hors registre → 1 échec ; renvoi du registre vers
   un test inexistant → 2 échecs ; nom vivant inscrit comme retiré → 2 échecs ; abréviation et ancien nom
-  de fichier → vert. Le compteur du contrôle ci-dessus passe de 792 à **795** tests. Détail : §26.53 de
+  de fichier → vert. Le compteur du contrôle ci-dessus passe de 792 à **795** tests (deux contrôles neufs, plus un paramétrage : le registre entre dans les contrôles par document). Détail : §26.53 de
   `ROBUSTESSE_2026-10-12.md`.
 
 ---
