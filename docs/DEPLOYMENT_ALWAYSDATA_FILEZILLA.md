@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.45).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.46).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 792 passed
+.venv/bin/python -m pytest -q                      # attendu : 795 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2581,6 +2581,27 @@ jamais ces outils).
   182 · 793 · 18 694 · 1 684), `--rapide` 576 profils, `flow_effect` et `db_effect --grille mini` sans
   aucun changement. Le compteur du contrôle ci-dessus reste à **792** tests (aucun test neuf : le verrou
   de la 62e passe tenait déjà la propriété, son assertion est devenue plus stricte). Détail : §26.52 de
+  `ROBUSTESSE_2026-10-12.md`.
+
+### 12.46 Mise à jour du 2026-10-14 (37e) : dix-sept citations de tests qui n'existaient plus
+
+**Fichiers à envoyer** : **aucun** — un test et des documents. **Redémarrage** : inutile.
+
+- Les renvois de section étaient vérifiés depuis C80, pas les noms de tests cités : dix-sept citations
+  (douze noms distincts) désignent un test absent — huit dans `AUDIT_CONFIDENTIALITE.md`, trois dans
+  `PROTOCOLE_DISCORD_CONFIDENTIALITE.md`, trois dans `AUDIT.md`, trois dans `MASTER_PROMPT_AZEMOUSE.md`.
+  Chaque nom a existé (`git log -S`), et le renommage est tracé ; les tests du bouton « Terminer » ont
+  disparu avec le bouton.
+- Corrigé : chaque citation pointe sur le test du jour qui porte la même vérification. Les deux rapports
+  datés (`RAPPORT_FINAL.md`, `REPORTE_DESIGN.md`) gardent les noms de leur jour : c'est leur sujet.
+- Les noms retirés sont consignés dans un registre dédié, `docs/audit/NOMS_DE_TESTS_RETIRES.md`
+  (ancien nom → test du jour, avec la raison) : c'est la table à consulter avant de citer un test.
+- Verrou : `tests/test_doc_references.py::test_chaque_nom_de_test_cite_en_document_existe_dans_la_suite`
+  (noms de fichiers et abréviations écartés ; seuls les noms du registre sont acceptés en plus des tests
+  vivants) et `test_le_registre_des_noms_retires_ne_contient_que_des_renvois_valides` (chaque renvoi vit,
+  aucun nom retiré ne réapparaît). Mutations : nom mort hors registre → 1 échec ; renvoi du registre vers
+  un test inexistant → 2 échecs ; nom vivant inscrit comme retiré → 2 échecs ; abréviation et ancien nom
+  de fichier → vert. Le compteur du contrôle ci-dessus passe de 792 à **795** tests. Détail : §26.53 de
   `ROBUSTESSE_2026-10-12.md`.
 
 ---

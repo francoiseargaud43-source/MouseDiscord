@@ -22,8 +22,8 @@ Ils ne prouvent **pas** le comportement de Discord.
 | 5. Soumettre les modals | `tests/test_flow.py::test_valid_measures_move_to_budget_step`, `test_custom_budget_invalid_then_valid` |
 | 6. Erreur de saisie privée | `tests/test_privacy.py::test_p04_…`, `test_p05_…` |
 | 7. Terminer les deux parcours | `tests/test_privacy.py::test_p02_p03_p06_…` |
-| 8. Chacun ne voit que son résultat | `tests/test_privacy.py::test_p12_…`, `test_flow.py::test_results_close_is_owner_only_and_clears_message` |
-| 9. Anciens composants / bouton d'un autre | `tests/test_privacy.py::test_p09_old_components_are_refused_and_never_modify_new_session`, `test_p09_old_results_buttons_do_not_affect_new_session`, `test_p08_…` |
+| 8. Chacun ne voit que son résultat | `tests/test_privacy.py::test_p12_result_has_no_interactive_component_and_touches_no_session`, `tests/test_privacy.py::test_p02_p03_p06_full_path_is_private_and_result_goes_to_participant_only` |
+| 9. Anciens composants / bouton d'un autre | `tests/test_privacy.py::test_p14_replayed_click_after_the_result_gets_the_same_result`, `tests/test_privacy.py::test_p12_result_has_no_interactive_component_and_touches_no_session`, `tests/test_privacy.py::test_p08_…` |
 | 10. Expiration et redémarrage | `tests/test_privacy.py::test_p10_…`, `test_p11_…` (simulé), `tests/test_session.py::test_session_expires_after_ttl_and_activity_refreshes_it` |
 | Contrôle statique du code | `python tools/privacy_scan.py` → `0 violation(s)` |
 

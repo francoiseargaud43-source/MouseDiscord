@@ -4451,3 +4451,55 @@ bot n'est touché (deux outils, un test, des documents).
 
 **Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
 
+## 26.53 66e passe — dix-sept citations de tests qui n'existaient plus (2026-10-14)
+
+**Ce qui a été trouvé.** Les renvois de section sont vérifiés par un test depuis la 61e passe (C80),
+mais les **noms de tests** cités dans les documents ne l'étaient pas. Balayage : **dix-sept citations**
+(douze noms distincts) désignent un test qui **n'existe plus** dans la suite —
+
+| Document | Citations mortes |
+|---|---|
+| `docs/audit/AUDIT_CONFIDENTIALITE.md` | 8 — `test_results_close_is_owner_only_and_clears_message`, `test_p08_intruder_cannot_use_results_buttons_of_another_user`, `test_p09_old_components_are_refused_and_never_modify_new_session` (×2), `test_p09_old_results_buttons_do_not_affect_new_session`, `test_p11_persistent_panel_works_after_restart_in_fresh_bot_instance`, `test_result_shows_the_explanation_block_below_the_recommendation`, `test_stale_grip_menu_cannot_write_into_new_session` |
+| `docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md` | 3 — `test_results_close_is_owner_only_and_clears_message`, les deux tests `test_p09_old_…` |
+| `docs/audit/AUDIT.md` | 3 — `test_expired_session_informs_user`, `test_thenar_is_stored_and_not_scored`, `test_thenar_petite_adds_a_purely_informative_narrow_rear_note` |
+| `docs/MASTER_PROMPT_AZEMOUSE.md` | 3 — `test_thenar_is_stored_and_not_scored`, `test_thenar_step`, `test_thenar_not_affecting_score` |
+
+Ce ne sont pas des inventions : `git log -S` retrouve chaque nom dans l'histoire du dépôt, et le
+renommage est tracé. Trois exemples : `test_p11_persistent_panel_works_after_restart_in_fresh_bot_instance`
+est devenu `test_p11_a_restart_keeps_the_running_parcours_and_its_components` (commit `04324d0`) ; les
+deux tests `test_p09_old_…` sont devenus `test_p14_replayed_click_after_the_result_gets_the_same_result`
+et `test_p12_result_has_no_interactive_component_and_touches_no_session` ; et les tests du bouton
+« Terminer » (`test_results_close_is_owner_only_and_clears_message`) ont disparu **avec le bouton**, lors
+de la refonte du résultat du 2026-10-11 (`e2c040e`). Le défaut est le même que C80 : le lecteur — ou la
+personne qui exécute le protocole de confidentialité — cherche une preuve qui n'existe pas.
+
+**Ce qui a été corrigé.** Chaque citation pointe désormais sur le test **du jour** qui porte la même
+vérification, et les cas où le test a disparu avec sa fonction le disent en clair (le bouton
+« Terminer », la liste « À vérifier »). Les deux rapports **datés** (`RAPPORT_FINAL.md`, 2026-10-10, qui
+est le rapport de migration et parle *des* renommages ; `REPORTE_DESIGN.md`, 2026-10-11) gardent les noms
+de leur jour : c'est leur sujet.
+
+**Le registre, plutôt qu'une exception.** Le journal a besoin de citer les noms fautifs pour expliquer la
+correction — le contrôle l'a d'ailleurs attrapé lui-même en cours d'écriture. Plutôt que d'exempter les
+documents entiers, les noms retirés vivent dans un fichier dédié,
+`docs/audit/NOMS_DE_TESTS_RETIRES.md` : **ancien nom → test du jour**, avec la raison (renommage tracé,
+ou disparition avec la fonction vérifiée). C'est aussi la table qu'un relecteur cherchera.
+
+**Verrou.**
+`tests/test_doc_references.py::test_chaque_nom_de_test_cite_en_document_existe_dans_la_suite` refuse tout
+nom de test cité qui n'existe pas, dans tous les documents sauf les deux rapports datés — un nom du
+registre est accepté, et lui seul. Deux formes sont écartées parce qu'elles ne sont pas des renvois : un
+nom de **fichier** de test (`test_session`, `test_catalog_lookup`, ou l'ancien nom marqué
+« ex-`test_justification.py` ») et une **abréviation** assumée (`test_p07_…`, ou un nom finissant par
+« _ »). `test_le_registre_des_noms_retires_ne_contient_que_des_renvois_valides` tient le registre des deux
+côtés : chaque renvoi doit être un test **vivant**, et aucun nom retiré ne doit réapparaître comme test.
+Mutations jouées : nom mort hors registre remis dans `AUDIT.md` → **1 échec** ; renvoi du registre vers un
+test inexistant → **2 échecs** ; nom vivant inscrit comme retiré → **2 échecs** ; abréviation et ancien nom
+de fichier → **vert**. Une première version du contrôle excusait un nom mort **en fin de phrase** : c'est
+la mutation qui l'a montré, la règle a été retirée.
+
+**Mesure** : **795 tests verts** (792 avant, trois tests neufs), `pyflakes` 0, `privacy_scan` 0 violation,
+banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un registre et des documents).
+
+**Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
+

@@ -640,7 +640,7 @@ pytest tests/test_flow.py tests/test_setup_command.py
 # Parcours 1/3→3/3, erreurs de saisie restent sur la même étape, score wording « Score de correspondance : X/40 — Y% », pending séparé, lien manquant → « Lien bientôt disponible » (ou nouveau single disabled), Refaire le test → GripView
 ```
 
-À adapter si tu ajoutes ThenarView : ajouter `test_thenar_is_stored_and_not_scored`.
+À adapter si tu ajoutes ThenarView : ajouter un test de **stockage** et un test de **barème** — livrés sous `test_thenar_selection_stores_value_and_moves_to_measures` (`tests/test_flow.py`) et `test_thenar_never_changes_the_score` (`tests/test_matcher.py`).
 
 ### 13.4 Intégration graphique
 
@@ -813,7 +813,7 @@ Aucun autre fichier ne lit `thenar` pour calculer.
 ### 14.5 Tests à mettre à jour (minimaux)
 
 - `tests/test_data.py` : si tu ajoutes des clés, mettre à jour `test_images_config_has_all_keys`.
-- `tests/test_flow.py` : ajouter un test `test_thenar_step` si thénar ajouté, et adapter `test_valid_measures_move_to_budget_step` si le flux passe par thenar.
+- `tests/test_flow.py` : ajouter un test du pas « thénar » si le thénar est ajouté — livrés sous `test_grip_selection_edits_message_to_thenar_step` et `test_thenar_selection_stores_value_and_moves_to_measures` —, et adapter `test_valid_measures_move_to_budget_step` si le flux passe par le thénar.
 - Ne **supprime pas** les tests de scores 30/30/25/20.
 
 ---
@@ -827,7 +827,7 @@ Aucun autre fichier ne lit `thenar` pour calculer.
 - [ ] Parcours testé manuellement sur serveur de test : 3 clics + 2 saisies → résultat en <60s, éphémère, pas d'accumulation.
 - [ ] Résultat : Match Idéal lisible en 2 sec, pas de lignes `… : 10 pts`, pending ≤5 noms sans scores partiels, footer honnête conservé, boutons d'achat fonctionnels, `Fermer`/`Refaire` OK.
 - [ ] Grip 180×90 Palm → V6 30, Z1 30, A9 25, X1 20 (non-régression).
-- [ ] Thénar (si ajouté) stocké et affiché, mais n'influence aucun score (vérifié par `test_thenar_not_affecting_score` ou équivalent).
+- [ ] Thénar (si ajouté) stocké et affiché, mais n'influence aucun score (vérifié par `test_thenar_never_changes_the_score` — `tests/test_matcher.py` — et `test_thenar_never_changes_the_recommendation` — `tests/test_flow.py`).
 - [ ] Aucun lien commercial inventé, aucun prix inventé.
 - [ ] Documentation à jour : `README.md` (§ Personnaliser les images), `docs/REPORTE_DESIGN.md` (URLs + mappings), `matrice_profils.md` régénérée si catalogue changé.
 - [ ] Captures `ImageAct` après refonte fournies (ou description) montrant l'amélioration sur mobile et desktop thème sombre.
