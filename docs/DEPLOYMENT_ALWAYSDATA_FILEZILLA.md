@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.39).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.40).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 785 passed
+.venv/bin/python -m pytest -q                      # attendu : 787 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2479,6 +2479,19 @@ catalogue est relu à chaque interaction.
   deux modèles valent 59,95 €). Le relevé reste conservé tel quel — c'est une observation datée — et reçoit
   un **§5 ter** daté qui met face à face les quatre lignes devenues trompeuses et la valeur retenue.
 - Le compteur du contrôle ci-dessus passe de 784 à **785** tests (un test neuf). Détail : §26.46 de
+  `ROBUSTESSE_2026-10-12.md`.
+
+### 12.40 Mise à jour du 2026-10-14 (31e) : une écriture morte retirée, et le contrôle qui la refuse
+
+**Fichiers à envoyer** : **aucun** — un fichier de tests et des documents. **Redémarrage** : inutile.
+
+- Le fichier de tests qui traque les « tests creux » construisait son fichier de contre-épreuve **deux fois
+  de suite** : la première écriture était morte, écrasée par la seconde, et portait encore la trace d'un
+  script d'édition (un `\n,` bricolé). Aucun test ne pouvait le voir : l'effet était nul.
+- L'écriture morte est retirée et la famille est fermée : le contrôle refuse désormais, dans tout le code
+  livré, deux écritures consécutives sur le **même nom** (`X.write_text` / `X.write_bytes`), avec sa
+  contre-épreuve sur fichier temporaire. Mutation — réintroduire deux écritures d'affilée — **2 échecs**.
+- Le compteur du contrôle ci-dessus passe de 785 à **787** tests. Détail : §26.47 de
   `ROBUSTESSE_2026-10-12.md`.
 
 ---

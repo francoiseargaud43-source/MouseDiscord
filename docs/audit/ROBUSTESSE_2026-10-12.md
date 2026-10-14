@@ -4174,3 +4174,29 @@ Duckbill pour l'oscillation d'un euro) y sont mises face à la valeur retenue, c
 Aucun fichier du bot n'est touché : cette passe ne change que des documents et un fichier de tests.
 
 **Fichiers à envoyer** : **aucun** (documents et tests).
+
+## 26.47 61e passe (suite) — une écriture morte dans le garde-fou qui traque les tests creux (2026-10-14)
+
+**Ce qui a été trouvé.** En relisant `tests/test_code_hygiene.py` pour éprouver ses garanties, un détail
+saute aux yeux : la contre-épreuve du contrôle des tests creux construit son fichier temporaire **deux fois
+de suite** — deux appels `creux.write_text(...)`, dont le second écrase le premier. La première écriture
+était donc **morte**, et sa chaîne portait la signature d'un script d'édition resté en travers (un `\n,`
+fabriqué puis retiré par un `.replace`). Aucun test ne pouvait le dire : l'effet était **nul** — la
+contre-épreuve continuait de passer, le compte de tests ne bougeait pas. C'est la famille des défauts
+invisibles : seul un lecteur perd son temps.
+
+**Ce qui a été corrigé.** L'écriture morte est retirée (le fichier temporaire est construit une fois), et
+la famille est **fermée par un contrôle** :
+`tests/test_code_hygiene.py::test_aucune_ecriture_aussitot_ecrasee_dans_le_code_livre` refuse, dans tout le
+code livré, deux appels `X.write_text(...)` / `X.write_bytes(...)` **consécutifs sur le même nom** — analyse
+syntaxique, corps de fonctions et de boucles compris. Sa contre-épreuve s'écrit sur un fichier temporaire
+qui contient un cas signalé (deux écritures d'affilée) et quatre cas acceptés (une écriture puis une
+lecture, une écriture sur un **autre** nom, une écriture sur une autre méthode, une variable simple).
+
+**Contre-épreuve jouée** : réintroduire deux écritures consécutives dans ce même fichier fait échouer
+**2 tests** — le garde-fou du dépôt et sa contre-épreuve. Fichier restauré, md5 vérifié.
+
+**Mesure** : **787 tests verts** (785 avant, deux tests neufs), `pyflakes` 0, `privacy_scan` 0 violation.
+Aucun fichier du bot n'est touché.
+
+**Fichiers à envoyer** : **aucun** (un fichier de tests et des documents).

@@ -97,21 +97,71 @@ def test_aucun_test_du_depot_ne_passe_sans_rien_verifier():
     assert sans_verification == [], "tests sans aucune vérification : " + ", ".join(sans_verification)
 
 
+# ---------------------------------------------------------------------------
+# Une écriture aussitôt écrasée est une écriture morte (2026-10-14, 61e passe)
+# ---------------------------------------------------------------------------
+# Cas réel trouvé le 2026-10-14 : ce fichier construisait son fichier de contre-épreuve **deux fois de
+# suite** (`creux.write_text(...)` puis un second appel identique) — la première écriture était morte,
+# écrasée par la seconde, et sa chaîne portait un `\n,` bricolé par un script d'édition resté en
+# travers. Rien ne pouvait le voir : l'effet était nul, seul le lecteur perdait son temps. Le contrôle
+# ci-dessous refuse deux écritures consécutives sur le **même nom** (``X.write_text`` / ``X.write_bytes``).
+
+
+def _cible_ecriture(instruction: ast.stmt) -> tuple[str, str] | None:
+    """« (nom, méthode) » si l'instruction est un appel ``X.write_text(...)`` / ``X.write_bytes(...)``."""
+    if not isinstance(instruction, ast.Expr) or not isinstance(instruction.value, ast.Call):
+        return None
+    appel = instruction.value
+    if not isinstance(appel.func, ast.Attribute) or appel.func.attr not in ("write_text", "write_bytes"):
+        return None
+    if not isinstance(appel.func.value, ast.Name):
+        return None
+    return appel.func.value.id, appel.func.attr
+
+
+def _ecritures_ecrasees(chemin: Path) -> list[str]:
+    """Les appels d'écriture consécutifs sur le même nom : le second écrase le premier, sans effet."""
+    trouves = []
+    arbre = ast.parse(chemin.read_text(encoding="utf-8"))
+    for noeud in ast.walk(arbre):
+        corps = getattr(noeud, "body", None)
+        if not isinstance(corps, list):
+            continue
+        precedent = None
+        for instruction in corps:
+            cible = _cible_ecriture(instruction)
+            if cible is not None and cible == precedent:
+                trouves.append(f"{chemin.name}:{instruction.lineno} ({cible[0]}.{cible[1]})")
+            precedent = cible
+    return trouves
+
+
+def test_aucune_ecriture_aussitot_ecrasee_dans_le_code_livre():
+    ecrasees = [trouve for chemin in FICHIERS_PY for trouve in _ecritures_ecrasees(chemin)]
+    assert ecrasees == [], "écritures mortes (écrasées aussitôt) : " + ", ".join(ecrasees)
+
+
+def test_le_controle_des_ecritures_mortes_sait_reconnaitre_un_ecrasement(tmp_path):
+    """Contre-épreuve : deux écritures d'affilée sur le même nom sont signalées, le reste non."""
+    exemple = tmp_path / "exemple.py"
+    exemple.write_text(
+        "a = 1\n"
+        "chemin.write_text('un')\n"
+        "chemin.write_text('deux')\n"
+        "autre.write_text('trois')\n"
+        "chemin.read_text()\n"
+        "autre.write_bytes(b'quatre')\n",
+        encoding="utf-8")
+
+    signalees = _ecritures_ecrasees(exemple)
+
+    assert len(signalees) == 1, signalees
+    assert "chemin.write_text" in signalees[0]
+
+
 def test_le_controle_de_verification_sait_reconnaitre_un_test_creux(tmp_path):
     """Contre-épreuve : le contrôle doit signaler un test vide **et** accepter les vraies preuves."""
     creux = tmp_path / "test_creux.py"
-    creux.write_text(
-        "import pytest\n"
-        "from unittest.mock import AsyncMock\n"
-        "\n"
-        "def test_qui_ne_verifie_rien():\n"
-        "    {'a': 1}.get('a')\n"
-        "\n"
-        "def test_avec_assertion():\n"
-        "    assert 1 == 1\n"
-        "\n"
-        "def test_avec_assertion_de_simulation()\n,\n".replace("\n,", ""),
-        encoding="utf-8")
     creux.write_text(
         "import pytest\n"
         "from unittest.mock import AsyncMock\n"

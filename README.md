@@ -523,7 +523,9 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré. Depuis le 2026-10-13, il refuse
   aussi **tout test du dépôt qui ne vérifie rien** (relevé par analyse syntaxique : `assert`, `raises`, méthode
   d'assertion, `fail(`) — un test creux trouvé dans `tests/test_flow.py` a été renforcé, et la contre-épreuve
-  du contrôle s'écrit sur un fichier temporaire.
+  du contrôle s'écrit sur un fichier temporaire. Depuis le 2026-10-14, il refuse aussi les **écritures
+  aussitôt écrasées** (`X.write_text(...)` deux fois de suite : la première est morte) — le défaut trouvé
+  dans ce fichier même, où le fichier de contre-épreuve était construit deux fois.
 - `tests/test_textes_des_cartes.py` : **les textes variables des cartes sont mesurés, bornés et jamais coupés** — la justification du choix comme le sommaire morphologique, la ligne « en clair » et le résumé du parcours, sur la
   grille resserrée (420 profils) comme sur un pire cas construit (libellé le plus long du catalogue, meilleur
   score, zone la plus large) ; la phrase connue la plus longue fait 320 caractères sur les 18 522 profils de la
