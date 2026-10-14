@@ -4145,12 +4145,16 @@ déjà occupé, corrigé la veille.
 
 **Le verrou qui manquait.**
 `tests/test_doc_references.py::test_chaque_numero_de_section_cite_existe_dans_le_document_qu_il_vise`
-relit désormais **tous** les renvois `§N.M` et `C##` de 59 fichiers (documents, README, tests) et exige
-que le numéro existe dans le document visé. Trois plages sont contrôlées, parce qu'elles sont **sans
+relit désormais **tous** les renvois `§N.M` et `C##` de **89 fichiers** — documents, README, tests,
+outils, modules et notes des données (`data/*.json`) — et exige que le numéro existe dans le document
+visé. La portée compte : une citation **nue** (`§26.8` dans `tools/measure_grip_width.py`) n'est
+attrapée ni par le test de la 37e passe, qui exige un nom de fichier accolé, ni par un balayage limité
+aux documents. Trois plages sont contrôlées, parce qu'elles sont **sans
 ambiguïté** dans ce dépôt : `§19.x`–`§26.x` n'existent que dans ce fichier, `§12.x` que dans le guide de
 déploiement, et les constats `C##` que dans `AUDIT.md`. Contre-épreuves jouées : renommer `### 22.1` →
 **1 échec** ; renommer `### 12.38` → **1 échec** ; casser une citation de constat dans
-`tests/test_data.py` (56 → 99) → **1 échec** (fichiers restaurés, md5 vérifié). Amusant, le test a d'abord échoué
+`tests/test_data.py` (56 → 99) → **1 échec** ; et, après extension de la portée, `26.8` → `26.99`
+dans `tools/measure_grip_width.py` (cités sans « § », sinon le test se dénonce lui-même) → **1 échec** (fichiers restaurés, md5 vérifié). Amusant, le test a d'abord échoué
 sur **son propre commentaire**, qui citait « 21.6 » pour raconter le bug : il est écrit sans « § » pour
 ne pas se dénoncer — la règle balaie ce fichier comme les autres.
 

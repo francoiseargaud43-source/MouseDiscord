@@ -111,9 +111,12 @@ def test_chaque_numero_de_section_cite_existe_dans_le_document_qu_il_vise():
     deploiement = {n for n in _sections("docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md") if n.startswith("12.")}
     constats = set(re.findall(r"^\| (C\d+) \|", _read("docs/audit/AUDIT.md"), re.M))
 
-    fichiers = sorted([p.relative_to(ROOT).as_posix() for p in (ROOT / "docs").rglob("*.md")]
-                      + [p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").rglob("*.py")]
-                      + ["README.md"])
+    # 89 fichiers : documents, notes des données, et tout le code — une citation nue (§26.8 dans
+    # `tools/measure_grip_width.py`) n'est attrapée ni par le test 37e (qui exige un nom de fichier
+    # accolé) ni par un balayage limité aux documents.
+    motifs = ("README.md", "docs/**/*.md", "tests/*.py", "tools/*.py", "utils/*.py", "cogs/*.py",
+              "bot.py", "config.py", "data/*.json")
+    fichiers = sorted({p.relative_to(ROOT).as_posix() for motif in motifs for p in ROOT.glob(motif)})
     morts = []
     for rel in fichiers:
         texte = _read(rel)
