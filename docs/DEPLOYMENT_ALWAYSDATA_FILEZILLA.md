@@ -2404,8 +2404,18 @@ documentation et des outils.
   1 262 à **1 367** profils (7,4 %) — la paire U2, 105 profils, n'était pas comptée faute de `shell_id` — et
   trois libellés de la troisième place se déplacent. Les trois aperçus PNG portent la nouvelle empreinte.
 
-**Fichiers à envoyer** : `data/mouse_db.json` et `cogs/finder_flow.py`. Détail : §26.42 de
+**Fichiers à envoyer** : `data/mouse_db.json` et `cogs/finder_flow.py`. Détail : §26.42 et §26.43 de
 `ROBUSTESSE_2026-10-12.md`.
+
+Le compteur du contrôle ci-dessus passe de 776 à **780** tests (trois tests neufs pour ces deux
+corrections, un ancien remplacé).
+
+**Vérification du 2026-10-14** : un chiffre publié dans les notes du catalogue (« 48 profils ») ne se
+rejouait pas ; il valait **207** sur la grille du rapport (235 sur la grille complète). Les notes portent
+la mesure datée, les documents distinguent « montrer les deux souris » de « changer de résultat »
+(**175 profils, 0,64 %**), et l'invariant des cotes identiques est tenu par un seul test enrichi — le
+doublon qui l'écrasait a été retiré. Aucun autre fichier à envoyer : hors commentaire daté, rien du
+catalogue ni du moteur ne change de comportement (0 profil de différence, mesuré).
 
 ---
 
