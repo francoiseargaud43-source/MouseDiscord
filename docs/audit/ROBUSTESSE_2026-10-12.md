@@ -4229,6 +4229,12 @@ le compteur qui était en retard. Vérification directe de la correction : sur l
 (27 170), il passe de **1 260** à **2 004** (7,4 %, le même taux que la grille du rapport : 7,38 %), et
 « Problèmes détectés » reste à **0** (le compteur n'est pas une faute — c'est le repli documenté).
 
+**Concordance des cinq compteurs, vérifiée le même jour** (les deux outils passés sur la grille du
+rapport, 18 522 profils) : profils **sans** aucun résultat **252 = 252** ; places **0 · 1 · 2 · 3** =
+**252 · 1 086 · 1 134 · 16 050** des deux côtés ; repli de coque **1 367 = 1 367**. Le banc d'essai et
+le rapport statistique racontent désormais la même histoire, chiffre par chiffre — c'est cette
+comparaison qui a révélé l'écart du compteur de coque, et elle est désormais rejouable.
+
 **Verrou.** `tests/test_qa_flow_matrix.py::test_le_compteur_de_coque_partagee_regarde_toutes_les_paires`
 fige la sémantique sur des profils fabriqués : la paire (alternative, économie) compte, comme les deux
 autres, une place vide ne compte jamais, et la même souris affichée deux fois est vue aussi. Mutation
