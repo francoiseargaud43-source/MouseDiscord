@@ -4990,3 +4990,40 @@ inchangés.
 
 **Ce que la correction ne change pas.** Aucun code, aucun texte affiché, aucune donnée. Suite de tests :
 823 → **824**. **Fichiers à envoyer** : **aucun**.
+
+---
+
+## 26.63 76e passe — neuf notes du catalogue portaient une phrase collée à la suivante (2026-10-14)
+
+**Ce qui a été trouvé.** Après les champs sans lecteur (§26.61, §26.62), le balayage a porté sur les
+**textes** du catalogue — ceux que le propriétaire lit dans la traçabilité. Neuf souris Pulsar portent la
+même faute : une phrase collée à la suivante, sans espace après le point.
+
+```
+… la souris reste « à vérifier » jusqu'au relevé.Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS…)
+… la souris reprend la coque.Capteur maison Pulsar XS-1 (…)
+```
+
+**D'où vient la faute.** La phrase sur le capteur a été **concaténée** au texte existant lors de la
+construction des données, sans le séparateur. Rien ne manquait au sens — la valeur est juste — mais le
+texte publié portait une faute visible, et aucune relecture ne pouvait la voir autrement qu'à l'œil,
+ligne par ligne, sur trente-six fiches de notes longues.
+
+**Ce qui a été corrigé.** Les **neuf** occurrences sont recollées (une espace après le point) dans
+`data/mouse_db.json`. Aucun mot, aucun chiffre, aucune source n'est modifié : seule la ponctuation est
+réparée.
+
+**Verrou.** Un contrôle neuf (`tests/test_data.py`) lit **tous** les textes libres du catalogue — notes,
+notes de prix, justifications de prise et les 269 libellés de sources — et refuse une minuscule (ou une
+fermeture de citation) suivie d'un point puis d'une majuscule, c'est-à-dire une phrase collée à la
+suivante. Il exige aussi que le balayage porte sur plus de 200 textes : un contrôle qui ne lit rien ne
+vaut pas mieux que pas de contrôle.
+
+**Mutation jouée** : remettre une seule phrase collée (`relevé.Capteur`) → **1 rouge**. Fichier restauré
+depuis la copie saine.
+
+**Ce que la correction ne change pas.** Aucun code, aucun prix, aucune mesure, aucun pixel : les trois
+aperçus, régénérés parce que le catalogue fait partie de leur empreinte, sont **identiques bit à bit**
+(empreinte `0df6083f181d`). Suite de tests : 824 → **825**. **Fichiers à envoyer** : **aucun** (le
+catalogue livré sur l'hébergement peut toutefois être mis à jour quand vous voudrez : la correction est
+dans `data/mouse_db.json`, sans effet sur le comportement du bot).

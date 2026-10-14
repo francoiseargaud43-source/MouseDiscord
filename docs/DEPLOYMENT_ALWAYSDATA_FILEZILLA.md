@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.55).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.56).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 824 passed
+.venv/bin/python -m pytest -q                      # attendu : 825 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2778,6 +2778,23 @@ Les documents, les tests et les aperçus accompagnent.
   nul partout comme annoncé.
 - Aucun changement pour le bot. Le compteur du contrôle ci-dessus passe de 823 à **824** tests.
   Détail : §26.62 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.56 Mise à jour du 2026-10-14 (47e) : neuf notes du catalogue avaient une phrase collée
+
+**Fichiers à envoyer** : `data/mouse_db.json` **si** vous voulez la correction sur l'hébergement (aucun
+effet sur le comportement du bot). **Redémarrage** : inutile.
+
+- Neuf souris Pulsar portaient, dans leurs notes, une phrase collée à la suivante — « … jusqu'au
+  relevé.Capteur maison Pulsar XS-1 … » — la phrase sur le capteur ayant été concaténée sans séparateur.
+- Corrigé : les neuf occurrences portent l'espace manquante. **Ponctuation seule** : aucun mot, aucun
+  chiffre, aucune source, aucune mesure ne bouge.
+- **Contrôle neuf** (`tests/test_data.py`) : tous les textes libres du catalogue sont balayés (notes,
+  notes de prix, justifications, 269 libellés de sources) et une phrase collée à la suivante est
+  refusée. Mutation rejouée : 1 rouge. Le compteur du contrôle ci-dessus passe de 824 à **825** tests.
+- Les trois aperçus ont été régénérés (le catalogue entre dans leur empreinte, `0df6083f181d`) et sont
+  **identiques bit à bit** : rien ne change à l'écran. Détail : §26.63 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

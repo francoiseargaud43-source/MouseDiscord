@@ -1479,3 +1479,40 @@ def test_chaque_lien_a_variante_est_trace_par_une_source(mice):
         if not any(variante in s.url for s in mouse.sources):
             manquants.append(f"{mid} (variant={variante})")
     assert manquants == [], f"variantes figées sans source : {', '.join(manquants)}"
+
+
+# ---------------------------------------------------------------------------
+# Typographie des textes du catalogue (2026-10-14, 76e passe)
+# ---------------------------------------------------------------------------
+# Défaut trouvé en balayant les notes du catalogue : neuf souris Pulsar portaient une phrase collée à
+# la suivante — « … la souris reste « à vérifier » jusqu'au relevé.Capteur maison Pulsar XS-1 … ». Le
+# texte vient d'une concaténation à la construction des données : rien ne manquait au sens, mais le
+# texte publié (la traçabilité du catalogue, que le propriétaire lit) portait une faute visible. Une
+# phrase française se termine par une espace ; ce contrôle l'exige pour tous les textes du catalogue.
+PHRASE_COLLEE = re.compile(r'[a-zéèêàçùûôîïœ)"»]\.[A-ZÉÈÀÊÎÔÛÇ][a-zéèêàçûôî]')
+
+
+def _textes_du_catalogue():
+    """Tous les textes libres du catalogue : (identifiant de souris, chemin du champ, texte)."""
+    for souris in json.loads(MOUSE_DB_PATH.read_text(encoding="utf-8")):
+        identifiant = souris.get("id", "?")
+        for champ, valeur in souris.items():
+            if isinstance(valeur, str):
+                yield identifiant, champ, valeur
+            elif isinstance(valeur, list):
+                for rang, élément in enumerate(valeur):
+                    if isinstance(élément, dict):
+                        for sous_champ, texte in élément.items():
+                            if isinstance(texte, str):
+                                yield identifiant, f"{champ}[{rang}].{sous_champ}", texte
+
+
+def test_aucune_phrase_du_catalogue_n_est_collee_a_la_suivante():
+    """« … jusqu'au relevé.Capteur maison Pulsar XS-1 … » : il manque l'espace après le point."""
+    collées = [
+        f"{identifiant}.{champ} : …{texte[max(0, m.start() - 40):m.end() + 40]}…"
+        for identifiant, champ, texte in _textes_du_catalogue()
+        for m in PHRASE_COLLEE.finditer(texte)
+    ]
+    assert not collées, "phrases sans espace après le point :\n  " + "\n  ".join(collées)
+    assert sum(1 for _ in _textes_du_catalogue()) > 200, "le balayage ne lit presque rien"
