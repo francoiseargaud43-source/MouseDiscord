@@ -17,9 +17,10 @@ sys.path.insert(0, str(ROOT))
 from cogs.finder_flow import compute_selection, result_slots, results_embeds, third_slot_title  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
 from tools.qa_flow_matrix import (check_result_message, deux_places_meme_coque, grille,
-                                  message_text, places_au_prix_non_verifie)  # noqa: E402
+                                  message_text, places_au_prix_non_verifie,
+                                  profile)  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
-from utils.models import BudgetMode, Grip, Thenar  # noqa: E402
+from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
 from types import SimpleNamespace  # noqa: E402
 
@@ -199,3 +200,42 @@ def test_la_grille_du_banc_ne_contient_aucun_profil_duplique():
     assert {e[3] for e in complet if e[0] is Grip.PALM} == {Thenar.PETITE, Thenar.MOYENNE, Thenar.GRANDE}
     assert None in {e[3] for e in complet if e[0] is Grip.CLAW}          # cas « thénar non répondu »
     assert sum(1 for e in complet if e[0] is Grip.FINGERTIP) == 2717
+
+
+def _places_du_profil(grip, length, width, thenar, mode, budget) -> int:
+    session = profile(mode, budget)
+    session.grip = grip
+    session.hand_length_mm = length
+    session.hand_width_mm = width
+    session.thenar = thenar if grip is not Grip.FINGERTIP else None
+    if grip is Grip.CLAW:
+        session.claw_variant = ClawVariant.RELACHEE
+    return len([place for place in result_slots(compute_selection(session)) if place is not None])
+
+
+def test_les_places_manquantes_viennent_toutes_d_un_budget_personnalise():
+    """« Trois lignes partout où le budget le permet » : un trou ne vient que d'un budget épuisé.
+
+    Mesure de la grille complète (2026-10-14, 21 736 entrées distinctes) : **18 694** profils à trois
+    places (86,00 %), **793** à deux, **182** à une, **2 067** sans aucun résultat — et aucun de ces
+    trous hors des trois budgets personnalisés serrés (10, 25 et 45 €) : les six autres modes
+    remplissent les trois places pour **tous** leurs profils. L'échantillon ci-dessous est petit mais
+    il exige des trous : un échantillon vide ne prouverait rien (règle des tests creux).
+    """
+    prises = [(Grip.PALM, Thenar.PETITE), (Grip.CLAW, None), (Grip.FINGERTIP, None)]
+    modes = [(None, None), (BudgetMode.ECONOMIQUE, None), (BudgetMode.CUSTOM, 10.0),
+             (BudgetMode.CUSTOM, 25.0), (BudgetMode.CUSTOM, 45.0)]
+    trous, pleins = [], 0
+    for grip, thenar in prises:
+        for length in (150.0, 200.0):
+            for width in (60.0, 100.0):
+                for mode, budget in modes:
+                    places = _places_du_profil(grip, length, width, thenar, mode, budget)
+                    if places == 3:
+                        pleins += 1
+                        continue
+                    trous.append((grip.value, length, width, mode, budget, places))
+    assert len(trous) >= 10, f"échantillon sans trou : il ne prouverait rien ({len(trous)} trous)"
+    assert pleins >= 20, f"échantillon sans profil complet : il ne prouverait rien ({pleins})"
+    hors_budget_serre = [t for t in trous if t[3] is not BudgetMode.CUSTOM or t[4] not in (10.0, 25.0, 45.0)]
+    assert hors_budget_serre == [], f"des trous hors budget épuisé : {hors_budget_serre}"

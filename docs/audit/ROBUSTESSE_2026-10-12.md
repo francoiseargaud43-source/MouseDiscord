@@ -4380,3 +4380,37 @@ explique la correction. Mutation jouée — replacer 178 devant « profils » da
 banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un document).
 
 **Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
+
+## 26.51 64e passe — les compteurs de places publiés ne se rejouaient plus (2026-10-14)
+
+**Ce qui a été trouvé.** En vérifiant ce que la 62e passe déplace, deux docstrings de `tests/test_flow.py`
+citent la répartition des places comme une **mesure de référence, sans date** :
+« 3 lignes sur 85,50 % de la grille du banc (23 231 des 27 170 profils) … 1 196 profils à 2 lignes, 182 à
+1, 2 561 sans aucun résultat » et « C'est le cas de 2 561 profils sur 27 170 de la grille complète ». Les
+chiffres ne se rejouent pas : sur la grille d'alors (27 170 itérations) la mesure du jour donne
+**23 140 · 85,17 % · 1 287 à 2 lignes** — 91 profils passés de trois lignes à deux depuis l'écriture —, et
+sur la grille corrigée de la 62e passe (21 736 entrées distinctes) la répartition est
+**18 694 · 86,00 % · 793 · 182 · 2 067**. Seuls « 182 à 1 ligne » et « 2 561 sans aucun résultat » se
+rejouaient exactement, et ce dernier seulement sur l'ancienne grille.
+
+**Ce qui a été vérifié.** L'affirmation « les trous restants sont **exclusivement** des budgets épuisés »
+a été contrôlée mode par mode sur la grille complète : les 3 042 profils à moins de trois places (2 067
+sans résultat, 182 à une, 793 à deux) sont **tous** dans les trois budgets personnalisés serrés (10, 25 et
+45 €) — 1 976 dans le seul budget à 10 €, qui n'a aucun candidat —, et les **huit** autres modes
+remplissent les trois places pour **tous** leurs profils (1 976 chacun). L'affirmation tient.
+
+**Ce qui a été corrigé.** Les deux docstrings portent la mesure du jour, la grille et la date ; la
+première dit aussi ce que valait l'ancien couple, et où il a bougé. Aucun texte affiché ne change.
+
+**Verrou.** `tests/test_qa_flow_matrix.py::test_les_places_manquantes_viennent_toutes_d_un_budget_personnalise`
+tient l'invariant sur un échantillon volontairement non vide (il exige au moins dix trous et vingt profils
+complets, sinon il ne prouverait rien) : tout profil à moins de trois places doit venir d'un budget
+personnalisé serré (10, 25 ou 45 €), jamais d'un mode normal. Mutation jouée — dernier palier de
+`result_slots` désactivé → **2 échecs** (le verrou et les cartes de résultat) ; fichier du moteur restauré
+à l'identique (`git diff` vide).
+
+**Mesure** : **792 tests verts** (791 avant, un test neuf), `pyflakes` 0, `privacy_scan` 0 violation,
+banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un document).
+
+**Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
+

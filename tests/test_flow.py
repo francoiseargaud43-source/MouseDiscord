@@ -1122,9 +1122,13 @@ async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     Profil Budget personnalisé serré (Palm 150 × 65, plafond 25 €) : la zone du mode ne contient rien
     de comparable à la VXE V3 (13,95 €), qui gagne le classement. Les deux autres lignes sont remplies
     par le dernier palier — l'U2 (22,95 €, dans le budget) puis la R1 — et chaque ligne qui n'est pas
-    une vraie alternative porte le titre « 🔎 Autre piste ». Mesure de référence : 3 lignes
-    sur 85,50 % de la grille du banc (23 231 des 27 170 profils) ; les trous restants sont
-    exclusivement des budgets épuisés (1 196 profils à 2 lignes, 182 à 1, 2 561 sans aucun résultat).
+    une vraie alternative porte le titre « 🔎 Autre piste ». Mesure de référence (2026-10-14, grille
+    complète du banc : 21 736 entrées distinctes) : 3 lignes sur **86,00 %** (18 694 profils) ; les
+    trous restants sont **exclusivement des budgets épuisés** — 793 profils à 2 lignes, 182 à 1,
+    2 067 sans aucun résultat, tous dans les trois budgets personnalisés serrés (10, 25 et 45 €),
+    aucun dans les six autres modes (vérifié profil par profil le 2026-10-14). Le couple publié plus
+    tôt sans date (23 231 · 85,50 % · 1 196 à 2 lignes, sur les 27 170 itérations d'alors) ne se
+    rejoue plus : sur cette même grille d'alors, la mesure du jour donne 23 140 · 85,17 % · 1 287.
     """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=150.0, width=65.0, thenar=Thenar.PETITE)
@@ -1673,7 +1677,8 @@ def test_un_prix_absent_est_annonce_comme_non_renseigne():
 def test_aucun_match_classable_reste_une_reponse_honnete_et_utile():
     """Profil sans candidat (petite main, budget 10 €) : une seule carte, qui dit quoi faire.
 
-    C'est le cas de 2 561 profils sur 27 170 de la grille complète. Le message ne rejette la faute
+    C'est le cas de 2 067 profils sur les 21 736 entrées distinctes de la grille complète (2 561 sur
+    les 27 170 itérations d'alors, avant le dédoublonnage du 2026-10-14). Le message ne rejette la faute
     ni sur le membre ni sur des « données manquantes » : il propose les deux seules issues réelles
     (changer de gamme, élargir le budget).
     """

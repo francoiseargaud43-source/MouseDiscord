@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.43).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.44).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 791 passed
+.venv/bin/python -m pytest -q                      # attendu : 792 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2547,6 +2547,24 @@ jamais ces outils).
   fichier publiant une mesure resserve ce chiffre comme un nombre de profils (le journal garde le droit de
   le citer pour expliquer la correction) ; mutation → 1 échec. Le compteur du contrôle ci-dessus passe de
   790 à **791** tests. Détail : §26.50 de `ROBUSTESSE_2026-10-12.md`.
+
+### 12.44 Mise à jour du 2026-10-14 (35e) : la répartition des places publiée ne se rejouait plus
+
+**Fichiers à envoyer** : **aucun** — un test et des documents. **Redémarrage** : inutile.
+
+- Deux docstrings de `tests/test_flow.py` citaient la répartition des places **sans date**, comme une
+  mesure de référence : « 23 231 des 27 170 profils » à trois lignes et 1 196 à deux. Rejouée sur la grille
+  d'alors, la mesure du jour donne **23 140 · 85,17 % · 1 287** — 91 profils passés de trois lignes à deux
+  depuis l'écriture —, et sur la grille dédoublonnée de la 62e passe : **18 694 · 86,00 % · 793 · 182 ·
+  2 067**.
+- L'affirmation « les trous viennent exclusivement des budgets épuisés » a été contrôlée mode par mode :
+  les 3 042 profils à moins de trois places sont **tous** dans les trois budgets personnalisés serrés
+  (10, 25 et 45 €) ; les huit autres modes remplissent les trois places pour tous leurs profils.
+- Corrigé : les deux docstrings portent la mesure du jour, la grille et la date. Verrou :
+  `tests/test_qa_flow_matrix.py::test_les_places_manquantes_viennent_toutes_d_un_budget_personnalise`
+  (échantillon non vide exigé) ; mutation — dernier palier de `result_slots` désactivé → 2 échecs, fichier
+  du moteur restauré à l'identique. Le compteur du contrôle ci-dessus passe de 791 à **792** tests.
+  Détail : §26.51 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 
