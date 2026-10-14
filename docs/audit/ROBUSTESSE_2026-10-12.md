@@ -4076,3 +4076,53 @@ que celui du dossier, un cas réel déjà testé. Le point est **clos**, pas con
 mutation, pas une relecture.
 
 **Fichiers à envoyer** : **aucun** (un fichier de tests et des documents).
+
+## 26.45 60e passe — quatre prix relus, et le bloc de contrôle qui comptait un tour de retard (2026-10-14)
+
+**Ce qui a été relu.** La veille au soir, la boutique ATK avait republié ses prix (`updated_at`
+2026-10-13T20:55, heure du Pacifique) : les **25 liens ATK** ont été rouverts fiche par fiche le 2026-10-14
+en JSON public (`variants/<id>.json?country=FR` pour les douze variantes figées ; `search/suggest.json`
+seulement pour repérer une fiche, jamais pour conclure — « Fierce X » y renvoie la X1 V2), plus les
+**10 liens Pulsar** (`products/<handle>.json`, la source fiable : chez Pulsar, `search/suggest.json`
+renvoie les éditions PRX). Résultat : **quatre écarts d'un euro**, tous à la baisse — X1 V2 Ultra Max
+41,95 → **40,95 €** (variante `47058382782682`), F1 V2 Ultra Max 41,95 → **40,95 €**
+(`47006581096666`), VXE MAD R 41,95 → **40,95 €** (produit épuisé), Duckbill 82,95 → **81,95 €** — et
+31 liens inchangés (21 ATK + 10 Pulsar, dont les trois Xlite v4 et les quatre CrazyLight).
+
+**Ce qui a été corrigé, ensemble.** Le prix d'une souris vit dans **trois lieux solidaires** : le
+catalogue, le tableau §8.1 du document de vérification (verrouillé par `tests/test_liens_achat.py`) et,
+pour la Duckbill, le prix en dur de
+`tests/test_data.py::test_duckbill_price_matches_the_only_variant_on_sale`. Les trois ont bougé le même
+jour : les notes de prix portent la date du relevé et disent l'**oscillation** (81,95 puis 82,95 puis
+81,95 du 12 au 14), et quatre sources datées ont été ajoutées (**269** au total). Les renvois du tableau
+pointent vers le **§7.7** du document de vérification — écrit dans cette passe après contrôle qu'aucun
+autre §7.5 n'existait : le premier jet avait pris un numéro déjà occupé (« Le point ouvert : le prix de
+l'A9 Plus »), et le renvoi aurait désigné la mauvaise section.
+
+**Effet mesuré** : `tools/db_effect.py --avant /tmp/mouse_db_avant_c79.json --grille complete` →
+**0 profil sur 27 170** change de recommandation. La matrice régénérée ne bouge que sur la ligne de prix
+du Duckbill (toujours exclue, même motif) et le rapport statistique régénéré est **identique** au fichier
+versionné ; les trois aperçus portent l'empreinte `49d119ea3409`. Suite : **784 passed**.
+
+**Deuxième défaut de la passe, dans le guide de déploiement.** Le « bloc de contrôle » du §12.23 — le seul
+que le guide dit « tenu à jour » — annonçait encore `# attendu : 780 passed` et « dernière valeur :
+§12.36 » alors que la suite comptait **784** tests depuis la 59e passe. Le bloc porte **784** et renvoie
+au **§12.38** ; ses autres valeurs ont été vérifiées par exécution le jour même, pas recopiées : 36 souris
+et 36 liens au contrôle de déploiement (1 erreur bloquante : l'absence de `.env` dans l'atelier),
+`qa_flow_matrix` → « Problèmes détectés : 0 », rapport statistique identique après régénération. Au même
+endroit, deux paragraphes de la 58e (« 776 → 780 » et la vérification du « 48 profils ») traînaient à la
+fin du §12.37 au lieu de leur section d'origine, le §12.36 : replacés.
+
+**Deux points ouverts clos par preuve, sans une ligne de code.** (a) Le message favorable du thénar
+(« arrière marqué qui soutient votre thénar ») ne peut pas s'afficher tant que le mécanisme est en repli
+**0 / 0 / 0** — c'est la décision du propriétaire, et `tests/test_flow.py` le verrouille sur un barème
+fabriqué pour que, le jour d'une réactivation, le thénar « ne soit pas le quatrième point muet ». (b)
+L'arrière étroit reste réservé au thénar « Petite » alors que l'outil de référence le conseille aussi à
+« Moyenne » : écart **assumé**, consigné (prompt §7.6, `docs/REVERSE_ENGINEERING_OBLIVITY.md` §3) et gravé
+par `tests/test_reverse_engineering.py::test_l_arriere_etroit_reste_reserve_au_thenar_petite_malgre_la_reference`.
+
+**Couverture rejouée le même jour** (`coverage run --branch --source=cogs,utils,bot.py,config.py -m pytest -q`) : **1 552 instructions / 484 branches**, 0 manquante des deux côtés — 
+le périmètre est écrit ici pour que le chiffre se rejoue.
+
+**Fichiers à envoyer** : `data/mouse_db.json` — et `cogs/finder_flow.py` si le §12.36 n'est pas encore en
+ligne (le même fichier de données porte les deux mises à jour).

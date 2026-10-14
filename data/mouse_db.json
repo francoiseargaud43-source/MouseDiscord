@@ -387,9 +387,9 @@
     "fingertip_grip_fit": "Faible",
     "fit_status": "owner_spec",
     "dimension_status": "verified",
-    "price_eur": 41.95,
+    "price_eur": 40.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 41,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre — prix normal 63,95 €). Le relevé du 2026-10-12 donnait 40,95 € pour la même variante : la promotion d'un euro a pris fin, le prix publié suit la boutique officielle à sa date de relevé. L'ancienne valeur du cahier des charges (75,00 €) était sans rapport avec le modèle.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 40,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre —, prix normal 63,95 €). Relevés précédents : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la variante figée au jour du relevé — ici celui du 2026-10-14.",
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
@@ -476,7 +476,7 @@
         "label": "ATK Store — fiche officielle (2026-10-12)",
         "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse",
         "fields": [
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-12"
       },
@@ -496,7 +496,7 @@
         "label": "ATK Store — X1 V2 Series, variante « Ultra Max 2.0 / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 41,95 €, prix normal 63,95 €) — c'est la variante que le bouton d'achat ouvre",
         "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?variant=47058382782682",
         "fields": [
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-13"
       },
@@ -508,6 +508,15 @@
           "price_note"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — variante figée par le bouton « Ultra Max 2.0 / Black » (JSON public, pays France) : 40,95 €, prix normal 63,95 € (relevé du 2026-10-14).",
+        "url": "https://www.atk.store/en-fr/variants/47058382782682.json?country=FR",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-10-14"
       }
     ],
     "shape": "Symmetrical",
@@ -1728,9 +1737,9 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "manufacturer_guide",
     "dimension_status": "verified",
-    "price_eur": 82.95,
+    "price_eur": 81.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 82,95 € (fiche ATK pays France, modèle « Ultra », trois coloris, prix normal 118,95 €). Le relevé du 2026-10-12 donnait 81,95 € pour la même fiche : la boutique a relevé le prix d'un euro, le prix publié suit la boutique officielle à sa date de relevé.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 81,95 € (fiche ATK pays France, modèle « Ultra », trois coloris — Metallic Purple, White, Black —, prix normal 118,95 €). Relevés précédents : 81,95 € le 2026-10-12, 82,95 € le 2026-10-13, 81,95 € le 2026-10-14 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la fiche au jour du relevé — ici celui du 2026-10-14 — et la date est écrite pour que la prochaine relecture sache quoi comparer.",
     "fit_rationale": "Fabricant (fiche ATK, 2026-10-12) : « Grip Style: Claw / Palm / Fingertip » ; mains petites-moyennes.",
     "weight_g": 46.0,
     "sensor": "PAW3950 Ultra",
@@ -1800,7 +1809,7 @@
         "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky Duckbill, prix du produit",
         "url": "https://www.atk.store/fr-fr/collections/souris",
         "fields": [
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-11"
       },
@@ -1838,10 +1847,18 @@
         "label": "ATK Store — Blazing Sky Duckbill, modèle « Ultra » (prix EUR affiché en France, relevé du 2026-10-13 : 82,95 €, prix normal 118,95 €)",
         "url": "https://www.atk.store/products/atk-blazing-sky-duckbill-wireless-mouse",
         "fields": [
-          "price_note",
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — fiche Duckbill (JSON public, pays France) : « Ultra » à 81,95 €, prix normal 118,95 € (relevé du 2026-10-14).",
+        "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-duckbill-wireless-mouse.json?country=FR",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-10-14"
       }
     ],
     "shape": "Symmetrical",
@@ -2495,8 +2512,8 @@
     "weight_g": 36.0,
     "sensor": "PAW3395",
     "polling_hz": 8000,
-    "price_eur": 41.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 41,95 € (série MAD R « à partir de », boutique ATK pays France ; c'est le montant que la page affiche aujourd'hui). Le relevé du 2026-10-12 donnait 40,95 € pour la même page : l'écart d'un euro est consigné, le prix publié suit la boutique officielle à sa date de relevé. Produit affiché en rupture de stock à ces deux dates : le réapprovisionnement est annoncé sur la fiche. Aucune conversion d'un prix en dollars.",
+    "price_eur": 40.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 40,95 € (série MAD R « à partir de », boutique ATK pays France ; c'est le montant que la page affiche aujourd'hui). Relevés précédents : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14 : l'écart d'un euro va et vient avec la promotion de la boutique. Le produit est en rupture de stock (toutes variantes), noté tel quel : le prix publié est celui de la fiche, pas une disponibilité.",
     "sources": [
       {
         "label": "EloShapes — VXE MAD R",
@@ -2574,10 +2591,18 @@
         "label": "ATK Store — VXE MAD R Series (prix EUR affiché en France, relevé du 2026-10-13 : « à partir de » 41,95 €, produit en rupture de stock à cette date)",
         "url": "https://www.atk.store/products/vxe-mad-r-series-wireless-mouse",
         "fields": [
-          "price_note",
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — fiche VXE MAD R (JSON public, pays France) : « MAD R » à 40,95 €, produit en rupture de stock (relevé du 2026-10-14).",
+        "url": "https://www.atk.store/en-fr/products/vxe-mad-r-series-wireless-mouse.json?country=FR",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-10-14"
       }
     ],
     "shape": "Symmetrical",
@@ -2937,8 +2962,8 @@
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": 41.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-13 : 41,95 € (boutique ATK pays France, fiche F1 V2, variante « Ultra Max 2.0 / Black » prix normal 63,95 €). Le relevé du 2026-10-12 donnait 40,95 € pour la même variante : la promotion d'un euro a pris fin, le prix publié suit la boutique officielle à sa date de relevé. Les autres modèles de la série sont plus chers : « Ultimate 2.0 » 54,95 € (39 ± 2 g) et « Extreme 2.0 » 77,95 €. Le 2026-10-13, le lien d'achat a été figé sur cette variante même (identifiant 47006581096666) : il ouvre désormais exactement l'édition dont le prix est publié, et non plus la page qui vend aussi « Ultimate 2.0 » (54,95 €) et « Extreme 2.0 » (77,95 €).",
+    "price_eur": 40.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 40,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre —, prix normal 63,95 €). Relevés précédents : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la variante figée au jour du relevé — ici celui du 2026-10-14.",
     "sources": [
       {
         "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
@@ -2970,7 +2995,7 @@
         "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — ATK Blazing Sky F1 V2 « à partir de »",
         "url": "https://www.atk.store/fr-fr/collections/souris",
         "fields": [
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-11"
       },
@@ -2999,7 +3024,6 @@
         "label": "Boutique ATK pays France — fiche officielle ATK Blazing Sky F1 V2 (spécifications, modèles, prix EUR)",
         "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse?country=FR",
         "fields": [
-          "price_eur",
           "price_note"
         ],
         "date_checked": "2026-10-12"
@@ -3016,8 +3040,7 @@
         "label": "ATK Store — F1 V2 Series, variante « Ultra Max 2.0 / Black » (prix EUR affiché en France, relevé du 2026-10-13 : 41,95 €, prix normal 63,95 €) — c'est la variante que le bouton d'achat ouvre",
         "url": "https://www.atk.store/products/atk-blazing-sky-f1-v2-series-esports-wireless-mouse",
         "fields": [
-          "price_note",
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-13"
       },
@@ -3025,9 +3048,18 @@
         "label": "ATK Store — ATK Blazing Sky F1 V2, variante « Ultra Max 2.0 / Black » (celle que le bouton d'achat fige depuis le 2026-10-13) : 41,95 €, prix normal 63,95 €",
         "url": "https://www.atk.store/en-fr/variants/47006581096666.json?country=FR",
         "fields": [
-          "price_eur"
+          "price_note"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "ATK Store — variante figée par le bouton « Ultra Max 2.0 / Black » (JSON public, pays France) : 40,95 €, prix normal 63,95 € (relevé du 2026-10-14).",
+        "url": "https://www.atk.store/en-fr/variants/47006581096666.json?country=FR",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-10-14"
       }
     ],
     "shape": "Symmetrical",

@@ -524,20 +524,23 @@ def test_duckbill_dimensions_resolved_from_the_manufacturer(mice):
 
 
 def test_duckbill_price_matches_the_only_variant_on_sale(mice):
-    """La Duckbill n'existe qu'en un modèle (« Ultra », trois coloris) : le prix retenu est le sien.
+    """La Duckbill n'existe qu'un modèle (« Ultra », trois coloris) : le prix retenu est le sien.
 
-    Relevé sur la boutique ATK pays France : 81,95 € le 2026-10-12, **82,95 € le 2026-10-13**
-    (prix normal 118,95 €, inchangé pour les trois coloris). Aucune variante moins chère n'existe,
-    donc le prix de la fiche est celui de ce modèle — et il suit la boutique, pas l'ancien relevé.
-    Le prix et la note gardent la trace des deux dates.
+    Relevés sur la boutique ATK pays France (prix normal 118,95 €, inchangé pour les trois coloris) :
+    **81,95 € le 2026-10-12, 82,95 € le 2026-10-13, 81,95 € le 2026-10-14**. La boutique fait osciller
+    ce prix d'un euro avec sa promotion « deal » : le catalogue publie le prix de la fiche **au jour
+    du relevé** (règle du 2026-10-12), et la note garde la trace des trois dates pour que la prochaine
+    relecture sache quoi comparer. Aucune variante moins chère n'existe : le prix de la fiche est celui
+    de ce modèle.
     """
     duck = mice["atk_duckbill"]
-    assert (duck.price_eur, duck.price_status) == (82.95, "verified")
+    assert (duck.price_eur, duck.price_status) == (81.95, "verified")
     assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields
                for s in duck.sources)
     assert "« Ultra »" in duck.price_note      # modèle unique : le prix est celui de ce modèle
-    assert "2026-10-13" in duck.price_note      # la date du relevé qui fait foi est écrite
-    assert "81,95" in duck.price_note           # l'ancien relevé reste expliqué, pas effacé
+    assert "2026-10-14" in duck.price_note      # la date du relevé qui fait foi est écrite
+    assert "81,95" in duck.price_note           # l'oscillation reste expliquée, pas effacée
+    assert "82,95" in duck.price_note           # les relevés précédents restent lisibles
 
 
 def test_chaque_prix_de_souris_est_date_par_une_source(mice):

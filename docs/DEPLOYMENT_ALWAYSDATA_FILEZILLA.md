@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.36).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.38).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 780 passed
+.venv/bin/python -m pytest -q                      # attendu : 784 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2411,6 +2411,16 @@ documentation et des outils.
 **Fichiers à envoyer** : `data/mouse_db.json` et `cogs/finder_flow.py`. Détail : §26.42 et §26.43 de
 `ROBUSTESSE_2026-10-12.md`.
 
+Le compteur du contrôle ci-dessus passe de 776 à **780** tests (trois tests neufs pour ces deux
+corrections, un ancien remplacé).
+
+**Vérification du 2026-10-14** : un chiffre publié dans les notes du catalogue (« 48 profils ») ne
+se rejouait pas ; il valait **207** sur la grille du rapport (235 sur la grille complète). Les notes portent
+la mesure datée, les documents distinguent « montrer les deux souris » de « changer de résultat »
+(**175 profils, 0,64 %**), et l'invariant des cotes identiques est tenu par un seul test enrichi — le
+doublon qui l'écrasait a été retiré. Aucun autre fichier à envoyer : hors commentaire daté, rien du
+catalogue ni du moteur ne change de comportement (0 profil de différence, mesuré).
+
 ---
 
 ### 12.37 Mise à jour du 2026-10-14 (28e) : la promesse « aucun redémarrage » est tenue par des tests
@@ -2434,15 +2444,27 @@ Le compteur du contrôle ci-dessus passe de 780 à **784** tests (trois tests ne
 garde-fou qui vérifie chaque fichier de code du dépôt).
 
 
-Le compteur du contrôle ci-dessus passe de 776 à **780** tests (trois tests neufs pour ces deux
-corrections, un ancien remplacé).
+### 12.38 Mise à jour du 2026-10-14 (29e) : quatre prix de boutique relus et corrigés
 
-**Vérification du 2026-10-14** : un chiffre publié dans les notes du catalogue (« 48 profils ») ne
-se rejouait pas ; il valait **207** sur la grille du rapport (235 sur la grille complète). Les notes portent
-la mesure datée, les documents distinguent « montrer les deux souris » de « changer de résultat »
-(**175 profils, 0,64 %**), et l'invariant des cotes identiques est tenu par un seul test enrichi — le
-doublon qui l'écrasait a été retiré. Aucun autre fichier à envoyer : hors commentaire daté, rien du
-catalogue ni du moteur ne change de comportement (0 profil de différence, mesuré).
+**Fichiers à envoyer** : **`data/mouse_db.json`** — le même fichier porte déjà la coque de l'U2 (§12.36) ;
+s'il n'a pas encore été téléversé, joindre aussi **`cogs/finder_flow.py`**. **Redémarrage** : inutile, le
+catalogue est relu à chaque interaction.
+
+- La veille au soir, la boutique ATK a republié ses prix (`updated_at` 2026-10-13T20:55, heure du Pacifique) :
+  la relecture du **2026-10-14** — les **25 liens ATK** fiche par fiche (`variants/<id>.json?country=FR`
+  pour les douze variantes figées) et les **10 liens Pulsar** (`products/<handle>.json`) — a relevé
+  **quatre écarts d'un euro**, tous à la baisse : X1 V2 « Ultra Max 2.0 / Black » **41,95 → 40,95 €**,
+  F1 V2 « Ultra Max 2.0 / Black » **41,95 → 40,95 €**, VXE MAD R **41,95 → 40,95 €** et Blazing Sky
+  Duckbill **82,95 → 81,95 €**. Le catalogue suit la page ouverte : prix corrigés, notes **datées** qui
+  disent l'oscillation du 12 au 14 octobre (promotion « deal » de la boutique), quatre sources datées
+  ajoutées (**269** au total). Les 21 autres liens ATK et les 10 Pulsar sont inchangés.
+- **Effet mesuré** (grille complète, 27 170 profils, `tools/db_effect.py --avant /tmp/mouse_db_avant_c79.json
+  --grille complete`) : **0 profil** change de recommandation.
+- **Artefacts et verrous** : les lignes du tableau §8.1 et le test qui fige le prix du Duckbill sont alignés
+  (les trois lieux sont solidaires — en corriger un seul fait rougir la suite) ; les trois aperçus PNG et la
+  matrice sont régénérés sur le catalogue corrigé (empreinte des aperçus : `49d119ea3409`). Suite
+  complète : **784 passed**. Détail : §7.7 de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` et §26.45 de
+  `ROBUSTESSE_2026-10-12.md`.
 
 ---
 
