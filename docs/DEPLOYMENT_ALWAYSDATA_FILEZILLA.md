@@ -218,7 +218,11 @@ il faut donc les publier, puis indiquer au bot où les trouver.
 
 Sans `IMAGES_BASE_URL`, le bot fonctionne normalement mais **aucun embed n'affiche d'image** (aucune erreur, aucun plantage).
 Le fichier `assets/images.json` (et le `.env`) est relu à chaque interaction : **aucun redémarrage** n'est nécessaire après
-une modification.
+une modification. Il en va de même des **fichiers de données** — `data/mouse_db.json` et
+`data/commercial_links.json` — au **parcours suivant** : c'est écrit dans le code (docstring de
+`compute_selection`) et **trois tests le refusent désormais** (`tests/test_donnees_a_chaud.py`) : un cache
+ajouté dans un chargeur, ou une lecture sortie du calcul, les fait rougir. Un catalogue remplacé est donc
+pris en compte **sans redémarrer le bot** — jamais l'ancien prix, jamais l'ancien nom.
 
 ---
 
@@ -2407,11 +2411,34 @@ documentation et des outils.
 **Fichiers à envoyer** : `data/mouse_db.json` et `cogs/finder_flow.py`. Détail : §26.42 et §26.43 de
 `ROBUSTESSE_2026-10-12.md`.
 
+---
+
+### 12.37 Mise à jour du 2026-10-14 (28e) : la promesse « aucun redémarrage » est tenue par des tests
+
+**Fichiers à envoyer** : **aucun** — un fichier de tests et de la documentation. Rien à téléverser.
+
+- Ce guide promet que remplacer un **fichier de données** suffit (catalogue, liens d'achat) : le bot le relit
+  au parcours suivant. La promesse était écrite dans le code mais tenue par aucun test : un `lru_cache`
+  ajouté « pour la performance », ou un catalogue lu une fois au démarrage, l'aurait cassée **en silence** —
+  le membre aurait vu l'ancien prix sans que rien ne le signale. Trois tests neufs le refusent désormais
+  (`tests/test_donnees_a_chaud.py`) : souris ajoutée au catalogue, lien remplacé, souris renommées entre deux
+  parcours — chacun doit apparaître **immédiatement**. Contre-épreuves : cache dans le chargeur de catalogue
+  → 2 rouges, cache dans le chargeur de liens → 1 rouge, catalogue capturé au démarrage → 4 rouges.
+- Le même passage a clos le point ouvert « `OSError` de `_save` non testé » : l'enregistrement des parcours
+  attrape déjà `(OSError, ValueError)` et **ne lève jamais** ; la branche `OSError` est bien atteinte et
+  **tenue par un test** — retirer `OSError` de l'`except` fait rougir
+  `tests/test_session.py::test_un_dossier_a_la_place_du_fichier_d_etat_ne_bloque_pas_le_demarrage`
+  (mutation jouée le 2026-10-14).
+
+Le compteur du contrôle ci-dessus passe de 780 à **784** tests (trois tests neufs, plus un cas du
+garde-fou qui vérifie chaque fichier de code du dépôt).
+
+
 Le compteur du contrôle ci-dessus passe de 776 à **780** tests (trois tests neufs pour ces deux
 corrections, un ancien remplacé).
 
-**Vérification du 2026-10-14** : un chiffre publié dans les notes du catalogue (« 48 profils ») ne se
-rejouait pas ; il valait **207** sur la grille du rapport (235 sur la grille complète). Les notes portent
+**Vérification du 2026-10-14** : un chiffre publié dans les notes du catalogue (« 48 profils ») ne
+se rejouait pas ; il valait **207** sur la grille du rapport (235 sur la grille complète). Les notes portent
 la mesure datée, les documents distinguent « montrer les deux souris » de « changer de résultat »
 (**175 profils, 0,64 %**), et l'invariant des cotes identiques est tenu par un seul test enrichi — le
 doublon qui l'écrasait a été retiré. Aucun autre fichier à envoyer : hors commentaire daté, rien du

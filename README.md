@@ -551,6 +551,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   occupaient, et laquelle des souris restantes reprend la place — tandis qu'un catalogue **enrichi** reste
   refusé dans tous les cas.
 - `tests/test_flow_effect.py` : le mesureur d'effet du parcours recharge la version antérieure du code (`git show`) et refuse une référence inconnue avec un message lisible, sans trace Python.
+- `tests/test_donnees_a_chaud.py` : **les fichiers de données sont relus à chaque appel** — le catalogue, les liens commerciaux et le calcul lui-même (une souris ajoutée ou renommée dans `data/mouse_db.json` apparaît au parcours suivant, sans redémarrer le bot). C'est la promesse du guide de déploiement, tenue par trois tests : un cache ajouté dans un chargeur, ou une lecture sortie de `compute_selection`, les fait rougir.
 - `tests/test_catalog_hardening.py` : catalogue hostile (valeurs numériques, booléens, listes, dictionnaires, chaînes) refusé au chargement avec un message clair, jamais au milieu d'une réponse d'interaction.
 - `tests/test_build_mouse_db_guard.py` : garde-fou du générateur (`tools/build_mouse_db.py`) — il refuse d'écraser le catalogue réel et n'écrit qu'avec `--force`, en une seule fois.
 - `tests/test_doc_coherence.py` : chaque pourcentage des documents doit correspondre à l'ensemble cité (« N sur M ») — le contrôle qui a rattrapé C48, limites comprises.

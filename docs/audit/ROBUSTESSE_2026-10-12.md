@@ -4041,3 +4041,38 @@ coque de l'U2 pointée ailleurs (`atk_u2_bis`) → **3 rouges**. Voir le tableau
 **Fichiers à envoyer** : `data/mouse_db.json` (notes et dates corrigées, **aucun** changement de comportement —
 mesuré : 0 profil de différence avant/après sur les deux grilles) et `cogs/finder_flow.py` (palier de la
 2e place, inchangé depuis le commit précédent hors commentaire daté).
+
+## 26.44 59e passe — deux promesses écrites dans le code, tenues par des tests (2026-10-14)
+
+### 26.44.1 « Remplacer le fichier suffit » : elle n'était tenue par rien
+
+Le guide de déploiement promet qu'un fichier de données remplacé sur le serveur est pris en compte **sans
+redémarrer le bot**, et `compute_selection` le dit dans sa docstring (« lecture à chaud du catalogue, les
+données ne sont jamais mises en cache »). Mais **aucun test ne relisait un fichier modifié entre deux
+appels** : un `lru_cache` ajouté « pour la performance », ou un catalogue capturé au démarrage, aurait cassé
+la promesse en silence — le membre aurait vu l'ancien prix, l'ancien nom, l'ancienne forme, et personne
+n'aurait su pourquoi. C'est la même famille que C61 (un artefact figé que plus personne ne relisait).
+
+Trois tests neufs (`tests/test_donnees_a_chaud.py`) refusent les trois façons de casser la promesse :
+
+| Ce qui est vérifié | Contre-épreuve jouée (fichiers restaurés octet à octet) |
+|---|---|
+| Le chargeur de catalogue relit le fichier (souris ajoutée → visible au 2e appel) | cache alimenté dans `load_catalog` → **2 rouges** |
+| Le chargeur de liens d'achat relit le fichier (URL remplacée → visible au 2e appel) | cache alimenté dans `load_commercial_links` → **1 rouge** |
+| Le calcul lui-même relit le catalogue (toutes les souris renommées apparaissent au parcours suivant) | catalogue lu une seule fois (constante de module) → **4 rouges** |
+
+La troisième contre-épreuve est la plus instructive : elle fait aussi rougir `tests/test_db_effect.py` (deux
+tests) et `tests/test_flow.py::test_un_catalogue_illisible_dit_la_vraie_raison_au_membre` — la lecture à
+chaud était donc déjà **indirectement** tenue par l'outillage de mesure, sans qu'aucun test ne l'énonce.
+
+### 26.44.2 « `_save` ne lève jamais » : le point ouvert est clos
+
+Le point « `OSError` de `_save` non testé » traînait dans les points ouverts. Vérifié le 2026-10-14 :
+l'enregistrement des parcours attrape `(OSError, ValueError)` et la branche `OSError` **est** atteinte et
+protégée — **retirer `OSError` de l'`except` fait rougir un test**
+(`tests/test_session.py::test_un_dossier_a_la_place_du_fichier_d_etat_ne_bloque_pas_le_demarrage` :
+`IsADirectoryError` est un `OSError`). Le cas du disque plein et des droits suit exactement la même branche
+que celui du dossier, un cas réel déjà testé. Le point est **clos**, pas contourné : la preuve est la
+mutation, pas une relecture.
+
+**Fichiers à envoyer** : **aucun** (un fichier de tests et des documents).
