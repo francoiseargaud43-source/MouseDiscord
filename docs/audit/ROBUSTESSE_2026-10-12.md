@@ -4343,3 +4343,40 @@ banc complet **0 problème**, rapport statistique inchangé. Aucun fichier du bo
 deux tests, des documents).
 
 **Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
+
+## 26.50 63e passe — le chiffre périmé que deux docstrings avaient gardé (2026-10-14)
+
+**Ce qui a été trouvé.** Le journal de la 58e passe (§26.43.2) conclut noir sur blanc : « les documents
+distinguent les deux comptages et **ne citent plus 178** ». C'est vrai des notes du catalogue et des
+documents — mais **deux docstrings de `tests/test_data.py`** citaient encore ce chiffre, sous deux formes :
+« 178 profils sur 27 170 (0,66 %) **affichaient les deux** dans le même résultat » et « Reproductible :
+`tools/db_effect.py --avant <catalogue d'avant> --grille complete` — 178 profils sur 27 170 (0,66 %)
+**changeaient** ». Deux erreurs en une, la même que celle corrigée en 58e : 178 était le comptage du
+**moteur d'avant le palier de la 2e place**, et ce n'était pas le comptage de la phrase (celui des profils
+qui montrent les deux souris).
+
+**Ce qui a été mesuré.** Le comptage a été refait sur les deux grilles, avec le catalogue d'avant
+reconstruit (les deux `shell_id` de la paire U2 retirés) et le moteur livré :
+
+| Mesure (coque non enregistrée → enregistrée) | 27 170 itérations (grille d'alors) | 21 736 entrées (grille corrigée, 62e passe) |
+|---|---|---|
+| L'U2 **et** l'U2 V2 Ultimate dans le même résultat | **235** (0,86 %) | **235** (1,08 %) |
+| Profils dont le résultat **change** | **175** (0,64 %) | **175** (0,81 %) |
+
+Les doublons Fingertip ne montraient jamais la paire et ne changeaient jamais : le dédoublonnage de la 62e
+passe déplace les **pourcentages**, pas les comptes. Le chiffre de 178, lui, ne se rejoue sur aucune des
+deux grilles.
+
+**Ce qui a été corrigé.** Les deux docstrings portent les chiffres remesurés, avec la grille de chaque
+mesure (175 sur 21 736 aujourd'hui, 235 sur les 27 170 itérations d'alors), et disent d'où venait le 178.
+
+**Verrou.** `tests/test_doc_coherence.py::test_un_chiffre_perime_ne_reste_pas_publie_comme_une_mesure`
+refuse qu'un fichier qui **publie** une mesure (README, `data/`, code, tests) resserve ce chiffre comme un
+nombre de profils. Le journal des constats (`docs/audit/`) garde le droit de le citer : c'est ainsi qu'il
+explique la correction. Mutation jouée — replacer 178 devant « profils » dans `tests/test_data.py` →
+**1 échec**.
+
+**Mesure** : **791 tests verts** (790 avant, un test neuf), `pyflakes` 0, `privacy_scan` 0 violation,
+banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un document).
+
+**Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).

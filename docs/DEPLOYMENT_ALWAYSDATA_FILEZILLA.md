@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.42).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.43).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 790 passed
+.venv/bin/python -m pytest -q                      # attendu : 791 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2530,6 +2530,23 @@ jamais ces outils).
   des grilles outils ↔ banc). Trois mutations jouées, **trois rouges**. Le compteur du contrôle ci-dessus
   passe de 788 à **790** tests. Les deux documents ne changent pas. Détail : §26.49 de
   `ROBUSTESSE_2026-10-12.md`.
+
+### 12.43 Mise à jour du 2026-10-14 (34e) : le chiffre périmé que deux docstrings avaient gardé
+
+**Fichiers à envoyer** : **aucun** — un test et des documents. **Redémarrage** : inutile.
+
+- La 58e passe avait retiré de partout le chiffre « 178 profils » de la paire ATK U2 / U2 V2 Ultimate (un
+  comptage du moteur d'avant le palier de la 2e place) et écrit que plus rien ne le citait. Deux
+  docstrings de `tests/test_data.py` le citaient encore, sous les **deux** formes fausses.
+- Remesuré sur les deux grilles avec le catalogue d'avant reconstruit : **235** profils montraient les deux
+  souris (0,86 % des 27 170 itérations d'alors, **1,08 %** des 21 736 entrées distinctes de la grille
+  corrigée) et **175** changeaient de résultat (0,64 % puis **0,81 %**). Les doublons Fingertip ne
+  touchaient ni l'un ni l'autre : le dédoublonnage déplace les pourcentages, pas les comptes.
+- Corrigé : les deux docstrings portent les chiffres remesurés et la grille de chaque mesure. Verrou :
+  `tests/test_doc_coherence.py::test_un_chiffre_perime_ne_reste_pas_publie_comme_une_mesure` refuse qu'un
+  fichier publiant une mesure resserve ce chiffre comme un nombre de profils (le journal garde le droit de
+  le citer pour expliquer la correction) ; mutation → 1 échec. Le compteur du contrôle ci-dessus passe de
+  790 à **791** tests. Détail : §26.50 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

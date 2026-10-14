@@ -118,3 +118,33 @@ def test_un_pourcentage_peut_se_rapporter_a_l_ensemble_de_la_ligne_precedente():
     texte = ("Le test affirmait « 1 profil sur 960 avant, **101 sur 960 après** » le correctif — soit\n"
              "10,5 % des profils. La mesure ne se reproduit pas : 4 sur 1 029 pour l'ancienne règle.\n")
     assert defauts_d_un_texte(texte, "exemple") == []
+
+
+CHIFFRE_PERIME = re.compile(r"\b178\s+profils|\*\*178\b")
+PUBLICATIONS = ([ROOT / "README.md"] + sorted((ROOT / "data").rglob("*.json"))
+                + sorted((ROOT / "tests").rglob("*.py")) + sorted((ROOT / "tools").rglob("*.py")))
+
+
+def test_un_chiffre_perime_ne_reste_pas_publie_comme_une_mesure():
+    """Le chiffre qui ne se rejoue pas doit disparaître de partout où l'on publie une mesure.
+
+    Constat (57e passe, §26.42 du ROBUSTESSE) : la paire ATK U2 / U2 V2 Ultimate a fait circuler un
+    chiffre périmé — 178, présenté comme un nombre de profils à 0,66 % — un comptage du **moteur
+    d'avant** le palier de la 2e place, périmé au moment même où il était écrit. La 58e passe l'a retiré des documents et des notes du catalogue, et a annoncé
+    que plus rien ne le citait : **deux docstrings de `tests/test_data.py` l'ont gardé** jusqu'au
+    2026-10-14 (63e passe). Les chiffres justes, remesurés sur les deux grilles : **235** profils
+    montraient les deux souris (0,86 % des 27 170 itérations d'alors, 1,08 % des 21 736 entrées
+    distinctes), **175** changeaient de résultat (0,64 % puis 0,81 %).
+
+    Le journal des constats (`docs/audit/`) a le droit de citer le chiffre fautif — c'est ainsi qu'il
+    explique la correction ; les fichiers qui **publient** une mesure (README, données, code, tests) ne
+    l'ont pas. Mutation jouée : replacer 178 juste devant « profils » dans `tests/test_data.py` →
+    1 échec.
+    """
+    coupables = [
+        f"{f.relative_to(ROOT)}:{numero}"
+        for f in PUBLICATIONS
+        for numero, ligne in enumerate(f.read_text(encoding="utf-8").splitlines(), start=1)
+        if CHIFFRE_PERIME.search(ligne)
+    ]
+    assert coupables == [], f"chiffre périmé republié comme une mesure : {coupables}"

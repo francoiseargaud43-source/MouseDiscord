@@ -196,9 +196,12 @@ def test_deux_entrees_de_meme_cote_partagent_la_meme_coque(mice):
     `shell_id` reste vide, le moteur ne peut pas appliquer la règle du propriétaire du 2026-10-12
     (« deux places du résultat ne montrent jamais la même coque ») — et c'est exactement ce qui est
     arrivé à l'ATK Blazing Sky U2 / U2 Plus / U2 Ultimate et à l'ATK U2 V2 Ultimate, dont les notes
-    disaient « même coque, mêmes cotes » sans que le champ soit rempli : **178 profils sur 27 170
-    (0,66 %)** affichaient les deux dans le même résultat (`tools/db_effect.py --avant <catalogue
-    d'avant>`). Trouvé et corrigé le 2026-10-13 (57e passe).
+    disaient « même coque, mêmes cotes » sans que le champ soit rempli : **235 profils** affichaient les
+    deux dans le même résultat — 0,86 % des 27 170 itérations d'alors, 1,08 % des 21 736 entrées
+    distinctes de la grille corrigée le 2026-10-14 (62e passe) — et **175** changeaient de résultat une
+    fois la coque enregistrée. Le « 178 » qui traînait ici était le comptage du **moteur d'avant** le
+    palier de la 2e place : chiffre périmé, jamais rejouable, retiré le 2026-10-14 (63e passe). Trouvé
+    et corrigé le 2026-10-13 (57e passe).
 
     Une coque enregistrée ne s'arrête pas aux cotes : les invariants de bosse et de hauteur de boutons
     (ci-dessus) tiennent la même pièce de plastique des deux côtés. Ici, on refuse seulement qu'elles
@@ -222,8 +225,10 @@ def test_deux_entrees_de_meme_cote_partagent_la_meme_coque(mice):
 def test_la_coque_u2_change_le_resultat_sur_deux_profils_reels():
     """Le cas corrigé le 2026-10-13, mesuré sur deux profils réels (les deux sens de la règle).
 
-    Reproductible : `python tools/db_effect.py --avant <catalogue d'avant> --grille complete` — **178
-    profils sur 27 170 (0,66 %)** changeaient, tous pour retirer une coque déjà affichée.
+    Reproductible : `python tools/db_effect.py --avant <catalogue d'avant> --grille complete` — **175
+    profils sur 21 736 (0,81 %)** changent, tous pour retirer une coque déjà affichée (235 sur les
+    27 170 itérations d'alors, doublons compris : 0,86 % pour les deux affichées, 0,64 % pour le
+    changement).
 
     Profil **palm 200 × 60, mode Économique** : la préférence agit. Avant, la 3e place reprenait la
     coque du match idéal (ATK U2 puis ATK U2 V2 Ultimate) ; elle prend maintenant l'ATK GHOST Ultimate,
