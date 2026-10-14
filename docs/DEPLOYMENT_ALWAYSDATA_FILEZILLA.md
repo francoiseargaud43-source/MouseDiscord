@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.54).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.55).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 823 passed
+.venv/bin/python -m pytest -q                      # attendu : 824 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2760,6 +2760,24 @@ Les documents, les tests et les aperçus accompagnent.
   peuvent contenir `budget_tier`, et le README doit porter la phrase vraie. Mutation rejouée (lecture
   plausible ajoutée au moteur) : 1 rouge. Le compteur du contrôle ci-dessus passe de 822 à **823** tests.
 - Aucun changement pour le bot : ni code, ni donnée, ni pixel. Détail : §26.61 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.55 Mise à jour du 2026-10-14 (46e) : la justification du catalogue n'est affichée nulle part
+
+**Fichiers à envoyer** : **aucun**. **Redémarrage** : inutile.
+
+- Deuxième champ du catalogue décrit pour un rôle qu'il n'a pas : le README présentait `fit_rationale`
+  comme un « texte affiché dans le résultat ». Il est renseigné pour les 36 souris, mais n'apparaît dans
+  aucun message — le bloc « 🧭 Pourquoi ce choix ? » vient de `selection.explanation`, calculé par le
+  moteur. Même famille que `budget_tier` (§12.54) ; corrigé le même jour, dans le README.
+- Le contrôle de la mise à jour précédente est devenu **paramétré** (2 champs × 2 vérifications :
+  aucun lecteur dans le bot, phrase du README juste), avec mutation rejouée : 1 rouge.
+- Le balayage complet du tableau des champs a **confirmé** le reste : `sources` obligatoire pour
+  `verified`/`single_source`, départage capteur > MCU > switchs, affichage de `shape`, `grip_width_mm`
+  nul partout comme annoncé.
+- Aucun changement pour le bot. Le compteur du contrôle ci-dessus passe de 823 à **824** tests.
+  Détail : §26.62 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

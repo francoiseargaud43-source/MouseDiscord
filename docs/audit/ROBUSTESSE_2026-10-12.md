@@ -4951,3 +4951,42 @@ vide, bytecode purgé.
 
 **Ce que la correction ne change pas.** Aucun code, aucun texte affiché, aucune donnée : seul le rôle
 *décrit* du champ change de statut. Suite de tests : 822 → **823**. **Fichiers à envoyer** : **aucun**.
+
+---
+
+## 26.62 75e passe — la deuxième étiquette sans lecteur, trouvée le même jour (2026-10-14)
+
+**Ce qui a été trouvé.** Après `budget_tier` (§26.61), le balayage a été étendu à **tout** le tableau des
+champs du README : chacun de ses « Usages » a été confronté au code livré. Un deuxième champ ne résiste
+pas à l'examen : `fit_rationale`, décrit comme « **Texte affiché dans le résultat** ».
+
+Vérification : `fit_rationale` est renseigné pour **les 36 souris** (et exigé dès qu'un `*_grip_fit`
+l'est, `tests/test_catalog_lookup.py`), mais il n'apparaît dans **aucun** message. Le bloc
+« 🧭 Pourquoi ce choix ? » — celui que le propriétaire a demandé le 2026-10-11 — est rempli par
+`selection.explanation`, un texte **calculé** par le moteur (`_dimensions_embed(session, ideal,
+selection.explanation)`, `cogs/finder_flow.py:1124`). Le seul autre endroit qui cite ces phrases est le
+générateur d'exemple `tools/build_mouse_db.py`, qui les écrit : personne ne les lit.
+
+**Même cause, même correction.** Le README dit maintenant le rôle réel du champ (justification écrite de
+la compatibilité de prise, **jamais affichée** — et il nomme la source de ce qui est affiché). Le
+contrôle de la passe précédente, écrit pour un champ, est devenu **paramétré** : il porte désormais sur
+les deux, et il exige, pour chacun, la phrase vraie du README **et** l'absence de la phrase périmée
+(« départage visuel uniquement », « Texte affiché dans le résultat »).
+
+Ce que le balayage a **confirmé** au passage, sans rien changer : `sources` est bien obligatoire pour
+toute donnée `verified` ou `single_source` (aucune souris du catalogue n'est dans ce cas sans source —
+et `single_source` qualifie **la donnée**, pas le nombre de sources : quatre souris sont `single_source`
+sur les cotes avec 5 à 8 sources au total, ce qui est cohérent) ; le départage du mode « Peu importe le
+prix » suit bien capteur > MCU > switchs puis polling (`utils/selection.py:97-100`) ; `shape` est
+affichée sur la ligne du match idéal et de l'alternative ; `grip_width_mm` existe au schéma et vaut
+`null` partout (aucune mesure), comme le README le dit.
+
+**Verrou.** Le test paramétré de `tests/test_code_hygiene.py` (2 champs, chacun vérifié des deux côtés :
+aucun lecteur dans le bot, phrase du README juste).
+
+**Mutation jouée** : afficher le champ dans la ligne descriptive (`if mouse.fit_rationale:
+parts.append(...)`) → **1 rouge**. Moteur restauré, `git diff -- cogs/` vide, bytecode purgé, aperçus
+inchangés.
+
+**Ce que la correction ne change pas.** Aucun code, aucun texte affiché, aucune donnée. Suite de tests :
+823 → **824**. **Fichiers à envoyer** : **aucun**.

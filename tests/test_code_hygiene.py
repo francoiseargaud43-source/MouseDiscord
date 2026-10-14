@@ -15,6 +15,8 @@ import py_compile
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))     # les outils du dépôt s'importent comme des modules
 
@@ -286,27 +288,38 @@ def test_le_controle_ne_signale_pas_un_ensemble_de_constantes(tmp_path):
     assert diagnostic.statut == check_bytecode.A_JOUR, diagnostic
 
 
-def test_l_etiquette_de_gamme_du_catalogue_n_est_lue_par_aucun_module_du_bot():
-    """`budget_tier` classe le catalogue : le bot ne la lit nulle part — ni au tri, ni à l'affichage.
+CHAMPS_SANS_LECTEUR_DANS_LE_BOT = {
+    # champ du catalogue → (phrase vraie exigée dans le README, phrase périmée interdite)
+    "budget_tier": ("aucun module du bot ne la lit", "départage visuel uniquement"),
+    "fit_rationale": ("le bot ne l'affiche pas", "Texte affiché dans le résultat"),
+}
 
-    Défaut trouvé le 2026-10-14 : le README annonçait ce champ comme un « départage visuel » et le
-    constat d'audit le disait « conservé et **affiché** pour information ». Vérifié sur le code livré :
-    aucun module du bot ne le lit. Le seul endroit qui le touche est le schéma (`utils/catalog.py`, qui
-    le valide) et la dataclass (`utils/models.py`, qui le porte) ; le récapitulatif affiche la gamme
-    choisie par le membre, pas l'étiquette de la souris. Le contrôle tient le document et le code
-    ensemble : le jour où le bot s'en servira, ce test tombera et forcera la mise à jour du README.
+
+@pytest.mark.parametrize("champ, phrases", sorted(CHAMPS_SANS_LECTEUR_DANS_LE_BOT.items()))
+def test_les_champs_du_catalogue_sans_lecteur_sont_dits_tels_quels(champ, phrases):
+    """Un champ que rien ne lit doit être **décrit** comme tel, jamais autrement.
+
+    Défaut trouvé le 2026-10-14, deux fois dans la même heure : le README annonçait `budget_tier`
+    comme un « départage visuel » (et le constat d'audit le disait « affiché ») alors qu'aucun module
+    ne le lit ; puis il annonçait `fit_rationale` comme un « texte affiché dans le résultat » alors
+    que le bloc « 🧭 Pourquoi ce choix ? » vient du calcul (`selection.explanation`) — le texte du
+    catalogue n'apparaît dans **aucun** message, pour aucune des 36 souris. Dans les deux cas, le seul
+    code qui touche le champ est le schéma (`utils/catalog.py`) et la dataclass (`utils/models.py`).
+
+    Le contrôle tient le document et le code ensemble : le jour où le bot lira l'un de ces champs, ce
+    test tombera et forcera la mise à jour du README — dans ce sens-là.
     """
+    phrase_vraie, phrase_perimee = phrases
     lecteurs_autorises = {"utils/catalog.py", "utils/models.py"}
     lecteurs = {
         chemin.relative_to(ROOT).as_posix()
         for chemin in FICHIERS_DU_BOT
-        if "budget_tier" in chemin.read_text(encoding="utf-8")
+        if champ in chemin.read_text(encoding="utf-8")
     }
     assert lecteurs == lecteurs_autorises, (
-        "un module du bot lit `budget_tier` : mettre le README à jour et élargir ce contrôle — "
+        f"un module du bot lit `{champ}` : mettre le README à jour et élargir ce contrôle — "
         f"lecteurs trouvés : {sorted(lecteurs)}"
     )
-    # et le document doit dire la même chose que ce contrôle
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "aucun module du bot ne la lit" in readme
-    assert "départage visuel uniquement" not in readme
+    assert phrase_vraie in readme, f"le README ne dit pas que `{champ}` n'est pas lu"
+    assert phrase_perimee not in readme, f"le README garde la description périmée : {phrase_perimee!r}"

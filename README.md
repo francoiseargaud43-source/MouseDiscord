@@ -299,7 +299,7 @@ pour un statut `verified`.
 | `hump_position` | `Front`, `Mid`, `Rear`, `Mid-Front`, `Mid-Rear`, `Any` ou `Inconnu`. |
 | `button_height` | `Low`, `Mid`, `High` ou `Inconnu`. |
 | `fit_status` | `owner_spec` (cahier des charges, ou coque jumelle de la même forme), `manufacturer_guide` (recommandation écrite du fabricant), `third_party_guide` (recommandation écrite d'une source tierce autorisée — mouseshape.com — pour une prise que le fabricant ne publie pas : jamais « Faible », jamais à la place d'une valeur fabricant) ou `unverified` (tout `Inconnu`). |
-| `fit_rationale` | Texte affiché dans le résultat. |
+| `fit_rationale` | Justification écrite de la compatibilité de prise (renseignée pour les 36 souris, obligatoire dès qu'un `*_grip_fit` l'est) : **le bot ne l'affiche pas** — le bloc « 🧭 Pourquoi ce choix ? » vient du calcul (`selection.explanation`), pas du catalogue (contrôle : `tests/test_code_hygiene.py`). |
 
 **Commercial** (ne modifie jamais le score géométrique)
 
