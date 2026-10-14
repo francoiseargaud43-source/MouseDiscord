@@ -9,6 +9,8 @@ verrouillent la lecture **par rôle** et le contrôle des libellés de la troisi
 from __future__ import annotations
 
 import sys
+
+import discord
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,7 +18,8 @@ sys.path.insert(0, str(ROOT))
 
 from cogs.finder_flow import compute_selection, result_slots, results_embeds, third_slot_title  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
-from tools.qa_flow_matrix import (check_result_message, deux_places_meme_coque, grille,
+from tools.qa_flow_matrix import (check_embed_limits, check_result_message, check_view_limits,
+                                  deux_places_meme_coque, grille,
                                   message_text, places_au_prix_non_verifie,
                                   profile)  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
@@ -239,3 +242,106 @@ def test_les_places_manquantes_viennent_toutes_d_un_budget_personnalise():
     assert pleins >= 20, f"échantillon sans profil complet : il ne prouverait rien ({pleins})"
     hors_budget_serre = [t for t in trous if t[3] is not BudgetMode.CUSTOM or t[4] not in (10.0, 25.0, 45.0)]
     assert hors_budget_serre == [], f"des trous hors budget épuisé : {hors_budget_serre}"
+
+
+def _bloc(titre="", description="", pied="", auteur="", champs=()):
+    embed = discord.Embed(title=titre or None, description=description or None)
+    if pied:
+        embed.set_footer(text=pied)
+    if auteur:
+        embed.set_author(name=auteur)
+    for nom, valeur in champs:
+        embed.add_field(name=nom, value=valeur)
+    return embed
+
+
+def test_le_banc_mesure_toutes_les_limites_d_un_bloc_discord():
+    """Un bloc hors limites est signalé — titre, pied et auteur compris.
+
+    Le banc ne vérifiait que cinq des neuf limites d'un bloc jusqu'au 2026-10-14 : un titre de plus de
+    256 caractères, un pied de plus de 2 048 et un auteur de plus de 256 passaient sans un mot. Ils sont
+    désormais mesurés, et le bloc conforme ne produit rien (sinon le contrôle serait bruyant).
+    """
+    conforme = _bloc(titre="🎯 Votre recommandation", description="court", pied="Repère",
+                     auteur="AzeMouse", champs=[("🥇 Le match idéal", "ATK Z1 · 59,95 € · **75 %**")])
+    assert check_embed_limits([conforme]) == []
+    assert check_embed_limits([_bloc(titre="t" * 257)]) != []
+    assert check_embed_limits([_bloc(pied="p" * 2049)]) != []
+    assert check_embed_limits([_bloc(auteur="a" * 257)]) != []
+    assert check_embed_limits([_bloc(description="d" * 4097)]) != []
+    assert check_embed_limits([_bloc(champs=[("n" * 257, "v")])]) != []
+    assert check_embed_limits([_bloc(champs=[("n", "v" * 1025)])]) != []
+    # Le total (6 000) additionne titre, description, champs, pied ET auteur.
+    # 256 + 4 096 + 2 048 + 256 = 6 656 caractères : seule la somme dépasse (chaque partie est à sa
+    # limite), donc c'est bien le contrôle du total qui parle.
+    gros = _bloc(titre="t" * 256, description="d" * 4096, pied="p" * 2048, auteur="a" * 256)
+    assert any("6000" in probleme for probleme in check_embed_limits([gros]))
+    assert check_embed_limits([conforme] * 11) != []          # plus de dix blocs
+
+
+def test_le_banc_mesure_toutes_les_limites_d_une_vue_discord():
+    """Un composant hors limites est signalé — ces limites-là, Discord les refuse à l'envoi.
+
+    `discord.py` ne refuse à la construction que le nombre d'enfants (25) et les rangées (0 à 4) :
+    un libellé de bouton de 100 caractères, une adresse de 620, un `custom_id` de 150 et un menu à
+    30 options **passent** la construction et sont refusés par Discord **à l'envoi** — le membre ne
+    verrait alors aucun résultat, sans erreur lisible. Le banc les mesure depuis le 2026-10-14.
+    """
+    conforme = discord.ui.View()
+    conforme.add_item(discord.ui.Button(label="Acheter ATK Z1 Ultra", url="https://exemple.test/z1"))
+    conforme.add_item(discord.ui.Select(options=[discord.SelectOption(label="Palm Grip", value="p")]))
+    assert check_view_limits(conforme) == []
+
+    long_libelle = discord.ui.View()
+    long_libelle.add_item(discord.ui.Button(label="l" * 100, url="https://exemple.test/z1"))
+    assert check_view_limits(long_libelle) != []
+
+    longue_url = discord.ui.View()
+    longue_url.add_item(discord.ui.Button(label="ok", url="https://exemple.test/" + "x" * 600))
+    assert any("adresse" in probleme for probleme in check_view_limits(longue_url))
+
+    long_id = discord.ui.View()
+    long_id.add_item(discord.ui.Button(label="ok", custom_id="c" * 150))
+    assert any("custom_id" in probleme for probleme in check_view_limits(long_id))
+
+    trente_options = discord.ui.View()
+    trente_options.add_item(discord.ui.Select(
+        options=[discord.SelectOption(label=f"option {i}", value=f"v{i}") for i in range(30)]))
+    assert any("options" in probleme for probleme in check_view_limits(trente_options))
+
+    longue_option = discord.ui.View()
+    longue_option.add_item(discord.ui.Select(
+        options=[discord.SelectOption(label="x" * 120, value="v",
+                                      description="d" * 120)]))
+    problemes = check_view_limits(longue_option)
+    assert any("libellé d'option" in p for p in problemes)
+    assert any("description d'option" in p for p in problemes)
+
+    assert check_view_limits(discord.ui.View()) != []          # vue vide
+
+
+def test_le_banc_releve_la_limite_la_plus_remplie_du_passage():
+    """La ligne de synthèse nomme le composant le plus proche de son plafond, et se rejoue.
+
+    « 0 dépassement » ne dit pas si l'on passe à un cheveu d'une limite ou si l'on a de la place : le
+    banc relève donc la plus grande valeur vue pour chaque limite, et publie la plus **remplie** (en
+    fraction de sa limite — un compte d'options et une longueur de texte ne se soustraient pas).
+    """
+    import tools.qa_flow_matrix as banc_mod
+
+    sauvegarde = dict(banc_mod.MARGES)
+    try:
+        banc_mod.MARGES.clear()
+        assert "aucune mesure" in banc_mod.resume_des_marges()      # banc interrompu : le dire
+        check_embed_limits([_bloc(titre="t" * 100, champs=[("n", "v" * 20)])])
+        assert banc_mod.MARGES["titre de bloc"] == (100, 256)
+        assert banc_mod.MARGES["valeur de champ"] == (20, 1024)
+        assert "titre de bloc" in banc_mod.resume_des_marges()      # 100/256 > 20/1024
+        vue = discord.ui.View()
+        vue.add_item(discord.ui.Select(options=[discord.SelectOption(label="Palm Grip", value="p",
+                                                                     description="d" * 99)]))
+        check_view_limits(vue)
+        assert "« description d'option » — 99/100 (99 % de la limite)" in banc_mod.resume_des_marges()
+    finally:
+        banc_mod.MARGES.clear()
+        banc_mod.MARGES.update(sauvegarde)

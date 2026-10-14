@@ -4503,3 +4503,75 @@ banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un regist
 
 **Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
 
+## 26.54 67e passe — le banc ne mesurait que cinq limites Discord sur dix-sept (2026-10-14)
+
+**Ce qui a été trouvé.** Le banc d'essai est l'instrument que le dépôt cite pour dire « 0 dépassement des
+limites Discord » (§26.1, §26.34). En listant les limites une par une, il en mesurait **cinq** : nombre de
+blocs, total d'un bloc (6 000), nombre de champs, description (4 096), et nom/valeur d'un champ. N'étaient
+mesurés **nulle part** : le titre d'un bloc (256), son pied (2 048), son auteur (256) — et **toutes** les
+limites des composants : libellé de bouton (80), adresse d'un bouton (512), `custom_id` (100), nombre
+d'options d'un menu (25), libellé et description d'une option (100).
+
+Ces oublis ne sont pas théoriques. `discord.py` refuse à la construction seulement deux choses : plus de
+25 enfants dans une vue, et une rangée hors de 0–4. **Le reste passe la construction et est refusé par
+Discord à l'envoi** : un libellé de 81 caractères, un `custom_id` de 101, un menu à 26 options — vérifié
+sur la version installée (un menu à 30 options se construit sans erreur). Le membre ne verrait alors
+**aucun résultat**, sans message lisible. Second oubli, de la même famille : seuls les blocs du
+**résultat** étaient mesurés ; les **étapes** du parcours (panneau, prise, variante, thénar, mesures,
+budget) et leurs vues ne l'étaient pas du tout.
+
+**Ce qui a été corrigé.** Les limites sont nommées une seule fois (`LIMITES_BLOC`, `LIMITES_VUE`), les
+contrôles les lisent, et le banc mesure désormais :
+
+- les **neuf** limites d'un bloc (titre, description, champs, nom, valeur, pied, auteur, total, nombre) ;
+- les **huit** limites d'une vue (`check_view_limits` : composants, rangées, libellé et adresse de
+  bouton, `custom_id`, options, libellé et description d'option) ;
+- les **écrans fixes** du parcours (panneau, prise, variante, thénar Palm et Claw) et leurs cinq vues,
+  une fois par passage (`check_ecrans_fixes`) ;
+- les blocs des **étapes dépendantes du profil** (mesures, budget), sur chaque profil ;
+- la vue du **résultat**, sur chaque profil.
+
+**Ce que le banc publie maintenant.** Une ligne de synthèse donne la limite la plus remplie du passage —
+le chiffre qui dit si l'on est à un cheveu d'un plafond. Relevé complet du 2026-10-14 (grille complète,
+21 736 profils), de la plus remplie à la plus large :
+
+| Limite Discord | Maximum mesuré | Part de la limite |
+|---|---|---|
+| Description d'une option | **78** / 100 | 78,0 % |
+| Libellé de bouton | 50 / 80 | 62,5 % |
+| Valeur d'un champ | 320 / 1 024 | 31,2 % |
+| Adresse d'un bouton | 142 / 512 | 27,7 % |
+| Nom d'un champ | 53 / 256 | 20,7 % |
+| Options d'un menu | 5 / 25 | 20,0 % |
+| Libellé d'une option | 20 / 100 | 20,0 % |
+| Total d'un bloc | 1 039 / 6 000 | 17,3 % |
+| Titre d'un bloc | 38 / 256 | 14,8 % |
+| Champs d'un bloc | 3 / 25 | 12,0 % |
+| Composants d'une vue | 3 / 25 | 12,0 % |
+| Description d'un bloc | 435 / 4 096 | 10,6 % |
+| Pied d'un bloc | 152 / 2 048 | 7,4 % |
+| Auteur d'un bloc (non utilisé) | 0 / 256 | 0,0 % |
+
+Aucune limite n'est dépassée, et la plus exposée est la description d'une option de Claw (78/100) : elle
+vient du texte de la variante, pas du catalogue, donc elle ne bouge qu'avec le code.
+
+**Ce que la correction ne change pas.** Aucun texte affiché n'est modifié : les contrôles **mesurent**, ils
+ne réécrivent rien. Le banc est passé de 61 à 70 secondes (les étapes sont mesurées sur chaque profil).
+Aucun fichier du bot n'est touché.
+
+**Verrou.** Trois tests neufs dans `tests/test_qa_flow_matrix.py` :
+`test_le_banc_mesure_toutes_les_limites_d_un_bloc_discord` (les quatre limites autrefois absentes + le
+total, et le bloc conforme qui ne produit rien), `test_le_banc_mesure_toutes_les_limites_d_une_vue_discord`
+(libellé, adresse, `custom_id`, 30 options, libellé et description d'option, vue vide) et
+`test_le_banc_releve_la_limite_la_plus_remplie_du_passage`. Mutations jouées, une par contrôle neutralisé :
+titre → 1 échec ; pied → 1 ; auteur → 1 ; adresse de bouton → 1 ; nombre d'options → 1 ; libellé d'option →
+1. Preuve que les contrôles mordent sur du **contenu réel** : avec des limites volontairement resserrées
+(titre ≤ 30, libellé de bouton ≤ 10), le passage rapide remonte **1 877 problèmes** (« titre 32 (> 30) »
+sur le panneau, etc.) ; avec les vraies limites, **0**.
+
+**Mesure** : **798 tests verts** (795 avant, trois tests neufs), `pyflakes` 0, `privacy_scan` 0 violation,
+banc complet : **0 problème**, 21 736 profils, compteurs inchangés (3 109 · 1 748 · 28 · 2 067 · 182 ·
+793 · 18 694 · 1 684).
+
+**Fichiers à envoyer** : **aucun** (un outil et des documents).
+

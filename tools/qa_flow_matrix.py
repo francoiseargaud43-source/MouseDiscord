@@ -35,6 +35,10 @@ Contrôles effectués, profil par profil :
 - **score partiel annoncé** : une souris au score partiel (hauteur des boutons non documentée) affichée
   en 2e ou 3e place porte « boutons non documentés » (décision du propriétaire, 2026-10-13) ; pour le
   match idéal, la note longue du bloc « 📐 Vos repères de taille » en tient lieu ;
+- **toutes** les limites Discord, blocs et composants : aucune n'était mesurée avant le 2026-10-14 en
+  dehors de cinq limites de bloc sur le seul résultat ; le banc mesure désormais les neuf limites d'un
+  bloc et les huit limites d'une vue, sur les écrans fixes, les étapes du profil et le résultat, et
+  publie la limite la plus remplie du passage (marge mesurée, jamais supposée) ;
 - comptage, sans le compter comme une faute, des profils où DEUX places montrent la même coque :
   c'est le repli documenté (« jamais moins de résultats qu'avant ») quand la zone de tolérance ne
   contient que des variantes de la coque retenue — il est mesuré, pas supposé ;
@@ -51,9 +55,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+import discord  # noqa: E402  (types des composants, pour mesurer leurs limites)
+
 from cogs.finder_flow import (ALTERNATIVE_EXTENSION_POINTS, ECONOMY_SLOT_TOLERANCE_POINTS,  # noqa: E402
-                              ResultsView, compute_selection, mode_tolerance, result_slots,
-                              results_embeds)
+                              BudgetView, ClawVariantView, GripView, MeasureView, ResultsView,
+                              ThenarView, banner_embed, budget_step_embed, claw_variant_step_embed,
+                              compute_selection, grip_step_embed, measure_step_embed,
+                              mode_tolerance, result_slots, results_embeds, thenar_step_embed)
 from config import COMMERCIAL_LINKS_PATH  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.matcher import MAX_SCORE, compatibility_percent  # noqa: E402
@@ -296,6 +304,7 @@ def check_result_message(session, selection, embeds, ideal, alternative, economy
 
     # Boutons d'achat : un par souris montrée, jamais pour une souris absente, et la bonne adresse.
     view = ResultsView([s for s in (ideal, alternative, economy) if s is not None], LINKS)
+    problems.extend(check_view_limits(view))
     boutons = [item for item in view.children]
     for bouton in boutons:
         url = getattr(bouton, "url", None)
@@ -343,23 +352,142 @@ def profile(mode: BudgetMode | None, budget: float | None) -> FinderSession:
     return session
 
 
+# Limites Discord, valeurs documentées (docs/partie « limits ») — une seule source pour le banc.
+# Le banc ne les vérifiait qu'en partie jusqu'au 2026-10-14 : cinq des neuf limites d'un bloc, et
+# **aucune** des huit limites d'une vue. Or discord.py ne refuse à la construction que le nombre
+# d'enfants d'une vue (25) et les rangées (0 à 4) : un libellé trop long, une adresse trop longue, un
+# `custom_id` trop long et un menu à plus de 25 options **passent** la construction et sont refusés par
+# Discord **à l'envoi** — le membre ne verrait alors aucun résultat, sans erreur lisible.
+LIMITES_BLOC = {"blocs": 10, "titre": 256, "description": 4096, "champs": 25, "nom_de_champ": 256,
+                "valeur_de_champ": 1024, "pied": 2048, "auteur": 256, "total": 6000}
+LIMITES_VUE = {"composants": 25, "rangees": 5, "libelle_bouton": 80, "url_bouton": 512,
+               "custom_id": 100, "options": 25, "libelle_option": 100, "description_option": 100}
+
+
+# Marges observées pendant le passage (plus grande valeur vue, limite) — pour la ligne de synthèse :
+# « 0 dépassement » ne dit pas si l'on passe à un cheveu de la limite ou si l'on a de la place.
+MARGES: dict[str, tuple[int, int]] = {}
+
+
+def _noter_marge(nom: str, valeur: int, limite: int) -> None:
+    if nom not in MARGES or valeur > MARGES[nom][0]:
+        MARGES[nom] = (valeur, limite)
+
+
+def resume_des_marges() -> str:
+    """La limite la plus remplie du passage, en clair (rejouable, jamais devinée).
+
+    On compare des **fractions de limite** (un compte d'options et une longueur de texte ne se
+    soustraient pas) : c'est le composant le plus proche de son plafond qui compte pour la suite.
+    """
+    if not MARGES:
+        return "Limites Discord : aucune mesure (banc interrompu ?)"
+    nom, (valeur, limite) = max(MARGES.items(), key=lambda item: item[1][0] / item[1][1])
+    return (f"Limites Discord : la plus remplie est « {nom} » — {valeur}/{limite} "
+            f"({100 * valeur / limite:.0f} % de la limite), sur les blocs et les vues du parcours entier")
+
+
 def check_embed_limits(embeds) -> list[str]:
+    """Toutes les limites d'un bloc Discord, mesurées : aucune n'est supposée."""
     problems: list[str] = []
-    if not 1 <= len(embeds) <= 10:
+    L = LIMITES_BLOC
+    if not 1 <= len(embeds) <= L["blocs"]:
         problems.append(f"nombre de blocs hors limites : {len(embeds)}")
     for index, embed in enumerate(embeds, start=1):
         total = len(embed.title or "") + len(embed.description or "")
         total += sum(len(f.name) + len(f.value) for f in embed.fields)
-        total += len(embed.footer.text or "")
-        if total > 6000:
-            problems.append(f"bloc {index} : {total} caractères (> 6000)")
-        if len(embed.fields) > 25:
-            problems.append(f"bloc {index} : {len(embed.fields)} champs (> 25)")
-        if len(embed.description or "") > 4096:
-            problems.append(f"bloc {index} : description {len(embed.description or '')} (> 4096)")
+        total += len(embed.footer.text or "") + len(embed.author.name or "")
+        _noter_marge("total d'un bloc", total, L["total"])
+        if total > L["total"]:
+            problems.append(f"bloc {index} : {total} caractères (> {L['total']})")
+        _noter_marge("titre de bloc", len(embed.title or ""), L["titre"])
+        if len(embed.title or "") > L["titre"]:
+            problems.append(f"bloc {index} : titre {len(embed.title or '')} (> {L['titre']})")
+        _noter_marge("description de bloc", len(embed.description or ""), L["description"])
+        if len(embed.description or "") > L["description"]:
+            problems.append(f"bloc {index} : description {len(embed.description or '')} "
+                            f"(> {L['description']})")
+        _noter_marge("pied de bloc", len(embed.footer.text or ""), L["pied"])
+        if len(embed.footer.text or "") > L["pied"]:
+            problems.append(f"bloc {index} : pied {len(embed.footer.text or '')} (> {L['pied']})")
+        _noter_marge("auteur de bloc", len(embed.author.name or ""), L["auteur"])
+        if len(embed.author.name or "") > L["auteur"]:
+            problems.append(f"bloc {index} : auteur {len(embed.author.name or '')} (> {L['auteur']})")
+        _noter_marge("champs d'un bloc", len(embed.fields), L["champs"])
+        if len(embed.fields) > L["champs"]:
+            problems.append(f"bloc {index} : {len(embed.fields)} champs (> {L['champs']})")
         for f in embed.fields:
-            if len(f.name) > 256 or len(f.value) > 1024:
+            _noter_marge("nom de champ", len(f.name), L["nom_de_champ"])
+            _noter_marge("valeur de champ", len(f.value), L["valeur_de_champ"])
+            if len(f.name) > L["nom_de_champ"] or len(f.value) > L["valeur_de_champ"]:
                 problems.append(f"bloc {index} : champ « {f.name} » hors limites")
+    return problems
+
+
+def check_ecrans_fixes() -> list[str]:
+    """Les écrans fixes du parcours — panneau, étapes de choix — blocs **et** vues, mesurés une fois.
+
+    Ils ne dépendaient d'aucun profil, donc aucun contrôle par profil ne pouvait les couvrir : leurs
+    limites Discord n'étaient mesurées nulle part avant le 2026-10-14.
+    """
+    problems: list[str] = []
+    blocs = {"panneau": banner_embed(), "prise": grip_step_embed(), "variante": claw_variant_step_embed()}
+    for grip in (Grip.PALM, Grip.CLAW):     # Fingertip saute le thénar (garde de _step_number)
+        blocs[f"thénar/{grip.value}"] = thenar_step_embed(grip)
+    for nom, embed in blocs.items():
+        problems.extend(f"{nom} : {p}" for p in check_embed_limits([embed]))
+    vues = {"prise": GripView(), "variante": ClawVariantView(), "thénar": ThenarView(),
+            "mesures": MeasureView(), "budget": BudgetView()}
+    for nom, vue in vues.items():
+        problems.extend(f"{nom} : {p}" for p in check_view_limits(vue))
+    return problems
+
+
+def check_view_limits(view) -> list[str]:
+    """Toutes les limites Discord d'une vue : enfants, rangées, libellés, adresses, options.
+
+    Les deux premières sont aussi refusées par discord.py à la construction (25 enfants, rangées 0 à
+    4) : les mesurer ici garde la limite écrite noir sur blanc, et les autres — celles que discord.py
+    laisse passer et que Discord refuse **à l'envoi** — n'étaient mesurées nulle part avant le
+    2026-10-14.
+    """
+    problems: list[str] = []
+    L = LIMITES_VUE
+    enfants = [item for item in view.children]
+    if not enfants:
+        problems.append("vue vide : un envoi sans composant n'a pas de sens ici")
+        return problems
+    _noter_marge("composants d'une vue", len(enfants), L["composants"])
+    if len(enfants) > L["composants"]:
+        problems.append(f"vue : {len(enfants)} composants (> {L['composants']})")
+    rangees = {item.row for item in enfants if item.row is not None}
+    if rangees and (min(rangees) < 0 or max(rangees) >= L["rangees"]):
+        problems.append(f"vue : rangées {sorted(rangees)} hors de 0 à {L['rangees'] - 1}")
+    for item in enfants:
+        if isinstance(item, discord.ui.Button):
+            _noter_marge("libellé de bouton", len(item.label or ""), L["libelle_bouton"])
+            if len(item.label or "") > L["libelle_bouton"]:
+                problems.append(f"vue : libellé de bouton {len(item.label or '')} "
+                                f"(> {L['libelle_bouton']}) : « {item.label} »")
+            _noter_marge("adresse de bouton", len(item.url or ""), L["url_bouton"])
+            if item.url is not None and len(item.url) > L["url_bouton"]:
+                problems.append(f"vue : adresse de bouton {len(item.url)} (> {L['url_bouton']})")
+            if item.custom_id is not None and not 1 <= len(item.custom_id) <= L["custom_id"]:
+                problems.append(f"vue : custom_id de {len(item.custom_id)} caractères "
+                                f"(attendu 1 à {L['custom_id']})")
+        elif isinstance(item, discord.ui.Select):
+            _noter_marge("options d'un menu", len(item.options), L["options"])
+            if len(item.options) > L["options"]:
+                problems.append(f"vue : menu à {len(item.options)} options (> {L['options']})")
+            for option in item.options:
+                _noter_marge("libellé d'option", len(option.label or ""), L["libelle_option"])
+                if len(option.label or "") > L["libelle_option"]:
+                    problems.append(f"vue : libellé d'option {len(option.label or '')} "
+                                    f"(> {L['libelle_option']}) : « {option.label} »")
+                _noter_marge("description d'option", len(option.description or ""), L["description_option"])
+                if len(option.description or "") > L["description_option"]:
+                    problems.append(f"vue : description d'option {len(option.description or '')} "
+                                    f"(> {L['description_option']}) : « {option.description} »")
     return problems
 
 
@@ -394,6 +522,8 @@ def run(fast: bool) -> int:
     places = {0: 0, 1: 0, 2: 0, 3: 0}          # nombre de places réellement remplies dans le message
     same_shell_slots: list[str] = []            # profils où deux places partagent la même coque (repli)
     ordre_repli: list[str] = []                 # profils où le plafond d'ordre n'a laissé aucun candidat
+    MARGES.clear()                          # un passage = un relevé de marges
+    problems.extend(check_ecrans_fixes())
     for grip, length, width, thenar, mode, budget in grille(fast):
         cases += 1
         where = f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}"
@@ -411,6 +541,10 @@ def run(fast: bool) -> int:
             problems.append(f"{where} : EXCEPTION {type(exc).__name__} : {exc}")
             continue
         problems.extend(f"{where} : {p}" for p in check_embed_limits(embeds))
+        # Les étapes montrées par le parcours : leurs blocs portaient des limites Discord jamais
+        # vérifiées avant le 2026-10-14 (seul le résultat l'était).
+        problems.extend(f"{where} : {p}" for p in check_embed_limits([measure_step_embed(session)]))
+        problems.extend(f"{where} : {p}" for p in check_embed_limits([budget_step_embed(session)]))
         ideal, alternative, economy = result_slots(selection)
         places[len([s for s in (ideal, alternative, economy) if s is not None])] += 1
         problems.extend(f"{where} : {p}"
@@ -449,6 +583,7 @@ def run(fast: bool) -> int:
           + f"  (3 places = {100 * places[3] / cases:.2f} % des profils)" if cases else "")
     print(f"Places portant « (prix non vérifié) » : {marques_prix}"
           + (f"  ({100 * marques_prix / cases:.2f} % des profils)" if cases else ""))
+    print(resume_des_marges())
     print(f"Problèmes détectés : {len(problems)}")
     for problem in problems[:40]:
         print(f"  ! {problem}")

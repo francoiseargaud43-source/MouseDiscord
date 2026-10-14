@@ -2102,11 +2102,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.46).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.47).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 795 passed
+.venv/bin/python -m pytest -q                      # attendu : 798 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2602,6 +2602,25 @@ jamais ces outils).
   aucun nom retiré ne réapparaît). Mutations : nom mort hors registre → 1 échec ; renvoi du registre vers
   un test inexistant → 2 échecs ; nom vivant inscrit comme retiré → 2 échecs ; abréviation et ancien nom
   de fichier → vert. Le compteur du contrôle ci-dessus passe de 792 à **795** tests (deux contrôles neufs, plus un paramétrage : le registre entre dans les contrôles par document). Détail : §26.53 de
+  `ROBUSTESSE_2026-10-12.md`.
+
+### 12.47 Mise à jour du 2026-10-14 (38e) : le banc mesure enfin toutes les limites Discord
+
+**Fichiers à envoyer** : **aucun** — un outil et des documents. **Redémarrage** : inutile.
+
+- Le banc d'essai est l'instrument cité pour « 0 dépassement des limites Discord » : il ne mesurait que
+  **cinq** limites (blocs, total, champs, description, nom/valeur de champ). Le titre, le pied et l'auteur
+  d'un bloc, et **toutes** les limites des composants (libellé de bouton, adresse, `custom_id`, options,
+  libellé et description d'option) n'étaient mesurés nulle part — alors que `discord.py` ne refuse que
+  25 enfants et les rangées hors de 0–4 : le reste est refusé par Discord **à l'envoi**, sans message
+  lisible pour le membre. Les étapes du parcours n'étaient pas mesurées non plus (seul le résultat l'était).
+- Corrigé : les limites sont nommées une seule fois et mesurées partout — écrans fixes du parcours, étapes
+  dépendantes du profil, résultat. Le banc publie désormais la limite la plus remplie du passage :
+  **description d'option 78/100 (78 %)** au 2026-10-14, **aucune limite dépassée** (tableau complet :
+  §26.54 du ROBUSTESSE).
+- Trois tests neufs ; six mutations (une par contrôle neutralisé) → six rouges ; limites resserrées sur du
+  contenu réel → 1 877 problèmes, vraies limites → 0. Aucun texte affiché modifié ; le banc passe de 61 à
+  **70 secondes**. Le compteur du contrôle ci-dessus passe de 795 à **798** tests. Détail : §26.54 de
   `ROBUSTESSE_2026-10-12.md`.
 
 ---
