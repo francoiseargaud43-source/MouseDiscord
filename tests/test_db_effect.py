@@ -125,11 +125,11 @@ def test_les_outils_partagent_la_grille_du_banc_et_la_mini_ne_duplique_rien():
     """
     import qa_flow_matrix as banc
 
-    from utils.models import Grip, Thenar
+    from utils.models import Grip
 
     for nom, rapide in (("complete", False), ("rapide", True)):
         assert list(db_effect.profils(nom)) == list(banc.grille(rapide)), nom
     mini = list(db_effect.profils("mini"))
     assert len(mini) == 150, f"la docstring annonce 150 profils, la grille en produit {len(mini)}"
     assert len(set(mini)) == len(mini), "profil mesuré deux fois dans la grille minimale"
-    assert {e[3] for e in mini if e[0] is Grip.FINGERTIP} == {Thenar.PETITE}
+    assert {e[3] for e in mini if e[0] is Grip.FINGERTIP} == {None}

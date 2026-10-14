@@ -81,6 +81,7 @@ def profils(nom: str):
         if grip is Grip.FINGERTIP:
             if thenar is not thenars[0]:
                 continue                  # question non posée : un seul profil par taille
+            thenar = None                 # le moteur ne voit jamais un thénar en Fingertip
         elif thenar is None:
             continue                      # le thénar est toujours demandé hors Fingertip
         for mode in modes:
@@ -121,7 +122,7 @@ def _places(chemin: Path, profils: list[tuple]) -> list[list[tuple[str, int]]]:
             session.grip = grip
             session.hand_length_mm = length
             session.hand_width_mm = width
-            session.thenar = thenar if grip is not Grip.FINGERTIP else None
+            session.thenar = thenar
             if grip is Grip.CLAW:
                 session.claw_variant = ClawVariant.RELACHEE
             selection = flux.compute_selection(session)

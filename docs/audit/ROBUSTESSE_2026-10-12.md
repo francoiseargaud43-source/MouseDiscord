@@ -4291,7 +4291,10 @@ fantômes, 22 %. Le seul test qui la regardait exigeait « au moins 100 profils 
 **Ce qui a été corrigé.** La grille du banc devient un **générateur public**, `grille(fast)`, avec la règle
 du parcours écrite noir sur blanc : thénar **toujours demandé** en Palm et en Claw (le cas « non répondu »
 restant testé en Claw), **jamais** en Fingertip — un seul profil par couple taille/prise. Les trois outils
-le consomment ; plus aucune copie de la règle ne subsiste dans le dépôt. La grille « mini » passe par la
+le consomment ; les **grilles** ne sont plus recopiées nulle part. (La phrase disait d'abord « plus aucune
+copie de la règle » : c'était trop fort — `run()` et `db_effect._places` la réécrivaient encore une ligne
+plus loin, `session.thenar = thenar if grip is not Grip.FINGERTIP else None`. Corrigé et mesuré en 65e
+passe, §26.52.) La grille « mini » passe par la
 même règle et retombe sur ses **150 profils** documentés. Bilan des tailles :
 
 | Grille | Avant | Après |
@@ -4411,6 +4414,40 @@ personnalisé serré (10, 25 ou 45 €), jamais d'un mode normal. Mutation joué
 
 **Mesure** : **792 tests verts** (791 avant, un test neuf), `pyflakes` 0, `privacy_scan` 0 violation,
 banc d'essai 0 problème. Aucun fichier du bot n'est touché (un test, un document).
+
+**Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
+
+## 26.52 65e passe — la règle du thénar n'est plus écrite deux fois (2026-10-14)
+
+**Ce qui a été trouvé.** En relisant le code de la 62e passe, une phrase de son propre journal est allée
+plus loin que le code : « les trois outils le consomment ; **plus aucune copie de la règle ne subsiste
+dans le dépôt** » (§26.49). Deux lignes la réécrivaient encore — `run()` du banc et `_places()` de
+`db_effect` :
+
+```python
+session.thenar = thenar if grip is not Grip.FINGERTIP else None
+```
+
+Le défaut n'est pas la ligne elle-même (elle est juste, et sans effet — la grille donne déjà `None`), mais
+la **seconde définition** de la règle : c'est exactement le mécanisme qui a produit la 62e passe, où trois
+outils recopiaient une règle fautive et divergeaient en silence. Une affirmation du journal qui ne
+correspond pas au code est le même défaut que le chiffre qui ne se rejoue pas (C77, C85), sous une autre
+forme.
+
+**Ce qui a été corrigé.** La règle est désormais exprimée **une seule fois**, dans `grille(fast)`, et les
+appelants s'y fient : la ligne est retirée de `run()` et de `_places()`, avec un commentaire qui dit d'où
+vient la garantie. La grille « mini » de `db_effect` rend elle aussi `None` en Fingertip (elle portait un
+thénar de remplissage que le moteur ne voyait jamais — vrai, mais illisible) ; son test le fige
+désormais sur `{None}`. La phrase de §26.49 est corrigée sur place.
+
+**Aucun effet mesuré**, et c'est voulu : banc complet — partiels 3 109 · coque 1 748 · ordre 28 · places
+2 067 · 182 · 793 · 18 694 (86,00 %) · prix non vérifié 1 684 (7,75 %) · **0 problème** ; banc `--rapide` :
+576 profils, 100 % à trois places, 0 problème ; `flow_effect --rapide` : 576 profils comparés, aucun
+changement ; `db_effect --grille mini` : 150 profils comparés, aucun changement.
+
+**Mesure** : **792 tests verts** (aucun test neuf : le verrou de la 62e passe tenait déjà la propriété, son
+assertion est simplement devenue plus stricte), `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du
+bot n'est touché (deux outils, un test, des documents).
 
 **Fichiers à envoyer** : **aucun** (aucun changement visible par les membres).
 

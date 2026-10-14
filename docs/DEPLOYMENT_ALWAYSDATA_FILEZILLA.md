@@ -2102,7 +2102,7 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.44).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.45).
 
 ```bash
 cd ~/MouseDiscord
@@ -2565,6 +2565,23 @@ jamais ces outils).
   (échantillon non vide exigé) ; mutation — dernier palier de `result_slots` désactivé → 2 échecs, fichier
   du moteur restauré à l'identique. Le compteur du contrôle ci-dessus passe de 791 à **792** tests.
   Détail : §26.51 de `ROBUSTESSE_2026-10-12.md`.
+
+### 12.45 Mise à jour du 2026-10-14 (36e) : la règle du thénar n'est plus écrite deux fois
+
+**Fichiers à envoyer** : **aucun** — deux outils et des documents. **Redémarrage** : inutile.
+
+- Le journal de la 62e passe promettait « plus aucune copie de la règle ne subsiste dans le dépôt » : deux
+  lignes la réécrivaient encore (thénar forcé à `None` en Fingertip) dans `run()` du banc et dans
+  `db_effect._places`. Lignes justes et sans effet, mais secondes définitions d'une règle — le mécanisme
+  exact de la 62e passe.
+- Corrigé : la règle n'existe plus que dans `grille(fast)` ; la grille « mini » de `db_effect` rend `None`
+  en Fingertip (son thénar de remplissage n'était jamais vu par le moteur, mais se lisait mal) et son
+  verrou le fige sur `{None}`. La phrase du §26.49 est corrigée sur place.
+- Effet mesuré : **nul** — banc complet 0 problème, compteurs identiques (3 109 · 1 748 · 28 · 2 067 ·
+  182 · 793 · 18 694 · 1 684), `--rapide` 576 profils, `flow_effect` et `db_effect --grille mini` sans
+  aucun changement. Le compteur du contrôle ci-dessus reste à **792** tests (aucun test neuf : le verrou
+  de la 62e passe tenait déjà la propriété, son assertion est devenue plus stricte). Détail : §26.52 de
+  `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

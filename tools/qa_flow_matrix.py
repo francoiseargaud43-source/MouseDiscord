@@ -401,7 +401,7 @@ def run(fast: bool) -> int:
         session.grip = grip
         session.hand_length_mm = length
         session.hand_width_mm = width
-        session.thenar = thenar if grip is not Grip.FINGERTIP else None
+        session.thenar = thenar          # déjà None en Fingertip : la règle est dans grille()
         if grip is Grip.CLAW:
             session.claw_variant = ClawVariant.RELACHEE
         try:
