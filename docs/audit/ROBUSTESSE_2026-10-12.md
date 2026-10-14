@@ -4718,3 +4718,37 @@ remplie 78/100). Couverture rejouée : **1 656 instructions / 508 branches, 100 
 **Fichiers à envoyer** : `cogs/finder_flow.py` **seul** (le texte de l'étape et le bloc du résultat vivent
 là). Les documents, les tests et les aperçus accompagnent; **redémarrage** du bot nécessaire (texte affiché
 modifié) — la tâche planifiée s'en charge, ou `pkill -f "bot.py"`.
+
+---
+
+## 26.57 70e passe — les bornes des saisies n'étaient mesurées par aucun test (2026-10-14)
+
+**Ce qui a été trouvé.** Les saisies du parcours acceptent 100 à 260 mm de longueur, 50 à 130 mm de
+largeur et 10 à 5 000 € de budget (`utils/validation.py`). Le banc d'essai et le rapport statistique,
+eux, ne balaient que le **milieu** de ces plages : 140 à 230 mm, 60 à 120 mm, budgets de 10 à 150 €. Les
+valeurs extrêmes qu'un membre peut réellement saisir n'étaient donc mesurées **nulle part** — ni pour
+savoir si le calcul tient, ni pour savoir ce que le membre reçoit quand rien ne correspond.
+
+**Ce qui a été mesuré.** Les coins du domaine (100 / 140 / 260 mm × 50 / 60 / 130 mm × 10 / 150 / 5 000 €),
+sur les trois prises et les cinq gammes — **189 profils** :
+
+- **aucune exception** (0 sur 189) ;
+- **aucune valeur absurde** : chaque pourcentage affiché est un entier de 0 à 100 et l'ordre des places
+  est décroissant ;
+- **117 profils sans aucun résultat** — une main de 100 mm n'a aucune souris assez petite au catalogue,
+  c'est normal — et dans chacun de ces cas le message porte la phrase prévue : « Aucune souris ne peut
+  être retenue avec ces critères. Essayez une autre gamme ou un budget plus élevé. » Jamais un bloc
+  vide, jamais une place fantôme.
+
+**Ce qui a été corrigé.** Rien dans le bot : le comportement était déjà juste aux bornes. Ce qui manquait,
+c'est la **preuve qui reste** : un test neuf (paramétré sur les trois prises) parcourt ces coins et exige
+les quatre garanties ci-dessus — aucune exception, pourcentages entiers de 0 à 100, ordre décroissant, et
+la phrase d'explication quand rien n'est retenu. Mutation jouée pour vérifier qu'il mord sur la branche
+vide : remplacer la phrase par une autre fait **échouer les trois prises** — la branche « rien à
+proposer » est donc bien parcourue par les coins du domaine, pour Palm comme pour Claw et Fingertip.
+
+**Ce que la correction ne change pas.** Aucune ligne du bot (le test ne fait que mesurer), aucun texte
+affiché, aucun compteur du banc (la grille reste à 21 736 profils, 0 problème). Suite de tests :
+813 → **816**.
+
+**Fichiers à envoyer** : **aucun** (un test).

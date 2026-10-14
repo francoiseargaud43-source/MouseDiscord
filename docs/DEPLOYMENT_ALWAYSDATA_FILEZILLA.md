@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.49).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.50).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 813 passed
+.venv/bin/python -m pytest -q                      # attendu : 816 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2674,6 +2674,23 @@ Les documents, les tests et les aperçus accompagnent.
   places 2 067/182/793/18 694). Trois attentes de `tests/test_flow.py` mises à jour, un test neuf, aperçus
   régénérés. Le compteur du contrôle ci-dessus passe de 812 à **813** tests. Détail : §26.56 de
   `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.50 Mise à jour du 2026-10-14 (41e) : les bornes des saisies enfin mesurées
+
+**Fichiers à envoyer** : **aucun** (un test et des documents). **Redémarrage** : inutile.
+
+- Les saisies acceptent 100 à 260 mm de longueur, 50 à 130 mm de largeur et 10 à 5 000 € de budget ; le
+  banc d'essai et le rapport ne balaient que le **milieu** de ces plages. Les valeurs extrêmes qu'un
+  membre peut saisir n'étaient couvertes par **aucun** test.
+- Mesure du 2026-10-14 sur les coins du domaine (189 profils) : **0 exception**, **0 valeur absurde** —
+  le bot tient déjà très bien aux bornes. Le manque était la preuve, pas le comportement.
+- Ce que le membre voit quand rien ne correspond est vérifié lui aussi (117 profils de mains extrêmes ou
+  de budget serré) : la phrase « Aucune souris ne peut être retenue avec ces critères. Essayez une autre
+  gamme ou un budget plus élevé. » — jamais un message vide.
+- Un test neuf, paramétré sur les trois prises, verrouille les quatre garanties. Le compteur du contrôle
+  ci-dessus passe de 813 à **816** tests. Détail : §26.57 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

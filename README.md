@@ -527,6 +527,9 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   de thénar) ne l'étaient pas. Les titres d'étape attendus sont écrits en clair, et les **trois places du
   résultat sont figées** (souris, pourcentage, prix) au lieu d'être redemandées au moteur : c'est ce qui
   fait échouer le test si deux places s'échangent (défaut trouvé le 2026-10-14, §26.55 du ROBUSTESSE).
+  Il balaie aussi les **coins du domaine autorisé** (100 / 260 mm, 50 / 130 mm, 10 / 5 000 €), là où ni
+  le banc ni le rapport ne vont : aucune exception, pourcentages entiers de 0 à 100 dans l'ordre, et la
+  phrase d'explication quand rien n'est retenu (§26.57).
 - `tests/test_code_hygiene.py` : hygiène du code livré — aucun résidu de guillemets (le défaut trouvé le
   2026-10-12, invisible à la compilation), aucun `print` dans le bot (il ne laisserait aucune trace dans
   `~/admin/logs/jobs/`), et le contrôle porte bien sur tout le code livré. Depuis le 2026-10-13, il refuse

@@ -191,3 +191,54 @@ async def test_le_budget_personnalise_saisi_au_clavier_termine_le_parcours():
     assert session is not None
     assert session.budget_mode is BudgetMode.CUSTOM and session.max_budget_eur == 60.0
     assert session.finished is True
+
+
+# Domaines autorisés par la validation des saisies (`utils/validation.py`) : le banc d'essai et le
+# rapport statistique ne parcourent, eux, que le MILIEU de ces plages (140–230 mm, 60–120 mm,
+# 10–150 €). Les valeurs extrêmes qu'un membre peut réellement saisir n'étaient donc mesurées nulle
+# part — c'est ce que verrouille le test suivant.
+LONGUEURS_AUX_BORDS = (100.0, 140.0, 260.0)      # bornes : 100 à 260 mm
+LARGEURS_AUX_BORDS = (50.0, 60.0, 130.0)         # bornes : 50 à 130 mm
+BUDGETS_AUX_BORDS = (10.0, 150.0, 5000.0)        # bornes : 10 à 5 000 €
+
+
+@pytest.mark.parametrize("grip", list(Grip))
+def test_les_coins_du_domaine_autorise_donnent_un_resultat_ou_un_message_clair(grip):
+    """Aux bornes des saisies, le bot répond — trois places ordonnées, ou la phrase qui explique.
+
+    Constat du 2026-10-14 : le banc d'essai et le rapport balaient le milieu des plages autorisées
+    (140–230 mm de longueur, 60–120 mm de largeur, budgets jusqu'à 150 €). Un membre peut saisir
+    **100** ou **260 mm**, **50** ou **130 mm**, et **5 000 €** : ces coins du domaine n'étaient
+    mesurés par **aucun** test. Le test les parcourt et exige, pour chacun : aucune exception, des
+    pourcentages entiers de 0 à 100, l'ordre décroissant des places, et — quand rien ne peut être
+    retenu (une main de 100 mm n'a aucune souris assez petite au catalogue) — la phrase qui le dit,
+    jamais un message vide.
+    """
+    for longueur in LONGUEURS_AUX_BORDS:
+        for largeur in LARGEURS_AUX_BORDS:
+            for budget in BUDGETS_AUX_BORDS:
+                store = SessionStore(ttl_seconds=600)
+                session = store.start(user_id=7)
+                session.grip = grip
+                session.thenar = Thenar.MOYENNE if grip is not Grip.FINGERTIP else None
+                session.claw_variant = ClawVariant.RELACHEE if grip is Grip.CLAW else None
+                session.hand_length_mm, session.hand_width_mm = longueur, largeur
+                session.budget_mode = BudgetMode.CUSTOM
+                session.max_budget_eur = budget
+
+                selection = flow.compute_selection(session)          # ne doit jamais lever
+                places = [place for place in flow.result_slots(selection) if place is not None]
+                blocs = flow.results_embeds(session, selection)
+                texte = " ".join(str(bloc.to_dict()) for bloc in blocs)
+
+                assert blocs, f"{grip.value}/{longueur}x{largeur}/{budget} : aucun bloc envoyé"
+                if places:
+                    pourcentages = [int(place.total * 100 / 40 + 0.5) for place in places]
+                    assert all(0 <= valeur <= 100 for valeur in pourcentages), pourcentages
+                    assert pourcentages == sorted(pourcentages, reverse=True), pourcentages
+                    for place in places:
+                        assert place.mouse.label in texte, f"{place.mouse.label} absent du message"
+                else:
+                    assert "Aucune souris ne peut être retenue" in texte, \
+                        f"{grip.value}/{longueur}x{largeur}/{budget} : rien retenu, sans explication"
+                assert "None" not in texte and "nan" not in texte.lower()
