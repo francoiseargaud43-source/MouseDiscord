@@ -92,9 +92,12 @@ MEASURE_MODAL_CUSTOM_ID = "mouse_finder:measures_modal"
 BUDGET_MODAL_CUSTOM_ID = "mouse_finder:budget_modal"
 
 # --- Palette AzeMouse (voir docs/REPORTE_DESIGN.md §4) ---------------------
-NAVY = discord.Color.from_rgb(11, 18, 32)        # #0B1220 Nuit  — référencée dans les illustrations
+# Seule la couleur des embeds vit ici : le bordeaux de la charte et l'orange de l'exception.
+# Le reste de la palette (nuit #0B1220, encre #070B14, étincelle #F0C43C) habite les **images** T15
+# et le tableau §4 du design — deux constantes mortes le recopiaient ici sans que rien ne les lise
+# (« utilisées par le rendu d'aperçu » était faux : le rendu ne les a jamais importées) ; retirées le
+# 2026-10-14. Le liseré de l'aperçu, lui, prend désormais BORDEAUX à la source.
 BORDEAUX = discord.Color.from_rgb(138, 35, 66)   # #8A2342 Bordeaux — couleur latérale des embeds
-SPARK = discord.Color.from_rgb(240, 196, 60)     # #F0C43C Étincelle — jamais en aplat, images uniquement
 COLOR = BORDEAUX
 COLOR_EXPIRED = discord.Color.orange()           # seule exception à la charte (session expirée)
 

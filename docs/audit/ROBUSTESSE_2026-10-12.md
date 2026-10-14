@@ -2101,8 +2101,11 @@ sont identiques.
 ### 25.3 Ce que la passe a aussi vérifié
 
 - **Chasse aux références mortes** (analyse syntaxique de tout le code) : seuls `NAVY` et `SPARK`
-  ressortent — des constantes de la palette des illustrations, utilisées par le rendu d'aperçu. **Faux
-  positifs, rien à nettoyer.**
+  ressortent — deux constantes de la palette, qui n'étaient lues **nulle part**. La conclusion « faux
+  positifs, rien à nettoyer » était **fausse** : elle affirmait qu'elles servaient « au rendu d'aperçu »,
+  ce qui n'a jamais été le cas (`tools/render_preview.py` ne les a jamais importées — vérifié par
+  `git log -S`). Constat corrigé le 2026-10-14 (§26.58) : les deux constantes mortes sont retirées, et le
+  liseré de l'aperçu prend désormais le bordeaux de la charte à la source.
 - **Chasse aux renvois morts dans la documentation** : **deux** renvois de ce document citaient « §6.6 »
   et « §6.8 » d'un fichier qui n'a pas ces sections (les faits visés étaient les **points 6 et 8 du §3**
   de `VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`) — corrigés. Un **test** vérifie désormais ces renvois
@@ -4752,3 +4755,43 @@ affiché, aucun compteur du banc (la grille reste à 21 736 profils, 0 problème
 813 → **816**.
 
 **Fichiers à envoyer** : **aucun** (un test).
+
+---
+
+## 26.58 71e passe — une justification inventée, deux constantes mortes (2026-10-14)
+
+**Ce qui a été trouvé.** En repassant la chasse aux références mortes sur l'arbre du jour, deux constantes
+de `cogs/finder_flow.py` ressortent encore : `NAVY` et `SPARK`, lues **nulle part** dans le dépôt. Le
+document qui les avait déjà vues concluait « faux positifs, rien à nettoyer », en affirmant qu'elles
+servaient « au rendu d'aperçu ». **C'est faux**, et c'était vérifiable : `git log -S "NAVY" -- 
+tools/render_preview.py` ne renvoie rien — le rendu ne les a **jamais** importées. La justification
+protégeait donc du code mort avec une raison inventée, exactement ce que la règle du projet interdit.
+
+Second défaut, de la même famille, dans le même voisinage : `tools/render_preview.py` portait
+`LISERE = (138, 35, 66)`, la **copie littérale** de `BORDEAUX`. Le liseré des aperçus ne suivait donc pas
+la charte du bot : le jour où le bordeaux change, les images livrées gardent l'ancien — et c'est le genre de
+décalage que rien ne signale, puisque le fichier reste « valide ».
+
+**Ce qui a été corrigé.**
+
+- `NAVY` et `SPARK` sont **retirés** : la palette des images vit dans le tableau §4 de
+  `docs/REPORTE_DESIGN.md` (et dans les images elles-mêmes), pas en constantes mortes. Le commentaire de la
+  palette dit maintenant ce qui s'y trouve vraiment : la couleur des embeds, rien d'autre.
+- `LISERE = flow.BORDEAUX.to_rgb()` : l'aperçu prend la charte **à la source**.
+- La phrase fausse du §25.3 est corrigée et datée, avec la commande qui l'a démentie.
+
+**Preuve que rien ne change à l'écran.** Les trois aperçus ont été régénérés et comparés **pixel par
+pixel** à ceux du dépôt : `a.tobytes() == b.tobytes()` est vrai sur les trois (620 × 3545, 620 × 4973,
+620 × 1324). La couleur est la même valeur ; seul le **lien** change. L'empreinte des sources passe à
+`5d2d6bb6d968` (le code a bougé, c'est son rôle).
+
+**Verrou.** Un test neuf (`tests/test_apercus.py::test_le_lisere_de_l_apercu_vient_de_la_charte_du_bot`)
+exige trois choses : le liseré de l'outil **égale** la couleur de la charte, le littéral `138, 35, 66`
+n'est plus recopié dans l'outil (contrôle du source), et `NAVY`/`SPARK` ne reviennent pas par
+copier-coller.
+
+**Ce que la correction ne change pas.** Aucun pixel des trois aperçus, aucun texte du bot, aucun
+compteur. Suite de tests : 816 → **817**.
+
+**Fichiers à envoyer** : **aucun** (le bot ne change pas d'un pixel ; les aperçus livrés, eux, sont
+régénérés à l'identique).

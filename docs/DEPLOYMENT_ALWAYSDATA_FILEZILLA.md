@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.50).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.51).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 816 passed
+.venv/bin/python -m pytest -q                      # attendu : 817 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2691,6 +2691,21 @@ Les documents, les tests et les aperçus accompagnent.
   gamme ou un budget plus élevé. » — jamais un message vide.
 - Un test neuf, paramétré sur les trois prises, verrouille les quatre garanties. Le compteur du contrôle
   ci-dessus passe de 813 à **816** tests. Détail : §26.57 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.51 Mise à jour du 2026-10-14 (42e) : deux constantes mortes et une justification inventée
+
+**Fichiers à envoyer** : **aucun**. **Redémarrage** : inutile.
+
+- `cogs/finder_flow.py` gardait `NAVY` et `SPARK`, lues **nulle part** — et un document les protégeait par
+  une raison **fausse** (« utilisées par le rendu d'aperçu » : le rendu ne les a jamais importées, vérifié
+  par `git log -S`). Retirées ; la palette des images reste documentée dans `docs/REPORTE_DESIGN.md` §4.
+- `tools/render_preview.py` recopiait le bordeaux en littéral : l'aperçu ne suivait pas la charte du bot.
+  Il prend désormais `BORDEAUX` à la source. Les trois aperçus livrés, régénérés, sont **identiques pixel
+  par pixel** (vérifié sur les 620 × 3545, 620 × 4973 et 620 × 1324).
+- Un test neuf refuse le retour des trois (liseré recopié, constante morte). Le compteur du contrôle
+  ci-dessus passe de 816 à **817** tests. Détail : §26.58 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

@@ -65,3 +65,26 @@ def test_l_empreinte_inscrite_se_relit_dans_l_image(tmp_path):
     image.save(chemin, pnginfo=metadonnees)
     assert lire_empreinte(chemin) == "abc123def456"
     assert lire_empreinte(ROOT / "assets" / "illustrations" / "T08_azemouse_banniere.png") is None
+
+
+def test_le_lisere_de_l_apercu_vient_de_la_charte_du_bot():
+    """La couleur bordeaux n'est écrite qu'une fois : dans la charte, pas recopiée dans l'outil.
+
+    Défaut trouvé le 2026-10-14 : `tools/render_preview.py` portait `LISERE = (138, 35, 66)` — la
+    copie littérale de `BORDEAUX` — et `cogs/finder_flow.py` gardait deux constantes de palette mortes
+    (`NAVY`, `SPARK`) justifiées par un commentaire **faux** (« utilisées par le rendu d'aperçu » : le
+    rendu ne les a jamais importées). Si la charte change un jour, l'aperçu doit suivre tout seul : le
+    contrôle lit la source de l'outil pour refuser une nouvelle copie du littéral.
+    """
+    from cogs.finder_flow import BORDEAUX, COLOR
+    from render_preview import LISERE
+
+    assert LISERE == BORDEAUX.to_rgb(), "le liseré de l'aperçu ne suit pas la charte"
+    assert COLOR is BORDEAUX
+    source = (ROOT / "tools" / "render_preview.py").read_text(encoding="utf-8")
+    assert "138, 35, 66" not in source, "le bordeaux est recopié en littéral dans l'outil d'aperçu"
+    assert "138,35,66" not in source
+    # Les deux constantes mortes ne doivent pas revenir par copier-coller.
+    bot = (ROOT / "cogs" / "finder_flow.py").read_text(encoding="utf-8")
+    for morte in ("NAVY = ", "SPARK = "):
+        assert morte not in bot, f"constante de palette morte réintroduite : {morte.strip()}"

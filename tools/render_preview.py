@@ -81,7 +81,7 @@ MUTED = (148, 155, 164)
 WHITE = (255, 255, 255)
 BOUTON_PRIMAIRE = (88, 101, 242)
 BOUTON_SECONDAIRE = (78, 80, 88)
-LISERE = (138, 35, 66)     # #8A2342 Bordeaux
+LISERE = flow.BORDEAUX.to_rgb()   # liseré des embeds : la charte du bot, jamais une copie
 LARGEUR = 620
 PAD = 18
 
