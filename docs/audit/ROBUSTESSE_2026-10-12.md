@@ -3528,6 +3528,12 @@ coque (6,8 %)** — repli documenté, paires `atk_a9_plus` + `atk_a9_ultimate` 7
 `pulsar_x2h_v3_mini` 96, `atk_ghost_extreme` + `atk_ghost_ultimate` 6 —, 16 050 profils à trois places
 (86,65 %), troisième place « ➕ L'autre option » 9 563 · « 💸 L'économie » 4 908 · « 🔎 Autre piste » 1 579.
 
+> **Chiffres datés.** Les valeurs ci-dessus sont celles du 2026-10-13. Le 2026-10-14, la coque de l'ATK U2
+> a été enregistrée (§26.42) : le repli de coque passe de 1 262 à **1 367** profils (7,4 %) — la paire
+> `atk_u2` + `atk_u2_v2_ultimate` (105 profils) n'était **pas comptée** faute de `shell_id` —, et trois
+> libellés de la troisième place se déplacent (« ➕ » 9 563 → 9 509, « 💸 » 4 908 → 4 962). Le rapport
+> versionné porte la mesure du jour, et deux tests refusent qu'il s'en écarte.
+
 **Les deux verrous** (`tests/test_tools_usage_errors.py`) :
 
 - le rapport versionné doit annoncer le nombre de profils **compté** par le module
@@ -3895,3 +3901,66 @@ qu'il mesure.
 **Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
 côtés)**, **776 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation. Aucun fichier du bot n'est modifié
 (un fichier de tests et des documents) : **rien à envoyer** sur le serveur.
+
+## 26.42 57e passe — deux souris, une coque, et 178 résultats qui montraient deux fois la même forme (2026-10-14)
+
+### 26.42.1 Le défaut
+
+`shell_id` porte une seule idée : **deux entrées de la même coque**. C'est lui qui applique la décision du
+propriétaire du 2026-10-12 (« deux places du résultat ne montrent jamais la même coque »), et il est
+documenté, sourcé et testé pour treize coques.
+
+**Sauf une.** L'ATK Blazing Sky U2 / U2 Plus / U2 Ultimate et l'ATK U2 V2 Ultimate ont des cotes publiées
+**identiques au dixième de millimètre** (123,7 × 64,6 × 39,1 mm, vérifiées sur les deux fiches officielles ET
+sur EloShapes) — et leurs propres notes l'écrivaient : « partage la coque et les cotes exactes du U2 V2
+Ultimate ». Le champ `shell_id` était pourtant **vide** des deux côtés. La préférence de coque ne pouvait donc
+pas s'appliquer à cette paire : elle s'affichait deux fois.
+
+Mesure (`tools/db_effect.py --avant <catalogue d'avant> --grille complete`, 27 170 profils) : **178 profils
+(0,66 %)** montraient l'U2 et l'U2 V2 Ultimate dans le même résultat. La coque enregistrée, ces 178 profils
+prennent une souris d'une autre coque (`atk_a9_plus` 32, `atk_zero` 28, `atk_a9_mini` 20, `atk_u2_v2_mini` 16,
+`pulsar_xlite_v4_medium` 8…) ; aucun repli ne s'ajoute là où la préférence intervient.
+
+**Une règle générale, écrite dans le test** : deux souris dont les **trois** cotes publiées sont identiques ne
+peuvent pas être deux coques. Neuf groupes de jumelles existent dans le catalogue ; huit partageaient déjà
+leur `shell_id`, le neuvième était cette paire. Le verrou
+(`tests/test_data.py::test_deux_entrees_de_meme_cote_partagent_la_meme_coque`) refuse l'un comme l'autre sens :
+cotes identiques sans coque commune, ou coque commune avec des cotes qui divergent (déjà couvert par les
+invariants de bosse et de boutons).
+
+### 26.42.2 Ce que la correction a révélé : 178 profils, puis 3 de plus
+
+Le remplissage du `shell_id` a fait tomber `test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre`
+(garantie de la décision du 2026-10-13) sur un profil : **mode Économique, main 225 × 85, prise Palm**. Le
+match idéal y est l'ATK U2 (15 points, 22,95 €, la moins chère de la zone) ; la seule souris du classement
+qui passe sous ses 15 points est l'ATK U2 V2 Ultimate (10 points) — **désormais sa coque jumelle**. Le dernier
+palier de la deuxième place cherchait alors « une autre coque » sans plafond et affichait l'ATK A9 Plus
+(20 points, 50 %) : **l'idéal moins bien noté que la ligne du dessous**, exactement l'oddité que la décision du
+2026-10-13 a supprimée (1 622 profils corrigés ce jour-là).
+
+Mesure sur les 18 270 profils remplis : **3 profils** portaient ce désordre non justifié (24 désordres au
+total, 21 expliqués par le repli documenté). Le palier manquant est ajouté (`result_slots`) : avant de
+renoncer à l'ordre, le moteur cherche sous le plafond **sans contrainte de coque** — la préférence de coque
+garde la priorité partout où elle a un candidat sous le plafond, et cède là où son propre repli le prévoit
+(« si la zone n'offre rien d'autre, on reprend la liste complète »). Après correction : **désordres non
+justifiés : 0**, désordres justifiés : 24 (inchangés), et trois profils de plus montrent une coque jumelle
+sous le plafond (1 364 → 1 367) — le prix de la garantie d'ordre, mesuré.
+
+**Effet complet de la passe, sur la grille de 18 522 profils** : rapport statistique régénéré — repli de coque
+**1 367 (7,4 %)** au lieu de 1 262 (dont la paire U2, 105 profils, désormais comptée), libellés de la 3e place
+« ➕ » 9 509 · « 💸 » 4 962 · « 🔎 Autre piste » 1 579, matrice inchangée hors sa date.
+
+### 26.42.3 Contre-épreuves
+
+| Mutation | Détectée par |
+|---|---|
+| `shell_id` retiré de l'ATK U2 (l'état d'avant) | **3 tests** de `tests/test_data.py` (l'invariant, le profil réel, la source déclarante) |
+| Palier intermédiaire retiré de la 2e place | `tests/test_flow.py::test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre` + le test synthétique du palier |
+| Coque U2 pointée vers un autre `shell_id` que sa jumelle | l'invariant des cotes identiques |
+
+**Fichiers à envoyer** : **`data/mouse_db.json`** (le catalogue est relu à chaque interaction — aucun
+redémarrage nécessaire) et **`cogs/finder_flow.py`** (le palier de la 2e place). Les trois aperçus, le rapport
+et la matrice sont régénérés (documentation et développement seulement).
+
+**Mesure finale** : **1 655 instructions / 0 manquante** et **508 branches / 0 manquante (100 % des deux
+côtés)**, **780 tests verts**, `pyflakes` 0, `privacy_scan` 0 violation, `qa_flow_matrix` 0 problème.

@@ -1,6 +1,6 @@
 # Matrices de comparaison par profil
 
-_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-10-13**. Ne pas modifier à la main : relancer le script._
+_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-10-14**. Ne pas modifier à la main : relancer le script._
 
 **Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; « ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.
 

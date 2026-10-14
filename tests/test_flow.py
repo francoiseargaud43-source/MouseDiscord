@@ -1245,6 +1245,34 @@ def test_third_slot_is_the_cheapest_of_the_window_not_an_expensive_one():
     assert flow.third_slot_title(third, ideal, alternative) == "➕ L'autre option"
 
 
+def test_alternative_ne_depasse_jamais_le_plafond_quand_une_souris_passe_dessous():
+    """Ordre garanti (décision du 2026-10-13) : l'alternative ne peut pas mieux noter que le match idéal.
+
+    Priorité des deux règles, telle qu'elle est codée : la préférence de coque de la 2e place gagne
+    **quand elle a un candidat sous le plafond** ; sinon, l'ordre gagne et la variante de coque est
+    montrée (son propre repli le prévoit : « si la zone n'offre rien d'autre, on reprend la liste
+    complète »). Sans ce palier, la 2e place prenait la meilleure souris d'une AUTRE coque même
+    mieux notée que le match idéal — le membre voyait alors un « idéal » moins bien noté que la ligne
+    du dessous, exactement ce que la décision du 2026-10-13 a supprimé (trouvé sur 3 profils de la
+    grille en corrigeant la coque de l'ATK U2, dont la variante V2 était écartée par la préférence).
+    """
+    ideal = _fake_score("ideal", 30, 22.95, shell_id="s1")
+    variante_sous_plafond = _fake_score("variante", 28, 59.95, shell_id="s1")   # même coque, 28 ≤ 30
+    autre_coque_au_dessus = _fake_score("autre", 32, 27.95, shell_id="s2")      # autre coque, 32 > 30
+    selection = _fake_selection([ideal, autre_coque_au_dessus, variante_sous_plafond], reference=32)
+
+    _, alternative, _ = flow.result_slots(selection)
+    assert alternative is variante_sous_plafond, "l'ordre prime : 28 ≤ 30, la variante reste montrable"
+    assert alternative.total <= ideal.total
+
+    # Contrepartie : dès qu'une autre coque passe SOUS le plafond, c'est elle qui est préférée.
+    autre_sous_plafond = _fake_score("autre_bis", 29, 27.95, shell_id="s2")
+    selection = _fake_selection([ideal, autre_coque_au_dessus, variante_sous_plafond, autre_sous_plafond],
+                                reference=32)
+    _, alternative, _ = flow.result_slots(selection)
+    assert alternative is autre_sous_plafond, "la préférence de coque garde la main quand elle le peut"
+
+
 def test_third_slot_prefers_another_shell_over_a_variant_of_a_shown_mouse():
     """Décision du 2026-10-12 appliquée à la troisième place : « deux places ne montrent jamais la
     même coque ». Quand la moins chère des options restantes est une variante d'une coque déjà

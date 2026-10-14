@@ -189,6 +189,107 @@ def test_two_missing_criteria_still_block_a_mouse(mice):
 A9_LARGE_SHELL = ("atk_a9_plus", "atk_a9_ultimate", "atk_a9_air", "atk_a9_nb")
 
 
+def test_deux_entrees_de_meme_cote_partagent_la_meme_coque(mice):
+    """Invariant de base : deux souris de cotes publiées IDENTIQUES ne peuvent pas être deux coques.
+
+    Longueur, largeur maximale et hauteur réunies au dixième de millimètre : c'est le moule. Tant que
+    `shell_id` reste vide, le moteur ne peut pas appliquer la règle du propriétaire du 2026-10-12
+    (« deux places du résultat ne montrent jamais la même coque ») — et c'est exactement ce qui est
+    arrivé à l'ATK Blazing Sky U2 / U2 Plus / U2 Ultimate et à l'ATK U2 V2 Ultimate, dont les notes
+    disaient « même coque, mêmes cotes » sans que le champ soit rempli : **178 profils sur 27 170
+    (0,66 %)** affichaient les deux dans le même résultat (`tools/db_effect.py --avant <catalogue
+    d'avant>`). Trouvé et corrigé le 2026-10-13 (57e passe).
+
+    Une coque enregistrée ne s'arrête pas aux cotes : les invariants de bosse et de hauteur de boutons
+    (ci-dessus) tiennent la même pièce de plastique des deux côtés. Ici, on refuse seulement qu'elles
+    se contredisent.
+    """
+    par_cotes: dict[tuple, list] = {}
+    for mouse in mice.values():
+        par_cotes.setdefault((mouse.length_mm, mouse.width_max_mm, mouse.height_mm), []).append(mouse)
+    jumelles = {cotes: souris for cotes, souris in par_cotes.items() if len(souris) > 1}
+    # Garde-fou du test : sans groupe de jumelles, le contrôle ne prouverait rien.
+    assert len(jumelles) >= 8, f"trop peu de groupes de cotes identiques : {sorted(jumelles)}"
+
+    incoherentes = {}
+    for cotes, souris in jumelles.items():
+        coques = {s.shell_id for s in souris}
+        if len(coques) > 1 or None in coques:
+            incoherentes[cotes] = [(s.id, s.shell_id) for s in souris]
+    assert incoherentes == {}, f"cotes identiques mais coques distinctes : {incoherentes}"
+
+
+def test_la_coque_u2_change_le_resultat_sur_deux_profils_reels():
+    """Le cas corrigé le 2026-10-13, mesuré sur deux profils réels (les deux sens de la règle).
+
+    Reproductible : `python tools/db_effect.py --avant <catalogue d'avant> --grille complete` — **178
+    profils sur 27 170 (0,66 %)** changeaient, tous pour retirer une coque déjà affichée.
+
+    Profil **palm 200 × 60, mode Économique** : la préférence agit. Avant, la 3e place reprenait la
+    coque du match idéal (ATK U2 puis ATK U2 V2 Ultimate) ; elle prend maintenant l'ATK GHOST Ultimate,
+    d'une autre coque — c'est la décision du 2026-10-12 qui s'applique enfin à cette paire.
+    """
+    from cogs.finder_flow import compute_selection, result_slots
+    from utils.models import BudgetMode, Grip, Thenar
+    from utils.session import FinderSession
+
+    def trois_places(longueur: float, largeur: float):
+        session = FinderSession(user_id=1)
+        session.grip = Grip.PALM
+        session.thenar = Thenar.PETITE
+        session.hand_length_mm = longueur
+        session.hand_width_mm = largeur
+        session.budget_mode = BudgetMode.ECONOMIQUE
+        selection = compute_selection(session)
+        return [score for score in result_slots(selection) if score is not None]
+
+    places = trois_places(200.0, 60.0)
+    affichees = [score.mouse.id for score in places]
+    assert "atk_u2_v2_ultimate" not in affichees, affichees
+    coques = [score.mouse.shell_id or score.mouse.id for score in places]
+    assert len(coques) == len(set(coques)), affichees
+
+
+def test_le_repli_de_coque_reste_sous_le_plafond_du_match_ideal():
+    """Second sens de la règle : quand AUCUNE autre coque ne passe sous le plafond, l'ordre prime.
+
+    Profil **palm 225 × 85, mode Économique** : le match idéal est l'ATK U2 (15 pts, 22,95 €, la moins
+    chère de la zone) ; la seule souris du classement qui passe sous ses 15 points est l'ATK U2 V2
+    Ultimate (10 pts) — **même coque**. La préférence de coque cède donc, comme son propre repli le
+    prévoit, et la 2e place reste sous le plafond : le pourcentage ne remonte jamais d'une ligne à
+    l'autre (décision du 2026-10-13). L'alternative affichée est donc une variante de la coque du
+    match idéal, à sa juste place : 38 % puis 25 %.
+    """
+    from cogs.finder_flow import compute_selection, result_slots
+    from utils.matcher import compatibility_percent
+    from utils.models import BudgetMode, Grip
+    from utils.session import FinderSession
+
+    session = FinderSession(user_id=1)
+    session.grip = Grip.PALM
+    session.thenar = None
+    session.hand_length_mm = 225.0
+    session.hand_width_mm = 85.0
+    session.budget_mode = BudgetMode.ECONOMIQUE
+    selection = compute_selection(session)
+    places = [score for score in result_slots(selection) if score is not None]
+
+    pourcentages = [compatibility_percent(score) for score in places]
+    # Le match idéal et l'alternative : la garantie de la décision du 2026-10-13 (38 % puis 25 %).
+    # La troisième place peut, elle, dépasser la deuxième par le repli documenté (« aucune souris du
+    # classement ne passe sous son plafond ») — c'est `test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre`
+    # (tests/test_flow.py) qui vérifie que ce repli n'est jamais pris à la légère.
+    assert pourcentages[:2] == sorted(pourcentages[:2], reverse=True), pourcentages
+    assert pourcentages[:2] == [38, 25], pourcentages
+    ideal, alternative = places[0], places[1]
+    assert alternative.total <= ideal.total
+    assert alternative.mouse.id == "atk_u2_v2_ultimate"
+    assert alternative.mouse.shell_id == ideal.mouse.shell_id == "atk_u2"
+    # La donnée qui rend ce repli légitime : rien d'autre ne passe sous le plafond du match idéal.
+    sous_plafond = [s.mouse.id for s in selection.ranked[1:] if s.total <= ideal.total]
+    assert sous_plafond == ["atk_u2_v2_ultimate"], sous_plafond
+
+
 def test_a9_shell_variants_share_the_owners_button_height(mice):
     """Les quatre variantes de la coque A9 « large » ont la même hauteur de boutons, sourcée."""
     assert {mice[i].shell_id for i in A9_LARGE_SHELL} == {"atk_a9_large"}

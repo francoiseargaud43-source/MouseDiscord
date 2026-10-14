@@ -535,6 +535,13 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
   **écart assumé et daté** (l'outil d'origine conseille l'arrière étroit au thénar petit *et* moyen ; le bot le
   réserve à « Petite », comme le prescrit `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 — le test refuse que l'un des
   deux bouge sans l'autre).
+- `tests/test_data.py` (suite) : **invariants de coque** — deux souris dont les trois cotes publiées sont
+  identiques (au dixième : longueur, largeur maximale, hauteur) ne peuvent pas être deux coques : neuf
+  groupes de jumelles au catalogue, dont un (ATK Blazing Sky U2 / U2 V2 Ultimate) est resté sans `shell_id`
+  jusqu'au 2026-10-14 — **178 profils sur 27 170** montraient alors les deux dans le même résultat, contre
+  la règle « deux places ne montrent jamais la même coque ». Deux profils réels tiennent les deux sens de
+  la règle : la préférence de coque quand une autre coque passe sous le plafond, le repli quand il n'y en a
+  aucune.
 - `tests/test_db_effect.py` : le comparateur de données (`tools/db_effect.py`) prouve dans les deux sens —
   deux catalogues identiques ne produisent aucun écart, un prix modifié en produit, et deux catalogues qui
   ne contiennent pas les mêmes souris sont refusés au lieu d'être comparés. Une **simulation de retrait**

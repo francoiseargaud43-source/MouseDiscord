@@ -2098,11 +2098,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.35).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.36).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 776 passed
+.venv/bin/python -m pytest -q                      # attendu : 780 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2377,6 +2377,34 @@ les fichiers de référence sont arrondis au dixième de millimètre et ne peuve
 limite est écrite dans le fichier de tests, pour qu'on ne lui fasse pas dire plus qu'il ne mesure.
 
 **Fichiers à envoyer** : **aucun** — un fichier de tests. Détail : §26.41 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.36 Mise à jour du 2026-10-14 (27e) : deux souris de la même coque, et un palier d'ordre corrigé
+
+**À envoyer : `data/mouse_db.json` et `cogs/finder_flow.py`.** Le reste de cette mise à jour est de la
+documentation et des outils.
+
+- **Le catalogue** : l'ATK Blazing Sky U2 / U2 Plus / U2 Ultimate et l'ATK U2 V2 Ultimate ont des cotes
+  publiées identiques (123,7 × 64,6 × 39,1 mm) — donc **une seule coque** — mais le champ `shell_id` était
+  vide. La règle « deux places du résultat ne montrent jamais la même coque » (votre décision du 2026-10-12)
+  ne pouvait donc pas s'appliquer : **178 profils sur 27 170** montraient les deux dans le même résultat. La
+  coque est enregistrée (`shell_id = atk_u2`), avec sa source datée ; ces profils prennent maintenant une
+  souris d'une autre coque. Le fichier est relu **à chaque interaction** : aucun redémarrage nécessaire.
+- **Le moteur** (`cogs/finder_flow.py`) : en corrigeant la coque, trois profils sur 18 270 ont montré un
+  « match idéal » moins bien noté que la ligne du dessous — précisément ce que votre décision du
+  2026-10-13 a supprimé (la garantie d'ordre, pour laquelle vous aviez autorisé une modification du
+  moteur). Le dernier palier de la deuxième place cherchait « une autre coque » sans regarder le plafond ;
+  il cherche désormais sous le plafond avant de renoncer à l'ordre. Après correction : **plus aucun désordre
+  non justifié** (3 → 0), 24 désordres justifiés par le repli documenté (inchangés), et trois profils de
+  plus montrent une coque jumelle, sous le plafond. **Redémarrage** : la tâche planifiée s'en charge (ou
+  `pkill -f "bot.py"`).
+- **Le rapport statistique et la matrice** sont régénérés (18 522 profils) : le repli de coque passe de
+  1 262 à **1 367** profils (7,4 %) — la paire U2, 105 profils, n'était pas comptée faute de `shell_id` — et
+  trois libellés de la troisième place se déplacent. Les trois aperçus PNG portent la nouvelle empreinte.
+
+**Fichiers à envoyer** : `data/mouse_db.json` et `cogs/finder_flow.py`. Détail : §26.42 de
+`ROBUSTESSE_2026-10-12.md`.
 
 ---
 

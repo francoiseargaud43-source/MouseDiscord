@@ -679,7 +679,18 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
         # montrée sous le titre « 🔎 Autre piste » (``third_slot_title``) — le résultat ne comporte
         # jamais de trou au milieu, et son pourcentage dit à lui seul que la piste est loin.
         restants = [score for score in ordered[1:] if not_same_shell(score)]
-        alternative = best_match(sous_plafond(restants, plafond_ideal)) or best_match(restants)
+        # Palier ajouté le 2026-10-13 : AVANT de renoncer à l'ordre, on cherche sous le plafond SANS
+        # contrainte de coque. Une variante de la coque déjà montrée reste une souris à montrer, alors
+        # qu'une souris mieux notée que le match idéal fait douter du calcul — c'est la règle que le
+        # propriétaire a fait garantir le 2026-10-13 (1 622 profils corrigés). La préférence de coque
+        # garde la priorité partout où elle a un candidat SOUS le plafond (paliers ci-dessus) : elle
+        # cède ici, comme le documente son propre repli (« si la zone n'offre rien d'autre, on reprend
+        # la liste complète »). Mesure : 3 profils sur 18 270 affichaient une alternative MIEUX notée
+        # que le match idéal alors qu'une souris passait sous le plafond (trouvé le 2026-10-13 en
+        # corrigeant la coque de l'ATK U2, dont la variante V2 était écartée par la préférence).
+        alternative = (best_match(sous_plafond(restants, plafond_ideal))
+                       or best_match(sous_plafond(ordered[1:], plafond_ideal))
+                       or best_match(restants))
 
     # (3) La troisième place : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``)
     # qui est vraiment moins chère que les deux autres (« l'économie ») ; **à défaut**, depuis la
