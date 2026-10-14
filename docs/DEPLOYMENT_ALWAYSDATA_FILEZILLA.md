@@ -2104,7 +2104,7 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.56).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.57).
 
 ```bash
 cd ~/MouseDiscord
@@ -2795,6 +2795,26 @@ effet sur le comportement du bot). **Redémarrage** : inutile.
   refusée. Mutation rejouée : 1 rouge. Le compteur du contrôle ci-dessus passe de 824 à **825** tests.
 - Les trois aperçus ont été régénérés (le catalogue entre dans leur empreinte, `0df6083f181d`) et sont
   **identiques bit à bit** : rien ne change à l'écran. Détail : §26.63 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.57 Mise à jour du 2026-10-14 (48e) : le point ouvert de la Xlite CrazyLight Mini est tranché
+
+**Fichiers à envoyer** : **aucun**. **Redémarrage** : inutile. Nombre de tests : **825**, inchangé.
+
+- Une souris **vendue** restait hors du catalogue (Xlite CrazyLight Mini, 149,99 €) parce que la
+  boutique la classe `Shape/Symmetrical` quand la famille Xlite est ergonomique main droite. Mesure du
+  jour sur trois pages officielles : sa **propre page** écrit « **ERGONOMIC RIGHT HAND** » et « Ergonomic
+  right-handed shape », et les deux autres pages de la même ligne (CrazyLight Medium, Xlite v4 Mini)
+  sont taggées `Ergonomic` → **la forme est tranchée** : ergonomique main droite.
+- La même page fournit tout le dossier d'entrée, sourcé et daté : 115,6 × 63,4 × **40,7 mm** (« Same
+  Size as the Xlite Size 1 », soit la coque de la Xlite v4 Mini), ±41 g / ±43 g, capteur XS-1, switchs
+  optiques 100 M, molette TTC Golden, LOD 2/1/0,7 mm. Polling : « **1000Hz/1ms** » puis « Up to 8K » →
+  **1 000 Hz**, la règle déjà appliquée à la famille. Seul le **MCU** reste ouvert (« 32bit ARM
+  Processor » : un type, pas un nom).
+- L'entrée au catalogue n'est pas faite ici : une souris de plus déplace tous les compteurs publiés
+  (banc, rapport, statistiques, aperçus) et peut changer le trio de référence — c'est une passe à part.
+  Le §6 du `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` est mis à jour. Détail : §26.64 du ROBUSTESSE.
 
 ---
 

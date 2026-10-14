@@ -188,13 +188,43 @@ lignes corrigées ci-dessous. **Tableau régénéré depuis le catalogue le 2026
 
 ## 6. Points à trancher (jamais devinés)
 
-1. **Xlite CrazyLight Mini** (handle `xlite-crazylight-gaming-mouse`, 149,99 €) : la boutique la classe sous
-   `Shape/Symmetrical` alors que **toute la famille Xlite est ergonomique main droite**. Forme à trancher
-   avant toute entrée au catalogue : elle n'a donc **pas** été ajoutée.
+1. **Xlite CrazyLight Mini** (handle `xlite-crazylight-gaming-mouse`, 149,99 €) — **TRANCHÉ le
+   2026-10-14** : la forme est **ergonomique main droite**. C'est la **page officielle du produit** qui le
+   dit, deux fois : une pastille de caractéristiques « **ERGONOMIC RIGHT HAND** » (icône
+   `icon_right_hand_yellow.svg`) et, dans ses « BENEFITS », « *Ergonomic right-handed shape ensures
+   comfortable use and supports various grip styles* » puis « *Optimized for right-handed palm grip…* ».
+   La contradiction est **interne à la boutique** : la CrazyLight **Medium** (texte produit identique mot
+   pour mot, 44 g contre 41 g) porte `Shape/Ergonomic`, et la **Xlite v4 Mini** — même famille, même
+   taille — aussi. Mesure du 2026-10-14 (les trois pages, `updated_at` 10 h 56) :
+
+   | Produit (handle) | Étiquette de forme de la boutique | Prix | La page officielle dit |
+   | --- | --- | --- | --- |
+   | Xlite CrazyLight **Mini** (`xlite-crazylight-gaming-mouse`) | `Shape/Symmetrical` | 149,99 € | **« ERGONOMIC RIGHT HAND »** + « Ergonomic right-handed shape » |
+   | Xlite CrazyLight **Medium** (`xlite-crazylight-medium-gaming-mouse`) | `Shape/Ergonomic` | 149,90 € | texte produit identique |
+   | Xlite **v4 Mini** (`xlite-v4-mini-gaming-mouse`) | `Shape/Ergonomic` | 119,99 € | « ergonomically crafted for right-handed gamers » |
+
+   **L'étiquette `Symmetrical` de la boutique est donc isolée** — elle contredit les deux autres pages de
+   la même ligne et le texte du produit lui-même. La souris reste **absente du catalogue**, mais le
+   blocage n'est plus la forme : son **entrée** est une passe à part entière, parce qu'une souris de plus
+   fait bouger les compteurs publiés (banc 21 736 profils, rapport 18 522, statistiques par souris).
+
+   Ce qu'il faudra pour l'ajouter est **déjà mesuré, pas deviné** (relevé du 2026-10-14 sur la même
+   page, section « Technical Specifications ») : dimensions publiées par le fabricant — **115,6 × 63,4 ×
+   40,7 mm**, la page écrivant « *Same Size as the Xlite Size 1* » (c'est exactement la coque de la
+   `pulsar_xlite_v4_mini` du catalogue) ; poids **±41 g** (patins « dot ») / **±43 g** (patins classiques) ;
+   capteur **XS-1** (32 000 dpi, 750 IPS, 50 g d'accélération) ; switchs **optiques 100 M** ; molette TTC
+   Golden ; LOD 2 / 1 / 0,7 mm.)
 2. **Polling** : les fiches Pulsar annoncent « 1 000 Hz/1 ms » et « jusqu'à 8 000 Hz avec le dongle 8K vendu
    séparément ». Le catalogue retient **1 000 Hz** (valeur publiée) ; les souris ATK/Scyrox, livrées avec leur
    dongle 8K, gardent 8 000 Hz. À confirmer par le propriétaire si l'on veut homogénéiser.
+   *(Relevé du 2026-10-14, page de la CrazyLight Mini : ses spécifications écrivent « **1000Hz/1ms Polling
+   Rate** » et « Up to 8K Polling Rate » l'une sous l'autre, pendant que son texte commercial dit « the 8K
+   polling rate favored by gamers ». C'est donc bien la valeur des **spécifications** que le catalogue
+   retient : **1 000 Hz**.)*
 3. **MCU Pulsar** non publié : laissé vide (`mcu` = 0 dans le départage), jamais deviné.
+   *(Relevé du 2026-10-14 : les pages annoncent « 32bit ARM Processor », c'est-à-dire un type de
+   processeur, pas un nom de MCU — la règle tient : le champ reste vide. C'est le seul point des trois que
+   la mesure n'a pas pu fermer.)*
 4. **Éditions de couleur** (T1, PRX, Bruce Lee, Demon Slayer, BlueArchive…) : mêmes coques et mêmes
    spécifications annoncées, seuls le coloris et le prix changent — une entrée par modèle a été retenue,
    les éditions restent citées dans le relevé §2.

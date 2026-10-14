@@ -5027,3 +5027,50 @@ aperçus, régénérés parce que le catalogue fait partie de leur empreinte, so
 (empreinte `0df6083f181d`). Suite de tests : 824 → **825**. **Fichiers à envoyer** : **aucun** (le
 catalogue livré sur l'hébergement peut toutefois être mis à jour quand vous voudrez : la correction est
 dans `data/mouse_db.json`, sans effet sur le comportement du bot).
+
+---
+
+## 26.64 77e passe — le point ouvert du catalogue Pulsar est tranché par la page du fabricant (2026-10-14)
+
+**Le point de départ.** Le catalogue Pulsar laissait une souris **vendue** hors du bot, avec cette raison
+écrite : la « Xlite CrazyLight Mini » est classée `Shape/Symmetrical` par la boutique alors que toute la
+famille Xlite est ergonomique main droite — « forme à trancher avant toute entrée au catalogue ».
+
+**Ce que la mesure du 2026-10-14 a montré.** La forme se tranche **sans arbitrage** : c'est la **page
+officielle du produit** qui répond, deux fois — une pastille « **ERGONOMIC RIGHT HAND** » et, dans ses
+« BENEFITS », « *Ergonomic right-handed shape ensures comfortable use and supports various grip styles* ».
+Et la contradiction est **interne à la boutique**, mesurée sur trois pages le même jour (`updated_at`
+10 h 56) :
+
+| Produit | Étiquette de forme de la boutique | Prix | La page officielle dit |
+| --- | --- | --- | --- |
+| Xlite CrazyLight **Mini** | `Shape/Symmetrical` | 149,99 € | **« ERGONOMIC RIGHT HAND »** |
+| Xlite CrazyLight **Medium** | `Shape/Ergonomic` | 149,90 € | texte produit **identique mot pour mot** |
+| Xlite **v4 Mini** | `Shape/Ergonomic` | 119,99 € | « ergonomically crafted for right-handed gamers » |
+
+Deux pages de la même ligne contre une : l'étiquette `Symmetrical` de la Mini est isolée, et elle
+contredit le texte de sa propre fiche. **La question posée est tranchée** (ergonomique main droite).
+
+**Ce que la mesure a aussi donné, et qui n'est pas perdu.** La page publie tout ce qu'il faut pour
+entrer la souris au catalogue, **sourcé et daté** : dimensions « *Same Size as the Xlite Size 1* » —
+**115,6 × 63,4 × 40,7 mm** (exactement la coque de la `pulsar_xlite_v4_mini` déjà au catalogue), poids
+**±41 g** (patins « dot ») / **±43 g** (patins classiques), capteur **XS-1**, switchs **optiques 100 M**,
+molette TTC Golden, LOD 2 / 1 / 0,7 mm. Le **polling** est également lisible sans ambiguïté : les
+spécifications écrivent « **1000Hz/1ms Polling Rate** » et « Up to 8K Polling Rate » l'une sous l'autre,
+c'est donc **1 000 Hz** qui reste la valeur publiée — la règle déjà appliquée à la famille Xlite. Seul le
+**MCU** reste fermé : la page dit « 32bit ARM Processor », un type de processeur, pas un nom.
+
+**Ce qui n'a pas été fait, et pourquoi.** La souris n'entre **pas** au catalogue dans cette passe. Une
+souris de plus fait bouger **tous les compteurs publiés** (banc 21 736 profils, rapport 18 522,
+statistiques par souris, trois aperçus) et peut changer le trio de référence du parcours : c'est une
+passe à part entière, la même discipline que pour les entrées précédentes. Le blocage de forme, lui, est
+levé — et le dossier de la souris est prêt.
+
+**Ce qui a été écrit.** Les trois points du §6 du `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` sont
+mis à jour : le premier est **tranché** (avec la mesure et les citations), le deuxième porte le relevé
+de polling du jour, le troisième dit ce que la page annonce vraiment (« 32bit ARM Processor ») — et
+reste le seul point ouvert, parce que la donnée n'existe pas.
+
+**Ce que la passe ne change pas.** Aucun code, aucune donnée du catalogue, aucun compteur : suite de
+tests **825**, inchangée. Aucun test n'est ajouté — la mesure est **externe et datée**, elle se vérifie en
+ouvrant les trois pages, pas en exécutant la suite. **Fichiers à envoyer** : **aucun**.
