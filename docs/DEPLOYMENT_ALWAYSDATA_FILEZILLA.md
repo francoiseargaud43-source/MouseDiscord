@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.52).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.53).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 820 passed
+.venv/bin/python -m pytest -q                      # attendu : 822 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2724,6 +2724,25 @@ Les documents, les tests et les aperçus accompagnent.
   rejouées : 1 rouge (titre), 2 rouges (mauvaise place). Le compteur du contrôle ci-dessus passe de 817 à
   **820** tests.
 - Aucun changement pour le bot : ni lien, ni prix, ni texte. Détail : §26.59 de `ROBUSTESSE_2026-10-12.md`.
+
+---
+
+### 12.53 Mise à jour du 2026-10-14 (44e) : le journal des passes avait perdu une passe
+
+**Fichiers à envoyer** : **aucun**. **Redémarrage** : inutile.
+
+- La section du journal qui raconte l'aperçu périmé (commit `1cf2839`) était titrée « 50e passe
+  (suite) » alors que le commit annonce la **51e** : le numéro 51 avait disparu du journal, qui sautait
+  de 50 à 52 — alors qu'il cite lui-même « le défaut des 50e et 51e passes » (§26.42).
+- La section du partage des liens d'achat, publiée le même jour, était titrée « 71e passe » alors que
+  c'est la **72e** (numéro déjà pris par le §26.58, et sans « (suite) »).
+- Corrigé : §26.35 → **51e**, §26.59 → **72e**, avec une note datée dans chacune (le message du commit
+  `87d7b8d`, déjà poussé, n'est pas réécrit : il est corrigé dans le journal). La suite est complète de
+  48 à 72.
+- **Deux contrôles neufs** (`tests/test_doc_coherence.py`) : aucun trou dans les numéros de passe du §26,
+  et une passe qui occupe plusieurs sections doit dire « (suite) » ou « Complément de la Ne ». Deux
+  mutations rejouées : 1 rouge chacune. Le compteur du contrôle ci-dessus passe de 820 à **822** tests.
+- Aucun changement pour le bot : ni code, ni texte, ni image. Détail : §26.60 de `ROBUSTESSE_2026-10-12.md`.
 
 ---
 

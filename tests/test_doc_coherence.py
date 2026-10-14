@@ -18,6 +18,12 @@ Le contrôle est volontairement **local et strict**, pour ne signaler que ce qu'
 - un « N sur M » avec N = 0 n'est pas jugé : « après correction : 0 profil sur 2 805 » voisine les
   pourcentages d'avant correction et aucun rapport ne peut y correspondre.
 
+Depuis le 2026-10-14, il vérifie aussi la **numérotation des passes** du journal : la suite des numéros
+ne doit avoir aucun trou (une passe livrée mais non racontée) et une passe qui occupe plusieurs sections
+doit le dire (« (suite) », « Complément de la Ne »). Le défaut qui a motivé ce contrôle : la section de
+l'aperçu périmé était titrée « 50e passe (suite) » alors que son commit (`1cf2839`) annonce la 51e — le
+numéro 51 avait disparu du journal.
+
 Ce qu'il ne voit pas, donc vérifié à la main (balayage décrit dans `docs/audit/ROBUSTESSE_2026-10-12.md`
 §26.18) : un pourcentage dont le dénominateur est implicite — « N profils sur les 24 609 », ou une cellule
 de tableau dont la grille est dans l'en-tête. Élargir le motif a été essayé et **écarté** : il laissait
@@ -148,3 +154,55 @@ def test_un_chiffre_perime_ne_reste_pas_publie_comme_une_mesure():
         if CHIFFRE_PERIME.search(ligne)
     ]
     assert coupables == [], f"chiffre périmé republié comme une mesure : {coupables}"
+
+
+JOURNAL = ROOT / "docs" / "audit" / "ROBUSTESSE_2026-10-12.md"
+
+
+def _passes_du_journal() -> list[tuple[int, str]]:
+    """Les couples (numéro de passe, titre de section) du journal, dans l'ordre du fichier.
+
+    Seules les sections **numérotées du §26** sont lues (« ## 26.35 51e passe — … ») : les premières
+    sections de ce paragraphe s'annoncent en toutes lettres (« ## 26. Trente-huitième passe (…) ») et les
+    passes racontées avant lui (§7 à §9) sont hors de portée du contrôle — c'est dit ici pour que
+    personne ne croie que « aucun trou » vaut pour les 72 passes.
+    """
+    passes: list[tuple[int, str]] = []
+    for ligne in JOURNAL.read_text(encoding="utf-8").splitlines():
+        if not ligne.startswith("## 26."):
+            continue
+        trouvé = re.search(r"(\d+)e passe", ligne)
+        if trouvé:
+            passes.append((int(trouvé.group(1)), ligne))
+    return passes
+
+
+def test_le_journal_des_passes_ne_saute_aucun_numero():
+    """Un trou dans la numérotation veut dire qu'une passe livrée n'est racontée nulle part.
+
+    Défaut trouvé le 2026-10-14 : la section qui raconte l'aperçu périmé (commit `1cf2839`) était titrée
+    « 50e passe (suite) » alors que le commit annonce la **51e** — le numéro 51 avait disparu du journal,
+    et la suite allait de 50 à 52. Le document cite pourtant lui-même « le défaut des 50e et 51e passes ».
+    """
+    passes = _passes_du_journal()
+    assert passes, "aucune section numérotée lue : le contrôle ne mesure rien"
+    numéros = [numéro for numéro, _ in passes]
+    assert numéros == sorted(numéros), "le journal revient en arrière"
+    attendus = set(range(numéros[0], numéros[-1] + 1))
+    manquants = sorted(attendus - set(numéros))
+    assert not manquants, f"passes sans aucune section dans le journal : {manquants}"
+
+
+def test_une_passe_qui_occupe_plusieurs_sections_le_dit():
+    """Deux sections du même numéro doivent s'annoncer « (suite) » ou « Complément de la Ne ».
+
+    Sans cette règle, la section d'une passe **suivante** peut se cacher derrière le numéro de la
+    précédente : c'est exactement la faute corrigée le 2026-10-14 (§26.35) et celle commise le même jour
+    en publiant la 72e sous le numéro de la 71e (§26.59).
+    """
+    vus: dict[int, str] = {}
+    for numéro, titre in _passes_du_journal():
+        if numéro in vus:
+            assert "(suite)" in titre or "Complément de la" in titre, \
+                f"le numéro {numéro} revient sans se dire « (suite) » : {titre!r}"
+        vus[numéro] = titre

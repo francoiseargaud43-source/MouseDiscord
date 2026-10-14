@@ -1,6 +1,6 @@
 """Les aperçus PNG versionnés ne doivent pas être plus vieux que ce qu'ils montrent.
 
-Défaut trouvé le 2026-10-13 (50e passe) : `docs/apercu_prix_libre.png` montrait encore « Z1 V2 Ultra »
+Défaut trouvé le 2026-10-13 (51e passe, commit `1cf2839`) : `docs/apercu_prix_libre.png` montrait encore « Z1 V2 Ultra »
 après le renommage du modèle, et personne ne pouvait le voir sans comparer l'image à l'écran du bot.
 Chaque aperçu porte désormais dans ses métadonnées une **empreinte des sources** (catalogue, liens,
 images, modules qui composent le message) : ce fichier la relit et la recalcule. Un aperçu périmé est un

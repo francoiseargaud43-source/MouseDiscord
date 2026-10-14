@@ -3553,7 +3553,14 @@ matrice → **1 échec**. **Mesure de la passe** : 709 tests verts, `pyflakes` 0
 Aucun fichier du bot n'est touché (deux documents générés, deux tests) : **rien à envoyer** sur le serveur,
 les deux rapports sont des copies de référence si vous les voulez.
 
-## 26.35 50e passe (suite) — l'aperçu du mode « Peu importe le prix » montrait un nom périmé (2026-10-13)
+## 26.35 51e passe — l'aperçu du mode « Peu importe le prix » montrait un nom périmé (2026-10-13)
+
+> **Numéro corrigé le 2026-10-14 (73e passe).** Cette section était titrée « 50e passe (suite) », alors
+> qu'elle raconte le travail du commit `1cf2839`, qui annonce la **51e passe**. Le numéro 51 avait donc
+> purement disparu du journal, sans que cela se voie : la suite des numéros allait de 50 à 52, et le
+> document cite pourtant lui-même « le défaut des 50e et 51e passes » (§26.42). Le titre dit maintenant
+> la 51e passe ; un contrôle lit désormais la suite des numéros et refuse tout trou
+> (`tests/test_doc_coherence.py`).
 
 ### 26.35.1 Le défaut
 
@@ -4798,7 +4805,14 @@ régénérés à l'identique).
 
 ---
 
-## 26.59 71e passe — un partage qui annonçait des comptes faux depuis vingt-quatre passages (2026-10-14)
+## 26.59 72e passe — un partage qui annonçait des comptes faux depuis vingt-quatre passages (2026-10-14)
+
+> **Numéro corrigé le 2026-10-14 (73e passe).** La section a d'abord été publiée sous le titre « 71e
+> passe », en même temps que le §26.58 : deux sections du même numéro dont aucune ne dit « (suite) » —
+> ce qui contredit la convention du journal et rendait le décompte ambigu. C'est la **72e** : elle a son
+> propre commit (`87d7b8d`), comme la 71e a le sien (`8b369b8`), et l'hébergement les compte comme deux
+> mises à jour (§12.51 et §12.52). Le message de commit, lui, annonce encore « 71e passe » : un message
+> poussé ne se réécrit pas, il se corrige ici.
 
 **Ce qui a été trouvé.** Le document qui décrit la relecture des liens d'achat partage les liens de la
 boutique ATK en deux tableaux : « §7.2 Les **onze** liens qui figent une variante » et « §7.3 Les
@@ -4838,3 +4852,57 @@ reliait ces deux tableaux aux liens.
 
 **Ce que la correction ne change pas.** Aucun lien, aucun prix, aucun texte du bot, aucun pixel. Suite de
 tests : 817 → **820**. **Fichiers à envoyer** : **aucun**.
+
+---
+
+## 26.60 73e passe — le journal avait perdu une passe en chemin (2026-10-14)
+
+**Ce qui a été trouvé.** En relisant la suite des numéros de passe du §26, deux défauts de la même famille
+apparaissent — et le second est de ma main, écrit le jour même.
+
+1. La section qui raconte l'aperçu périmé (le mode « Peu importe le prix » qui montrait encore « Z1 V2
+   Ultra ») était titrée « **50e passe (suite)** ». Or elle décrit le travail du commit `1cf2839`, qui
+   annonce la **51e passe** — et la section suivante est la 52e. Le numéro **51 n'existait donc nulle
+   part** dans le journal, alors que le document le cite lui-même deux § plus loin (« le défaut des 50e et
+   51e passes », §26.42). Une passe livrée, commitée, documentée… et introuvable sous son numéro.
+2. La section que j'ai publiée juste avant celle-ci (le partage des liens d'achat) était titrée « **71e
+   passe** », en même temps que le §26.58 : deux sections du même numéro dont aucune ne dit « (suite) ».
+   C'est la **72e** — elle a son propre commit (`87d7b8d`), comme la 71e a le sien (`8b369b8`), et
+   l'hébergement les compte comme deux mises à jour (§12.51 et §12.52). Le journal disait donc, à deux
+   reprises, un numéro de passe faux.
+
+**Pourquoi personne ne le voyait.** Un numéro de passe n'était vérifié par rien : ni par un test, ni par
+un outil. Les deux erreurs étaient invisibles à la lecture, parce qu'un numéro plausible ne se distingue
+pas d'un numéro juste — exactement le défaut du §26.42 (« un chiffre publié qui ne se rejouait pas »),
+appliqué à la traçabilité elle-même.
+
+**Ce qui a été corrigé.**
+
+- §26.35 est titré **51e passe** ; §26.59 est titré **72e passe**. Les deux sections portent une note
+  datée qui raconte le numéro d'avant et la preuve du numéro d'après (le commit, pour l'une ; le commit et
+  la mise à jour d'hébergement, pour l'autre). Le message du commit `87d7b8d` annonce encore « 71e
+  passe » : un message poussé ne se réécrit pas, il se corrige dans le journal.
+- `tests/test_apercus.py` datait le même défaut de la « 50e passe » : corrigé en 51e, avec le commit.
+- La suite est désormais **complète de 48 à 72** — plus aucun trou.
+
+**Verrou.** Deux contrôles neufs dans `tests/test_doc_coherence.py` :
+
+1. **aucun trou** : les numéros de passe lus dans l'ordre des sections du §26 forment une suite continue
+   (du plus petit au plus grand) — c'est ce contrôle qui aurait signalé le 51 manquant ;
+2. **une passe qui occupe plusieurs sections le dit** : deux sections du même numéro exigent « (suite) »
+   ou « Complément de la Ne » dans le titre — c'est ce contrôle qui aurait signalé ma 72e titrée 71e.
+
+Portée dite honnêtement dans le test : il lit les sections **numérotées du §26** (les premières du
+paragraphe s'annoncent en toutes lettres, « Trente-huitième passe », et les passes racontées aux §7 à §9
+sont hors de portée). Le contrôle ne prétend donc pas couvrir les 72 passes, seulement la partie qui porte
+un numéro en chiffres.
+
+**Mutations jouées** (journal sauvegardé puis restauré) :
+
+| Mutation | Résultat |
+| --- | --- |
+| §26.35 re-titrée « 50e passe (suite) » (le numéro 51 disparaît) | **1 rouge** : le contrôle des trous |
+| §26.59 re-titrée « 71e passe » (deux sections sous le même numéro) | **1 rouge** : le contrôle du « (suite) » |
+
+**Ce que la correction ne change pas.** Aucun code, aucun texte du bot, aucun chiffre de mesure. Suite de
+tests : 820 → **822**. **Fichiers à envoyer** : **aucun**.
