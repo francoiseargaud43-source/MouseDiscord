@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.57).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.58).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 825 passed
+.venv/bin/python -m pytest -q                      # attendu : 826 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2815,6 +2815,21 @@ effet sur le comportement du bot). **Redémarrage** : inutile.
 - L'entrée au catalogue n'est pas faite ici : une souris de plus déplace tous les compteurs publiés
   (banc, rapport, statistiques, aperçus) et peut changer le trio de référence — c'est une passe à part.
   Le §6 du `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` est mis à jour. Détail : §26.64 du ROBUSTESSE.
+
+---
+
+### 12.58 Mise à jour du 2026-10-15 (49e) : le brief de reprise pour l'ingénieur suivant
+
+**Fichiers à envoyer** : **aucun** (un document, rien pour le bot). **Redémarrage** : inutile.
+
+- `docs/PROMPT_REPRISE_TOTALE.md` : le document remis à l'IA qui reprend le projet avec **pleins pouvoirs**
+  (mandat, les six non-négociables, carte du dépôt, méthode, état mesuré, typologie des défauts, dette dite
+  honnêtement, vérifications à refaire, pièges déjà payés, plan en sept chantiers, définitions de « fini » et
+  annexes : schéma du catalogue, barème, commandes, glossaire).
+- Une section y est écrite pour être **exécutée, pas crue** : « ne me crois pas », avec la liste des dix
+  vérifications à refaire avant de bâtir dessus.
+- Le compteur du contrôle ci-dessus passe de 825 à **826** tests : le document est lu par le contrôle de
+  cohérence documentaire, qui compte une vérification de plus par fichier `.md` ajouté.
 
 ---
 
