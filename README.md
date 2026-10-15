@@ -511,6 +511,7 @@ python tools/render_preview.py       # régénère les trois aperçus livrés (d
 python tools/render_preview.py --sortie-dossier /tmp/apercus   # les rend sans toucher aux fichiers livrés
 python tools/measure_button_height.py IMG --length-mm 122.5 --height-mm 42.4   # classe de hauteur des boutons
 python tools/campagne_boutons.py campagne manifeste.csv --rapport rapport.md --json releve.json   # campagne EloShapes
+python tools/campagne_boutons.py sensibilite   # ce que les hauteurs de boutons inconnues peuvent encore changer
 python tools/measure_grip_width.py IMG --length 118.2   # largeur au capteur (méthode Oblivity)
 python tools/build_mouse_db.py       # traçabilité du premier relevé — refuse d'écraser le catalogue réel
 ```

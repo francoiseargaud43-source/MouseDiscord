@@ -2,12 +2,13 @@
 
 **Pourquoi** : 18 souris sur 36 n'ont pas de hauteur de boutons. Elles perdent les points de ce
 critère sans que personne sache si elles les méritaient. Selon ce que vaudront ces 18 hauteurs, le
-match idéal peut changer pour **27 % des profils** (mesure du 2026-10-15, 21 736 profils du banc).
+match idéal peut changer pour **27 % des profils** (mesure du 2026-10-15, 21 736 profils du banc ;
+rejouable : `python tools/campagne_boutons.py sensibilite`).
 EloShapes dessine toutes les souris de profil, à plat et de la même façon : c'est la source idéale.
 
 **Ton rôle** : collecter **une image de profil latéral par souris** sur EloShapes, puis lancer l'outil
-de mesure. Tu ne modifies **rien** dans le dépôt, tu ne décides **aucune** valeur : l'outil propose,
-le propriétaire décide.
+de mesure. En dehors du manifeste (que tu remplis) et du dossier `images/` (que tu crées), tu ne
+modifies **rien** dans le dépôt, et tu ne décides **aucune** valeur : l'outil propose, le propriétaire décide.
 
 ## 1. Préparer
 
@@ -66,4 +67,5 @@ Renvoie au propriétaire, **sans les résumer** :
 
 - Une image = une souris, identifiée par sa page EloShapes. Aucune image d'une autre source.
 - Aucune valeur inventée, aucune image « approchante » : une souris introuvable reste sans image.
-- Tu ne modifies ni `data/mouse_db.json` ni aucun autre fichier du dépôt.
+- Tu ne modifies ni `data/mouse_db.json` ni aucun autre fichier du dépôt, en dehors du manifeste et du
+  dossier `images/`.

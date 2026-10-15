@@ -874,8 +874,8 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
 def _piste_hors_budget(session: FinderSession) -> str:
     """Budget personnalisé sans résultat : le prix à partir duquel une souris notée existe.
 
-    Mesuré le 2026-10-15 (80e passe) : les 2 067 profils sans résultat de la grille sont TOUS des budgets
-    personnalisés trop bas (10 € : 1 976 ; 25 € : 91) — jamais une main hors catalogue. « Un budget plus
+    Mesuré le 2026-10-15 (80e passe, ligne « Profils sans aucun résultat » du banc d'essai) : les 2 067
+    profils sans résultat de la grille sont TOUS des budgets personnalisés trop bas (10 € : 1 976 ; 25 € : 91) — jamais une main hors catalogue. « Un budget plus
     élevé » ne disait pas lequel ; la phrase donne désormais le prix de la moins chère des souris notées
     pour cette main, avec son pourcentage (aucune promesse de mieux que ce qu'elle vaut).
     """
@@ -895,8 +895,8 @@ def _piste_hors_budget(session: FinderSession) -> str:
 def _une_illustration_par_message(embeds: list[discord.Embed]) -> None:
     """Une même illustration n'apparaît qu'UNE fois dans le message : dans le dernier bloc qui la porte.
 
-    Mesuré le 2026-10-15 (80e passe) : 21 032 résultats sur 49 153 de la grille (43 %, 82 % en
-    Fingertip) montraient deux fois la même image — la bosse ou les boutons de la souris retenue en
+    Mesuré le 2026-10-15 (80e passe) : 10 448 profils sur les 21 736 du banc (48 %, 74 % en Fingertip —
+    rejouable : le banc actuel lancé sur le ``cogs/finder_flow.py`` du commit a447cce) montraient deux fois la même image — la bosse ou les boutons de la souris retenue en
     haut, puis la même image dans le bloc de conseil qui l'explique. On la garde dans ce bloc-là (le
     texte qui l'explique est à côté) et la recommandation, en tête, devient plus courte sur mobile.
     """

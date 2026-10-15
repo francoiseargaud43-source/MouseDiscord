@@ -2108,7 +2108,7 @@ ci-dessous est le seul tenu à jour** (dernière valeur : §12.60).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 857 passed
+.venv/bin/python -m pytest -q                      # attendu : 858 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2853,9 +2853,9 @@ souhaitez, `tools/` (sept outils mis à jour, un outil nouveau). **Redémarrage*
   **0 écart** sur 44 776 profils (grille réelle + 40 catalogues aléatoires), confirmé par
   `tools/flow_effect.py --avant c6a268b` (0 profil changé sur 19 669).
 - Ce que le membre voit change sur deux points : une même illustration n'apparaît plus qu'**une fois** par
-  message (43 % des résultats la montraient deux fois), et un budget personnalisé trop bas donne le prix
+  message (48 % des profils du banc la montraient deux fois), et un budget personnalisé trop bas donne le prix
   de la moins chère des souris notées pour sa main.
-- Le compteur du contrôle ci-dessus passe de 826 à **857** tests (dont `tests/test_architecture.py`, qui relit
+- Le compteur du contrôle ci-dessus passe de 826 à **858** tests (dont `tests/test_architecture.py`, qui relit
   `docs/ARCHITECTURE.md` — le nouveau document de vérité courante — contre le code).
 
 ---

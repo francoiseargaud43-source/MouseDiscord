@@ -229,3 +229,23 @@ def test_le_manifeste_de_la_campagne_couvre_exactement_le_catalogue():
         assert ligne["image"] == f"{ligne['id']}.png"
         assert "-vs.-" not in ligne["source"]
         assert ligne["source"] == "" or ligne["source"].startswith("https://www.eloshapes.com/")
+
+
+def test_la_sensibilite_mesure_ce_que_les_hauteurs_inconnues_peuvent_changer(tmp_path):
+    """« 27 % des matchs idéaux en jeu » se rejoue : ``campagne_boutons.py sensibilite``. Ici, sur la grille
+    réduite : avec le vrai catalogue, des résultats dépendent des inconnues ; une fois chaque hauteur
+    renseignée (catalogue de test, sources ajoutées), plus aucun — l'incertitude est alors nulle."""
+    reel = cb.sensibilite(rapide=True)
+    assert reel["_inconnues"] == {"souris": 18, "total": 36}
+    assert sum(ligne["ideal"] for cle, ligne in reel.items() if cle != "_inconnues") > 0
+
+    catalogue = json.loads((ROOT / "data" / "mouse_db.json").read_text(encoding="utf-8"))
+    for souris in catalogue:
+        if souris["button_height"] == "Inconnu":
+            souris["button_height"] = "Mid"
+            souris["sources"][0]["fields"] = [*souris["sources"][0]["fields"], "button_height"]
+    complet = tmp_path / "complet.json"
+    complet.write_text(json.dumps(catalogue, ensure_ascii=False), encoding="utf-8")
+    plein = cb.sensibilite(complet, rapide=True)
+    assert plein.pop("_inconnues") == {"souris": 0, "total": 36}
+    assert all(ligne["ideal"] == 0 and ligne["une_place"] == 0 for ligne in plein.values())

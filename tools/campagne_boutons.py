@@ -5,7 +5,8 @@ Pourquoi cet outil existe
 18 souris sur 36 n'ont pas de hauteur de boutons : elles perdent les points de ce critère (5 sur 40
 en Palm et en Claw, 10 en Fingertip) sans que personne sache si elles les méritaient. Mesuré le
 2026-10-15 sur les 21 736 profils du banc : selon ce que vaudront ces 18 hauteurs, le match idéal peut
-changer pour **5 810 profils (27 %)** et au moins une des trois places pour **14 627 (67 %)**.
+changer pour **5 810 profils (27 %)** et au moins une des trois places pour **14 627 (67 %)** — rejouable :
+``python tools/campagne_boutons.py sensibilite``, qui mesurera aussi l'incertitude restante après la campagne.
 
 L'outil historique (``tools/measure_button_height.py``) bute sur un seul obstacle : il lui faut une vue
 de profil **parfaitement de côté**, et sur les sites des fabricants 7 vues sur 11 étaient en
@@ -571,6 +572,56 @@ def releve_json(releves: list[Releve], retenu: Etalonnage | None) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Sensibilité : ce que les hauteurs inconnues peuvent encore changer
+# ---------------------------------------------------------------------------
+def sensibilite(catalogue: Path = CATALOGUE_PAR_DEFAUT, rapide: bool = False) -> dict[str, dict[str, int]]:
+    """Combien de résultats dépendent des hauteurs de boutons encore inconnues ?
+
+    Deux classements de toute la grille du banc d'essai : aujourd'hui (une hauteur inconnue ne rapporte
+    aucun point) et la borne haute (chaque hauteur inconnue vaut la classe idéale de la prise du profil).
+    L'écart entre les deux est ce que la campagne peut encore changer — avant elle, c'est l'argument pour
+    la faire ; après elle, c'est l'incertitude qui reste. Aucune valeur n'est publiée : ce sont deux
+    bornes. Rend, par prise : profils, match idéal pouvant changer, au moins une place pouvant changer.
+    """
+    import dataclasses
+    import sys
+
+    for chemin in (str(ROOT), str(ROOT / "tools")):
+        if chemin not in sys.path:
+            sys.path.insert(0, chemin)
+    from qa_flow_matrix import grille
+    from utils.catalog import load_catalog
+    from utils.matcher import BUTTON_IDEAL, evaluate_mouse
+    from utils.models import Grip, HandMeasure
+    from utils.selection import select
+    from utils.slots import result_slots
+
+    souris = load_catalog(catalogue)
+    borne = {g: tuple(dataclasses.replace(m, button_height=sorted(BUTTON_IDEAL[g])[0])
+                      if m.button_height == INCONNU else m for m in souris) for g in Grip}
+
+    def places(cat, grip, main, mode, budget, thenar):
+        notes = [evaluate_mouse(m, main, grip, mode, budget, thenar=thenar) for m in cat]
+        return [s.mouse.id if s else None for s in result_slots(select(notes, mode, top_n=len(notes)))]
+
+    bilan: dict[str, dict[str, int]] = {}
+    for grip, longueur, largeur, thenar, mode, budget in grille(rapide):
+        ligne = bilan.setdefault(grip.value, {"profils": 0, "ideal": 0, "une_place": 0})
+        main = HandMeasure(longueur, largeur)
+        aujourd_hui = places(souris, grip, main, mode, budget, thenar)
+        haute = places(borne[grip], grip, main, mode, budget, thenar)
+        ligne["profils"] += 1
+        ligne["ideal"] += aujourd_hui[0] != haute[0]
+        ligne["une_place"] += aujourd_hui != haute
+    bilan["_inconnues"] = {"souris": sum(1 for m in souris if m.button_height == INCONNU), "total": len(souris)}
+    return bilan
+
+
+def _pourcent(n: int, total: int) -> str:
+    return f"{100 * n / total:.1f} %".replace(".", ",") if total else "—"
+
+
+# ---------------------------------------------------------------------------
 # Ligne de commande
 # ---------------------------------------------------------------------------
 def _parseur() -> argparse.ArgumentParser:
@@ -589,6 +640,9 @@ def _parseur() -> argparse.ArgumentParser:
     tous.add_argument("--rapport", help="fichier Markdown à écrire (sinon : affiché)")
     tous.add_argument("--json", dest="json_sortie", help="relevé JSON à écrire")
     tous.add_argument("--catalogue", default=str(CATALOGUE_PAR_DEFAUT))
+    sens = sous.add_parser("sensibilite", help="ce que les hauteurs encore inconnues peuvent changer (grille du banc)")
+    sens.add_argument("--rapide", action="store_true", help="grille réduite du banc")
+    sens.add_argument("--catalogue", default=str(CATALOGUE_PAR_DEFAUT))
     return parser
 
 
@@ -613,6 +667,17 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {nom:13} {_fmt(nom, valeur)}")
             print("Profil (mm depuis l'avant → hauteur) : " + " · ".join(
                 f"{d}→{prof.hauteur_a(d):.1f}" for d in range(0, int(prof.longueur_mm) + 1, 10)))
+            return 0
+        if args.commande == "sensibilite":
+            bilan = sensibilite(Path(args.catalogue), args.rapide)
+            inconnues = bilan.pop("_inconnues")
+            print(f"Souris sans hauteur de boutons : {inconnues['souris']} sur {inconnues['total']}.")
+            print("Si chacune avait la classe idéale de la prise du profil (borne haute) :")
+            total = {k: sum(ligne[k] for ligne in bilan.values()) for k in ("profils", "ideal", "une_place")}
+            for nom, ligne in [*bilan.items(), ("toutes prises", total)]:
+                print(f"  {nom:14} match idéal changé : {ligne['ideal']} / {ligne['profils']} "
+                      f"({_pourcent(ligne['ideal'], ligne['profils'])}) · au moins une place : "
+                      f"{ligne['une_place']} ({_pourcent(ligne['une_place'], ligne['profils'])})")
             return 0
         manifeste = Path(args.manifeste)
         lignes = lire_manifeste(manifeste)

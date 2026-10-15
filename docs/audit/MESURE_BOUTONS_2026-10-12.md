@@ -458,7 +458,7 @@ Au rythme d'une vue trouvée de temps en temps, 18 souris restaient sans hauteur
 
 **Ce que la mesure change** (2026-10-15, 21 736 profils du banc) : selon les classes que prendront ces
 18 souris, le match idéal peut changer pour **5 810 profils (27 %)** et au moins une des trois places
-pour **14 627 (67 %)**. Le critère manquant n'est donc pas un détail : c'est la principale incertitude
+pour **14 627 (67 %)** (`python tools/campagne_boutons.py sensibilite`). Le critère manquant n'est donc pas un détail : c'est la principale incertitude
 du classement.
 
 **La voie retenue** : EloShapes dessine toutes ses souris de profil, à plat, de la même façon — une

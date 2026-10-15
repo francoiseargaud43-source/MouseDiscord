@@ -55,7 +55,7 @@ donnée manquante est la hauteur des boutons, la souris est quand même classée
 à l'écran) ; toute autre donnée manquante la met « en attente », hors classement.
 
 > **Le point faible du calcul** : 18 souris sur 36 n'ont pas de hauteur de boutons. Selon ce qu'elles
-> vaudront, le match idéal peut changer pour 27 % des profils. La campagne de mesure est prête
+> vaudront, le match idéal peut changer pour 27 % des profils (`tools/campagne_boutons.py sensibilite`). La campagne de mesure est prête
 > (`tools/campagne_boutons.py`, `docs/campagne_boutons/CONSIGNES.md`).
 
 ### 3.2 Le classement selon le budget — `utils/selection.py`

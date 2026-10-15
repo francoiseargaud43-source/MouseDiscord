@@ -583,6 +583,7 @@ def _run(fast: bool) -> int:
     cases = 0
     problems: list[str] = []
     empties: list[str] = []
+    vides_par_cause: dict[str, int] = {}      # d'où vient un résultat vide (80e passe)
     partials = 0
     marques_prix = 0
     places = {0: 0, 1: 0, 2: 0, 3: 0}          # nombre de places réellement remplies dans le message
@@ -619,6 +620,9 @@ def _run(fast: bool) -> int:
                                                      repli_ordre=ordre_repli))
         if ideal is None:
             empties.append(where)
+            cause = (f"budget personnalisé de {budget:g} €" if mode is BudgetMode.CUSTOM
+                     else f"mode {mode.value if mode else 'aucun'}")
+            vides_par_cause[cause] = vides_par_cause.get(cause, 0) + 1
         else:
             if ideal.is_partial:
                 partials += 1
@@ -636,7 +640,9 @@ def _run(fast: bool) -> int:
             }:
                 problems.append(f"{where} : économie déjà montrée plus haut")
     print(f"Profils testés : {cases}")
-    print(f"Profils sans aucun résultat : {len(empties)}")
+    print(f"Profils sans aucun résultat : {len(empties)}"
+          + (" (" + " · ".join(f"{cause} : {n}" for cause, n in sorted(vides_par_cause.items())) + ")"
+             if vides_par_cause else ""))
     for where in empties[:15]:
         print(f"  · {where}")
     print(f"Profils où le match idéal est partiel (boutons non documentés) : {partials}")

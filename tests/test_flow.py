@@ -1172,8 +1172,8 @@ async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     une vraie alternative porte le titre « 🔎 Autre piste ». Mesure de référence (2026-10-14, grille
     complète du banc : 21 736 entrées distinctes) : 3 lignes sur **86,00 %** (18 694 profils) ; les
     trous restants sont **exclusivement des budgets épuisés** — 793 profils à 2 lignes, 182 à 1,
-    2 067 sans aucun résultat, tous dans les trois budgets personnalisés serrés (10, 25 et 45 €),
-    aucun dans les six autres modes (vérifié profil par profil le 2026-10-14). Le couple publié plus
+    2 067 sans aucun résultat — ces trous sont tous dans les trois budgets personnalisés serrés (10, 25
+    et 45 € ; les vides, eux, seulement à 10 et 25 €, que le banc détaille désormais), aucun dans les six autres modes (vérifié profil par profil le 2026-10-14). Le couple publié plus
     tôt sans date (23 231 · 85,50 % · 1 196 à 2 lignes, sur les 27 170 itérations d'alors) ne se
     rejoue plus : sur cette même grille d'alors, la mesure du jour donne 23 140 · 85,17 % · 1 287.
     """
