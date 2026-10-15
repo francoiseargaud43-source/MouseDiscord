@@ -1096,6 +1096,7 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
             value=(
                 "Aucune souris ne peut être retenue avec ces critères. "
                 "Essayez une autre gamme ou un budget plus élevé."
+                + _piste_hors_budget(session)
             ),
             inline=False,
         )
@@ -1133,10 +1134,50 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     buttons = _buttons_guide_embed(session)
     if buttons is not None:
         embeds.append(buttons)
+    _une_illustration_par_message(embeds)
     # Le renvoi n'est ajouté que si le bloc « Pourquoi ce choix ? » est bien dans le message.
     embeds[-1].set_footer(
         text=SCORE_DISCLAIMER + (EXPLANATION_REFERENCE if dimensions is not None else ""))
     return embeds
+
+
+def _piste_hors_budget(session: FinderSession) -> str:
+    """Budget personnalisé sans résultat : le prix à partir duquel une souris notée existe.
+
+    Mesuré le 2026-10-15 (80e passe) : les 2 067 profils sans résultat de la grille sont TOUS des budgets
+    personnalisés trop bas (10 € : 1 976 ; 25 € : 91) — jamais une main hors catalogue. « Un budget plus
+    élevé » ne disait pas lequel ; la phrase donne désormais le prix de la moins chère des souris notées
+    pour cette main, avec son pourcentage (aucune promesse de mieux que ce qu'elle vaut).
+    """
+    if session.budget_mode is not BudgetMode.CUSTOM or session.grip is None or not session.has_measures:
+        return ""
+    hand = HandMeasure(session.hand_length_mm, session.hand_width_mm)
+    notees = [score for score in (evaluate_mouse(mouse, hand, session.grip, thenar=session.thenar)
+                                  for mouse in load_catalog(MOUSE_DB_PATH))
+              if score.is_scored and score.mouse.price_eur is not None]
+    if not notees:
+        return ""
+    moins_chere = min(notees, key=lambda score: (score.mouse.price_eur, -score.total))
+    return (f"\n\nLa moins chère des souris notées pour votre main : **{moins_chere.mouse.label}** "
+            f"à **{_price_text(moins_chere)}** ({compatibility_percent(moins_chere)} %).")
+
+
+def _une_illustration_par_message(embeds: list[discord.Embed]) -> None:
+    """Une même illustration n'apparaît qu'UNE fois dans le message : dans le dernier bloc qui la porte.
+
+    Mesuré le 2026-10-15 (80e passe) : 21 032 résultats sur 49 153 de la grille (43 %, 82 % en
+    Fingertip) montraient deux fois la même image — la bosse ou les boutons de la souris retenue en
+    haut, puis la même image dans le bloc de conseil qui l'explique. On la garde dans ce bloc-là (le
+    texte qui l'explique est à côté) et la recommandation, en tête, devient plus courte sur mobile.
+    """
+    vues: set[str] = set()
+    for embed in reversed(embeds):
+        url = embed.image.url if embed.image else None
+        if not url:
+            continue
+        if url in vues:
+            embed.set_image(url=None)
+        vues.add(url)
 
 
 def expired_embed() -> discord.Embed:

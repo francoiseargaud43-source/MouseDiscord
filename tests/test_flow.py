@@ -277,7 +277,11 @@ async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeyp
     attendues = {"High": "T01_boutons_hauts", "Low": "T02_boutons_bas", "Mid": "T03_boutons_moyens"}
     illustration = attendues.get(ideal.mouse.button_height)
     assert illustration is not None, f"{ideal.mouse.label} : classe {ideal.mouse.button_height!r} inattendue"
-    assert illustration in embeds[0].image.url
+    # 2026-10-15 (80e passe) : l'illustration est dans le message UNE seule fois — en tête, ou dans le
+    # bloc « La hauteur des boutons » quand c'est la même image que le conseil (on la garde là).
+    images = [embed.image.url for embed in embeds if embed.image and embed.image.url]
+    assert sum(illustration in url for url in images) == 1
+    assert len(images) == len(set(images))
 
 
 def test_steps_total_follows_the_grip():
@@ -1047,10 +1051,17 @@ def test_result_hump_illustration_follows_the_winner(monkeypatch):
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
-    main = flow.results_embeds(session, flow.compute_selection(session))[0]
+    selection = flow.compute_selection(session)
+    ideal = flow.result_slots(selection)[0]
+    assert flow.result_image_key(ideal, Grip.PALM) == "illustration_hump_mid"
+    embeds = flow.results_embeds(session, selection)
     # Illustration liée à la bosse de la souris RÉELLEMENT retenue : la retenue du profil Palm
-    # 180 × 90 Qualité/Prix est l'ATK A9 Mini, bosse au milieu (« Center » EloShapes → Mid) → T14.
-    assert "T14_bosse_centrale" in main.image.url
+    # 180 × 90 Qualité/Prix est l'ATK Phantom Ultimate, bosse au milieu → T14. C'est aussi l'image du
+    # conseil de bosse en Palm : depuis le 2026-10-15, elle n'est montrée qu'UNE fois, dans ce bloc-là.
+    images = [embed.image.url for embed in embeds if embed.image and embed.image.url]
+    assert sum("T14_bosse_centrale" in url for url in images) == 1
+    bosse = next(embed for embed in embeds if embed.title == "⛰️ La bosse et la forme")
+    assert "T14_bosse_centrale" in bosse.image.url
 
 
 @pytest.mark.asyncio
@@ -2201,3 +2212,19 @@ def test_le_renvoi_du_pied_ne_s_affiche_que_quand_l_explication_est_presente():
     embeds = flow.results_embeds(session, selection)
     assert flow.EXPLANATION_REFERENCE in embeds[-1].footer.text
 
+
+
+def test_un_budget_trop_bas_donne_le_prix_de_la_moins_chere_des_souris_notees():
+    """80e passe (2026-10-15) : les 2 067 profils sans résultat de la grille sont tous des budgets
+    personnalisés trop bas. « Essayez un budget plus élevé » ne disait pas lequel : la carte nomme
+    désormais la moins chère des souris notées pour cette main, avec son prix et son pourcentage."""
+    store = SessionStore(ttl_seconds=600)
+    session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
+    session.budget_mode, session.max_budget_eur = BudgetMode.CUSTOM, 10.0
+    carte = flow.results_embeds(session, flow.compute_selection(session))[0].fields[0]
+    assert carte.name == "Aucun match classable"
+    assert carte.value.endswith("La moins chère des souris notées pour votre main : "
+                                "**VXE Dragonfly V3 / V3 Pro** à **13,95 €** (63 %).")
+    # Hors budget personnalisé, la phrase n'a pas de sens : elle n'est jamais ajoutée.
+    session.budget_mode, session.max_budget_eur = BudgetMode.ECONOMIQUE, None
+    assert flow._piste_hors_budget(session) == ""

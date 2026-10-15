@@ -37,18 +37,18 @@ from utils.session import SessionStore  # noqa: E402
 
 
 def _boutons_achat(selection) -> list[tuple[str, bool]]:
-    """Reproduit les boutons RÉELS du résultat : un lien d'achat par souris classée qui en a un.
+    """Les boutons RÉELS du résultat, lus sur la vue que le bot envoie (``flow.ResultsView``).
 
-    Aucun libellé n'est écrit en dur : si le classement change, l'aperçu change avec lui
-    (jamais de bouton montrant une souris qui n'est plus recommandée).
+    Défaut corrigé le 2026-10-15 (80e passe) : cette fonction recalculait les boutons à partir de
+    ``selection.ranked`` — le classement interne — alors que le bot les construit sur les souris
+    **affichées** (``result_slots``). L'aperçu livré montrait donc « Acheter Pulsar X2 CrazyLight »
+    sous une troisième place « VXE MAD R ». Lire la vue elle-même rend tout écart impossible.
     """
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
-    labels = [
-        "🛒 " + f"Acheter {score.mouse.label}"[: flow.BUTTON_LABEL_MAX]
-        for score in selection.ranked
-        if links.get(score.mouse.id)
-    ]
-    return [(label, False) for label in labels] or [("🔗 Liens à venir", False)]
+    displayed = [score for score in flow.result_slots(selection) if score is not None]
+    vue = flow.ResultsView(displayed, links)
+    return [(f"{bouton.emoji} {bouton.label}" if bouton.emoji else bouton.label, False)
+            for bouton in vue.children]
 
 # Les images locales sont référencées par un faux domaine : l'aperçu dessine les fichiers de
 # assets/illustrations/ sans exiger qu'ils soient déjà publiés en https.
@@ -244,15 +244,30 @@ def draw_embed(canvas, draw, embed, y: int, x: int = PAD, width: int = LARGEUR -
 
 
 def draw_boutons(draw, y: int, libelles: list[tuple[str, bool]], x: int = PAD) -> int:
+    """Une rangée de boutons ; comme sur mobile, un bouton qui ne tient plus passe à la ligne."""
     cursor = x
+    font = _font(False, 14)
     for label, primaire in libelles:
-        font = _font(False, 14)
         width = int(font.getlength(label)) + 34
+        if cursor > x and cursor + width > LARGEUR - PAD:
+            cursor, y = x, y + 46
         fill = BOUTON_PRIMAIRE if primaire else BOUTON_SECONDAIRE
         draw.rounded_rectangle([cursor, y, cursor + width, y + 36], radius=8, fill=fill)
         draw.text((cursor + 17, y + 10), label, font=font, fill=WHITE)
         cursor += width + 10
     return y + 52
+
+
+def hauteur_boutons(libelles: list[tuple[str, bool]]) -> int:
+    """Hauteur occupée par ``draw_boutons`` (mêmes règles de passage à la ligne)."""
+    font = _font(False, 14)
+    lignes, cursor = 1, PAD
+    for label, _ in libelles:
+        width = int(font.getlength(label)) + 34
+        if cursor > PAD and cursor + width > LARGEUR - PAD:
+            lignes, cursor = lignes + 1, PAD
+        cursor += width + 10
+    return 52 + 46 * (lignes - 1)
 
 
 def nouveau_canvas(hauteur_totale: int) -> tuple[Image.Image, ImageDraw.ImageDraw]:
@@ -326,22 +341,29 @@ def build_resultat() -> Image.Image:
     session.budget_mode = BudgetMode.QUALITE_PRIX
     selection = flow.compute_selection(session)
     embeds = flow.results_embeds(session, selection)
-    titres = [
-        "Résultat — message éphémère (privé) : la recommandation",
-        "Plus bas : les repères de taille (illustrés)",
-        "Plus bas : l'arrière étroit, quand le thénar est « Petite »",
-        "Plus bas : la bosse, la forme de coque, et le conseil de la variante de Claw",
-        "Plus bas : la variante de Claw déclarée, illustrée",
-        "Enfin : la hauteur des boutons conseillée",
-    ]
-    hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD + 200
+    # Légende de chaque bloc, retrouvée par son TITRE (et non par sa position : un bloc ajouté ou
+    # retiré décalait toutes les légendes suivantes).
+    legendes = {
+        "🎯 Votre recommandation": "Résultat — message éphémère (privé) : la recommandation",
+        "📐 Vos repères de taille": "Plus bas : les repères de taille (illustrés)",
+        "🖐️ Un arrière étroit pour votre thénar": "Plus bas : l'arrière étroit (thénar petit ou moyen)",
+        "⛰️ La bosse et la forme": "Plus bas : la bosse, la forme de coque, et le conseil de la variante de Claw",
+        "🖱️ La hauteur des boutons": "Enfin : la hauteur des boutons conseillée",
+    }
+    boutons = _boutons_achat(selection)
+    hauteur = (sum(_embed_height(e, LARGEUR - 4 * PAD) + 28 + 16 for e in embeds) + PAD
+               + 28 + hauteur_boutons(boutons))
     canvas, draw = nouveau_canvas(hauteur)
     y = PAD
-    for index, embed in enumerate(embeds):
-        y = bandeau(draw, y, titres[index] if index < len(titres) else embed.title)
+    for embed in embeds:
+        legende = legendes.get(embed.title) or (
+            "Plus bas : la variante de Claw déclarée, illustrée" if embed.title.startswith("🦾") else embed.title)
+        y = bandeau(draw, y, legende)
         y = draw_embed(canvas, draw, embed, y)
-        # Aucun bouton interactif : uniquement les liens d'achat (ou « 🔗 Liens à venir »).
-        y = draw_boutons(draw, y, _boutons_achat(selection))
+    # Discord affiche les composants UNE fois, sous le dernier bloc du message (défaut corrigé le
+    # 2026-10-15 : l'aperçu les répétait sous chacun des six blocs). Uniquement des liens d'achat.
+    y = bandeau(draw, y, "Sous le message : les liens d'achat des souris affichées")
+    draw_boutons(draw, y, boutons)
     return canvas
 
 

@@ -88,3 +88,24 @@ def test_le_lisere_de_l_apercu_vient_de_la_charte_du_bot():
     bot = (ROOT / "cogs" / "finder_flow.py").read_text(encoding="utf-8")
     for morte in ("NAVY = ", "SPARK = "):
         assert morte not in bot, f"constante de palette morte réintroduite : {morte.strip()}"
+
+
+def test_les_boutons_de_l_apercu_sont_ceux_que_le_bot_envoie():
+    """Défaut du 2026-10-15 (80e passe) : l'aperçu tirait ses boutons du classement interne
+    (``selection.ranked``) et montrait « Acheter Pulsar X2 CrazyLight » sous une troisième place
+    « VXE MAD R ». Les boutons de l'aperçu sont désormais lus sur la vue du bot : un bouton par souris
+    AFFICHÉE, dans l'ordre des places, et aucun autre."""
+    from cogs import finder_flow as flow
+    from render_preview import _boutons_achat
+    from utils.models import BudgetMode, ClawVariant, Grip, Thenar
+    from utils.session import FinderSession
+
+    session = FinderSession(user_id=1)
+    session.grip, session.hand_length_mm, session.hand_width_mm = Grip.CLAW, 180.0, 100.0
+    session.thenar, session.claw_variant = Thenar.PETITE, ClawVariant.PINCEE
+    session.budget_mode = BudgetMode.QUALITE_PRIX
+    selection = flow.compute_selection(session)
+    affichees = [score.mouse.label for score in flow.result_slots(selection) if score is not None]
+    libelles = [label for label, _ in _boutons_achat(selection)]
+    assert len(affichees) == 3
+    assert libelles == [f"🛒 Acheter {nom}" for nom in affichees]

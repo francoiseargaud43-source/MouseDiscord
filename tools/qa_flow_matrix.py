@@ -48,6 +48,7 @@ Contrôles effectués, profil par profil :
 from __future__ import annotations
 
 import argparse
+import contextlib
 import itertools
 import sys
 from pathlib import Path
@@ -393,6 +394,18 @@ def check_embed_limits(embeds) -> list[str]:
     L = LIMITES_BLOC
     if not 1 <= len(embeds) <= L["blocs"]:
         problems.append(f"nombre de blocs hors limites : {len(embeds)}")
+    # Discord compte les 6 000 caractères sur TOUS les blocs d'un message réunis, pas bloc par bloc
+    # (trou du banc trouvé le 2026-10-15, 80e passe : seule la limite par bloc était mesurée, alors que
+    # le résultat porte jusqu'à huit blocs). Un dépassement fait refuser l'envoi entier.
+    message = sum(len(e.title or "") + len(e.description or "")
+                  + sum(len(f.name) + len(f.value) for f in e.fields)
+                  + len(e.footer.text or "") + len(e.author.name or "") for e in embeds)
+    _noter_marge("total d'un message", message, L["total"])
+    if message > L["total"]:
+        problems.append(f"message : {message} caractères sur l'ensemble des blocs (> {L['total']})")
+    images = [e.image.url for e in embeds if e.image and e.image.url]
+    if len(images) != len(set(images)):
+        problems.append("la même illustration apparaît deux fois dans le message")
     for index, embed in enumerate(embeds, start=1):
         total = len(embed.title or "") + len(embed.description or "")
         total += sum(len(f.name) + len(f.value) for f in embed.fields)
@@ -538,11 +551,34 @@ def verifier_bytecode() -> str | None:
             "lancez `python tools/check_bytecode.py --purge`, puis relancez le banc")
 
 
+@contextlib.contextmanager
+def illustrations_actives():
+    """Le banc rend chaque résultat AVEC ses illustrations, comme sur le serveur.
+
+    Hors serveur, ``IMAGES_BASE_URL`` est vide et aucun bloc ne porte d'image : la règle « une même
+    illustration une seule fois par message » (80e passe) n'aurait alors jamais été vérifiée. Chaque
+    clé reçoit ici une adresse fictive distincte ; l'état d'origine est rétabli en sortie.
+    """
+    import cogs.finder_flow as flow
+    from utils.assets import IMAGE_KEYS
+    origine = flow.load_image_urls
+    flow.load_image_urls = lambda path, base_url=None: {cle: f"https://banc.local/{cle}.png" for cle in IMAGE_KEYS}
+    try:
+        yield
+    finally:
+        flow.load_image_urls = origine
+
+
 def run(fast: bool) -> int:
     gene = verifier_bytecode()
     if gene is not None:
         print(gene, file=sys.stderr)
         return 2
+    with illustrations_actives():
+        return _run(fast)
+
+
+def _run(fast: bool) -> int:
     cases = 0
     problems: list[str] = []
     empties: list[str] = []
