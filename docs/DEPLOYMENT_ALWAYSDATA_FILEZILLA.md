@@ -2843,9 +2843,10 @@ recherche).
 
 ### 12.60 Mise à jour du 2026-10-15 (51e) : logique remise au propre, campagne « hauteur des boutons » (80e passe)
 
-**Fichiers à envoyer** : `cogs/finder_flow.py` et le **nouveau fichier `utils/slots.py`** (les deux
-ensemble : l'un ne démarre pas sans l'autre ; `tools/check_deployment.py` signale désormais son absence).
-Si vous le souhaitez, `tools/` (deux outils corrigés, un outil nouveau). **Redémarrage** : nécessaire
+**Fichiers à envoyer** : les dossiers **`cogs/`** et **`utils/`** en entier — trois fichiers y changent :
+`cogs/finder_flow.py`, `utils/matcher.py` et le **nouveau fichier `utils/slots.py`** (ensemble : le bot ne
+démarre pas si l'un manque ; `tools/check_deployment.py` signale désormais son absence). Si vous le
+souhaitez, `tools/` (sept outils mis à jour, un outil nouveau). **Redémarrage** : nécessaire
 (`pkill -f "bot.py"`, la tâche planifiée relance le bot).
 
 - Le choix des trois souris montrées quitte le fichier Discord pour `utils/slots.py` (calcul pur) :
