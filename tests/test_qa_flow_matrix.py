@@ -338,6 +338,9 @@ def test_le_banc_releve_la_limite_la_plus_remplie_du_passage():
         assert banc_mod.MARGES["titre de bloc"] == (100, 256)
         assert banc_mod.MARGES["valeur de champ"] == (20, 1024)
         assert "titre de bloc" in banc_mod.resume_des_marges()      # 100/256 > 20/1024
+        # 80e passe : le total du MESSAGE (titre 100 + champ 1 + 20) est toujours publié à part.
+        assert banc_mod.MARGES["total d'un message"] == (121, 6000)
+        assert "message entier : 121/6000 caractères (2 %)" in banc_mod.resume_des_marges()
         vue = discord.ui.View()
         vue.add_item(discord.ui.Select(options=[discord.SelectOption(label="Palm Grip", value="p",
                                                                      description="d" * 99)]))

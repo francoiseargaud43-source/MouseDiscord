@@ -385,8 +385,14 @@ def resume_des_marges() -> str:
     if not MARGES:
         return "Limites Discord : aucune mesure (banc interrompu ?)"
     nom, (valeur, limite) = max(MARGES.items(), key=lambda item: item[1][0] / item[1][1])
-    return (f"Limites Discord : la plus remplie est « {nom} » — {valeur}/{limite} "
-            f"({100 * valeur / limite:.0f} % de la limite), sur les blocs et les vues du parcours entier")
+    texte = (f"Limites Discord : la plus remplie est « {nom} » — {valeur}/{limite} "
+             f"({100 * valeur / limite:.0f} % de la limite), sur les blocs et les vues du parcours entier")
+    # Le total d'un MESSAGE est la seule limite qui grandit avec le nombre de blocs (jusqu'à huit) : on la
+    # publie toujours, même quand une autre est plus remplie (80e passe).
+    if "total d'un message" in MARGES and nom != "total d'un message":
+        message, plafond = MARGES["total d'un message"]
+        texte += f" ; message entier : {message}/{plafond} caractères ({100 * message / plafond:.0f} %)"
+    return texte
 
 
 def check_embed_limits(embeds) -> list[str]:
