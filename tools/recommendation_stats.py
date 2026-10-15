@@ -30,10 +30,10 @@ SORTIE_PAR_DEFAUT = ROOT / "docs" / "audit" / "STATISTIQUES_RECOMMANDATIONS_2026
 sys.path.insert(0, str(ROOT))
 
 from config import MOUSE_DB_PATH  # noqa: E402
-from cogs.finder_flow import (  # noqa: E402
+from cogs.finder_flow import compute_selection  # noqa: E402
+from utils.slots import (  # noqa: E402
     PISTE_TITLE,
     alternative_slot_title,
-    compute_selection,
     mode_tolerance,
     result_slots,
     third_slot_title,

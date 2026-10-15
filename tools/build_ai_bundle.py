@@ -26,6 +26,7 @@ BUNDLE_FILES = (
     "docs/audit/matrice_profils.md",
     "utils/matcher.py",
     "utils/selection.py",
+    "utils/slots.py",
     "utils/models.py",
     "utils/catalog.py",
 )

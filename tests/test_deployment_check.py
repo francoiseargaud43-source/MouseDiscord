@@ -112,3 +112,19 @@ def test_illustrations_published_elsewhere_without_local_copy_is_not_a_warning(p
     results = cd.check(project, {"IMAGES_BASE_URL": "https://x.test/"}, python_version=(3, 11))
     assert not any("absent.png" in msg for _, msg in results)
     assert cd.ERROR not in levels(results)
+
+
+def test_chaque_module_livre_est_un_fichier_obligatoire_et_passe_au_controle_de_confidentialite():
+    """80e passe (2026-10-15) : ``utils/slots.py`` est né du découpage de ``cogs/finder_flow.py``. Une
+    liste tenue à la main l'aurait oublié — et un envoi FileZilla incomplet n'aurait alors été signalé
+    par aucun contrôle (le bot, lui, ne démarre plus). Tout module Python de ``cogs/`` et ``utils/`` doit
+    donc figurer dans les fichiers obligatoires du déploiement ET dans le balayage de confidentialité."""
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    import privacy_scan
+
+    livres = {p.relative_to(ROOT).as_posix() for dossier in ("cogs", "utils") for p in (ROOT / dossier).glob("*.py")}
+    assert livres <= set(cd.REQUIRED_FILES), sorted(livres - set(cd.REQUIRED_FILES))
+    sans_code = {"cogs/__init__.py", "utils/__init__.py"}
+    assert livres - sans_code <= set(privacy_scan.SCANNED_FILES) | sans_code, \
+        sorted(livres - set(privacy_scan.SCANNED_FILES) - sans_code)

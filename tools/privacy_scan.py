@@ -42,7 +42,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 SCANNED_FILES = ("bot.py", "config.py", "cogs/finder_flow.py", "cogs/mouse_finder.py", "cogs/__init__.py",
                  "utils/session.py", "utils/assets.py", "utils/catalog.py", "utils/validation.py",
-                 "utils/matcher.py", "utils/selection.py", "utils/models.py")
+                 "utils/matcher.py", "utils/selection.py", "utils/slots.py", "utils/models.py")
 
 SEND_METHODS_REQUIRING_EPHEMERAL = frozenset({"send_message", "defer"})   # R1
 EDIT_METHODS = frozenset({"edit_message", "edit_original_response", "edit"})  # R4

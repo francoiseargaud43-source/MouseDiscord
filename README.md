@@ -324,7 +324,7 @@ conflits sans deux valeurs, dimensions « vérifiées » sans source). Une erreu
 
 ## Moteur de scoring
 
-Code : `utils/matcher.py` (compatibilité géométrique, sans Discord) et `utils/selection.py` (modes).
+Code : `utils/matcher.py` (compatibilité géométrique, sans Discord), `utils/selection.py` (modes) et `utils/slots.py` (les trois places montrées, sans Discord).
 Toutes les constantes sont nommées en tête de fichier.
 
 **Trois couches distinctes**
@@ -434,6 +434,7 @@ MouseDiscord/
 ├── utils/
 │   ├── matcher.py            # Compatibilité morphologique (points, statuts, largeur de prise)
 │   ├── selection.py          # Modes de sélection (tolérances, classement, explications)
+│   ├── slots.py              # Les trois places du résultat et leurs titres (calcul pur, sans Discord)
 │   ├── models.py             # Grip, BudgetMode, Mouse, Source, HandMeasure
 │   ├── catalog.py            # Chargement / validation de mouse_db.json et des liens
 │   ├── assets.py             # Lecture de assets/images.json

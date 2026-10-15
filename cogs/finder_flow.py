@@ -22,20 +22,24 @@ possible, il faut tout recommencer ») :
 - toute erreur inattendue est tracée dans le journal ET expliquée à l'utilisateur (``on_error``) ;
   aucune interaction ne reste sans réponse.
 
-Parcours : 1/4 prise -> 2/4 thénar -> 3/4 mesures de la main -> 4/4 budget (en Fingertip, la question du
-thénar n'est pas posée : 3 étapes). Le thénar sert à lire l'arrière de la souris : **conseil indicatif**,
+Parcours (table ``STEP_NUMBERS``) : prise -> [variante, en Claw seulement] -> [thénar, sauf en Fingertip]
+-> mesures de la main -> budget, soit 4 étapes en Palm, 5 en Claw, 3 en Fingertip. Le choix des trois
+souris montrées est un calcul pur, hors de ce module (``utils/slots.py``). Le thénar sert à lire l'arrière
+de la souris : **conseil indicatif**,
 sans aucun effet sur le score (règle « zéro effet » du MASTER_PROMPT §7.6 : le barème est strictement le
 même quel que soit le thénar déclaré). Le mécanisme d'ajustement borné existe mais est en pause, valeurs
 neutres (``THENAR_WIDTH_ADJUSTMENT`` dans utils/matcher.py ; méthode : docs/REVERSE_ENGINEERING_OBLIVITY.md).
 
 CHARTE AZEMOUSE (voir docs/REPORTE_DESIGN.md) :
 - **Bordeaux #8A2342** = couleur latérale de tous les embeds (identité) ; seul « session expirée » reste orange ;
-- **Nuit #0B1220 / Encre #070B14** portent le fond des illustrations (assets/images/T*.png) ;
+- **Nuit #0B1220 / Encre #070B14** portent le fond des illustrations (``assets/illustrations/T*.png``) ;
 - **Étincelle #F0C43C** est un highlight présent uniquement dans les images (jamais en aplat) ;
 - **Crème #F6F1EA** n'apparaît que dans les illustrations, jamais dans un embed.
 Limites Discord prises en compte : pas de police personnalisée dans le texte natif (hiérarchie rendue par le
 Markdown), une seule image par embed, 25 champs maximum, 5 boutons par rangée, 1024 caractères par champ.
-Le résultat tient en **deux embeds** : la recommandation, puis les repères de taille — jamais les points internes.
+Le résultat est UN message : la recommandation (trois places), puis les blocs d'explication — repères de
+taille, arrière, bosse, variante de Claw, boutons —, de 3 à 8 blocs selon la prise ; une illustration n'y
+apparaît qu'une fois. Jamais les points internes du barème.
 """
 from __future__ import annotations
 
@@ -67,13 +71,10 @@ from utils.models import (
     HandMeasure,
     Thenar,
 )
-from utils.selection import (
-    QUALITE_PRIX_TOLERANCE_POINTS,
-    TOLERANCE_BY_MODE,
-    Selection,
-    _same_shell,
-    select,
-)
+from utils.selection import Selection, select
+# Le choix des trois places est un calcul pur, sans Discord : il vit dans ``utils/slots.py``. Ses noms
+# restent accessibles ici (``finder_flow.result_slots``…) pour les outils de mesure et les tests.
+from utils.slots import alternative_slot_title, mode_tolerance, result_slots, third_slot_title
 from utils.session import LOOKUP_OK, FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
 
@@ -545,277 +546,6 @@ def _slot_text(score: MouseScore, mode: BudgetMode | None = None, *, partial_hin
     if components:
         small += f" · ⚙️ {components}"
     return f"{line}\n{small}"
-
-
-def _price_or_inf(score: MouseScore) -> float:
-    return score.mouse.price_eur if score.mouse.price_eur is not None else float("inf")
-
-
-# ---------------------------------------------------------------------------
-# Fenêtres des trois places (décision du propriétaire, 2026-10-12 : l'expérience utilisateur prime)
-# ---------------------------------------------------------------------------
-# Mesures d'origine (grille de 27 170 profils) : avec une zone unique de ±2 points, 4 472 profils
-# (16,5 %) affichaient deux fois la même coque et la troisième place « Économie » ne sortait que dans
-# 0,3 % des cas — deux effets de seuil, pas des bugs.
-# Décision retenue :
-#   • l'ALTERNATIVE garde la zone étroite du mode (±2) ; si cette zone ne contient que des variantes de
-#     la coque déjà montrée, la recherche s'élargit UNE fois à ±5 points pour proposer une vraie autre
-#     forme ; si rien n'existe, la variante est conservée (jamais moins de résultats qu'avant) ;
-#   • l'ÉCONOMIE dispose de sa propre fenêtre (±5 points) : une option moins chère mérite d'être montrée
-#     même si elle perd quelques points, à condition d'être strictement moins chère que les deux autres
-#     et, si possible, d'une autre coque ;
-#   • ORDRE GARANTI (décision du propriétaire, 2026-10-13) : le pourcentage ne remonte jamais d'une
-#     place à l'autre — la 2e ne dépasse pas le match idéal, la 3e ne dépasse pas la 2e. La règle
-#     s'applique à la sélection de chaque place (``sous_plafond``), pas à l'affichage : le score n'est
-#     jamais retouché, c'est la souris choisie qui change. Repli documenté : si le plafond ne laisse
-#     aucun candidat, la place reste remplie (jamais de trou) et le banc compte ces profils.
-ALTERNATIVE_EXTENSION_POINTS = 5
-ECONOMY_SLOT_TOLERANCE_POINTS = 5
-# Dernier palier (décision du propriétaire, 2026-10-12) : quand ni « l'économie » ni « l'autre option »
-# de la fenêtre ne donnent quelque chose à montrer — Budget personnalisé serré, ou souris suivante très
-# loin derrière — la place reste remplie par la **meilleure souris restante du classement**, affichée
-# sous son vrai nom : « 🔎 Autre piste ». Son pourcentage reste affiché tel quel, donc le membre voit
-# immédiatement que la piste est loin. Le classement n'est jamais franchi vers une souris hors budget :
-# en Budget personnalisé, le plafond reste la règle. Mesuré sur le banc du parcours : 2 747 profils
-# (10,1 % de la grille, 13,6 % des profils avec un résultat) avaient une place vide avec au moins une
-# souris abordable — comblement possible, budget respecté.
-PISTE_TITLE = "🔎 Autre piste"
-
-
-def mode_tolerance(mode: BudgetMode | None) -> int:
-    """Tolérance du mode (la zone dans laquelle une souris reste « comparable » au match idéal)."""
-    return TOLERANCE_BY_MODE.get(mode, QUALITE_PRIX_TOLERANCE_POINTS)
-
-
-def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | None, MouseScore | None]:
-    """Trois rôles, dans l'ordre du classement déjà calculé : idéal, alternative, économie.
-
-    (1) **Le match idéal** : la tête du classement du mode (le prix suit, sauf budget contraint).
-    (2) **L'alternative** : la souris qui correspond le mieux au profil parmi celles qui restent,
-        en préférant une souris un peu moins chère ; sinon la meilleure tout court (son pourcentage
-        sert alors à accepter un léger surcoût). Elle reste dans la zone du mode ; elle n'en sort que
-        si cette zone ne contient rien d'autre que la coque déjà montrée (élargissement unique). Si
-        même cet élargissement ne donne rien, la place prend la meilleure souris restante et s'intitule
-        « Autre piste » (``alternative_slot_title``) : jamais de ligne vide au milieu du résultat.
-    (3) **L'économie** : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``) qui
-        est vraiment moins chère que les deux autres. À défaut, depuis la décision du propriétaire du
-        2026-10-12, l'option la moins chère restante de cette fenêtre — même un peu plus chère que le
-        match idéal — et la ligne s'intitule alors « L'autre option ». Si la fenêtre elle-même est
-        vide, la place prend la meilleure souris restante du classement (``PISTE_TITLE``, « Autre
-        piste ») : jamais une ligne blanche quand une souris est montrable dans le budget.
-
-    Aucun barème n'est modifié : les trois souris sortent du classement existant, jamais recalculé.
-    """
-    ordered = list(selection.ranked)
-    if not ordered:
-        return None, None, None
-    ideal = ordered[0]
-    # Deux places du résultat ne montrent jamais la MÊME coque (2026-10-12) : proposer
-    # « ATK GHOST Ultimate » puis « ATK GHOST Extreme » n'apporte aucun choix — même forme, même
-    # prise, seules la finition et le prix changent. On écarte donc, pour l'alternative uniquement,
-    # les variantes de la coque déjà retenue ; si la zone n'offre rien d'autre, on reprend la liste
-    # complète (jamais moins de résultats qu'avant).
-    def not_same_shell(other: MouseScore) -> bool:
-        return not _same_shell(ideal, other)
-
-    reference = selection.reference_score if selection.reference_score is not None else ideal.total
-    tolerance = mode_tolerance(selection.mode)
-
-    def in_window(score: MouseScore, margin: int) -> bool:
-        return score.total >= reference - margin
-
-    zone = [score for score in ordered[1:] if in_window(score, tolerance)]
-    distinct_zone = [score for score in zone if not_same_shell(score)]
-
-    def best_match(candidates: list[MouseScore]) -> MouseScore | None:
-        # Le meilleur profil ; à égalité, la moins chère.
-        return max(candidates, key=lambda score: (score.total, -_price_or_inf(score))) if candidates else None
-
-    def sous_plafond(candidates: list[MouseScore], plafond: int) -> list[MouseScore]:
-        """Candidats d'une place : jamais mieux notés que la place du dessus (décision du 2026-10-13).
-
-        Le pourcentage affiché ne remonte donc jamais d'une ligne à l'autre : la deuxième place ne
-        peut pas dépasser le match idéal, la troisième ne peut pas dépasser la deuxième. Avant, cela
-        arrivait — **1 622 profils (6,0 %)** montraient une deuxième place mieux notée que le match
-        idéal (en mode Économique, le match idéal est la souris la MOINS CHÈRE de la zone : une souris
-        mieux notée mais plus chère le dépassait donc en deuxième ligne), et la troisième place
-        dépassait la deuxième sur 24 à 128 profils selon le mode. Le membre lisait alors un « idéal »
-        moins bien noté que la ligne du dessous : cela ressemble à une erreur de calcul.
-
-        Filtre STRICT : quand le plafond ne laisse aucun candidat dans la fenêtre de la place, le
-        moteur élargit sa recherche SOUS le plafond (classement entier) avant de renoncer à l'ordre —
-        voir les derniers paliers de chaque place. Le seul cas où l'ordre cède est celui où aucune
-        souris du classement ne passe sous le plafond : la place reste alors remplie (règle du
-        2026-10-12 : jamais de trou dans le résultat) et le banc d'essai compte ces profils sous le nom
-        « ordre non garanti » — mesuré, jamais supposé.
-
-        Le plafond porte sur les points du barème (sur 40) : comme le pourcentage affiché est
-        proportionnel à ces points (``compatibility_percent`` = points × 100 / 40, arrondi), il ne peut
-        pas remonter quand les points ne remontent pas — la garantie vaut donc aussi pour le nombre
-        affiché, sans second plafond. Vérifié sur la grille complète le 2026-10-14 : **28 violations en
-        points = 28 en pourcentages**, aucune divergence (84 à la 35e passe : le chiffre suit les prix
-        du catalogue, il est re-mesuré, jamais recopié).
-        """
-        return [score for score in candidates if score.total <= plafond]
-
-    ideal_price = _price_or_inf(ideal)
-    plafond_ideal = ideal.total
-    zone = sous_plafond(zone, plafond_ideal)
-    distinct_zone = [score for score in zone if not_same_shell(score)]
-    if distinct_zone:
-        # Cas normal : une autre coque est déjà dans la zone du mode. On préfère la moins chère
-        # (c'est le rôle de cette place) ; à défaut, la mieux notée de la zone.
-        cheaper = [score for score in distinct_zone if _price_or_inf(score) < ideal_price]
-        alternative = best_match(cheaper) or best_match(distinct_zone)
-    else:
-        # Zone composée uniquement de variantes de la coque déjà montrée : élargissement UNIQUE
-        # (2026-10-12) à ``ALTERNATIVE_EXTENSION_POINTS``, et seulement vers une souris qui ne coûte
-        # pas plus cher que le match idéal — jamais une souris à la fois moins bien notée et plus
-        # chère. Sans candidat, on reprend la zone telle quelle : jamais moins de résultats qu'avant.
-        extension = [score for score in ordered[1:]
-                     if in_window(score, ALTERNATIVE_EXTENSION_POINTS) and not_same_shell(score)]
-        extension = sous_plafond(extension, plafond_ideal)
-        alternative = best_match([score for score in extension if _price_or_inf(score) <= ideal_price]) \
-            or best_match(zone)
-
-    if alternative is None:
-        # Dernier palier appliqué à la DEUXIÈME place (même décision du 2026-10-12) : la zone du mode
-        # est vide ou ne contient que des variantes de la coque retenue, et l'élargissement n'a rien
-        # donné de moins cher. La deuxième ligne reste alors remplie par la meilleure souris restante,
-        # montrée sous le titre « 🔎 Autre piste » (``third_slot_title``) — le résultat ne comporte
-        # jamais de trou au milieu, et son pourcentage dit à lui seul que la piste est loin.
-        restants = [score for score in ordered[1:] if not_same_shell(score)]
-        # Palier ajouté le 2026-10-14 : AVANT de renoncer à l'ordre, on cherche sous le plafond SANS
-        # contrainte de coque. Une variante de la coque déjà montrée reste une souris à montrer, alors
-        # qu'une souris mieux notée que le match idéal fait douter du calcul — c'est la règle que le
-        # propriétaire a fait garantir le 2026-10-13 (1 622 profils corrigés). La préférence de coque
-        # garde la priorité partout où elle a un candidat SOUS le plafond (paliers ci-dessus) : elle
-        # cède ici, comme le documente son propre repli (« si la zone n'offre rien d'autre, on reprend
-        # la liste complète »). Mesure : 3 profils sur 18 270 affichaient une alternative MIEUX notée
-        # que le match idéal alors qu'une souris passait sous le plafond (trouvé le 2026-10-14 en
-        # corrigeant la coque de l'ATK U2, dont la variante V2 était écartée par la préférence).
-        alternative = (best_match(sous_plafond(restants, plafond_ideal))
-                       or best_match(sous_plafond(ordered[1:], plafond_ideal))
-                       or best_match(restants))
-
-    # (3) La troisième place : la moins chère de sa propre fenêtre (``ECONOMY_SLOT_TOLERANCE_POINTS``)
-    # qui est vraiment moins chère que les deux autres (« l'économie ») ; **à défaut**, depuis la
-    # décision du propriétaire du 2026-10-12, l'option la moins chère restante de la fenêtre, même un
-    # peu plus chère que le match idéal — sans quoi la place disparaissait quand le match idéal était
-    # déjà la souris la moins chère du catalogue (VXE V3 à 13,95 € : 594 profils passaient de trois
-    # places à deux, mesuré). Le libellé suit la réalité du prix (``third_slot_title``).
-    shown_ids = {ideal.mouse.id}
-    if alternative is not None:
-        shown_ids.add(alternative.mouse.id)
-    # Plafond de la troisième place : le score de la DEUXIÈME (ou du match idéal si elle manque),
-    # par la même règle d'ordre (décision du propriétaire, 2026-10-13).
-    plafond_economie = alternative.total if alternative is not None else plafond_ideal
-    economy_window = [score for score in ordered[1:] if in_window(score, ECONOMY_SLOT_TOLERANCE_POINTS)]
-    candidates = sous_plafond(
-        [score for score in sorted(economy_window, key=lambda s: (_price_or_inf(s), -s.total))
-         if score.mouse.id not in shown_ids],
-        plafond_economie)
-
-    # Elle doit être moins chère que TOUT ce qui est déjà à l'écran : une souris plus chère que le
-    # match idéal ne serait pas « l'économie », et une souris au même prix que l'alternative
-    # n'apporterait aucun choix.
-    ceiling = min(ideal_price, _price_or_inf(alternative) if alternative is not None else ideal_price)
-    below = [score for score in candidates if _price_or_inf(score) < ceiling]
-    # « d'une AUTRE coque si possible » : la préférence s'applique PARMI les souris sous le plafond,
-    # jamais au prix de la place elle-même. Correctif du 2026-10-12 : en filtrant d'abord sur la
-    # coque, la place disparaissait dès que la moins chère d'une autre coque dépassait le plafond
-    # (mesure sur 1 029 profils : 2 profils au lieu de 4) — l'inverse de la règle annoncée.
-    def other_shell(score: MouseScore) -> bool:
-        """Aucune des deux places déjà affichées ne partage sa coque avec cette souris.
-
-        Le principe « deux places du résultat ne montrent jamais la même coque » (décision du
-        2026-10-12) vaut pour les TROIS places : une troisième ligne qui reprend la coque du match
-        idéal ou de l'alternative n'offre aucun choix de forme.
-        """
-        if _same_shell(ideal, score):
-            return False
-        return alternative is None or not _same_shell(alternative, score)
-
-    different_shell = [score for score in below if other_shell(score)]
-    economy = (different_shell or below)[0] if (different_shell or below) else None
-    if economy is None and candidates:
-        # Aucune souris moins chère que le plafond : décision du propriétaire (2026-10-12), la place
-        # reste remplie par l'option la MOINS CHÈRE de la fenêtre du mode — donc « un peu plus chère »
-        # au minimum possible. À prix comparable, une autre coque passe devant : mesuré sur la grille
-        # de référence (18 522 profils, 16 050 à trois places) le 2026-10-14, 2 445 profils (15,23 %
-        # des trois places) montrent une variante d'une coque déjà affichée, dont **1 684** avec une
-        # autre coque disponible dans la fenêtre (surcoût médian +4,00 €, 69 % sous +10 €) et **761**
-        # sans aucune autre coque — la variante y reste donc la seule option à montrer.
-        autre_coque = [score for score in candidates if other_shell(score)]
-        economy = (autre_coque or candidates)[0]
-    if economy is None:
-        # Dernier palier (décision du propriétaire, 2026-10-12) : ni la fenêtre du mode ni « l'autre
-        # option » de cette fenêtre ne donnent quoi que ce soit — soit le mode est un Budget
-        # personnalisé si serré que le plafond a tout écarté, soit la souris suivante est très loin
-        # derrière (10 à 25 points mesurés sur le banc). La place reste remplie par la meilleure souris
-        # restante : la ligne dit alors « 🔎 Autre piste » avec son pourcentage, donc jamais une
-        # promesse exagérée. Le budget reste la règle : en Budget personnalisé, le classement ne
-        # contient déjà que des souris conformes au plafond (``evaluate_mouse`` les écarte sinon).
-        restants = [score for score in ordered[1:] if score.mouse.id not in shown_ids]
-        sous_plafond_restants = sous_plafond(restants, plafond_economie)
-        autre_coque = [score for score in sous_plafond_restants if other_shell(score)]
-        # Dernier recours (ordre non garanti, compté par le banc) : aucune souris du classement ne
-        # passe sous le plafond de la deuxième place — la ligne reste remplie quand même.
-        economy = best_match(autre_coque or sous_plafond_restants) or best_match(restants)
-    return ideal, alternative, economy
-
-
-def alternative_slot_title(alternative: MouseScore, ideal: MouseScore,
-                           reference: int | None = None, tolerance: int | None = None) -> str:
-    """Titre de la deuxième place : « 🥈 L'alternative » ou, si elle vient du dernier palier, « Autre piste ».
-
-    Le titre ne fait que **redire la règle du moteur** : une alternative comparable est dans la zone du
-    mode (``tolerance``) ou dans l'élargissement unique à ``ALTERNATIVE_EXTENSION_POINTS`` sans coûter
-    plus cher que le match idéal. Tout le reste est une piste — la meilleure souris restante, choisie
-    pour ne pas laisser de ligne vide (décision du propriétaire, 2026-10-12).
-
-    Sans ``reference`` ni ``tolerance`` (appel direct dans un test ou un outil), le titre reste celui de
-    la place : le moteur ne produit une piste que dans les cas décrits ci-dessus.
-    """
-    if reference is None or tolerance is None:
-        return "🥈 L'alternative"
-    if alternative.total >= reference - tolerance:
-        return "🥈 L'alternative"
-    if alternative.total >= reference - ALTERNATIVE_EXTENSION_POINTS \
-            and _price_or_inf(alternative) <= _price_or_inf(ideal):
-        return "🥈 L'alternative"
-    return PISTE_TITLE
-
-
-def third_slot_title(economy: MouseScore, ideal: MouseScore,
-                     alternative: MouseScore | None = None,
-                     reference: int | None = None) -> str:
-    """Titre de la troisième place : le rôle réel, jamais un rôle supposé.
-
-    Trois cas, dans l'ordre (décisions du propriétaire, 2026-10-12) :
-
-    1. ``💸 L'économie`` — elle est *strictement moins chère* que tout ce qui est affiché : c'est un
-       fait sur le prix, vérifiable d'un coup d'œil, et c'est le rôle premier de cette ligne ;
-    2. ``🔎 Autre piste`` — elle n'est pas moins chère **et** se situe hors de la fenêtre de la place
-       (plus de ``ECONOMY_SLOT_TOLERANCE_POINTS`` sous le meilleur score) : c'est le dernier palier,
-       elle n'est comparable ni au match idéal ni à l'alternative, et le titre le dit ;
-    3. ``➕ L'autre option`` — elle est dans la fenêtre mais plus chère (ou au même prix) : le libellé
-       reste honnête.
-
-    ``reference`` est le meilleur score du mode, tel que ``Selection.reference_score`` : sans lui
-    (appel direct dans un test ou un outil), la distinction « piste » n'est pas faite et le titre
-    reste celui du prix. Le reste de la ligne (nom · prix · % du maximum théorique) ne change pas.
-    """
-    plafond = _price_or_inf(ideal)
-    if alternative is not None:
-        plafond = min(plafond, _price_or_inf(alternative))
-    if _price_or_inf(economy) < plafond:
-        # Le prix d'abord : « l'économie » est un fait vérifiable (574 profils de la grille, soit 1,8 %
-        # des trois places, l'affichent alors même qu'elle est hors de la fenêtre des ±5 points).
-        return "💸 L'économie"
-    if reference is not None and economy.total < reference - ECONOMY_SLOT_TOLERANCE_POINTS:
-        return PISTE_TITLE
-    return "➕ L'autre option"
 
 
 # ---------------------------------------------------------------------------

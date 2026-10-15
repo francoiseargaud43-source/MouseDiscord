@@ -2104,11 +2104,11 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.58).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.60).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 826 passed
+.venv/bin/python -m pytest -q                      # attendu : 850 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2830,6 +2830,31 @@ effet sur le comportement du bot). **Redémarrage** : inutile.
   vérifications à refaire avant de bâtir dessus.
 - Le compteur du contrôle ci-dessus passe de 825 à **826** tests : le document est lu par le contrôle de
   cohérence documentaire, qui compte une vérification de plus par fichier `.md` ajouté.
+
+### 12.59 Mise à jour du 2026-10-15 (50e) : relevé de terrain des liens et des sources (79e passe)
+
+**Fichiers à envoyer** : `data/mouse_db.json`. **Redémarrage** : inutile (le catalogue est relu à chaque
+recherche).
+
+- Premier passage complet de `tools/check_links.py`, depuis le poste du propriétaire : trois prix remontés
+  d'un euro (X1 V2 Ultra Max, F1 V2, VXE MAD R : **41,95 €**), une source de prix qui désignait un autre
+  produit retirée, trois fiches ATK qui n'attestent plus que la prise qu'elles publient (Claw).
+- Le compteur du contrôle reste à **826** (aucun test ajouté : un contrôle existant a été renforcé).
+
+### 12.60 Mise à jour du 2026-10-15 (51e) : logique remise au propre, campagne « hauteur des boutons » (80e passe)
+
+**Fichiers à envoyer** : `cogs/finder_flow.py` et le **nouveau fichier `utils/slots.py`** (les deux
+ensemble : l'un ne démarre pas sans l'autre ; `tools/check_deployment.py` signale désormais son absence).
+Si vous le souhaitez, `tools/` (deux outils corrigés, un outil nouveau). **Redémarrage** : nécessaire
+(`pkill -f "bot.py"`, la tâche planifiée relance le bot).
+
+- Le choix des trois souris montrées quitte le fichier Discord pour `utils/slots.py` (calcul pur) :
+  **0 écart** sur 44 776 profils (grille réelle + 40 catalogues aléatoires), confirmé par
+  `tools/flow_effect.py --avant c6a268b` (0 profil changé sur 19 669).
+- Ce que le membre voit change sur deux points : une même illustration n'apparaît plus qu'**une fois** par
+  message (43 % des résultats la montraient deux fois), et un budget personnalisé trop bas donne le prix
+  de la moins chère des souris notées pour sa main.
+- Le compteur du contrôle ci-dessus passe de 826 à **850** tests.
 
 ---
 

@@ -1,7 +1,8 @@
 """Mesure l'effet d'une modification du parcours : compare les trois places AVANT / APRÈS.
 
 But : ne jamais annoncer « ça change X profils » sans preuve. L'outil recharge l'ancienne version de
-``cogs/finder_flow.py`` depuis un commit du dépôt (``git show``), la met à côté de la version en cours
+``utils/slots.py`` (avant la 80e passe : ``cogs/finder_flow.py``) depuis un commit du dépôt
+(``git show``), la met à côté de la version en cours
 et passe EXACTEMENT la même grille de profils dans les deux (même sélection : seul l'aiguillage des
 places change, le barème n'est jamais recalculé).
 
@@ -32,18 +33,39 @@ from utils.models import ClawVariant, Grip  # noqa: E402
 from utils.selection import _same_shell  # noqa: E402
 
 
+def _fichier_au_commit(ref: str, chemin: str) -> str | None:
+    """Contenu de ``chemin`` au commit ``ref`` ; ``None`` si le fichier n'existait pas encore.
+
+    Une référence inconnue fait échouer ``git rev-parse`` (``CalledProcessError``), signalée par ``main``.
+    """
+    subprocess.run(["git", "rev-parse", "--verify", f"{ref}^{{commit}}"], cwd=ROOT, check=True,
+                   capture_output=True, text=True)
+    sortie = subprocess.run(["git", "show", f"{ref}:{chemin}"], cwd=ROOT, capture_output=True, text=True)
+    return sortie.stdout if sortie.returncode == 0 else None
+
+
 def charger_ancienne_version(ref: str):
-    """Importe ``cogs/finder_flow.py`` tel qu'il était au commit ``ref`` (copie temporaire)."""
-    source = subprocess.run(
-        ["git", "show", f"{ref}:cogs/finder_flow.py"],
-        cwd=ROOT, check=True, capture_output=True, text=True,
-    ).stdout
+    """Importe le code des trois places tel qu'il était au commit ``ref`` (copie temporaire).
+
+    Depuis la 80e passe (2026-10-15), ce code vit dans ``utils/slots.py`` ; avant, dans
+    ``cogs/finder_flow.py``. On recharge le fichier qui le portait À CE COMMIT. Recharger l'ancien
+    ``finder_flow.py`` après le découpage aurait été un piège silencieux : il importe ``result_slots``
+    depuis le ``utils/slots.py`` ACTUEL, et l'outil aurait comparé le nouveau code à lui-même —
+    « 0 changement » quelle que soit la modification.
+    """
+    source = _fichier_au_commit(ref, "utils/slots.py")
+    nom = "ancien_slots"
+    if source is None:
+        source = _fichier_au_commit(ref, "cogs/finder_flow.py")
+        nom = "ancien_finder_flow"
+    if source is None:
+        raise subprocess.CalledProcessError(1, ["git", "show", ref])
     with tempfile.TemporaryDirectory() as dossier:
-        chemin = Path(dossier) / "ancien_finder_flow.py"
+        chemin = Path(dossier) / f"{nom}.py"
         chemin.write_text(source, encoding="utf-8")
-        spec = importlib.util.spec_from_file_location("ancien_finder_flow", chemin)
+        spec = importlib.util.spec_from_file_location(nom, chemin)
         module = importlib.util.module_from_spec(spec)
-        sys.modules["ancien_finder_flow"] = module      # sinon les décorateurs échouent
+        sys.modules[nom] = module      # sinon les décorateurs et les dataclasses échouent
         spec.loader.exec_module(module)
     return module
 
@@ -97,7 +119,6 @@ def main(argv: list[str] | None = None) -> int:
     ordre_avant: list[str] = []                 # profils où le % remontait d'une place à l'autre
     ordre_apres: list[str] = []
 
-    # La grille vient du banc d'essai, sans copie : une seule définition pour les trois outils.
     # La grille vient du banc d'essai, sans copie : une seule définition, pour les trois outils.
     for grip, length, width, thenar, mode, budget in banc.grille(args.rapide):
         session = banc.profile(mode, budget)

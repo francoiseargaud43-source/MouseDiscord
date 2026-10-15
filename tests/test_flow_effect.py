@@ -20,10 +20,23 @@ import flow_effect  # noqa: E402
 
 
 def test_la_version_anterieure_se_recharge():
-    """`git show <ref>:cogs/finder_flow.py` puis import : le module doit exposer le même contrat."""
+    """`git show <ref>:…` puis import : le module rechargé expose le calcul des trois places."""
     module = flow_effect.charger_ancienne_version("HEAD")
-    for nom in ("result_slots", "_slot_text", "compute_selection"):
-        assert hasattr(module, nom), nom
+    assert callable(module.result_slots)
+
+
+def test_la_version_rechargee_n_est_jamais_le_code_actuel():
+    """Piège de la 80e passe : après le découpage, l'ancien ``finder_flow.py`` importe ``result_slots``
+    depuis le ``utils/slots.py`` ACTUEL — recharger ce fichier-là aurait comparé le nouveau code à
+    lui-même (« 0 changement » quoi qu'on modifie). L'outil recharge donc ``utils/slots.py`` du commit
+    quand il existe, et sa fonction n'est pas celle de l'arbre de travail."""
+    from utils import slots
+
+    module = flow_effect.charger_ancienne_version("HEAD")
+    assert module.result_slots is not slots.result_slots
+    assert module.__name__ in {"ancien_slots", "ancien_finder_flow"}
+    # Avant le découpage (commit c6a268b), le code vivait dans le cog : il est rechargé de là.
+    assert flow_effect.charger_ancienne_version("c6a268b").__name__ == "ancien_finder_flow"
 
 
 def test_une_reference_inconnue_est_signalee_sans_trace(monkeypatch, capsys):

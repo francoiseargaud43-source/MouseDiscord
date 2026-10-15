@@ -18,6 +18,7 @@ from cogs import finder_flow as flow
 from utils import selection
 from utils.models import THENAR_LABELS, BudgetMode, ClawVariant, Grip, Thenar
 from utils.session import SessionStore
+from utils.slots import PISTE_TITLE
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -1194,7 +1195,7 @@ async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     # Les deux lignes du dernier palier portent le titre qui dit la vérité (la 1re reste le match idéal).
     noms = [field.name for field in embeds[0].fields]
     assert noms[0] == "🥇 Le match idéal"
-    assert noms[1] == noms[2] == flow.PISTE_TITLE
+    assert noms[1] == noms[2] == PISTE_TITLE
     assert all(score.mouse.price_eur is not None and score.mouse.price_eur <= 25.0 for score in montrees)
 
 
@@ -1383,7 +1384,7 @@ def test_third_slot_falls_back_to_the_best_remaining_mouse_when_the_window_is_em
 
     _, _, third = flow.result_slots(selection)
     assert third is loin
-    assert flow.third_slot_title(third, ideal, alternative, 30) == flow.PISTE_TITLE
+    assert flow.third_slot_title(third, ideal, alternative, 30) == PISTE_TITLE
     assert flow.third_slot_title(third, ideal, alternative, 30) == "🔎 Autre piste"
 
 
@@ -1395,7 +1396,7 @@ def test_second_slot_falls_back_to_the_best_remaining_mouse_and_says_it():
 
     _, alternative, third = flow.result_slots(selection)
     assert alternative is loin and third is None
-    assert flow.alternative_slot_title(loin, ideal, 30, tolerance=2) == flow.PISTE_TITLE
+    assert flow.alternative_slot_title(loin, ideal, 30, tolerance=2) == PISTE_TITLE
     # Une souris comparable (dans la zone du mode) garde son titre de place.
     zone = _fake_score("zone", 29, 40.0, shell_id="s3")
     assert flow.alternative_slot_title(zone, ideal, 30, tolerance=2) == "🥈 L'alternative"

@@ -58,8 +58,8 @@ sys.path.insert(0, str(ROOT))
 
 import discord  # noqa: E402  (types des composants, pour mesurer leurs limites)
 
-from cogs.finder_flow import (ALTERNATIVE_EXTENSION_POINTS, ECONOMY_SLOT_TOLERANCE_POINTS,  # noqa: E402
-                              BudgetView, ClawVariantView, GripView, MeasureView, ResultsView,
+from cogs.finder_flow import (BudgetView, ClawVariantView,  # noqa: E402
+                              GripView, MeasureView, ResultsView,
                               ThenarView, banner_embed, budget_step_embed, claw_variant_step_embed,
                               compute_selection, grip_step_embed, measure_step_embed,
                               mode_tolerance, result_slots, results_embeds, thenar_step_embed)
@@ -68,6 +68,7 @@ from utils.catalog import load_commercial_links  # noqa: E402
 from utils.matcher import MAX_SCORE, compatibility_percent  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
 from utils.selection import _same_shell  # noqa: E402
+from utils.slots import ALTERNATIVE_EXTENSION_POINTS, ECONOMY_SLOT_TOLERANCE_POINTS  # noqa: E402
 from utils.session import FinderSession  # noqa: E402
 
 LINKS = load_commercial_links(COMMERCIAL_LINKS_PATH)

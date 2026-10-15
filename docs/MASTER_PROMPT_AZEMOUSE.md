@@ -359,7 +359,7 @@ largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inve
 ### 7.7 Présentation du résultat : ordre garanti et prix non vérifié (décisions du 2026-10-13)
 
 - **Ordre garanti** : le pourcentage ne remonte jamais d'une place à l'autre (idéal ≥ alternative ≥
-  économie). La contrainte s'applique au **choix de la souris** dans `result_slots` (`sous_plafond`),
+  économie). La contrainte s'applique au **choix de la souris** dans `result_slots` (`utils/slots.py`, filtre `_under`),
   jamais au score : le match idéal n'est jamais retouché. Repli documenté et compté par le banc d'essai :
   quand le plafond ne laisse aucun candidat (grande main à budget serré), la place reste remplie — jamais
   de trou — et le pourcentage peut alors remonter (**70 profils sur 27 170, 0,26 %** au banc d'essai du

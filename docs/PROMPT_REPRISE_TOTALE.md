@@ -94,11 +94,12 @@ bot.py                    108 l.   point d'entrée : intents, chargement des cog
 config.py                 101 l.   chemins (.env, catalogue, images), chargement de la configuration
 cogs/
   mouse_finder.py                  cog principal (démarrage du parcours, vues persistantes)
-  finder_flow.py          1 581 l. TOUT le parcours : embeds, boutons, modales, affichage du résultat
+  finder_flow.py          1 352 l. le parcours Discord : embeds, boutons, modales, affichage du résultat
   __init__.py
 utils/
   matcher.py                       le MOTEUR : barème 40 points, exclusions, statuts
   selection.py                     tri, fenêtres de budget, départage, phrase d'explication
+  slots.py                  170 l. les trois places montrées et leurs titres (calcul pur, sorti du cog à la 80e passe)
   catalog.py                       chargement + validation stricte du catalogue (schéma v2)
   models.py                        dataclasses (Mouse, MouseScore, Grip, Thenar, BudgetMode…)
   session.py                       état du parcours par utilisateur (en mémoire, TTL)
@@ -110,8 +111,8 @@ data/
 assets/
   images.json              17 clés → fichiers `assets/illustrations/T01…T15`
   illustrations/           les 15 images du bot (bannière, étapes, illustrations du résultat)
-tools/                     16 outils · 4 057 l.   mesures, bancs d'essai, contrôles, aperçus
-tests/                    36 fichiers · 10 316 l. · 825 tests · couverture 100 %
+tools/                     17 outils · 4 780 l.   mesures, bancs d'essai, contrôles, aperçus (80e passe)
+tests/                    37 fichiers · 10 637 l. · 850 tests · couverture 100 % (80e passe)
 docs/                     24 fichiers .md · 13 029 l.  (dont ROBUSTESSE 5 076 l. et DEPLOYMENT 2 843 l.)
 Reverse/                  10 fichiers    LA PREUVE PRIMAIRE : sorties datées de l'outil d'origine (Oblivity)
 ImageAct/ ImageEx/ ImageUse/   images de travail (fiches, exemples, les 15 illustrations livrées)
@@ -202,7 +203,7 @@ Le propriétaire a raison : ce dépôt est devenu **un peu n'importe quoi**. Voi
 **10 316 lignes de tests**, dont beaucoup assertent des **tournures françaises exactes**. C'est ce qui rend le bot fiable… et c'est aussi ce qui rend toute refonte de l'affichage très coûteuse : si tu réécris les textes, des centaines de tests tombent. **Décision à prendre tôt** : soit tu gardes la stratégie « tout est figé », soit tu introduis une couche de textes (un fichier de libellés) et tu testes **le contenu logique** plutôt que la phrase. Je te recommande la seconde — mais c'est **ton** appel, et il se prend **une fois**, pas à moitié.
 
 ### 7.3 Les outils se recouvrent
-16 outils, 4 057 lignes. Plusieurs se ressemblent beaucoup (`image_corpus_check` / `image_identity_check` ; `measure_button_height` / `measure_grip_width` partagent la même mécanique d'étalonnage). La grille de profils du banc est **recopiée** dans plusieurs outils (elle a déjà dû être dédoublonnée une fois, C84). À réunifier en une **bibliothèque de mesure** + des points d'entrée minces.
+17 outils, 4 780 lignes (80e passe). Plusieurs se ressemblent beaucoup (`image_corpus_check` / `image_identity_check` ; `measure_button_height` / `measure_grip_width` partagent la même mécanique d'étalonnage). La grille de profils du banc est **recopiée** dans plusieurs outils (elle a déjà dû être dédoublonnée une fois, C84). À réunifier en une **bibliothèque de mesure** + des points d'entrée minces.
 
 ### 7.4 Le catalogue est étroit et déséquilibré
 **36 souris** : 20 ATK, 10 Pulsar, 4 VXE, 2 Scyrox. **Aucune** Logitech, Razer, Zowie, VAXEE, Lamzu, Pwnage, Endgame Gear, Glorious, Ninjutso, etc. Le catalogue ne couvre donc pas le marché réel, et le moteur recommande presque toujours le même tiers de souris. Le propriétaire veut **l'étendre avec toi, plus tard** (§13, chantier 6) : ton travail d'ici là est de rendre l'ajout **simple, sûr et rapide**.
@@ -238,7 +239,7 @@ La **chaîne de preuves** (bytecode, aperçus horodatés par empreinte, banc d'e
 ## 9. Tes droits, explicitement
 
 ### 9.1 Sur le code
-Tu peux modifier, déplacer, découper, fusionner ou **supprimer** n'importe quel module — y compris `cogs/finder_flow.py` (1 581 lignes, « tout le parcours dans un fichier » : c'est un candidat évident à l'éclatement). Tu peux changer les dépendances (`discord.py ≥ 2.4`, Python ≥ 3.10), la structure des cogs, le découpage `utils/`, et **le moteur de calcul lui-même**.
+Tu peux modifier, déplacer, découper, fusionner ou **supprimer** n'importe quel module — y compris `cogs/finder_flow.py` (1 352 lignes depuis que le choix des trois places en est sorti, 80e passe : textes et rendu restent des candidats à l'éclatement). Tu peux changer les dépendances (`discord.py ≥ 2.4`, Python ≥ 3.10), la structure des cogs, le découpage `utils/`, et **le moteur de calcul lui-même**.
 
 ### 9.2 Sur les données
 Tu peux changer le schéma du catalogue, à condition de fournir la **migration** et de mettre à jour les outils, les tests et les documents qui en dépendent. Le schéma actuel fait **26 champs obligatoires ou optionnels** (Annexe A) ; il est verbeux et mérite d'être repensé — mais il a une qualité : **chaque valeur renseignée est adossée à une source qui déclare le champ**. Garde cette propriété.

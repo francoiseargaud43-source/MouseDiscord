@@ -99,6 +99,7 @@ FICHIERS_SOURCES = (
     ROOT / "utils" / "matcher.py",
     ROOT / "utils" / "models.py",
     ROOT / "utils" / "selection.py",
+    ROOT / "utils" / "slots.py",
     ROOT / "utils" / "session.py",
     ROOT / "tools" / "render_preview.py",
 )

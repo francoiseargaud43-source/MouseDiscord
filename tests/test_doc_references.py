@@ -20,7 +20,8 @@ DOC_FILES = [
     "docs/audit/RAPPORT_FINAL.md",
     "docs/audit/PROTOCOLE_DISCORD_CONFIDENTIALITE.md",
 ]
-CODE_FILES = ["utils/models.py", "utils/selection.py", "utils/matcher.py", "cogs/finder_flow.py"]
+CODE_FILES = ["utils/models.py", "utils/selection.py", "utils/slots.py", "utils/matcher.py",
+              "cogs/finder_flow.py"]
 
 PATH_RE = re.compile(r"`((?:docs|tests|utils|cogs|data|assets|tools)/[\w./-]+\.(?:md|py|json|txt|ini))`")
 
