@@ -77,7 +77,7 @@ Puis **un seul message** : le résultat. Trois lignes au maximum —
 | --- | --- | --- |
 | 🎯 **Match Idéal** | nom, % du maximum théorique, prix, poids, forme, phrase « en clair » | le meilleur score de la fenêtre de budget |
 | 💡 **Alternative** | idem | un peu moins bien, souvent moins chère |
-| ➕ **🔎 Autre piste** | la 3ᵉ place, remplie **même vide de sens** | peut être un peu plus chère (décision du propriétaire) |
+| 💸 / ➕ / 🔎 **3ᵉ place** | la 3ᵉ place, remplie **même vide de sens** ; titre selon son rôle réel : « 💸 L'économie » (strictement moins chère), « ➕ L'autre option » (dans la fenêtre, pas moins chère), « 🔎 Autre piste » (dernier palier) | peut être un peu plus chère (décision du propriétaire) ; la 2ᵉ place peut aussi devenir « 🔎 Autre piste » (`cogs/finder_flow.py`, `third_slot_title` / `alternative_slot_title`) |
 
 Plus, en dessous : un bloc **« 📐 Vos repères de taille »** (les plages cibles calculées pour **cette** main), et tout en bas, en petit, **« 🧭 Pourquoi ce choix ? »** (le calcul expliqué). **Aucun score de confiance en tête, aucun tableau des souris écartées, aucune matrice** : ce que l'utilisateur voit tient sur un écran.
 
@@ -94,7 +94,7 @@ bot.py                    108 l.   point d'entrée : intents, chargement des cog
 config.py                 101 l.   chemins (.env, catalogue, images), chargement de la configuration
 cogs/
   mouse_finder.py                  cog principal (démarrage du parcours, vues persistantes)
-  finder_flow.py          1 719 l. TOUT le parcours : embeds, boutons, modales, affichage du résultat
+  finder_flow.py          1 581 l. TOUT le parcours : embeds, boutons, modales, affichage du résultat
   __init__.py
 utils/
   matcher.py                       le MOTEUR : barème 40 points, exclusions, statuts
@@ -105,7 +105,7 @@ utils/
   validation.py                    bornes des saisies (100–260 mm, 50–130 mm, 10–5 000 €)
   assets.py                        résolution des images (nom de fichier → URL publique)
 data/
-  mouse_db.json            36 souris · 269 sources   LE CATALOGUE
+  mouse_db.json            36 souris · 268 sources   LE CATALOGUE
   commercial_links.json    36 liens affiliés (+ 3 clés `_` de commentaire)
 assets/
   images.json              17 clés → fichiers `assets/illustrations/T01…T15`
@@ -214,7 +214,7 @@ Les constantes du moteur (`LENGTH_SLOPE = 0.2633`, largeur de prise `= coque −
 `RAPPORT_FINAL.md`, `STATISTIQUES_RECOMMANDATIONS_2026-10-12.md`, `matrice_profils.md` sont des **photos datées**. Elles sont déjà partiellement fausses. Soit on les régénère à la demande (un outil le fait pour la matrice), soit on les archive avec une date en tête. Ne les traite jamais comme la vérité courante.
 
 ### 7.7 Ce qui est propre et qu'il ne faut pas casser
-La **chaîne de preuves** (bytecode, aperçus horodatés par empreinte, banc d'essai, mutations), la **discipline anti-invention**, le **catalogue sourcé** (269 sources pour 36 souris, chaque valeur traçable), et l'**outillage de mesure sur images** (étalonnage, contrôle de perspective, identité de silhouette). Si tu jettes le reste, garde ces quatre-là.
+La **chaîne de preuves** (bytecode, aperçus horodatés par empreinte, banc d'essai, mutations), la **discipline anti-invention**, le **catalogue sourcé** (268 sources pour 36 souris depuis la 79e passe, chaque valeur traçable), et l'**outillage de mesure sur images** (étalonnage, contrôle de perspective, identité de silhouette). Si tu jettes le reste, garde ces quatre-là.
 
 ---
 
@@ -238,7 +238,7 @@ La **chaîne de preuves** (bytecode, aperçus horodatés par empreinte, banc d'e
 ## 9. Tes droits, explicitement
 
 ### 9.1 Sur le code
-Tu peux modifier, déplacer, découper, fusionner ou **supprimer** n'importe quel module — y compris `cogs/finder_flow.py` (1 719 lignes, « tout le parcours dans un fichier » : c'est un candidat évident à l'éclatement). Tu peux changer les dépendances (`discord.py ≥ 2.4`, Python ≥ 3.10), la structure des cogs, le découpage `utils/`, et **le moteur de calcul lui-même**.
+Tu peux modifier, déplacer, découper, fusionner ou **supprimer** n'importe quel module — y compris `cogs/finder_flow.py` (1 581 lignes, « tout le parcours dans un fichier » : c'est un candidat évident à l'éclatement). Tu peux changer les dépendances (`discord.py ≥ 2.4`, Python ≥ 3.10), la structure des cogs, le découpage `utils/`, et **le moteur de calcul lui-même**.
 
 ### 9.2 Sur les données
 Tu peux changer le schéma du catalogue, à condition de fournir la **migration** et de mettre à jour les outils, les tests et les documents qui en dépendent. Le schéma actuel fait **26 champs obligatoires ou optionnels** (Annexe A) ; il est verbeux et mérite d'être repensé — mais il a une qualité : **chaque valeur renseignée est adossée à une source qui déclare le champ**. Garde cette propriété.
@@ -309,7 +309,7 @@ Le propriétaire est francophone, exige un **français irréprochable** (typogra
 ### 11.3 Ajouter une souris au catalogue (le geste que tu dois rendre trivial)
 1. **Vérifier qu'elle est vendue** et trouver le lien officiel, affilié (`?ref=aze` ATK, `?ref=AZE` Pulsar, `?bg_ref=…` Scyrox).
 2. **Relever les cotes** (longueur, largeur maximale, hauteur) sur deux sources ou sur le fabricant ; si elles divergent de plus de 0,5 mm → `conflicts` + statut d'incertitude.
-3. **Renseigner `shell_id`** si la coque est partagée : deux entrées de la même coque ne doivent **jamais** occuper deux places du même résultat.
+3. **Renseigner `shell_id`** si la coque est partagée : deux entrées de la même coque n'occupent pas deux places du même résultat — **sauf** repli volontaire quand aucun autre candidat ne reste (« jamais moins de résultats qu'avant ») : le banc le compte (1 748 profils sur 21 736 au 2026-10-15) sans le compter comme une faute.
 4. **Prises** : seulement ce que le fabricant (ou la source tierce autorisée) **publie**. « Inconnu » est une valeur acceptable ; une valeur inventée jamais. Une prise « Faible » **exclut** la souris de ce profil.
 5. **Bosse** (position) et **hauteur de boutons** (classe) : mesurées sur images, ou déduites d'une coque partagée **avec sa source**.
 6. **Prix en euros**, relevé daté, variante **figée** dans le lien si le produit en vend plusieurs.
@@ -412,7 +412,7 @@ Et une consigne de méthode : **quand tu as le choix entre « faire ce que le do
 | **Compatibilité de prise** | 10 | `Élevé` +10, `Moyen` +5, `Faible` ⇒ **exclusion**, `Inconnu` ⇒ à vérifier (aucun point) |
 | **Bosse** | 5 | position idéale selon la prise |
 | **Hauteur des boutons** | 5 (palm/claw) · 10 (fingertip) | classe idéale selon la prise |
-| **Maximum théorique** | **40** | le pourcentage affiché est **score / 40** (⚠️ au Fingertip, le maximum réel change : à vérifier — c'est le genre d'incohérence que tu dois traquer) |
+| **Maximum théorique** | **40** | le pourcentage affiché est **score / 40** — vérifié le 2026-10-15 : au Fingertip aussi, 10 + 10 + 10 + 0 (bosse ignorée) + **10** (boutons) = 40 |
 
 Plages cibles (mesurées par reverse engineering, `Reverse/`) :
 - Longueur min = `71,4 + 0,2633 × L` ; longueur max = min + 5 mm (Palm/Claw) ; Fingertip : max = base + 0,2633 × L.
@@ -466,7 +466,7 @@ find . -name __pycache__ -type d -not -path "./.venv/*" -exec rm -rf {} +
 - **Thénar** : informatif, **aucun point**, ne modifie pas le score (règle du 2026-10-13).
 - **Résultat** : la ligne descriptive + **Match Idéal** + **Alternative**, avec le **% du maximum théorique** (jamais présenté comme une probabilité ni une confiance). **Pas de score ni de confiance en tête**.
 - **« Le pourquoi »** : en petit encadré, **en bas**.
-- **3ᵉ place** : remplie **même incomplète**, titre « 🔎 Autre piste », % affiché ; une souris un peu plus chère est acceptée ; le **marqueur discret** signale un score partiel.
+- **3ᵉ place** : remplie **même incomplète**, titre selon son rôle (« 💸 L'économie », « ➕ L'autre option » ou « 🔎 Autre piste »), % affiché ; une souris un peu plus chère est acceptée ; le **marqueur discret** signale un score partiel.
 - **Ne pas afficher** : les souris écartées, la matrice, les données de debug.
 - **Images** : les 15 illustrations `T01`–`T15` (bannière, étapes, illustrations du résultat), hébergées par le propriétaire, lisibles en thème **sombre et clair**.
 - **Poids** affiché près des deux premières places.
@@ -489,7 +489,7 @@ find . -name __pycache__ -type d -not -path "./.venv/*" -exec rm -rf {} +
 | **T01–T15** | les 15 illustrations du bot (`ImageUse/`), mappées dans `assets/images.json` |
 | **banc / grille** | `tools/qa_flow_matrix.py` : passe tous les profils dans le moteur et vérifie les invariants |
 | **mutation** | casser volontairement le code pour vérifier qu'un test échoue bien |
-| **`shell_id`** | identifiant de **coque** : deux souris de même coque ne doivent jamais occuper deux places |
+| **`shell_id`** | identifiant de **coque** : deux souris de même coque n'occupent pas deux places, sauf repli quand aucun autre candidat ne reste |
 | **marqueur partiel** | « boutons non documentés » : signale un score incomplet sur une souris |
 | **empreinte des sources** | SHA-256 inscrit dans les PNG d'aperçu pour détecter un aperçu périmé |
 

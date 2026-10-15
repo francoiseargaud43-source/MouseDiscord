@@ -4,6 +4,8 @@ Date de vérification : **2026-10-10**, corrigé le **2026-10-12** puis le **202
 
 **Relecture du 2026-10-14 (60e passe)** : la boutique a rebasculé sa promotion et quatre références sont repassées d'un euro **sous** leur prix de la veille — X1 V2 Ultra Max « Ultra Max 2.0 / Black » **40,95 €**, F1 V2 « Ultra Max 2.0 / Black » **40,95 €**, VXE MAD R **40,95 €** (« à partir de », produit épuisé) et Duckbill **81,95 €**. Les deux lignes de prix de ce tableau sont alignées sur ces relevés datés, et le détail fiche par fiche — dont l'édition « Ultra Max 2.0 » que la page A9 vend aussi — est au §7.7 de `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md`.
 
+**Relecture du 2026-10-15 (79e passe)** : `tools/check_links.py`, lancé depuis le poste du propriétaire, voit trois références remontées d'un euro — X1 V2 Ultra Max et F1 V2 « Ultra Max 2.0 / Black » **41,95 €**, VXE MAD R **41,95 €** ; la Duckbill reste à 81,95 €. Détail au §7.8 du même document.
+
 > **Ce catalogue n'est pas exhaustif.** La collection ATK (store) listait 23 produits, mais la correspondance produit ↔ statut
 > de disponibilité n'a pas été extraite, et seule la première page de la collection a été lue. Plusieurs variantes
 > (Z1 originale, X1 original, F1 Pro Max, A9 SE / Pro / Ultra, Ghost Extreme sur sa propre page, Blazing Sky Phantom sur le store)

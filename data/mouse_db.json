@@ -73,10 +73,10 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "Maxesport — Scyrox V8S 8K (poids de la variante : 40 ±3 g)",
+        "label": "Maxesport — Scyrox V8S 8K (poids affiché « 40 g » ; titre de la variante Kailh optique : « 42g ») — relevé du 2026-10-15",
         "url": "https://maxesport.gg/products/scyrox-v8s-8k-wireless-white",
         "fields": [],
-        "date_checked": "2026-10-11"
+        "date_checked": "2026-10-15"
       },
       {
         "label": "Cahier des charges du propriétaire — Scyrox V8 / V8S (8K) (marque non-ATK) : dimensions, bosse, hauteur des boutons et verdicts de prise fournis par le propriétaire, non revérifiés sur le web ; traçabilité relue le 2026-10-12",
@@ -387,9 +387,9 @@
     "fingertip_grip_fit": "Faible",
     "fit_status": "owner_spec",
     "dimension_status": "verified",
-    "price_eur": 40.95,
+    "price_eur": 41.95,
     "price_status": "verified",
-    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 40,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre —, prix normal 63,95 €). Relevés précédents : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la variante figée au jour du relevé — ici celui du 2026-10-14.",
+    "price_note": "Prix EUR officiel constaté le 2026-10-15 : 41,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre —, prix normal 63,95 €). Relevés : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14, 41,95 € le 2026-10-15 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la variante figée au jour du relevé — ici celui du 2026-10-15.",
     "fit_rationale": "Idéale pour soutenir les grandes mains sans forcer l'arche.",
     "weight_g": 55.0,
     "polling_hz": 8000,
@@ -510,13 +510,13 @@
         "date_checked": "2026-10-13"
       },
       {
-        "label": "ATK Store — variante figée par le bouton « Ultra Max 2.0 / Black » (JSON public, pays France) : 40,95 €, prix normal 63,95 € (relevé du 2026-10-14).",
+        "label": "ATK Store — variante figée par le bouton « Ultra Max 2.0 / Black » (JSON public, pays France) : 41,95 €, prix normal 63,95 € (relevé du 2026-10-15, tools/check_links.py).",
         "url": "https://www.atk.store/en-fr/variants/47058382782682.json?country=FR",
         "fields": [
           "price_eur",
           "price_note"
         ],
-        "date_checked": "2026-10-14"
+        "date_checked": "2026-10-15"
       }
     ],
     "shape": "Symmetrical",
@@ -1334,12 +1334,10 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "label": "ATK Store — fiche officielle (2026-10-12) — n'atteste que « Grip Style: Claw » (seule prise publiée ; relu le 2026-10-15)",
         "url": "https://www.atk.store/en-fr/products/atk-fierce-x-lightweight-wireless-gaming-mouse",
         "fields": [
-          "palm_grip_fit",
-          "claw_grip_fit",
-          "fingertip_grip_fit"
+          "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
       },
@@ -1448,12 +1446,10 @@
         "date_checked": "2026-10-11"
       },
       {
-        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "label": "ATK Store — fiche officielle (2026-10-12) — n'atteste que « Grip Style: Claw » (seule prise publiée ; relu le 2026-10-15)",
         "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
         "fields": [
-          "palm_grip_fit",
-          "claw_grip_fit",
-          "fingertip_grip_fit"
+          "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
       },
@@ -1544,14 +1540,6 @@
         "date_checked": "2026-10-10"
       },
       {
-        "label": "Boutique ATK France (langue FR + marché FR, prix en euros) — produit « ATK Blazing Sky U2 Mini » : le store ne liste pas de « U2 V2 Mini » séparé",
-        "url": "https://www.atk.store/fr-fr/collections/souris",
-        "fields": [
-          "price_eur"
-        ],
-        "date_checked": "2026-10-11"
-      },
-      {
         "label": "ATK Store — collection U2 : profil symétrique de la famille (U2 V2 Mini 119,5 × 63 × 38,5 mm)",
         "url": "https://www.atk.store/collections/atk-u2-series-esports-wireless-mouse",
         "fields": [
@@ -1590,12 +1578,10 @@
         "date_checked": "2026-10-12"
       },
       {
-        "label": "ATK Store — fiche officielle (2026-10-12)",
+        "label": "ATK Store — fiche officielle (2026-10-12) — n'atteste que « Grip Style: Claw » (seule prise publiée ; relu le 2026-10-15)",
         "url": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse",
         "fields": [
-          "palm_grip_fit",
-          "claw_grip_fit",
-          "fingertip_grip_fit"
+          "claw_grip_fit"
         ],
         "date_checked": "2026-10-12"
       },
@@ -2512,8 +2498,8 @@
     "weight_g": 36.0,
     "sensor": "PAW3395",
     "polling_hz": 8000,
-    "price_eur": 40.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 40,95 € (série MAD R « à partir de », boutique ATK pays France ; c'est le montant que la page affiche aujourd'hui). Relevés précédents : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14 : l'écart d'un euro va et vient avec la promotion de la boutique. Le produit est en rupture de stock (toutes variantes), noté tel quel : le prix publié est celui de la fiche, pas une disponibilité.",
+    "price_eur": 41.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-15 : 41,95 € (série MAD R « à partir de », boutique ATK pays France : variantes « MAD R / Black (1K Dongle Only) » et « MAD R / White (1K Dongle Only) », les moins chères). Relevés : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14, 41,95 € le 2026-10-15 : l'écart d'un euro va et vient avec la promotion de la boutique. Le produit était en rupture de stock (toutes variantes) au relevé du 2026-10-14, noté tel quel : le prix publié est celui de la fiche, pas une disponibilité.",
     "sources": [
       {
         "label": "EloShapes — VXE MAD R",
@@ -2596,13 +2582,13 @@
         "date_checked": "2026-10-13"
       },
       {
-        "label": "ATK Store — fiche VXE MAD R (JSON public, pays France) : « MAD R » à 40,95 €, produit en rupture de stock (relevé du 2026-10-14).",
+        "label": "ATK Store — fiche VXE MAD R (JSON public, pays France) : « MAD R / Black (1K Dongle Only) » et « MAD R / White (1K Dongle Only) » à 41,95 € (relevé du 2026-10-15, tools/check_links.py).",
         "url": "https://www.atk.store/en-fr/products/vxe-mad-r-series-wireless-mouse.json?country=FR",
         "fields": [
           "price_eur",
           "price_note"
         ],
-        "date_checked": "2026-10-14"
+        "date_checked": "2026-10-15"
       }
     ],
     "shape": "Symmetrical",
@@ -2962,8 +2948,8 @@
     "weight_g": 39.0,
     "sensor": "PAW3950 Ultra",
     "polling_hz": 8000,
-    "price_eur": 40.95,
-    "price_note": "Prix EUR officiel constaté le 2026-10-14 : 40,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre —, prix normal 63,95 €). Relevés précédents : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la variante figée au jour du relevé — ici celui du 2026-10-14.",
+    "price_eur": 41.95,
+    "price_note": "Prix EUR officiel constaté le 2026-10-15 : 41,95 € (boutique ATK pays France, variante « Ultra Max 2.0 / Black » — celle que le bouton d'achat ouvre —, prix normal 63,95 €). Relevés : 40,95 € le 2026-10-12, 41,95 € le 2026-10-13, 40,95 € le 2026-10-14, 41,95 € le 2026-10-15 : la boutique ATK fait osciller ce prix d'un euro (bascule de sa promotion « deal »). Le catalogue publie le prix de la variante figée au jour du relevé — ici celui du 2026-10-15.",
     "sources": [
       {
         "label": "ATK Store — ATK Blazing Sky F1 V2 Series",
@@ -3053,13 +3039,13 @@
         "date_checked": "2026-10-13"
       },
       {
-        "label": "ATK Store — variante figée par le bouton « Ultra Max 2.0 / Black » (JSON public, pays France) : 40,95 €, prix normal 63,95 € (relevé du 2026-10-14).",
+        "label": "ATK Store — variante figée par le bouton « Ultra Max 2.0 / Black » (JSON public, pays France) : 41,95 €, prix normal 63,95 € (relevé du 2026-10-15, tools/check_links.py).",
         "url": "https://www.atk.store/en-fr/variants/47006581096666.json?country=FR",
         "fields": [
           "price_eur",
           "price_note"
         ],
-        "date_checked": "2026-10-14"
+        "date_checked": "2026-10-15"
       }
     ],
     "shape": "Symmetrical",

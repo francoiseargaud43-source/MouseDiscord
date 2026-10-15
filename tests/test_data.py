@@ -611,6 +611,14 @@ def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
         for champ in ("palm_grip_fit", "claw_grip_fit", "fingertip_grip_fit"):
             if getattr(mouse, champ) != "Inconnu":
                 assert any(champ in s.fields for s in mouse.sources), (mouse.id, champ)
+            # 2026-10-15 (79e passe) : la fiche ATK des U2 V2 Ultimate, U2 V2 Mini et Fierce X déclarait
+            # les trois prises alors qu'elle n'en publie qu'une (« Grip Style: Claw ») — le palm ou le
+            # fingertip venaient de mouseshape seul. Une prise complétée par la source tierce n'est
+            # attestée QUE par elle : le fabricant ne peut pas être cité pour ce qu'il ne publie pas.
+            if any(champ in s.fields for s in tierce):
+                constructeur = [s.url for s in mouse.sources
+                                if champ in s.fields and "mouseshape.com" not in s.url]
+                assert not constructeur, (mouse.id, champ, constructeur)
 
     # Cas concrets : « Recommended » accepté, « Not ideal » laissé « Inconnu ».
     xlite = mice["pulsar_xlite_v4_medium"]
