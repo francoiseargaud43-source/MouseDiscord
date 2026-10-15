@@ -436,10 +436,8 @@ avec sa commande, pour la prochaine passe ou pour l'arbitrage du propriétaire.
   mais inexploitable en l'état.)
 - **U2 / U2 V2** (pages boutique) : les autres rendus reçus sont des vues de trois quarts ou d'autres
   modèles (X1, ZERO) — écartés, aucun n'entre dans le corpus.
-MD
-.venv/bin/python -m pytest tests/test_doc_references.py -q 2>&1 | tail -2
 
-### 16.6 Pistes ouvertes pour la suite de la campagne (mesurées, pas supposées)
+### 17.3 Pistes ouvertes pour la suite de la campagne (mesurées, pas supposées)
 
 | Souris à mesurer | Ce qui a été tenté (2026-10-12) | Résultat | Piste |
 |---|---|---|---|
@@ -451,3 +449,38 @@ MD
 Shopify refuse la connexion sécurisée) ; seul l'outil de recherche d'images fournit des fichiers, et il
 ne renvoie que ce que son index connaît. Toute image glissée par le propriétaire dans `image-search/`
 est mesurable en une commande.
+
+## 18. Quatre-vingtième passe (2026-10-15) : la campagne passe par EloShapes
+
+**Le blocage des §5 et §17** : la méthode est juste, mais elle exige une vue de profil strictement
+orthographique, et les sites des fabricants n'en publient presque pas (7 vues sur 11 en perspective).
+Au rythme d'une vue trouvée de temps en temps, 18 souris restaient sans hauteur de boutons.
+
+**Ce que la mesure change** (2026-10-15, 21 736 profils du banc) : selon les classes que prendront ces
+18 souris, le match idéal peut changer pour **5 810 profils (27 %)** et au moins une des trois places
+pour **14 627 (67 %)**. Le critère manquant n'est donc pas un détail : c'est la principale incertitude
+du classement.
+
+**La voie retenue** : EloShapes dessine toutes ses souris de profil, à plat, de la même façon — une
+seule source, une seule méthode, 36 souris. `tools/campagne_boutons.py` :
+
+1. lit chaque image (fond transparent, fond uni, ou contour coloré sur une grille), écarte grille et
+   légendes, garde la souris d'un seul tenant ;
+2. relève le **profil complet** du dessus de la coque, millimètre par millimètre depuis la pointe avant
+   (échelle : cotes du catalogue) ; refuse une vue dont les proportions s'écartent de plus de 4 % des
+   cotes ; signale une bosse mesurée loin de celle du catalogue (image retournée) ;
+3. **laisse les données choisir** : cinq mesures candidates (dont celle de l'outil historique, 5 % de la
+   longueur), chacune étalonnée sur les souris dont la classe est connue, validée en laissant chaque
+   souris de côté à tour de rôle ; la meilleure est retenue, ses seuils classent les autres ;
+4. ne publie rien : rapport et relevé JSON (empreinte SHA-256 de chaque image, source, date), avec les
+   souris connues que la mesure contredit marquées « à revoir ».
+
+Consignes de collecte et manifeste des 36 souris : `docs/campagne_boutons/CONSIGNES.md` et
+`docs/campagne_boutons/manifeste.csv`. Tests : `tests/test_campagne_boutons.py` (profils synthétiques
+connus au dixième de millimètre, étalonnage, campagne de bout en bout).
+
+**Règle de publication proposée au propriétaire** (à trancher) : une classe proposée par la campagne
+entre au catalogue quand (a) l'image vient de la page EloShapes de ce modèle, (b) la validation croisée
+de l'étalonnage retrouve au moins 80 % des souris connues, (c) la mesure n'est pas « non tranchée ».
+C'est une source unique (EloShapes) : la règle des « deux vues distinctes » du §15.3 ne peut pas être
+tenue telle quelle, et c'est au propriétaire de dire si l'homogénéité de la source la remplace.
