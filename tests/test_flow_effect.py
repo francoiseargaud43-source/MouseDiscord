@@ -45,3 +45,17 @@ def test_une_reference_inconnue_est_signalee_sans_trace(monkeypatch, capsys):
         flow_effect.main()
     assert sortie.value.code == 2
     assert "référence introuvable" in capsys.readouterr().err
+
+
+def test_le_controle_d_equivalence_voit_un_changement_et_rien_d_autre(monkeypatch):
+    """« 0 écart sur 44 776 profils » (80e passe) se rejoue avec ``--aleatoires 40`` ; ce test le fait sur
+    la grille réduite : la refonte ne change rien, et un seuil modifié dans ``utils/slots.py`` est vu."""
+    from utils import slots
+
+    grille_d_origine = flow_effect.banc.grille
+    monkeypatch.setattr(flow_effect.banc, "grille", lambda rapide: grille_d_origine(True))
+    ancien = flow_effect.charger_ancienne_version("c6a268b")
+    profils, ecarts, _ = flow_effect.equivalence(ancien, 2)
+    assert profils == 3 * 576 and ecarts == 0
+    monkeypatch.setattr(slots, "ALTERNATIVE_EXTENSION_POINTS", 0)
+    assert flow_effect.equivalence(ancien, 0)[1] > 0

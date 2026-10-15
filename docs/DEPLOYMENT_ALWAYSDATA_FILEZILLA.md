@@ -2108,7 +2108,7 @@ ci-dessous est le seul tenu à jour** (dernière valeur : §12.60).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 856 passed
+.venv/bin/python -m pytest -q                      # attendu : 857 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2855,7 +2855,7 @@ souhaitez, `tools/` (sept outils mis à jour, un outil nouveau). **Redémarrage*
 - Ce que le membre voit change sur deux points : une même illustration n'apparaît plus qu'**une fois** par
   message (43 % des résultats la montraient deux fois), et un budget personnalisé trop bas donne le prix
   de la moins chère des souris notées pour sa main.
-- Le compteur du contrôle ci-dessus passe de 826 à **856** tests (dont `tests/test_architecture.py`, qui relit
+- Le compteur du contrôle ci-dessus passe de 826 à **857** tests (dont `tests/test_architecture.py`, qui relit
   `docs/ARCHITECTURE.md` — le nouveau document de vérité courante — contre le code).
 
 ---

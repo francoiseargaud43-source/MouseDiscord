@@ -501,6 +501,7 @@ python tools/qa_flow_matrix.py       # banc d'essai du parcours (21 736 profils,
 python tools/check_bytecode.py       # Python charge-t-il bien le code livré ? (0 bytecode périmé utilisé)
 python tools/qa_flow_matrix.py --rapide   # même banc, grille réduite (576 profils)
 python tools/flow_effect.py          # effet d'une modification du CODE des trois places (avant/après)
+python tools/flow_effect.py --avant c6a268b --aleatoires 40   # refonte : 0 écart attendu sur 44 776 profils
 python tools/db_effect.py --avant ancien_mouse_db.json   # effet d'une modification des DONNÉES
 python tools/db_effect.py --avant data/mouse_db.json --apres catalogue_reduit.json --retrait  # retrait de souris
 python tools/image_corpus_check.py  # doublons d'un corpus d'images (identité vérifiable avant mesure)

@@ -70,6 +70,66 @@ def charger_ancienne_version(ref: str):
     return module
 
 
+def _titres(module, selection, places) -> tuple[str | None, str | None]:
+    """Les titres des 2e et 3e places, calculés par le module donné (ancien ou nouveau)."""
+    ideal, alternative, troisieme = places
+    if ideal is None:
+        return None, None
+    tolerance = module.mode_tolerance(selection.mode)
+    return (module.alternative_slot_title(alternative, ideal, selection.reference_score, tolerance)
+            if alternative is not None else None,
+            module.third_slot_title(troisieme, ideal, alternative, selection.reference_score)
+            if troisieme is not None else None)
+
+
+def equivalence(ancien, nombre: int, graine: int = 20261015) -> tuple[int, int, list[str]]:
+    """Ancien et nouveau calcul des places sur la grille complète du catalogue réel, puis sur ``nombre``
+    catalogues tirés au hasard (grille réduite) : prix, coques, bosses, boutons et longueurs brassés pour
+    passer par tous les paliers de repli. Compare les souris ET les titres. Rend (profils, écarts, exemples).
+
+    C'est la mesure publiée à la 80e passe (« 0 écart sur 44 776 profils » : 21 736 + 40 × 576) ; la graine
+    est fixe, donc le chiffre se rejoue à l'identique.
+    """
+    import dataclasses
+    import random
+
+    from config import MOUSE_DB_PATH
+    from utils.catalog import load_catalog
+    from utils.matcher import evaluate_mouse
+    from utils.models import HandMeasure
+    from utils.selection import select
+
+    def comparer(catalogue, rapide: bool) -> tuple[int, list[str]]:
+        n, ecarts = 0, []
+        for grip, length, width, thenar, mode, budget in banc.grille(rapide):
+            main = HandMeasure(length, width)
+            scores = [evaluate_mouse(m, main, grip, mode, budget, thenar=thenar) for m in catalogue]
+            selection = select(scores, mode, top_n=len(scores))
+            avant, apres = ancien.result_slots(selection), result_slots(selection)
+            n += 1
+            if ([s.mouse.id if s else None for s in avant] != [s.mouse.id if s else None for s in apres]
+                    or _titres(ancien, selection, avant) != _titres(nouveau_slots, selection, apres)):
+                ecarts.append(f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}")
+        return n, ecarts
+
+    import utils.slots as nouveau_slots
+    reel = load_catalog(MOUSE_DB_PATH)
+    profils, ecarts = comparer(reel, False)
+    hasard = random.Random(graine)
+    for _ in range(nombre):
+        catalogue = tuple(dataclasses.replace(
+            m,
+            price_eur=hasard.choice([None, 13.95, 22.95, 40.95, 59.95, 59.95, 74.9, 119.99, 149.99]),
+            shell_id=hasard.choice([None, None, "s1", "s2", "s3"]),
+            button_height=hasard.choice(["Low", "Mid", "High", "Inconnu"]),
+            hump_position=hasard.choice(["Front", "Mid", "Rear", "Mid-Front"]),
+            length_mm=m.length_mm + hasard.uniform(-4, 4) if m.length_mm else None) for m in reel)
+        n, e = comparer(catalogue, True)
+        profils += n
+        ecarts += e
+    return profils, len(ecarts), ecarts[:5]
+
+
 def montrees(places) -> list[str]:
     """Les identifiants des souris montrées, place par place (une place vide n'apparaît pas)."""
     return [score.mouse.id for score in places if score is not None]
@@ -87,7 +147,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Effet d'une modification du parcours (avant/après)")
     parser.add_argument("--avant", default="HEAD", help="commit de référence pour l'ancienne version")
     parser.add_argument("--rapide", action="store_true", help="grille réduite")
+    parser.add_argument("--aleatoires", type=int, metavar="N",
+                        help="contrôle d'équivalence : grille complète + N catalogues tirés au hasard, "
+                             "souris ET titres comparés (refonte sans changement attendu)")
     args = parser.parse_args(argv)
+    if args.aleatoires is not None and args.aleatoires < 0:
+        parser.error("--aleatoires attend un nombre de catalogues positif ou nul")
 
     try:
         ancien = charger_ancienne_version(args.avant)
@@ -103,6 +168,13 @@ def main(argv: list[str] | None = None) -> int:
         reference = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
                                    check=True, capture_output=True, text=True).stdout.strip()
     print(f"Ancienne version : {reference} · nouvelle version : arbre de travail\n")
+    if args.aleatoires is not None:
+        profils, ecarts, exemples = equivalence(ancien, args.aleatoires)
+        print(f"Équivalence : {profils} profils comparés (catalogue réel + {args.aleatoires} catalogues "
+              f"aléatoires), {ecarts} écart(s)")
+        for exemple in exemples:
+            print(f"  · {exemple}")
+        return 1 if ecarts else 0
 
     profils = 0
     ideaux_changes: list[str] = []
