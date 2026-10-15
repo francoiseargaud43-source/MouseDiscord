@@ -34,8 +34,6 @@ WIDTH_SPAN_FINGERTIP_MM = 3.9
 # --- B. Largeur de prise (estimation provisoire) --------------------------
 # Utilisée UNIQUEMENT si aucune largeur de prise mesurée n'existe pour la souris.
 GRIP_WIDTH_ESTIMATE_OFFSET_MM = 3.0
-# Ancien nom conservé pour compatibilité des imports et des tests.
-WIDTH_MEASUREMENT_OFFSET_MM = GRIP_WIDTH_ESTIMATE_OFFSET_MM
 
 # --- C. Barème (points sur 40) --------------------------------------------
 MAX_SCORE = 40

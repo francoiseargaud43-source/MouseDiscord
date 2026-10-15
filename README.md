@@ -6,6 +6,8 @@ longueur et largeur, style de prise (grip), bosse et hauteur des boutons.
 L'interface est entièrement dans Discord : un message persistant dans un salon en lecture seule,
 puis un flux de messages éphémères (une seule fenêtre qui se met à jour) avec des illustrations.
 
+**Pour comprendre le système en dix minutes : `docs/ARCHITECTURE.md`** (vérité courante, relue par les tests).
+
 ---
 
 ## Sommaire
@@ -579,6 +581,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_image_corpus_check.py` : les groupes de doublons d'un corpus d'images (une même photo circulait sous huit noms de modèles) sont signalés, les fichiers non-image ignorés.
 - `tests/test_image_identity_check.py` : rattachement d'une image sans nom imprimé à une image nommée par sa silhouette (mise dans le même sens, deux verdicts bornés, refus de trancher).
 - `tests/test_measure_button_height.py` : mesure exacte sur une vue orthographique synthétique, classe estimée par les références étalonnées, et vue en perspective **refusée** (aucune valeur produite).
+- `tests/test_architecture.py` : le document de vérité courante (`docs/ARCHITECTURE.md`) est relu contre le code — plages cibles, barème, zones des modes et des places, délai d'expiration, carte des fichiers : une constante changée sans la phrase fait échouer la suite.
 - `tests/test_campagne_boutons.py` : la campagne EloShapes sur des profils **synthétiques** connus au dixième de millimètre — fond transparent, fond uni, tracé seul sur une grille avec légende, silhouette pleine traversée par la grille, avant à gauche ou à droite —, l'étalonnage par les souris connues (seuils, validation croisée), et une campagne de bout en bout (vue de biais refusée, image retournée signalée, souris connue contredite marquée « à revoir »).
 - `tests/test_measure_grip_width.py` : largeur au capteur depuis une vue de dessus, précision et cas limites.
 - `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes, comptage des places au prix non attesté, et le comptage des **coques partagées** — toutes les paires de places, comme le rapport statistique : jusqu'au 2026-10-14, les deux outils annonçaient deux chiffres différents pour la même phrase — et la **grille elle-même** : ses 21 736 entrées (576 en grille réduite) sont figées **sans doublon**, le même jour où 5 434 profils Fingertip mesurés trois fois faussaient tout pourcentage « sur 27 170 » — les **limites Discord** — les neuf d'un bloc et les huit d'une vue, sur les écrans fixes, les étapes du profil et le résultat (le banc publie la limite la plus remplie du passage : « description d'option 78/100 » au 2026-10-14) — et la **répartition des places** — tout profil à moins de trois lignes doit venir d'un budget personnalisé épuisé, jamais d'un mode normal) — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.

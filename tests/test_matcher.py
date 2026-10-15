@@ -21,7 +21,6 @@ from utils.matcher import (
     STATUS_PENDING,
     STATUS_SCORED,
     WIDTH_EXCLUDE_DELTA_MM,
-    WIDTH_MEASUREMENT_OFFSET_MM,
     WIDTH_NEAR_DELTA_MM,
     compatibility_percent,
     compute_target_ranges,
@@ -77,7 +76,6 @@ def test_fingertip_has_no_minimum_length_and_other_width_constants():
 
 def test_width_offset_constant_is_three_mm():
     assert GRIP_WIDTH_ESTIMATE_OFFSET_MM == 3.0
-    assert WIDTH_MEASUREMENT_OFFSET_MM == GRIP_WIDTH_ESTIMATE_OFFSET_MM
 
 
 def test_max_score_is_sum_of_criteria():
@@ -330,7 +328,7 @@ def test_width_delta_just_under_2_gives_5_points():
 
 def test_width_uses_width_max_minus_three():
     r = compute_target_ranges(HAND, Grip.PALM)
-    s = evaluate_mouse(make_mouse(width_max_mm=r.width_max + WIDTH_MEASUREMENT_OFFSET_MM), HAND, Grip.PALM)
+    s = evaluate_mouse(make_mouse(width_max_mm=r.width_max + GRIP_WIDTH_ESTIMATE_OFFSET_MM), HAND, Grip.PALM)
     assert s.breakdown.width_pts == 10
 
 

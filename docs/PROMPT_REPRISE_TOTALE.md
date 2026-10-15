@@ -112,7 +112,7 @@ assets/
   images.json              17 clés → fichiers `assets/illustrations/T01…T15`
   illustrations/           les 15 images du bot (bannière, étapes, illustrations du résultat)
 tools/                     17 outils · 4 780 l.   mesures, bancs d'essai, contrôles, aperçus (80e passe)
-tests/                    37 fichiers · 10 637 l. · 850 tests · couverture 100 % (80e passe)
+tests/                    38 fichiers · 10 713 l. · 856 tests · couverture 100 % (80e passe)
 docs/                     24 fichiers .md · 13 029 l.  (dont ROBUSTESSE 5 076 l. et DEPLOYMENT 2 843 l.)
 Reverse/                  10 fichiers    LA PREUVE PRIMAIRE : sorties datées de l'outil d'origine (Oblivity)
 ImageAct/ ImageEx/ ImageUse/   images de travail (fiches, exemples, les 15 illustrations livrées)
