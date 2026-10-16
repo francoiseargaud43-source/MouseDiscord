@@ -471,7 +471,8 @@ seule source, une seule méthode, 36 souris. `tools/campagne_boutons.py` :
    cotes ; signale une bosse mesurée loin de celle du catalogue (image retournée) ;
 3. **laisse les données choisir** : cinq mesures candidates (dont celle de l'outil historique, 5 % de la
    longueur), chacune étalonnée sur les souris dont la classe est connue, validée en laissant chaque
-   souris de côté à tour de rôle ; la meilleure est retenue, ses seuils classent les autres ;
+   forme de côté à tour de rôle ; une classe n'est proposée que si toutes les mesures validées
+   l'accordent (règle durcie au vu des vraies données, §18.1) ;
 4. ne publie rien : rapport et relevé JSON (empreinte SHA-256 de chaque image, source, date), avec les
    souris connues que la mesure contredit marquées « à revoir ».
 
@@ -484,3 +485,89 @@ entre au catalogue quand (a) l'image vient de la page EloShapes de ce modèle, (
 de l'étalonnage retrouve au moins 80 % des souris connues, (c) la mesure n'est pas « non tranchée ».
 C'est une source unique (EloShapes) : la règle des « deux vues distinctes » du §15.3 ne peut pas être
 tenue telle quelle, et c'est au propriétaire de dire si l'homogénéité de la source la remplace.
+
+### 18.1 La campagne du 2026-10-15 : 34 profils mesurés, 7 classes proposées, 10 non tranchées
+
+**Collecte** (agent du poste du propriétaire, consignes `docs/campagne_boutons/CONSIGNES.md`) : 36 lignes,
+34 profils mesurés. Le profil EloShapes est un dessin vectoriel inséré dans la page (bloc
+`sideView-outline`, viewBox en dixièmes de millimètre, contour cyan #00C8FF de 0,8 à 1 mm, avant à
+gauche sur les 35 dessins relevés), rendu en PNG pour l'outil. Deux refus, tous deux justes :
+
+- `atk_f1_v2` : absente d'EloShapes, ligne laissée vide comme le demandent les consignes ;
+- `pulsar_xlite_crazylight_medium` : proportions à 7,1 % des cotes du catalogue (tolérance 4 %). Son
+  dessin est **identique octet pour octet** à celui de la Xlite v4 Medium (SHA-256 `535331d60022`),
+  alors que le catalogue lui donne 40,7 mm de haut contre 43,0 mm à la v4 Medium (boutique Pulsar EU,
+  2026-10-12). Soit EloShapes réutilise le dessin, soit la hauteur publiée par la boutique est celle
+  d'une autre taille : **question ouverte**, rien n'est déduit.
+
+Le relevé est versé tel quel : `docs/campagne_boutons/releve_2026-10-15.json` (les champs
+`classe_proposee` et `verdict` y sont ceux du rendu de l'agent, règle du commit 6d4738f). Le manifeste
+rempli est `docs/campagne_boutons/manifeste.csv` ; les images et leurs SVG sont dans l'archive du
+propriétaire `campagne-boutons.zip` (SHA-256 `001F4918…787C`).
+
+**Ce que le premier rendu a montré** : l'ancienne règle retenait **une** mesure (h_10mm, seuils 19,7 et
+22,4 mm) et classait tout le reste avec ses seuils. Rejouée sur le relevé, elle redonne exactement le
+rendu de l'agent : 10 classes proposées, mais **3 souris connues non retrouvées** (Scyrox V6, Scyrox V8,
+VXE V3, « trop près d'un seuil »). Deux défauts, mesurés :
+
+1. **La validation croisée comptait des doublons** : A9 Plus, A9 Ultimate et A9 NB ont le même dessin
+   (même SHA-256), comme X2 V3 Mini et X2 CrazyLight Mini, ou X2A V3 et X2 CrazyLight Medium. « 17/17 »
+   valait en réalité **13 formes** distinctes ; la validation se fait désormais forme par forme.
+2. **Trois mesures sont également valides** (h_10mm, h_20mm, rapport_20mm : 13/13 formes, 0
+   contradiction chacune) **et ne disent pas la même chose** pour trois des propositions : Phantom
+   Ultimate (« moyens » selon les seuils de h_10mm, « bas » selon h_20mm), U2 V2 Mini (« hauts » selon
+   h_10mm, « moyens » selon h_20mm), VXE R1 (« bas » selon h_10mm, « moyens » selon rapport_20mm). Publier
+   l'une de ces classes aurait été choisir une mesure plutôt qu'une autre, sans donnée pour le faire.
+
+**La règle actuelle** (`conclure`) : une classe n'est proposée que si **toutes** les mesures validées
+placent la souris dans la plage **déjà observée** d'une classe connue (au bruit de mesure près :
+0,5 mm ou 1 point de rapport). Entre deux plages, rien n'est deviné. Résultat, rejouable sans les
+images :
+
+```
+python tools/campagne_boutons.py analyser docs/campagne_boutons/releve_2026-10-15.json --rapport analyse.md --essai essai.json
+```
+
+(sortie versée : `docs/campagne_boutons/analyse_2026-10-15.md`)
+
+- **17 souris connues sur 17 en accord** (dont les trois que l'ancienne règle ne retrouvait pas) ;
+- **7 classes proposées** : ATK A9 Mini **moyens** · VXE Dragonfly X3 **moyens** · Pulsar X2H V3 Mini et
+  X2H CrazyLight Mini **bas** · Pulsar Xlite v4 Mini, Medium et Large **hauts** ;
+- **10 non tranchées**, en deux familles :
+  - Duckbill, Fierce X, MAD R, R1 : **bas** en hauteur absolue (h_10mm, h_20mm), **moyens** en hauteur
+    rapportée à la bosse (rapport_20mm) — des souris basses dont l'avant est haut *pour leur taille* ;
+  - Ghost Ultimate et Extreme, U2 Mini, U2 V2 Mini, Phantom Ultimate, Y9 Ultimate : h_10mm tombe
+    **entre** la plage des « moyens » (20,1–21,1 mm) et celle des « hauts » (23,6–25,3 mm), et les deux
+    autres mesures se contredisent.
+
+Ces 10 souris ne se trancheront pas avec plus de calcul : la question est **ce que « hauteur des
+boutons » veut dire** (hauteur absolue au-dessus du tapis, ou hauteur relative au point le plus haut de
+la coque). Les étiquettes connues ne la tranchent pas, parce qu'aucune ne tombe dans ces zones. Deux
+issues : le propriétaire choisit la définition, ou une étiquette de référence de plus dans chaque zone
+(une souris dont la classe est publiée par le fabricant ou par une source autorisée).
+
+**Effet d'une publication des 7, mesuré avant toute décision** (catalogue d'essai, jamais le vrai) :
+
+```
+python tools/db_effect.py --avant data/mouse_db.json --apres essai.json
+python tools/campagne_boutons.py sensibilite --catalogue essai.json
+```
+
+- **4 515 profils sur 21 736 (20,77 %)** voient leur résultat changer, dont **1 491** leur match idéal ;
+  0 place gagnée ou perdue ; places reprises surtout par l'A9 Mini (1 157) et la X2H V3 Mini (1 084) ;
+- incertitude restante (11 souris sans hauteur) : le match idéal peut encore changer pour **5 583
+  profils (25,7 %)**, au moins une place pour **13 054 (60,1 %)** — contre 27 % et 67 % aujourd'hui.
+
+**À trancher par le propriétaire** (rien n'est écrit au catalogue avant) :
+
+1. publier les 7 classes proposées. La règle de publication du §18 est tenue et durcie : image de la page
+   EloShapes du modèle, mesures validées à 13/13 formes, aucune « non tranchée ». Reste ouverte la question
+   de la source unique (§15.3) ;
+2. la définition de la hauteur des boutons, pour les 10 non tranchées ;
+3. la hauteur de la Xlite CrazyLight Medium (40,7 mm boutique contre un dessin EloShapes de v4 Medium).
+
+**Amélioration possible** : le contour EloShapes est épais de près d'1 mm, d'où un écart de
+proportions systématique, de même signe sur les 34 profils (de 1,7 % à 3,0 %, moyenne 2,2 % : champ
+`ecart_aspect` du relevé). Les plages étant étalonnées sur des dessins tracés de la même façon, ce
+biais touche connues et inconnues ensemble ; son effet sur les classes n'est pas mesuré. Mesurer
+directement les SVG de l'archive le supprimerait.

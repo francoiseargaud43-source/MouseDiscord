@@ -2108,7 +2108,7 @@ ci-dessous est le seul tenu à jour** (dernière valeur : §12.60).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 858 passed
+.venv/bin/python -m pytest -q                      # attendu : 865 passed
 .venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
@@ -2857,6 +2857,16 @@ souhaitez, `tools/` (sept outils mis à jour, un outil nouveau). **Redémarrage*
   de la moins chère des souris notées pour sa main.
 - Le compteur du contrôle ci-dessus passe de 826 à **858** tests (dont `tests/test_architecture.py`, qui relit
   `docs/ARCHITECTURE.md` — le nouveau document de vérité courante — contre le code).
+
+### 12.61 Mise à jour du 2026-10-16 (52e) : résultats de la campagne « hauteur des boutons »
+
+**Fichiers à envoyer** : **aucun** pour le bot — seuls l'outil `tools/campagne_boutons.py`, ses tests et
+la documentation changent ; le catalogue n'est **pas** modifié. **Redémarrage** : inutile.
+
+- La campagne EloShapes du 2026-10-15 (34 profils mesurés) propose une hauteur de boutons pour 7 souris et
+  en laisse 10 non tranchées ; rien n'entre au catalogue avant la décision du propriétaire
+  (`docs/audit/MESURE_BOUTONS_2026-10-12.md` §18.1).
+- Le compteur du contrôle ci-dessus passe de 858 à **865** tests.
 
 ---
 

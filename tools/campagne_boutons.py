@@ -22,11 +22,17 @@ Ce que fait l'outil
    la silhouette doit coller aux cotes du catalogue (vue de biais ou image d'une autre souris → refus),
    et la position de la bosse est confrontée à celle du catalogue (alerte d'orientation).
 2. ``campagne`` : un manifeste (une ligne par image) → toutes les mesures, puis l'**étalonnage par les
-   données** : les souris dont la hauteur de boutons est déjà connue choisissent elles-mêmes la mesure
-   qui sépare le mieux « bas », « moyens » et « hauts » (validation en laissant chaque souris de côté à
-   tour de rôle), et ses seuils. Les souris inconnues reçoivent une classe **proposée**, ou « non
-   tranchée » quand la mesure tombe trop près d'un seuil. Les souris connues que la mesure contredit
-   sont signalées « à revoir ».
+   données** (``conclure``) : les souris dont la hauteur de boutons est déjà connue jugent chaque mesure
+   candidate. Une mesure est **validée** si elle les classe toutes sans contradiction et retrouve
+   chacune de leurs formes quand on l'écarte de l'étalonnage (deux souris au dessin identique comptent
+   pour une forme). Une souris inconnue ne reçoit une classe **proposée** que si **toutes** les mesures
+   validées la placent dans la plage déjà observée de cette classe (au bruit de mesure près) ; entre
+   deux plages ou en désaccord, elle reste « non tranchée », avec ce que dit chaque mesure. Les souris
+   connues que la mesure contredit sont signalées « à revoir » et écartées de l'étalonnage.
+3. ``analyser`` : rejoue la conclusion à partir d'un relevé JSON, sans les images ; ``--essai`` écrit
+   une **copie** du catalogue où les classes proposées remplacent « Inconnu », pour mesurer l'effet d'une
+   publication avant de la décider (``tools/db_effect.py --apres``, ``sensibilite --catalogue``).
+4. ``sensibilite`` : ce que les hauteurs encore inconnues peuvent changer sur la grille du banc.
 
 Ce que l'outil ne fait pas
 --------------------------
@@ -39,6 +45,8 @@ Usage
 -----
     python tools/campagne_boutons.py mesurer IMAGE --id atk_zero --avant droite
     python tools/campagne_boutons.py campagne manifeste.csv --rapport rapport.md --json releve.json
+    python tools/campagne_boutons.py analyser docs/campagne_boutons/releve_2026-10-15.json --essai essai.json
+    python tools/campagne_boutons.py sensibilite --catalogue essai.json
 
 Le manifeste est un CSV à en-tête ``id,image,avant,source,date`` (colonne ``couleur`` facultative,
 « #RRGGBB » du tracé quand l'image porte une grille). ``avant`` vaut ``gauche`` ou ``droite`` : le côté
@@ -356,9 +364,15 @@ class Etalonnage:
     seuil_bas: float                # frontière « bas / moyens »
     seuil_haut: float               # frontière « moyens / hauts »
     erreurs: int                    # souris connues mal classées par ces seuils
-    loo_justes: int                 # validation en laissant chaque souris de côté
-    effectif: int
+    loo_justes: int                 # formes distinctes retrouvées quand on les met de côté à tour de rôle
+    effectif: int                   # souris connues
     marge: float                    # plus petite distance d'une souris connue à un seuil
+    formes: int = 0                 # formes distinctes (deux souris au dessin identique comptent pour une)
+
+    @property
+    def validee(self) -> bool:
+        """Aucune contradiction ET chaque forme connue retrouvée quand on l'écarte de l'étalonnage."""
+        return self.erreurs == 0 and self.formes > 0 and self.loo_justes == self.formes
 
 
 def _classer(valeur: float, seuil_bas: float, seuil_haut: float) -> str:
@@ -390,18 +404,54 @@ def _seuils(echantillons: list[tuple[str, float]]) -> tuple[float, float, int, f
     return bas, haut, erreurs, -moins_marge
 
 
-def etalonner(metrique: str, connues: list[tuple[str, str, float]]) -> Etalonnage:
-    """Seuils d'une mesure, ajustés sur les souris connues, et leur validation croisée."""
-    echantillons = [(classe, valeur) for _, classe, valeur in connues]
-    bas, haut, erreurs, marge = _seuils(echantillons)
+def etalonner(metrique: str, connues: list[tuple]) -> Etalonnage:
+    """Seuils d'une mesure, ajustés sur les souris connues, et leur validation croisée PAR FORME.
+
+    ``connues`` : ``(identifiant, classe, valeur)`` ou ``(identifiant, classe, valeur, forme)``. Deux souris
+    de même coque ont souvent le MÊME dessin chez EloShapes (les quatre A9 pleine taille, les X2 par
+    paires) : en écarter une en laissant sa jumelle dans l'étalonnage ne l'éprouve pas. La validation
+    écarte donc une FORME entière à la fois, et compte les formes retrouvées (80e passe, campagne du
+    2026-10-15 : 17 souris connues, 13 formes distinctes).
+    """
+    echantillons = [(c[1], c[2], c[3] if len(c) > 3 else c[0]) for c in connues]
+    bas, haut, erreurs, marge = _seuils([(c, v) for c, v, _ in echantillons])
+    formes = sorted({f for _, _, f in echantillons}, key=str)
     justes = 0
-    for k, (classe, valeur) in enumerate(echantillons):
-        autres = echantillons[:k] + echantillons[k + 1:]
+    for forme in formes:
+        autres = [(c, v) for c, v, f in echantillons if f != forme]
         if len({c for c, _ in autres}) < len(CLASSES):
-            continue                 # sans les trois classes, aucun seuil n'est ajustable : non compté
+            continue                 # sans les trois classes, aucun seuil n'est ajustable : non comptée
         b, h, _, _ = _seuils(autres)
-        justes += _classer(valeur, b, h) == classe
-    return Etalonnage(metrique, bas, haut, erreurs, justes, len(echantillons), marge)
+        justes += all(_classer(v, b, h) == c for c, v, f in echantillons if f == forme)
+    return Etalonnage(metrique, bas, haut, erreurs, justes, len(echantillons), marge, len(formes))
+
+
+def _plages(metrique: str, connues: list["Releve"]) -> dict[str, tuple[float, float]]:
+    """La plage observée de chaque classe connue pour une mesure (minimum, maximum)."""
+    return {c: (min(r.metriques[metrique] for r in connues if r.classe_catalogue == c),
+                max(r.metriques[metrique] for r in connues if r.classe_catalogue == c))
+            for c in CLASSES if any(r.classe_catalogue == c for r in connues)}
+
+
+def classe_par_plage(valeur: float, plages: dict[str, tuple[float, float]], bruit: float) -> str | None:
+    """La classe que la mesure SOUTIENT, ou ``None`` : jamais de seuil tiré au milieu d'un vide.
+
+    Une valeur appartient à une classe si elle tombe dans la plage déjà observée pour cette classe (au
+    bruit de mesure près), ou au-delà des extrêmes (plus bas que tous les « bas », plus haut que tous les
+    « hauts »). Entre deux classes connues, aucune souris de référence ne dit où passe la frontière : la
+    valeur reste non tranchée (règle de la 80e passe — un seuil posé « à mi-chemin » d'un vide de 2,5 mm
+    classait trois souris au hasard).
+    """
+    dans = [c for c, (lo, hi) in plages.items() if lo - bruit <= valeur <= hi + bruit]
+    if len(dans) == 1:
+        return dans[0]
+    if dans:
+        return None                                   # plages qui se chevauchent : la mesure ne sépare pas
+    if "Low" in plages and valeur < plages["Low"][0] - bruit:
+        return "Low"
+    if "High" in plages and valeur > plages["High"][1] + bruit:
+        return "High"
+    return None
 
 
 def choisir(etalonnages: list[Etalonnage]) -> Etalonnage:
@@ -428,6 +478,7 @@ class Releve:
     alertes: list[str] = field(default_factory=list)
     classe_proposee: str | None = None
     verdict: str = ""
+    classes_par_mesure: dict[str, str | None] = field(default_factory=dict)
 
 
 def mesurer_ligne(ligne: dict[str, str], dossier: Path, catalogue: dict[str, dict]) -> Releve:
@@ -470,32 +521,64 @@ def lire_manifeste(chemin: Path) -> list[dict[str, str]]:
     return lignes
 
 
+def _forme(r: Releve) -> tuple[float, ...]:
+    """Deux souris au dessin identique (même coque chez EloShapes) ont exactement les mêmes mesures."""
+    return tuple(round(r.metriques[m], 2) for m in METRIQUES)
+
+
 def conclure(releves: list[Releve]) -> tuple[Etalonnage | None, list[Etalonnage]]:
-    """Étalonne chaque mesure sur les souris connues, retient la meilleure, classe les autres."""
+    """Étalonne chaque mesure sur les souris connues, garde celles qui tiennent, classe sans deviner.
+
+    1. Une souris connue que la meilleure mesure contredit est mise de côté (« à revoir ») : son étiquette
+       est suspecte et ne doit pas fausser les plages.
+    2. Une mesure est VALIDÉE si elle classe toutes les souris connues sans contradiction et retrouve
+       chaque forme distincte quand on l'écarte de l'étalonnage.
+    3. Une classe n'est proposée que si TOUTES les mesures validées la soutiennent
+       (``classe_par_plage``). Sinon : « non tranchée », avec ce que dit chaque mesure.
+    """
     mesurees = [r for r in releves if r.refus is None]
     connues = [r for r in mesurees if r.classe_catalogue in CLASSES]
+
+    def lot(groupe: list[Releve], m: str) -> list[tuple]:
+        return [(r.ident, r.classe_catalogue, r.metriques[m], _forme(r)) for r in groupe]
+
     if len({r.classe_catalogue for r in connues}) < len(CLASSES):
         for r in mesurees:
             r.verdict = "étalonnage impossible : il faut au moins une souris connue de chaque classe"
         return None, []
-    etalonnages = [etalonner(m, [(r.ident, r.classe_catalogue, r.metriques[m]) for r in connues])
-                   for m in METRIQUES]
-    retenu = choisir(etalonnages)
-    bruit = BRUIT[retenu.metrique]
+    repere = choisir([etalonner(m, lot(connues, m)) for m in METRIQUES])
+    suspectes = {r.ident for r in connues
+                 if _classer(r.metriques[repere.metrique], repere.seuil_bas, repere.seuil_haut) != r.classe_catalogue}
+    fiables = [r for r in connues if r.ident not in suspectes]
+    if len({r.classe_catalogue for r in fiables}) < len(CLASSES):
+        for r in mesurees:
+            r.verdict = "étalonnage impossible : trop de souris connues contredites par la mesure"
+        return None, []
+    etalonnages = [etalonner(m, lot(fiables, m)) for m in METRIQUES]
+    validees = [e for e in etalonnages if e.validee]
+    if not validees:
+        for r in mesurees:
+            r.verdict = "aucune mesure ne sépare les classes connues sans erreur : rien n'est proposé"
+        return None, etalonnages
+    plages = {e.metrique: _plages(e.metrique, fiables) for e in validees}
     for r in mesurees:
-        valeur = r.metriques[retenu.metrique]
-        distance = min(abs(valeur - retenu.seuil_bas), abs(valeur - retenu.seuil_haut))
-        classe = _classer(valeur, retenu.seuil_bas, retenu.seuil_haut)
-        if distance < bruit:
-            r.classe_proposee = None
-            r.verdict = "non tranchée (trop près d'un seuil)"
+        r.classes_par_mesure = {e.metrique: classe_par_plage(r.metriques[e.metrique], plages[e.metrique],
+                                                             BRUIT[e.metrique]) for e in validees}
+        avis = set(r.classes_par_mesure.values())
+        classe = next(iter(avis)) if len(avis) == 1 and None not in avis else None
+        r.classe_proposee = classe
+        if r.ident in suspectes or (classe is not None and r.classe_catalogue in CLASSES
+                                    and classe != r.classe_catalogue):
+            r.verdict = "À REVOIR : la mesure contredit le catalogue"
+        elif classe is None:
+            detail = " ; ".join(f"{m} : {NOM_CLASSE[c] if c else 'entre deux classes'}"
+                                for m, c in r.classes_par_mesure.items())
+            r.verdict = f"non tranchée ({detail})"
         elif r.classe_catalogue in CLASSES:
-            r.classe_proposee = classe
-            r.verdict = "accord" if classe == r.classe_catalogue else "À REVOIR : la mesure contredit le catalogue"
+            r.verdict = "accord"
         else:
-            r.classe_proposee = classe
             r.verdict = "classe proposée"
-    return retenu, etalonnages
+    return choisir(validees), etalonnages
 
 
 def _fmt(metrique: str, valeur: float) -> str:
@@ -512,24 +595,24 @@ def rapport_markdown(releves: list[Releve], retenu: Etalonnage | None, etalonnag
     if retenu is None:
         lignes.append("**Étalonnage impossible** : il faut au moins une souris connue de chaque classe.")
     else:
+        validees = [e for e in etalonnages if e.validee]
         lignes += [
-            f"Mesure retenue par les données : **{retenu.metrique}** — seuils "
-            f"{_fmt(retenu.metrique, retenu.seuil_bas)} (bas/moyens) et {_fmt(retenu.metrique, retenu.seuil_haut)} "
-            f"(moyens/hauts) ; validation croisée **{retenu.loo_justes}/{retenu.effectif}** souris connues "
-            f"retrouvées, {retenu.erreurs} contradiction(s) avec tous les seuils ajustés.",
+            "Mesures validées par les données : **" + ", ".join(e.metrique for e in validees) + "** — chacune "
+            f"classe les {retenu.effectif} souris connues sans contradiction et retrouve chacune de leurs "
+            f"{retenu.formes} formes distinctes quand on l'écarte de l'étalonnage.",
             "",
-            "Prudence : la mesure retenue est choisie parmi plusieurs candidates sur le même petit échantillon ; "
-            "sa validation croisée est donc un peu optimiste.",
+            "Règle : une classe n'est proposée que si **toutes** les mesures validées la soutiennent, chacune "
+            "par la plage déjà observée d'une classe connue (au bruit de mesure près). Entre deux classes "
+            "connues, rien n'est deviné : la souris reste « non tranchée ».",
             "",
             "## Mesures candidates",
             "",
-            "| Mesure | Validation croisée | Contradictions | Seuil bas/moyens | Seuil moyens/hauts | Marge |",
+            "| Mesure | Validée | Formes retrouvées | Contradictions | Seuil bas/moyens | Seuil moyens/hauts |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
-        for e in sorted(etalonnages, key=lambda e: (-e.loo_justes, e.erreurs)):
-            lignes.append(f"| {e.metrique}{' ✅' if e is retenu else ''} | {e.loo_justes}/{e.effectif} | "
-                          f"{e.erreurs} | {_fmt(e.metrique, e.seuil_bas)} | {_fmt(e.metrique, e.seuil_haut)} | "
-                          f"{_fmt(e.metrique, e.marge)} |")
+        for e in sorted(etalonnages, key=lambda e: (not e.validee, -e.loo_justes, e.erreurs)):
+            lignes.append(f"| {e.metrique} | {'oui' if e.validee else 'non'} | {e.loo_justes}/{e.formes} | "
+                          f"{e.erreurs} | {_fmt(e.metrique, e.seuil_bas)} | {_fmt(e.metrique, e.seuil_haut)} |")
     for titre, filtre in (("Souris dont la hauteur est connue (contrôle)", lambda r: r.classe_catalogue in CLASSES),
                           ("Souris sans hauteur de boutons (proposition)", lambda r: r.classe_catalogue not in CLASSES)):
         groupe = [r for r in mesurees if filtre(r)]
@@ -555,18 +638,56 @@ def rapport_markdown(releves: list[Releve], retenu: Etalonnage | None, etalonnag
     return "\n".join(lignes) + "\n"
 
 
+def releves_depuis_json(donnees: dict) -> list[Releve]:
+    """Relit un relevé écrit par ``campagne`` : la conclusion se rejoue sans les images."""
+    try:
+        return [Releve(x["id"], x["image"], x.get("source", ""), x.get("date", ""), x.get("avant", ""),
+                       sha256=x.get("sha256", ""), classe_catalogue=x.get("classe_catalogue", INCONNU),
+                       metriques=x.get("metriques") or {}, ecart_aspect=x.get("ecart_aspect"),
+                       position_bosse=x.get("position_bosse"), refus=x.get("refus"),
+                       alertes=list(x.get("alertes") or [])) for x in donnees["releves"]]
+    except (KeyError, TypeError) as exc:
+        raise EntreeInvalide(f"relevé illisible : champ manquant ou mal formé ({exc})") from exc
+
+
+def catalogue_d_essai(releves: list[Releve], source: Path, sortie: Path) -> int:
+    """Écrit une COPIE du catalogue où chaque classe proposée remplace « Inconnu », avec sa source datée.
+
+    Sert à mesurer l'effet d'une publication avant de la décider (``tools/db_effect.py --apres``,
+    ``campagne_boutons.py sensibilite --catalogue``). N'écrit jamais sur le catalogue d'origine. Rend le
+    nombre de souris renseignées.
+    """
+    if sortie.resolve() == source.resolve() or sortie.resolve() == CATALOGUE_PAR_DEFAUT.resolve():
+        raise EntreeInvalide("le catalogue d'essai ne peut pas remplacer le vrai catalogue : choisissez un autre fichier")
+    souris = json.loads(source.read_text(encoding="utf-8"))
+    par_id = {r.ident: r for r in releves if r.classe_proposee and r.classe_catalogue not in CLASSES}
+    renseignees = 0
+    for m in souris:
+        r = par_id.get(m["id"])
+        if r is None or m.get("button_height") != INCONNU:
+            continue
+        m["button_height"] = r.classe_proposee
+        m["sources"].append({"label": f"EloShapes — profil latéral mesuré par tools/campagne_boutons.py "
+                                      f"(image SHA-256 {r.sha256[:12]}) : classe « {r.classe_proposee} »",
+                             "url": r.source, "fields": ["button_height"], "date_checked": r.date})
+        renseignees += 1
+    sortie.write_text(json.dumps(souris, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return renseignees
+
+
 def releve_json(releves: list[Releve], retenu: Etalonnage | None) -> dict:
     return {
         "outil": "tools/campagne_boutons.py",
         "mesure_retenue": None if retenu is None else {
             "metrique": retenu.metrique, "seuil_bas": round(retenu.seuil_bas, 4),
-            "seuil_haut": round(retenu.seuil_haut, 4), "validation_croisee": f"{retenu.loo_justes}/{retenu.effectif}",
+            "seuil_haut": round(retenu.seuil_haut, 4), "validation_croisee": f"{retenu.loo_justes}/{retenu.formes}",
             "contradictions": retenu.erreurs},
         "releves": [{
             "id": r.ident, "image": r.image, "sha256": r.sha256, "source": r.source, "date": r.date,
             "avant": r.avant, "classe_catalogue": r.classe_catalogue, "metriques": r.metriques,
             "ecart_aspect": r.ecart_aspect, "position_bosse": r.position_bosse, "refus": r.refus,
             "alertes": r.alertes, "classe_proposee": r.classe_proposee, "verdict": r.verdict,
+            "classes_par_mesure": r.classes_par_mesure,
         } for r in releves],
     }
 
@@ -640,6 +761,13 @@ def _parseur() -> argparse.ArgumentParser:
     tous.add_argument("--rapport", help="fichier Markdown à écrire (sinon : affiché)")
     tous.add_argument("--json", dest="json_sortie", help="relevé JSON à écrire")
     tous.add_argument("--catalogue", default=str(CATALOGUE_PAR_DEFAUT))
+    relire = sous.add_parser("analyser", help="rejouer la conclusion à partir d'un relevé JSON (sans les images)")
+    relire.add_argument("releve")
+    relire.add_argument("--rapport", help="fichier Markdown à écrire (sinon : affiché)")
+    relire.add_argument("--json", dest="json_sortie", help="relevé JSON réanalysé à écrire")
+    relire.add_argument("--essai", help="écrire une COPIE du catalogue avec les classes proposées (jamais le vrai)")
+    relire.add_argument("--catalogue-source", default=str(CATALOGUE_PAR_DEFAUT),
+                        help="catalogue de départ de la copie d'essai")
     sens = sous.add_parser("sensibilite", help="ce que les hauteurs encore inconnues peuvent changer (grille du banc)")
     sens.add_argument("--rapide", action="store_true", help="grille réduite du banc")
     sens.add_argument("--catalogue", default=str(CATALOGUE_PAR_DEFAUT))
@@ -650,7 +778,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = _parseur()
     args = parser.parse_args(argv)
     try:
-        catalogue = charger_catalogue(Path(args.catalogue))
+        # « analyser » relit un relevé : il ne charge aucun catalogue (les classes sont dans le relevé).
+        catalogue = charger_catalogue(Path(args.catalogue)) if hasattr(args, "catalogue") else {}
         if args.commande == "mesurer":
             souris = fiche(catalogue, args.id)
             img = ouvrir_image(Path(args.image))
@@ -679,14 +808,24 @@ def main(argv: list[str] | None = None) -> int:
                       f"({_pourcent(ligne['ideal'], ligne['profils'])}) · au moins une place : "
                       f"{ligne['une_place']} ({_pourcent(ligne['une_place'], ligne['profils'])})")
             return 0
-        manifeste = Path(args.manifeste)
-        lignes = lire_manifeste(manifeste)
-        dossier = Path(args.dossier) if args.dossier else manifeste.parent
-        if not dossier.is_dir():
-            raise EntreeInvalide(f"dossier des images introuvable : {dossier}")
+        if args.commande == "analyser":
+            chemin = Path(args.releve)
+            if not chemin.is_file():
+                raise EntreeInvalide(f"relevé introuvable : {chemin}")
+            try:
+                releves = releves_depuis_json(json.loads(chemin.read_text(encoding="utf-8")))
+            except ValueError as exc:
+                raise EntreeInvalide(f"relevé illisible : {chemin} ({exc})") from exc
+        else:
+            manifeste = Path(args.manifeste)
+            lignes = lire_manifeste(manifeste)
+            dossier = Path(args.dossier) if args.dossier else manifeste.parent
+            if not dossier.is_dir():
+                raise EntreeInvalide(f"dossier des images introuvable : {dossier}")
     except EntreeInvalide as exc:
         parser.error(str(exc))
-    releves = [mesurer_ligne(ligne, dossier, catalogue) for ligne in lignes]
+    if args.commande == "campagne":
+        releves = [mesurer_ligne(ligne, dossier, catalogue) for ligne in lignes]
     retenu, etalonnages = conclure(releves)
     texte = rapport_markdown(releves, retenu, etalonnages)
     if args.rapport:
@@ -698,6 +837,12 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.json_sortie).write_text(json.dumps(releve_json(releves, retenu), ensure_ascii=False, indent=2),
                                           encoding="utf-8")
         print(f"Relevé écrit : {args.json_sortie}")
+    if getattr(args, "essai", None):
+        try:
+            n = catalogue_d_essai(releves, Path(args.catalogue_source), Path(args.essai))
+        except EntreeInvalide as exc:
+            parser.error(str(exc))
+        print(f"Catalogue d'essai écrit : {args.essai} ({n} hauteur(s) de boutons renseignée(s))")
     return 0
 
 

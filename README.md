@@ -459,7 +459,8 @@ MouseDiscord/
 │   ├── measure_grip_width.py # Largeur de prise en mm depuis une capture vue de dessus (méthode Oblivity)
 │   ├── measure_button_height.py # Classe de hauteur des boutons depuis une vue de côté (vue en perspective refusée)
 │   ├── campagne_boutons.py   # Hauteur des boutons sur les profils EloShapes : profil complet en mm, étalonnage
-│   │                         #   par les souris connues, classes proposées (n'écrit jamais dans le catalogue)
+│   │                         #   par les souris connues, classe proposée seulement si toutes les mesures validées
+│   │                         #   l'accordent ; analyser --essai : copie du catalogue (jamais le vrai)
 │   ├── image_corpus_check.py # Doublons d'un corpus d'images : une photo = une identité (sinon mesure refusée)
 │   ├── image_identity_check.py # Rattache une image SANS nom à une image nommée (comparaison de silhouette)
 │   ├── qa_flow_matrix.py     # Banc d'essai du parcours : toute la grille passe par le moteur, toutes les limites Discord mesurées
@@ -511,6 +512,7 @@ python tools/render_preview.py       # régénère les trois aperçus livrés (d
 python tools/render_preview.py --sortie-dossier /tmp/apercus   # les rend sans toucher aux fichiers livrés
 python tools/measure_button_height.py IMG --length-mm 122.5 --height-mm 42.4   # classe de hauteur des boutons
 python tools/campagne_boutons.py campagne manifeste.csv --rapport rapport.md --json releve.json   # campagne EloShapes
+python tools/campagne_boutons.py analyser docs/campagne_boutons/releve_2026-10-15.json --essai essai.json   # rejoue la campagne du 15/10
 python tools/campagne_boutons.py sensibilite   # ce que les hauteurs de boutons inconnues peuvent encore changer
 python tools/measure_grip_width.py IMG --length 118.2   # largeur au capteur (méthode Oblivity)
 python tools/build_mouse_db.py       # traçabilité du premier relevé — refuse d'écraser le catalogue réel
@@ -584,7 +586,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_image_identity_check.py` : rattachement d'une image sans nom imprimé à une image nommée par sa silhouette (mise dans le même sens, deux verdicts bornés, refus de trancher).
 - `tests/test_measure_button_height.py` : mesure exacte sur une vue orthographique synthétique, classe estimée par les références étalonnées, et vue en perspective **refusée** (aucune valeur produite).
 - `tests/test_architecture.py` : le document de vérité courante (`docs/ARCHITECTURE.md`) est relu contre le code — plages cibles, barème, zones des modes et des places, délai d'expiration, carte des fichiers : une constante changée sans la phrase fait échouer la suite.
-- `tests/test_campagne_boutons.py` : la campagne EloShapes sur des profils **synthétiques** connus au dixième de millimètre — fond transparent, fond uni, tracé seul sur une grille avec légende, silhouette pleine traversée par la grille, avant à gauche ou à droite —, l'étalonnage par les souris connues (seuils, validation croisée), et une campagne de bout en bout (vue de biais refusée, image retournée signalée, souris connue contredite marquée « à revoir »).
+- `tests/test_campagne_boutons.py` : la campagne EloShapes sur des profils **synthétiques** connus au dixième de millimètre — fond transparent, fond uni, tracé seul sur une grille avec légende, silhouette pleine traversée par la grille, avant à gauche ou à droite —, l'étalonnage par les souris connues (seuils, validation croisée forme par forme, dessins jumeaux comptés une fois), la règle de conclusion (rien n'est deviné entre deux plages connues, des mesures en désaccord ne proposent rien), une campagne de bout en bout (vue de biais refusée, image retournée signalée, souris connue contredite marquée « à revoir »), la vraie campagne du 2026-10-15 rejouée en valeurs littérales, et le catalogue d'essai (une copie que le bot accepte, jamais le vrai).
 - `tests/test_measure_grip_width.py` : largeur au capteur depuis une vue de dessus, précision et cas limites.
 - `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes, comptage des places au prix non attesté, et le comptage des **coques partagées** — toutes les paires de places, comme le rapport statistique : jusqu'au 2026-10-14, les deux outils annonçaient deux chiffres différents pour la même phrase — et la **grille elle-même** : ses 21 736 entrées (576 en grille réduite) sont figées **sans doublon**, le même jour où 5 434 profils Fingertip mesurés trois fois faussaient tout pourcentage « sur 27 170 » — les **limites Discord** — les neuf d'un bloc et les huit d'une vue, sur les écrans fixes, les étapes du profil et le résultat (le banc publie la limite la plus remplie du passage : « description d'option 78/100 » au 2026-10-14) — et la **répartition des places** — tout profil à moins de trois lignes doit venir d'un budget personnalisé épuisé, jamais d'un mode normal) — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.

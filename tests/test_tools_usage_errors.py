@@ -63,6 +63,7 @@ CAS_ENTREE_INVALIDE = [
     ("campagne_boutons", lambda d: ["mesurer", str(d / "absente.png"), "--id", "atk_zero", "--avant", "gauche"],
      "image introuvable"),
     ("campagne_boutons", lambda d: ["campagne", str(d / "absent.csv")], "manifeste introuvable"),
+    ("campagne_boutons", lambda d: ["analyser", str(d / "absent.json")], "relevé introuvable"),
 ]
 
 

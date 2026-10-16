@@ -186,7 +186,7 @@ def test_campagne_de_bout_en_bout(tmp_path):
     assert any("vérifier le côté avant" in a for a in par_id["retournee"]["alertes"])
     assert len(par_id["bas1"]["sha256"]) == 64
     rapport = (tmp_path / "rapport.md").read_text(encoding="utf-8")
-    assert "Mesure retenue par les données" in rapport
+    assert "Mesures validées par les données" in rapport
     assert "| `inconnue_basse` |" in rapport
 
 
@@ -249,3 +249,91 @@ def test_la_sensibilite_mesure_ce_que_les_hauteurs_inconnues_peuvent_changer(tmp
     plein = cb.sensibilite(complet, rapide=True)
     assert plein.pop("_inconnues") == {"souris": 0, "total": 36}
     assert all(ligne["ideal"] == 0 and ligne["une_place"] == 0 for ligne in plein.values())
+
+
+# ---------------------------------------------------------------------------
+# Règles de la 80e passe : formes distinctes, plages connues, accord des mesures
+# ---------------------------------------------------------------------------
+def _releve(ident, classe, h10, **autres):
+    """Un relevé fictif : toutes les mesures suivent h_10mm, sauf celles qu'on force."""
+    metriques = {"rapport_5pct": h10 / 40, "h_10mm": h10, "h_20mm": h10 + 5, "h_30mm": h10 + 8,
+                 "rapport_20mm": (h10 + 5) / 40, **autres}
+    return cb.Releve(ident, f"{ident}.png", "", "", "gauche", classe_catalogue=classe, metriques=metriques)
+
+
+CONNUES = [("b1", "Low", 18.0), ("b2", "Low", 19.0), ("m1", "Mid", 24.0), ("m2", "Mid", 25.0),
+           ("h1", "High", 31.0), ("h2", "High", 32.0)]
+
+
+def test_entre_deux_classes_connues_rien_n_est_devine():
+    """Seuil « à mi-chemin » entre 19 et 24 : 21,5. Une souris à 20,6 en est à 0,9 mm (au-delà du bruit),
+    l'ancienne règle la classait « bas » ; aucune souris de référence n'existe pourtant entre 19 et 24."""
+    releves = [_releve(*c) for c in CONNUES] + [_releve("vide", "Inconnu", 20.6),
+                                                  _releve("sous_tout", "Inconnu", 16.0)]
+    cb.conclure(releves)
+    vide, sous_tout = releves[-2], releves[-1]
+    assert vide.classe_proposee is None and "entre deux classes" in vide.verdict
+    assert sous_tout.classe_proposee == "Low"          # plus bas que tous les « bas » : soutenu
+
+
+def test_des_mesures_en_desaccord_ne_proposent_rien():
+    releves = [_releve(*c) for c in CONNUES] + [_releve("partagee", "Inconnu", 18.5, rapport_20mm=(24 + 5) / 40)]
+    cb.conclure(releves)
+    partagee = releves[-1]
+    assert partagee.classe_proposee is None
+    assert partagee.classes_par_mesure["h_10mm"] == "Low"
+    assert partagee.classes_par_mesure["rapport_20mm"] == "Mid"
+    assert partagee.verdict.startswith("non tranchée (")
+
+
+def test_deux_souris_au_dessin_identique_ne_comptent_que_pour_une_forme():
+    jumelles = [("j1", "Low", 18.0), ("j2", "Low", 18.0)]
+    e = cb.etalonner("h_10mm", [(i, c, v, v) for i, c, v in jumelles + CONNUES[2:]])
+    assert e.effectif == 6 and e.formes == 5
+
+
+def test_la_vraie_campagne_du_15_octobre():
+    """Le relevé de l'agent (``docs/campagne_boutons/releve_2026-10-15.json``) rejoué avec ces règles.
+    Attentes écrites en clair : sept souris tranchées, dix non tranchées, les 17 connues en accord."""
+    donnees = json.loads((ROOT / "docs" / "campagne_boutons" / "releve_2026-10-15.json").read_text(encoding="utf-8"))
+    releves = cb.releves_depuis_json(donnees)
+    retenu, etalonnages = cb.conclure(releves)
+    assert sorted(e.metrique for e in etalonnages if e.validee) == ["h_10mm", "h_20mm", "rapport_20mm"]
+    assert all((e.loo_justes, e.formes, e.effectif) == (13, 13, 17) for e in etalonnages if e.validee)
+    proposees = {r.ident: r.classe_proposee for r in releves if r.classe_catalogue == "Inconnu" and r.refus is None}
+    assert {i: c for i, c in proposees.items() if c} == {
+        "atk_a9_mini": "Mid", "vxe_x3": "Mid",
+        "pulsar_x2h_v3_mini": "Low", "pulsar_x2h_crazylight_mini": "Low",
+        "pulsar_xlite_v4_mini": "High", "pulsar_xlite_v4_medium": "High", "pulsar_xlite_v4_large": "High",
+    }
+    assert sorted(i for i, c in proposees.items() if c is None) == [
+        "atk_duckbill", "atk_fierce_x", "atk_ghost_extreme", "atk_ghost_ultimate", "atk_phantom_ultimate",
+        "atk_u2_mini", "atk_u2_v2_mini", "atk_y9_ultimate", "vxe_mad_r", "vxe_r1"]
+    connues = [r for r in releves if r.classe_catalogue in cb.CLASSES and r.refus is None]
+    assert len(connues) == 17 and all(r.verdict == "accord" for r in connues)
+
+
+def test_le_catalogue_d_essai_est_une_copie_et_jamais_le_vrai(tmp_path, capsys):
+    """``analyser --essai`` écrit une copie où les 7 classes proposées remplacent « Inconnu », chacune avec
+    sa source EloShapes datée — de quoi mesurer l'effet d'une publication avant de la décider. Le vrai
+    catalogue n'est jamais réécrit."""
+    vrai = ROOT / "data" / "mouse_db.json"
+    avant = vrai.read_bytes()
+    releve = str(ROOT / "docs" / "campagne_boutons" / "releve_2026-10-15.json")
+    essai = tmp_path / "essai.json"
+    assert cb.main(["analyser", releve, "--rapport", str(tmp_path / "r.md"), "--essai", str(essai)]) == 0
+    assert "7 hauteur(s) de boutons renseignée(s)" in capsys.readouterr().out
+    copie = {m["id"]: m for m in json.loads(essai.read_text(encoding="utf-8"))}
+    assert copie["atk_a9_mini"]["button_height"] == "Mid"
+    assert copie["atk_phantom_ultimate"]["button_height"] == "Inconnu"
+    assert copie["pulsar_xlite_v4_large"]["sources"][-1]["fields"] == ["button_height"]
+    assert copie["pulsar_xlite_v4_large"]["sources"][-1]["url"].startswith("https://www.eloshapes.com/")
+    # La copie passe la validation stricte du bot (sinon db_effect et sensibilite la refuseraient).
+    sys.path.insert(0, str(ROOT))
+    from utils.catalog import load_catalog
+    souris = load_catalog(essai)
+    assert len(souris) == 36 and sum(m.button_height == "Inconnu" for m in souris) == 11
+    with pytest.raises(SystemExit):
+        cb.main(["analyser", releve, "--rapport", str(tmp_path / "r.md"), "--essai", str(vrai)])
+    assert vrai.read_bytes() == avant
+

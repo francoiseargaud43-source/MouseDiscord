@@ -111,15 +111,15 @@ data/
 assets/
   images.json              17 clés → fichiers `assets/illustrations/T01…T15`
   illustrations/           les 15 images du bot (bannière, étapes, illustrations du résultat)
-tools/                     17 outils · 4 780 l.   mesures, bancs d'essai, contrôles, aperçus (80e passe)
-tests/                    38 fichiers · 10 747 l. · 858 tests · couverture 100 % (80e passe)
-docs/                     24 fichiers .md · 13 029 l.  (dont ROBUSTESSE 5 076 l. et DEPLOYMENT 2 843 l.)
+tools/                     17 outils · 5 074 l.   mesures, bancs d'essai, contrôles, aperçus (2026-10-16)
+tests/                    38 fichiers · 10 839 l. · 865 tests · couverture 100 % (2026-10-16)
+docs/                     28 fichiers .md · 14 053 l.  (dont ROBUSTESSE 5 076 l. et DEPLOYMENT 2 895 l.)
 Reverse/                  10 fichiers    LA PREUVE PRIMAIRE : sorties datées de l'outil d'origine (Oblivity)
 ImageAct/ ImageEx/ ImageUse/   images de travail (fiches, exemples, les 15 illustrations livrées)
 .env.example              le gabarit de configuration (le vrai `.env` n'est JAMAIS dans le dépôt)
 ```
 
-**Deux chiffres à retenir pour lire le reste** : le code livré fait **~3 400 lignes** (`bot.py` + `config.py` + `cogs/` + `utils/`), et **il est entouré de 4 057 lignes d'outils, 10 316 lignes de tests et 13 029 lignes de documentation**. C'est un projet où la **vérification** pèse six fois le **produit**. C'est à la fois sa force (on peut prouver ce qu'on avance) et sa maladie (§7.1).
+**Deux chiffres à retenir pour lire le reste** : le code livré fait **3 437 lignes** (`bot.py` + `config.py` + `cogs/` + `utils/`), et **il est entouré de 5 074 lignes d'outils, 10 839 lignes de tests et 14 053 lignes de documentation** (mesuré le 2026-10-16 : `cat bot.py config.py cogs/*.py utils/*.py | wc -l`, `cat tools/*.py | wc -l`, `cat tests/*.py | wc -l`, `find docs -name '*.md' -exec cat {} + | wc -l`). C'est un projet où la **vérification** pèse six fois le **produit**. C'est à la fois sa force (on peut prouver ce qu'on avance) et sa maladie (§7.1).
 
 ---
 
