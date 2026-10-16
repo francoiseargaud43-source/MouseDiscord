@@ -1,0 +1,101 @@
+"""Configuration centralisée du bot (variables d'environnement + chemins).
+
+Lecture du fichier ``.env`` : toujours celui situé À CÔTÉ de ce fichier (ROOT_DIR/.env),
+quel que soit le répertoire depuis lequel le bot est lancé. Les variables déjà présentes
+dans l'environnement du processus ne sont pas écrasées par ``.env``.
+"""
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+ROOT_DIR = Path(__file__).resolve().parent
+ENV_FILE = ROOT_DIR / ".env"
+DATA_DIR = ROOT_DIR / "data"
+ASSETS_DIR = ROOT_DIR / "assets"
+
+MOUSE_DB_PATH = DATA_DIR / "mouse_db.json"
+COMMERCIAL_LINKS_PATH = DATA_DIR / "commercial_links.json"
+IMAGES_CONFIG_PATH = ASSETS_DIR / "images.json"
+
+load_dotenv(ENV_FILE)  # chemin explicite : ne dépend pas du répertoire courant
+
+# Base publique des illustrations (ex. « https://moncompte.alwaysdata.net/illustrations/ »).
+# Elle permet à assets/images.json de ne contenir que des noms de fichiers repris de
+# assets/illustrations/ : une seule variable à changer au déploiement. Vide = les noms de
+# fichiers ne sont pas résolus (aucune image affichée) ; les URL https:// complètes restent utilisées telles quelles.
+IMAGES_BASE_URL = os.getenv("IMAGES_BASE_URL", "").strip()
+# Mémoire locale du message publié par !setup_finder (ignorée par Git).
+FINDER_STATE_PATH = ROOT_DIR / "state" / "finder_message.json"
+# Mémoire locale des parcours EN COURS (ignorée par Git) : elle permet à un questionnaire commencé
+# de survivre à un redémarrage du bot. Les réponses d'un parcours terminé n'y sont jamais écrites.
+SESSION_STATE_PATH = ROOT_DIR / "state" / "sessions.json"
+
+
+class ConfigError(ValueError):
+    """Variable d'environnement invalide ; le message indique la variable à corriger."""
+
+
+# Orthographes reconnues pour un booléen de configuration. Tout le reste est REFUSÉ au démarrage :
+# avant le 2026-10-13, tout ce qui n'était pas reconnu comme « vrai » valait « faux », donc une faute
+# de frappe (`SESSION_PERSIST=ture`) désactivait la conservation des parcours **en silence**.
+_ENV_VRAI = frozenset({"1", "true", "yes", "on", "oui", "vrai"})
+_ENV_FAUX = frozenset({"0", "false", "no", "off", "non", "faux"})
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    """Booléen de configuration ; une valeur inconnue est refusée avec la liste des orthographes."""
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return default
+    valeur = raw.strip().lower()
+    if valeur in _ENV_VRAI:
+        return True
+    if valeur in _ENV_FAUX:
+        return False
+    raise ConfigError(
+        f"{name} doit valoir vrai ou faux (valeur actuelle : {raw!r}). "
+        f"Orthographes acceptées : {', '.join(sorted(_ENV_VRAI | _ENV_FAUX))}. "
+        f"Corrigez-la dans le fichier {ENV_FILE}."
+    )
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name, "").strip()
+    if raw == "":
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        raise ConfigError(
+            f"{name} doit être un nombre entier (valeur actuelle : {raw!r}). "
+            f"Corrigez-la dans le fichier {ENV_FILE}."
+        ) from None
+
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!").strip() or "!"
+# Salon cible de !setup_finder (ID numérique). 0 = salon où la commande est tapée.
+FINDER_CHANNEL_ID = _env_int("FINDER_CHANNEL_ID", 0)
+if FINDER_CHANNEL_ID < 0:
+    raise ConfigError(
+        f"FINDER_CHANNEL_ID doit être un identifiant positif (0 = le salon où la commande est tapée ; "
+        f"valeur actuelle : {FINDER_CHANNEL_ID}). "
+        f"Corrigez-la dans le fichier {ENV_FILE}."
+    )
+# Rend le salon en lecture seule pour @everyone lors du setup.
+LOCK_FINDER_CHANNEL = _env_bool("LOCK_FINDER_CHANNEL", True)
+# Durée de vie d'une session utilisateur en mémoire (secondes).
+SESSION_TTL_SECONDS = _env_int("SESSION_TTL_SECONDS", 1800)
+if SESSION_TTL_SECONDS <= 0:
+    # Une valeur nulle ou négative ferait expirer chaque parcours aussitôt : le membre verrait
+    # « ce parcours a expiré » à chaque clic. On refuse la configuration au démarrage, clairement.
+    raise ConfigError(
+        f"SESSION_TTL_SECONDS doit être supérieur à 0 (valeur actuelle : {SESSION_TTL_SECONDS}). "
+        f"Corrigez-la dans le fichier {ENV_FILE}."
+    )
+# Conservation des parcours en cours dans state/sessions.json (true par défaut : un redémarrage du
+# bot ne fait plus perdre un questionnaire commencé). false = tout en mémoire.
+SESSION_PERSIST = _env_bool("SESSION_PERSIST", True)

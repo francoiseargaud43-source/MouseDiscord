@@ -1,0 +1,28 @@
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Secrets et configuration locale (jamais versionnés ; le modèle .env.example reste suivi)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# État local du bot (message Mouse Shape Finder publié)
+state/
+
+# Pack IA généré par tools/build_ai_bundle.py (jamais versionné)
+pack_ia_mousediscord.zip
+image-search/

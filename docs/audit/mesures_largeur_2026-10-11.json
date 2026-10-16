@@ -1,0 +1,236 @@
+{
+ "date": "2026-10-11",
+ "objet": "campagne de mesure de la largeur de prise (demande utilisateur du 2026-10-11)",
+ "outil": "tools/measure_grip_width.py :: silhouette_rows",
+ "methode": "vue de dessus ; echelle = longueur publiee / hauteur de silhouette ; filtres |ratio - W/L| <= 0.04 et |largeur_max - W publie| <= 1.2 mm ; attribution image->souris verifiee par titre/source puis par MD5 (doublons).",
+ "valeurs_publiees_utilisees_comme_echelle": "longueur publiee = celle de data/mouse_db.json (length_mm)",
+ "avertissements": [
+  "Les lignes extremes de la silhouette (0-10 % et 90-100 %) sont polluees par les ombres/anti-aliasing des photos : ne pas les lire comme la largeur du nez ou de l'arriere.",
+  "Orientation des images NON verifiee image par image : le profil est exprime en % de la hauteur de la silhouette depuis le HAUT de l'image (pas forcement l'avant).",
+  "Aucune valeur n'est inscrite en base : le champ a remplir est grip_width_mm (largeur au capteur, cf. docstring de l'outil), deja lu par utils/catalog.py et prioritaire dans utils/matcher.py (source 'measured').",
+  "atk_u2 et atk_u2_v2_ultimate ont les memes cotes dans la base (123.7x64.6x39.1) : les photos 'U2 V2' ne permettent pas de distinguer les deux modeles.",
+  "atk_f1_ultimate n'est PAS mesure : les fichiers ...f1-v3...whi-2 et whi-3 sont en realite des doublons de photos ZERO et F1 V2 (MD5 identiques)."
+ ],
+ "mesures": {
+  "scyrox_v8": {
+   "image": "scyrox-v8-wireless-mouse-top-view-white--3.jpg",
+   "md5": "771c0b5e9a68da1d7071d875c50cc1ae",
+   "fiche_L_x_W_mm": [
+    118.0,
+    63.0
+   ],
+   "largeur_max_mm": 62.33,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 54.64,
+    "20": 59.77,
+    "30": 60.28,
+    "40": 61.57,
+    "50": 62.08,
+    "60": 62.33,
+    "70": 62.33,
+    "80": 59.77,
+    "90": 47.46
+   }
+  },
+  "scyrox_v6": {
+   "image": "scyrox-v6-wireless-mouse-top-view-white--3.jpg",
+   "md5": "ee213903dd6fac9c9a8dc1f1a4d3f58d",
+   "fiche_L_x_W_mm": [
+    119.0,
+    61.0
+   ],
+   "largeur_max_mm": 61.49,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 50.52,
+    "20": 57.2,
+    "30": 58.94,
+    "40": 57.83,
+    "50": 56.24,
+    "60": 58.31,
+    "70": 60.85,
+    "80": 59.1,
+    "90": 47.66
+   }
+  },
+  "atk_f1_v2": {
+   "image": "atk-blazing-sky-f1-v2-wireless-mouse-top-2.jpg",
+   "md5": "9127cf17f35da98a68e9c3e6c0e2b1fe",
+   "fiche_L_x_W_mm": [
+    118.2,
+    62.4
+   ],
+   "largeur_max_mm": 62.35,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 56.75,
+    "20": 59.55,
+    "30": 59.55,
+    "40": 59.88,
+    "50": 59.21,
+    "60": 58.99,
+    "70": 62.12,
+    "80": 60.78,
+    "90": 49.92
+   }
+  },
+  "atk_x1_ultra_max": {
+   "image": "atk-blazing-sky-x1-v2-wireless-mouse-top-1.jpg",
+   "md5": "45ba7159db6d96e25aa5e313d2155f63",
+   "fiche_L_x_W_mm": [
+    127.0,
+    64.0
+   ],
+   "largeur_max_mm": 63.97,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 61.87,
+    "20": 62.18,
+    "30": 62.18,
+    "40": 61.13,
+    "50": 61.55,
+    "60": 62.18,
+    "70": 63.87,
+    "80": 62.18,
+    "90": 51.35
+   }
+  },
+  "atk_z1_ultra": {
+   "image": "atk-blazing-sky-z1-v2-wireless-mouse-top-2.jpg",
+   "md5": "e4b9b66d2dcdd778263dfcc22f2f8215",
+   "fiche_L_x_W_mm": [
+    122.5,
+    66.8
+   ],
+   "largeur_max_mm": 66.05,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 60.74,
+    "20": 62.78,
+    "30": 61.66,
+    "40": 62.78,
+    "50": 63.39,
+    "60": 64.52,
+    "70": 65.95,
+    "80": 63.6,
+    "90": 51.45
+   }
+  },
+  "atk_zero": {
+   "image": "atk-blazing-sky-zero-wireless-mouse-top--3.jpg",
+   "md5": "b0122183a1b3e11bd3fda654c6dfdfae",
+   "fiche_L_x_W_mm": [
+    120.1,
+    63.2
+   ],
+   "largeur_max_mm": 62.81,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 56.37,
+    "20": 60.25,
+    "30": 60.46,
+    "40": 61.69,
+    "50": 61.99,
+    "60": 60.87,
+    "70": 62.71,
+    "80": 60.77,
+    "90": 50.54
+   }
+  },
+  "atk_ghost_ultimate": {
+   "image": "atk-blazing-sky-ghost-carbon-fiber-wirel-3.jpg",
+   "md5": "fb0abfb8eb512e21fe17f57e937c65ca",
+   "fiche_L_x_W_mm": [
+    121.0,
+    61.3
+   ],
+   "largeur_max_mm": 61.26,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 59.23,
+    "20": 59.03,
+    "30": 58.32,
+    "40": 59.03,
+    "50": 59.44,
+    "60": 60.04,
+    "70": 61.16,
+    "80": 59.13,
+    "90": 49.21
+   }
+  },
+  "atk_y9_ultimate": {
+   "image": "atk-dragonfly-y9-wireless-mouse-top-view-3.jpg",
+   "md5": "71442f9469dc002158ddadd2b6af5ab3",
+   "fiche_L_x_W_mm": [
+    125.6,
+    67.5
+   ],
+   "largeur_max_mm": 67.26,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 54.81,
+    "20": 60.31,
+    "30": 60.31,
+    "40": 60.0,
+    "50": 60.2,
+    "60": 64.15,
+    "70": 67.16,
+    "80": 63.73,
+    "90": 50.76
+   }
+  },
+  "atk_fierce_x": {
+   "image": "atk-fierce-x-magnesium-wireless-mouse-to-1.jpg",
+   "md5": "a2e0bafa7b38c1c96da05092412929ee",
+   "fiche_L_x_W_mm": [
+    119.57,
+    60.99
+   ],
+   "largeur_max_mm": 61.15,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 33.14,
+    "20": 60.47,
+    "30": 59.27,
+    "40": 58.93,
+    "50": 58.42,
+    "60": 59.1,
+    "70": 60.98,
+    "80": 59.27,
+    "90": 48.34
+   }
+  },
+  "atk_u2_v2_ultimate": {
+   "image": "atk-blazing-sky-u2-v2-wireless-mouse-top-1.jpg",
+   "md5": "17fe357c66a7daf97dbd9728e928f42d",
+   "fiche_L_x_W_mm": [
+    123.7,
+    64.6
+   ],
+   "largeur_max_mm": 64.55,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 52.82,
+    "20": 59.66,
+    "30": 59.86,
+    "40": 59.56,
+    "50": 58.43,
+    "60": 59.15,
+    "70": 63.53,
+    "80": 63.53,
+    "90": 51.6
+   }
+  },
+  "vxe_mad_r": {
+   "image": "vxe-mad-r-wireless-mouse-top-view-white--2.jpg",
+   "md5": "581eb2921f4de14ed1fd4d9638715df6",
+   "fiche_L_x_W_mm": [
+    120.1,
+    63.1
+   ],
+   "largeur_max_mm": 63.26,
+   "profil_pct_hauteur_silhouette_mm": {
+    "10": 55.96,
+    "20": 60.11,
+    "30": 60.62,
+    "40": 61.75,
+    "50": 61.62,
+    "60": 61.62,
+    "70": 63.26,
+    "80": 61.24,
+    "90": 50.56
+   }
+  }
+ }
+}
