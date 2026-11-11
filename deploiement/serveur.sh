@@ -23,28 +23,36 @@ pids_du_bot() {
   done
 }
 
-# Fin du journal le plus récent qui parle du bot (logger « mouse_discord »).
+# Fin d'un journal : lignes coupées à 300 caractères, tout ce qui ressemble à un jeton Discord masqué.
+fin_de() {
+  tail -n "$2" "$1" | sed -E 's/[A-Za-z0-9_-]{23,28}\.[A-Za-z0-9_-]{6,7}\.[A-Za-z0-9_-]{27,}/(jeton masqué)/g' | cut -c1-300
+}
+
+# Fin du journal le plus récent qui parle du bot (logger « mouse_discord »), puis du bot.log du projet.
 journal_du_bot() {
-  local lignes="${1:-40}" fichier dossier
+  local lignes="${1:-40}" fichier
   # shellcheck disable=SC2086
   fichier="$(grep -rls 'mouse_discord' $journaux 2>/dev/null | xargs -r ls -t 2>/dev/null | head -n 1 || true)"
-  if [ -z "$fichier" ]; then
-    echo "(aucun journal ne mentionne mouse_discord)"
-    for dossier in $journaux; do
-      if [ -d "$dossier" ]; then
-        echo "--- $dossier"
-        ls -lt "$dossier" | head -n 6 || true
-      fi
-    done
-    return 0
+  if [ -n "$fichier" ]; then
+    echo "--- fin de $fichier (modifié le $(date -r "$fichier" '+%Y-%m-%d %H:%M'))"
+    fin_de "$fichier" "$lignes"
+  else
+    echo "(aucun journal d'Alwaysdata ne mentionne mouse_discord)"
+    echo "--- journaux les plus récents"
+    # shellcheck disable=SC2086
+    find $journaux -type f -printf '%TY-%Tm-%Td %TH:%TM %s %p\n' 2>/dev/null | sort -r | head -n 8 || true
   fi
-  echo "--- fin de $fichier"
-  tail -n "$lignes" "$fichier" | cut -c1-300
+  # Journal écrit dans le dossier du projet (bot lancé par une tâche planifiée avec redirection, par exemple).
+  if [ -f "$projet/bot.log" ]; then
+    echo "--- fin de $projet/bot.log (modifié le $(date -r "$projet/bot.log" '+%Y-%m-%d %H:%M'), $(du -h "$projet/bot.log" | cut -f1))"
+    fin_de "$projet/bot.log" "$lignes"
+  fi
 }
 
 etat() {
   titre "Serveur"
   date '+%Y-%m-%d %H:%M:%S %Z'
+  echo "machine : $(hostname)"
   echo "dossier personnel : $HOME"
   python --version 2>&1 || true
 
