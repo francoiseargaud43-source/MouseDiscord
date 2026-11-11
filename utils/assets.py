@@ -25,12 +25,14 @@ from pathlib import Path
 log = logging.getLogger(__name__)
 
 # Clés d'image par étape et par illustration de résultat.
-# Repère des étapes du parcours (4 étapes) : step1_grip (1/4), step2_thenar (2/4),
-# step2_measure (3/4), step3_budget (4/4, facultatif). Les noms « step2_measure » et
-# « step3_budget » sont conservés pour ne pas casser un assets/images.json déjà renseigné.
+# Repère des étapes du parcours : step1_grip (la prise), step2_claw_variant (le type de griffe, posé
+# en Griffe seulement), step2_thenar (l'éminence thénar), step2_measure (les mesures), step3_budget
+# (le budget, facultatif). Les noms « step2_measure » et « step3_budget » sont conservés pour ne pas
+# casser un assets/images.json déjà renseigné.
 IMAGE_KEYS = (
     "banner",
     "step1_grip",
+    "step2_claw_variant",
     "step2_thenar",
     "step2_measure",
     "step3_budget",

@@ -53,6 +53,15 @@ GRIP_LABELS = {
     Grip.CLAW: "Claw Grip",
     Grip.FINGERTIP: "Fingertip Grip",
 }
+# Noms français montrés aux membres : EXACTEMENT les mots de l'illustration de l'étape 1 (« Paume »,
+# « Griffe », « Bout des doigts »), pour qu'un membre lise le même mot dans le texte, dans le menu et
+# sous le dessin (demande du propriétaire, 2026-11-11). ``GRIP_LABELS`` garde les noms d'usage anglais :
+# ils sont cités entre parenthèses à l'étape 1 et servent aux messages internes (journal, outils).
+GRIP_NAMES = {
+    Grip.PALM: "Paume",
+    Grip.CLAW: "Griffe",
+    Grip.FINGERTIP: "Bout des doigts",
+}
 
 
 class BudgetMode(Enum):
@@ -98,11 +107,11 @@ THENAR_LABELS = {
 
 
 class ClawVariant(Enum):
-    """Variante de la prise Claw : collectée UNIQUEMENT en Claw, et jamais utilisée dans un calcul.
+    """Type de griffe (variante de la prise Claw) : collecté UNIQUEMENT en Claw, jamais utilisé dans un calcul.
 
-    Elle précise le conseil de bosse (méthode Oblivity) : une bosse arrière pour la Claw relâchée,
-    médiane pour l'agressive, arrière à flancs plats pour la pincée. Aucun point, aucun classement
-    ne change : le barème reste identique pour les trois variantes.
+    Il précise le conseil de bosse (méthode Oblivity) : une bosse arrière pour la griffe relâchée,
+    centrale pour l'agressive, arrière à flancs plats pour la griffe pince. Aucun point, aucun classement
+    ne change : le barème reste identique pour les trois types.
     """
 
     RELACHEE = "relachee"
@@ -110,10 +119,11 @@ class ClawVariant(Enum):
     PINCEE = "pincee"
 
 
+# Les libellés sont ceux des pastilles des illustrations T04, T05 et T06 (et du triptyque T16).
 CLAW_VARIANT_LABELS = {
-    ClawVariant.RELACHEE: "Claw relâchée",
-    ClawVariant.AGGRESSIVE: "Claw agressive",
-    ClawVariant.PINCEE: "Claw pincée",
+    ClawVariant.RELACHEE: "Griffe relâchée",
+    ClawVariant.AGGRESSIVE: "Griffe agressive",
+    ClawVariant.PINCEE: "Griffe pince",
 }
 
 

@@ -16,6 +16,7 @@ Ce n'est PAS un rendu officiel de Discord : la mise en page réelle dépend du c
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import hashlib
 import json
 import sys
@@ -141,35 +142,60 @@ def _plain(text: str) -> str:
     return text.replace("**", "").replace("*", "").replace("`", "")
 
 
+def _mots(paragraph: str) -> list[list[tuple[str, bool]]]:
+    """Les mots d'un paragraphe « Discord » ; chaque mot est une suite de fragments (texte, gras).
+
+    Un mot peut mêler les deux graisses : dans « **score**. », le point suit le mot en gras sans
+    espace. Avant le 2026-11-11, l'aperçu insérait une espace à chaque changement de graisse
+    (« petite , moyenne », « le score . ») et dessinait la ligne entière dans la graisse de son
+    dernier mot : des défauts d'aperçu, que le propriétaire aurait pu prendre pour des fautes du bot.
+    """
+    mots: list[list[tuple[str, bool]]] = []
+    mot: list[tuple[str, bool]] = []
+    for index, segment in enumerate(paragraph.split("**")):
+        gras = index % 2 == 1
+        for rang, morceau in enumerate(_plain(segment).split(" ")):
+            if rang and mot:              # une espace dans la source : le mot en cours est terminé
+                mots.append(mot)
+                mot = []
+            if morceau:
+                mot.append((morceau, gras))
+    if mot:
+        mots.append(mot)
+    return mots
+
+
+def _lignes(paragraph: str, font, bold_font, width: int) -> list[list[tuple[str, bool]]]:
+    """Met un paragraphe en lignes, mot à mot, chaque fragment mesuré dans SA graisse."""
+    espace = font.getlength(" ")
+    lignes: list[list[tuple[str, bool]]] = []
+    ligne: list[tuple[str, bool]] = []
+    occupe = 0.0
+    for mot in _mots(paragraph):
+        largeur = sum((bold_font if gras else font).getlength(texte) for texte, gras in mot)
+        if ligne and occupe + espace + largeur > width:
+            lignes.append(ligne)
+            ligne, occupe = [], 0.0
+        if ligne:
+            ligne.append((" ", False))
+            occupe += espace
+        ligne.extend(mot)
+        occupe += largeur
+    lignes.append(ligne)                  # un paragraphe vide occupe une ligne (saut de ligne)
+    return lignes
+
+
 def _draw_rich(draw, xy, text, font, bold_font, width, fill, line_gap=6):
     """Rend un texte « Discord » : gras (**…**) et sous-texte (``-# …``), retour à la ligne."""
     x, y = xy
     for paragraph in text.split("\n"):
         paragraph, font, bold_font, fill, line_gap = _rich_style(paragraph, font, bold_font, fill, line_gap)
-        segmentos = paragraph.split("**")
-        tokens: list[tuple[str, bool]] = []
-        for index, segment in enumerate(segmentos):
-            if not segment:
-                continue
-            tokens.append((_plain(segment), index % 2 == 1))
-        if not tokens:
-            y += font.size + line_gap
-            continue
-        line, line_bold = "", False
-        for token, bold in tokens:
-            for word in token.split(" "):
-                if word == "" and line:
-                    continue
-                candidate = f"{line} {word}".strip()
-                font_used = bold_font if bold else font
-                if font_used.getlength(candidate) <= width or not line:
-                    line, line_bold = candidate, bold
-                else:
-                    draw.text((x, y), line, font=(bold_font if line_bold else font), fill=fill)
-                    y += font.size + line_gap
-                    line, line_bold = word, bold
-        if line:
-            draw.text((x, y), line, font=(bold_font if line_bold else font), fill=fill)
+        for ligne in _lignes(paragraph, font, bold_font, width):
+            curseur = float(x)
+            for texte, gras in ligne:
+                police = bold_font if gras else font
+                draw.text((round(curseur), y), texte, font=police, fill=fill)
+                curseur += police.getlength(texte)
             y += font.size + line_gap
     return y
 
@@ -183,13 +209,11 @@ def _rich_style(paragraph, font, bold_font, fill, line_gap):
 
 
 def _text_height(text: str, contenu_largeur: int) -> int:
-    """Hauteur d'un texte riche ligne à ligne (le sous-texte est plus court que le texte normal)."""
+    """Hauteur d'un texte riche : la MÊME mise en lignes que ``_draw_rich`` (corps 15, interligne 6)."""
     height = 0
     for paragraph in text.split("\n"):
-        small = paragraph.startswith("-# ")
-        font = _font(False, 13) if small else _font(False, 16)
-        gap = 4 if small else 6
-        height += len(_wrap(_plain(paragraph[3:] if small else paragraph), font, contenu_largeur)) * (font.size + gap)
+        paragraph, font, bold_font, _fill, gap = _rich_style(paragraph, _font(False, 15), _font(True, 15), TEXT, 6)
+        height += len(_lignes(paragraph, font, bold_font, contenu_largeur)) * (font.size + gap)
     return height
 
 
@@ -294,25 +318,49 @@ def _legende_etape(kind: str, session, complement: str) -> str:
     return f"Étape {numero}/{total} — {complement}"
 
 
+def _menu(select: discord.ui.Select) -> list[str]:
+    """Le texte d'un menu fermé, lu sur le composant RÉEL du bot (jamais recopié à la main).
+
+    Corrigé le 2026-11-11 : ces textes étaient écrits ici en dur. Le menu du type de griffe a été
+    reformulé dans ``cogs/finder_flow`` et l'aperçu aurait continué d'afficher l'ancien libellé.
+    """
+    return [select.placeholder or ""]
+
+
+def _bouton(vue_classe: type[discord.ui.View]) -> list[str]:
+    """Le libellé du bouton d'une vue, lu sur la déclaration du bouton (sans créer la vue)."""
+    for attribut in vars(vue_classe).values():
+        reglages = getattr(attribut, "__discord_ui_model_kwargs__", None)
+        if reglages and reglages.get("label"):
+            emoji = reglages.get("emoji")
+            return [f"{emoji}  {reglages['label']}" if emoji else reglages["label"]]
+    raise LookupError(f"{vue_classe.__name__} : aucun bouton déclaré")
+
+
 def etapes_du_parcours(session) -> list[tuple[str, discord.Embed, list[str], bool]]:
     """Cartes de l'aperçu « parcours » : légende, embed, boutons, bouton principal.
 
-    Le parcours montré est celui de la **prise Claw** (le plus long : 5 étapes). Chaque légende est
-    dérivée de la table des étapes et de la même prise que l'embed qu'elle coiffe, donc une légende ne
-    peut pas annoncer un numéro que le titre ne dit pas (défaut corrigé le 2026-10-13, C43).
+    Le parcours montré est celui de la **prise en griffe** (le plus long : 5 étapes). Chaque légende
+    est dérivée de la table des étapes et de la même prise que l'embed qu'elle coiffe, donc une
+    légende ne peut pas annoncer un numéro que le titre ne dit pas (défaut corrigé le 2026-10-13,
+    C43). Les textes des menus et des boutons sont lus sur les composants du bot.
+
+    L'étape des mesures est montrée telle que l'utilisateur la voit : ses mesures ne sont pas encore
+    saisies, donc le récapitulatif ne les annonce pas (avant le 2026-11-11, l'aperçu les y affichait).
     """
+    avant_mesures = dataclasses.replace(session, hand_length_mm=None, hand_width_mm=None)
     return [
-        ("Accueil — message persistant (public)", flow.banner_embed(), ["🖱️  Start Mouse Shape Finder"], True),
+        ("Accueil — message persistant (public)", flow.banner_embed(), _bouton(flow.StartView), True),
         (_legende_etape("grip", session, "prise"),
-         flow.grip_step_embed(), ["Choisissez votre prise…"], False),
-        (_legende_etape("claw_variant", Grip.CLAW, "variante de Claw (aucun effet sur le score)"),
-         flow.claw_variant_step_embed(), ["Choisissez votre variante de Claw…"], False),
-        (_legende_etape("thenar", session, "thénar (arrière de la souris)"),
-         flow.thenar_step_embed(session.grip), ["Choisissez la taille de votre thénar…"], False),
+         flow.grip_step_embed(), _menu(flow.GripSelect()), False),
+        (_legende_etape("claw_variant", Grip.CLAW, "type de griffe (aucun effet sur le score)"),
+         flow.claw_variant_step_embed(), _menu(flow.ClawVariantSelect()), False),
+        (_legende_etape("thenar", session, "éminence thénar (arrière de la souris)"),
+         flow.thenar_step_embed(session.grip), _menu(flow.ThenarSelect()), False),
         (_legende_etape("measure", session, "mesures"),
-         flow.measure_step_embed(session), ["📏  Saisir mes mesures"], True),
+         flow.measure_step_embed(avant_mesures), _bouton(flow.MeasureView), True),
         (_legende_etape("budget", session, "budget"),
-         flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
+         flow.budget_step_embed(session), _menu(flow.BudgetSelect()), False),
     ]
 
 
@@ -320,6 +368,8 @@ def build_parcours() -> Image.Image:
     store = SessionStore(ttl_seconds=600)
     session = store.start(1)
     session.grip, session.hand_length_mm, session.hand_width_mm = Grip.CLAW, 200.0, 110.0
+    # Le récapitulatif de chaque étape reprend les réponses déjà données : ici « Griffe relâchée ».
+    session.claw_variant = ClawVariant.RELACHEE
     session.thenar = Thenar.MOYENNE
     etapes = etapes_du_parcours(session)
     hauteur = sum(_embed_height(e, LARGEUR - 4 * PAD) + 52 + 28 + 16 for _, e, _, _ in etapes) + PAD
@@ -333,7 +383,7 @@ def build_parcours() -> Image.Image:
 
 
 def build_resultat() -> Image.Image:
-    # Cas le plus complet : Claw pincée + thénar « Petite » → tous les blocs d'explication s'affichent.
+    # Cas le plus complet : Griffe pince + éminence thénar petite → tous les blocs s'affichent.
     store = SessionStore(ttl_seconds=600)
     session = store.start(1)
     session.grip, session.hand_length_mm, session.hand_width_mm = Grip.CLAW, 180.0, 100.0
@@ -345,10 +395,11 @@ def build_resultat() -> Image.Image:
     # Légende de chaque bloc, retrouvée par son TITRE (et non par sa position : un bloc ajouté ou
     # retiré décalait toutes les légendes suivantes).
     legendes = {
-        "🎯 Votre recommandation": "Résultat — message éphémère (privé) : la recommandation",
-        "📐 Vos repères de taille": "Plus bas : les repères de taille (illustrés)",
-        "🖐️ Un arrière étroit pour votre thénar": "Plus bas : l'arrière étroit (thénar petit ou moyen)",
-        "⛰️ La bosse et la forme": "Plus bas : la bosse, la forme de coque, et le conseil de la variante de Claw",
+        "🎯 Votre recommandation": "Résultat — message éphémère (privé) : la recommandation, sans image",
+        "🧭 Pourquoi ce choix ?": "Plus bas : pourquoi ce choix (score, souris en clair, rôle de la gamme)",
+        "📐 Vos repères de taille": "Plus bas : les repères de taille, et leur dessin juste dessous",
+        "🖐️ Un arrière étroit pour votre thénar": "Plus bas : l'arrière étroit (éminence thénar petite ou moyenne)",
+        "⛰️ La bosse et la forme": "Plus bas : la bosse que ce type de griffe appelle, et la forme de coque",
         "🖱️ La hauteur des boutons": "Enfin : la hauteur des boutons conseillée",
     }
     boutons = _boutons_achat(selection)
@@ -358,7 +409,7 @@ def build_resultat() -> Image.Image:
     y = PAD
     for embed in embeds:
         legende = legendes.get(embed.title) or (
-            "Plus bas : la variante de Claw déclarée, illustrée" if embed.title.startswith("🦾") else embed.title)
+            "Plus bas : le type de griffe déclaré, avec sa photo" if embed.title.startswith("🦾") else embed.title)
         y = bandeau(draw, y, legende)
         y = draw_embed(canvas, draw, embed, y)
     # Discord affiche les composants UNE fois, sous le dernier bloc du message (défaut corrigé le
@@ -397,7 +448,7 @@ def etapes_du_prix_libre(session, selection) -> list[tuple[str, discord.Embed, l
     return [
         (_legende_etape("budget", session,
                         f"budget : {len(flow.BUDGET_OPTIONS)} options, dont « Peu importe le prix »"),
-         flow.budget_step_embed(session), ["Choisissez votre gamme…"], False),
+         flow.budget_step_embed(session), _menu(flow.BudgetSelect()), False),
         ("Résultat « Peu importe le prix » — le prix en tout petit",
          embeds[0], [label for label, _ in _boutons_achat(selection)], True),
     ]

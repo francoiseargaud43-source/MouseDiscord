@@ -22,7 +22,7 @@ possible, il faut tout recommencer ») :
 - toute erreur inattendue est tracée dans le journal ET expliquée à l'utilisateur (``on_error``) ;
   aucune interaction ne reste sans réponse.
 
-Parcours (table ``STEP_NUMBERS``) : prise -> [variante, en Claw seulement] -> [thénar, sauf en Fingertip]
+Parcours (table ``STEP_NUMBERS``) : prise -> [type de griffe, en Claw seulement] -> [thénar, sauf en Fingertip]
 -> mesures de la main -> budget, soit 4 étapes en Palm, 5 en Claw, 3 en Fingertip. Le choix des trois
 souris montrées est un calcul pur, hors de ce module (``utils/slots.py``). Le thénar sert à lire l'arrière
 de la souris : **conseil indicatif**,
@@ -37,9 +37,20 @@ CHARTE AZEMOUSE (voir docs/REPORTE_DESIGN.md) :
 - **Crème #F6F1EA** n'apparaît que dans les illustrations, jamais dans un embed.
 Limites Discord prises en compte : pas de police personnalisée dans le texte natif (hiérarchie rendue par le
 Markdown), une seule image par embed, 25 champs maximum, 5 boutons par rangée, 1024 caractères par champ.
-Le résultat est UN message : la recommandation (trois places), puis les blocs d'explication — repères de
-taille, arrière, bosse, variante de Claw, boutons —, de 3 à 8 blocs selon la prise ; une illustration n'y
-apparaît qu'une fois. Jamais les points internes du barème.
+Le résultat est UN message : la recommandation (trois places, sans image), puis les blocs d'explication —
+pourquoi ce choix, repères de taille, arrière, type de griffe, bosse, boutons —, de 4 à 7 blocs selon la
+prise. Jamais les points internes du barème.
+
+LES MOTS ET LES IMAGES (2026-11-11, demande du propriétaire : « l'ordre des images n'est pas logique
+suivant l'écriture ») :
+- un texte emploie les mots écrits sur l'illustration placée dessous, dans le même ordre : « Paume »,
+  « Griffe », « Bout des doigts » (T09) ; « Griffe relâchée », « Griffe agressive », « Griffe pince »
+  (T16, T04–T06) ; « Bosse centrale / avant / arrière » ; « Boutons hauts / moyens / bas ». Les noms
+  anglais d'usage (Palm, Claw, Fingertip) ne sont cités qu'à l'étape 1, entre parenthèses ;
+- une image suit toujours le texte qu'elle illustre : un bloc ne porte qu'un sujet, donc qu'une image,
+  et la recommandation, en tête, n'en porte aucune ;
+- dans un bloc de conseil, le dessin montre toujours une forme CONSEILLÉE pour la prise ; ce que porte
+  la souris retenue est dit dans la phrase, à côté.
 """
 from __future__ import annotations
 
@@ -65,6 +76,7 @@ from utils.models import (
     CLAW_VARIANT_LABELS,
     ClawVariant,
     GRIP_LABELS,
+    GRIP_NAMES,
     THENAR_LABELS,
     BudgetMode,
     Grip,
@@ -106,49 +118,52 @@ SCORE_DISCLAIMER = (
     "Score géométrique provisoire : ni une probabilité d'achat ni une validation biomécanique."
 )
 # Renvoi vers un bloc qui EXISTE. Le pied de page est posé sur le dernier bloc du message, et le bloc
-# « Pourquoi ce choix ? » vit dans les repères de taille : la phrase ne dit donc aucune direction
-# (« plus bas » était faux, et le bloc « Comment lire ce résultat » n'existe plus depuis le
-# 2026-10-11). Correction autorisée par le propriétaire le 2026-10-13 (point ouvert C27).
+# « Pourquoi ce choix ? » est le deuxième : la phrase ne dit donc aucune direction (« plus bas » était
+# faux, et le bloc « Comment lire ce résultat » n'existe plus depuis le 2026-10-11). Correction
+# autorisée par le propriétaire le 2026-10-13 (point ouvert C27).
 EXPLANATION_REFERENCE = " Le calcul est expliqué dans le bloc « 🧭 Pourquoi ce choix ? »."
 # Marqueur des souris au score partiel (hauteur des boutons non documentée, décision du propriétaire du
-# 2026-10-13) : la note longue n'existe que dans le bloc « 📐 Vos repères de taille », écrit pour le
+# 2026-10-13) : la note longue n'existe que dans le bloc « 🧭 Pourquoi ce choix ? », écrit pour le
 # MATCH IDÉAL seul — les 2e et 3e places portent donc ce marqueur discret à la fin de leur ligne.
 PARTIAL_HINT = "boutons non documentés"
 BUTTON_LABEL_MAX = 80
 
-# Affichage : noms français des positions de bosse et des hauteurs de boutons (le catalogue garde
-# ses valeurs anglaises, seules les phrases montrées à l'utilisateur sont traduites).
+# Affichage : les positions de bosse et les hauteurs de boutons portent EXACTEMENT les mots des
+# illustrations (« Bosse centrale », « Bosse avant », « Bosse arrière », « Boutons moyens »…) : le membre
+# lit le même mot dans la phrase et sur le dessin. Le catalogue garde ses valeurs anglaises.
 HUMP_DISPLAY = {
-    "Front": "à l'avant",
-    "Mid-Front": "au milieu-avant",
-    "Mid": "au milieu",
-    "Mid-Rear": "au milieu-arrière",
-    "Rear": "à l'arrière",
+    "Front": "avant",
+    "Mid-Front": "centre-avant",
+    "Mid": "centrale",
+    "Mid-Rear": "centre-arrière",
+    "Rear": "arrière",
 }
-BUTTON_DISPLAY = {"High": "hauts", "Mid": "médians", "Low": "bas"}
+BUTTON_DISPLAY = {"High": "hauts", "Mid": "moyens", "Low": "bas"}
+# La prise dans une phrase : « prise en griffe bien soutenue », « en paume, les formes… ».
+GRIP_PHRASES = {Grip.PALM: "en paume", Grip.CLAW: "en griffe", Grip.FINGERTIP: "du bout des doigts"}
 
-# Conseils de forme par prise (vidéo Oblivity et outil de référence) : ils servent au bloc
-# « comment lire ce résultat », jamais au calcul — voir docs/REPORTE_DESIGN.md §9.
+# Conseils de forme par prise (vidéo Oblivity et outil de référence) : ils servent aux blocs de
+# conseil du résultat, jamais au calcul — voir docs/REPORTE_DESIGN.md §9.
 HUMP_GUIDE = {
-    Grip.PALM: ("au milieu ou à l'avant",
+    Grip.PALM: ("centrale ou avant",
                 "la bosse suit l'arche naturelle de la paume : la main repose à plat, le poignet reste libre."),
-    Grip.CLAW: ("au milieu ou à l'arrière",
+    Grip.CLAW: ("centrale ou arrière",
                 "la bosse soutient l'arche transverse de la main et garde les doigts arqués."),
 }
-# Bosse conseillée selon la variante de Claw déclarée (l'outil de référence en distingue trois).
+# Bosse conseillée selon le type de griffe déclaré (l'outil de référence en distingue trois).
 CLAW_HUMP_GUIDE = {
     ClawVariant.RELACHEE: ("arrière marquée",
                            "l'arrière de la souris vient remplir la paume : appui franc, main stable."),
-    ClawVariant.AGGRESSIVE: ("médiane marquée",
+    ClawVariant.AGGRESSIVE: ("centrale marquée",
                              "l'appui se fait au-dessus du milieu de la souris, les doigts restent arqués."),
     ClawVariant.PINCEE: ("arrière, flancs peu bombés",
                          "l'auriculaire se pose plus loin, sur un flanc plat : la souris reste « pincée »."),
 }
 # Forme de coque conseillée selon la prise (la forme de la souris retenue est citée à côté).
 SHAPE_GUIDE = {
-    Grip.PALM: ("formes **symétriques** comme **ergonomiques** conviennent au palm grip — "
+    Grip.PALM: ("en paume, les formes **symétriques** comme **ergonomiques** conviennent ; "
                 "une forme **ergonomique** épouse un peu mieux l'arche de la main."),
-    Grip.CLAW: ("en claw grip, les formes **symétriques** conviennent aux trois variantes "
+    Grip.CLAW: ("en griffe, les formes **symétriques** conviennent aux trois types de griffe "
                 "(une ergonomique basse peut aussi faire l'affaire)."),
 }
 SHAPE_DISPLAY = {"Symmetrical": "symétrique", "Ergonomic": "ergonomique", "Inconnu": "non vérifiée"}
@@ -160,58 +175,65 @@ BUTTON_GUIDE = {
                 "les doigts reposent à plat : des boutons hauts évitent de tirer sur les tendons."),
     Grip.CLAW: ("bas",
                 "les doigts restent relâchés : des boutons hauts les obligeraient à tirer vers l'arrière."),
-    Grip.FINGERTIP: ("médians à bas",
+    Grip.FINGERTIP: ("moyens à bas",
                      "des boutons hauts poussent les doigts vers le haut et tendent les tendons."),
 }
-# Variantes de la prise Claw : (illustration T04–T06, libellé, conseil pratique de la variante).
-# La bosse attendue, elle, est décrite une seule fois dans CLAW_HUMP_GUIDE.
-CLAW_VARIANTS = {
-    ClawVariant.RELACHEE: ("illustration_grip_relaxed", "Claw relâchée",
-                           "Doigts légèrement arqués et paume posée : cherchez une souris qui remplit la "
-                           "main sans forcer, avec une bosse franche sous la paume."),
-    ClawVariant.AGGRESSIVE: ("illustration_grip_aggressive", "Claw agressive",
-                             "Doigts très arqués : la bosse doit tomber sous le milieu de la paume et "
-                             "l'avant de la souris rester bas."),
-    ClawVariant.PINCEE: ("illustration_grip_pincer", "Claw pincée",
-                         "Souris pincée entre le pouce et l'annulaire : des flancs plats et un arrière "
-                         "étroit rendent la prise plus sûre."),
-}
-# Illustration à montrer dans la recommandation, selon la souris retenue (sa bosse, ses boutons).
-HUMP_IMAGE_BY_FAMILY = {"Front": "illustration_hump_front", "Mid": "illustration_hump_mid",
-                        "Rear": "illustration_hump_rear"}
-BUTTON_IMAGE_BY_HEIGHT = {"High": "illustration_buttons_high", "Mid": "illustration_buttons_mid",
-                          "Low": "illustration_buttons_low"}
-# Illustration des conseils de forme : elle montre ce qui est conseillé pour la prise, pas la souris.
-HUMP_IMAGE_BY_GRIP = {Grip.PALM: "illustration_hump_mid", Grip.CLAW: "illustration_hump_rear"}
-BUTTON_IMAGE_BY_GRIP = {Grip.PALM: "illustration_buttons_high", Grip.CLAW: "illustration_buttons_low",
-                        Grip.FINGERTIP: "illustration_buttons_mid"}
+# Illustration d'un bloc de conseil : le dessin montre TOUJOURS une forme conseillée pour la prise, et
+# son libellé (« Bosse centrale », « Boutons bas »…) est un mot de la phrase placée au-dessus. Quand
+# deux formes sont conseillées (« centrale ou avant »), le dessin est celle que porte le match idéal ;
+# à défaut, la première de la liste. Les listes reprennent les règles du barème (``HUMP_IDEAL`` et
+# ``BUTTON_IDEAL`` dans utils/matcher.py) : tests/test_flow.py vérifie qu'elles ne s'en écartent pas.
+HUMP_IMAGES = {"Front": "illustration_hump_front", "Mid": "illustration_hump_mid",
+               "Rear": "illustration_hump_rear"}
+BUTTON_IMAGES = {"High": "illustration_buttons_high", "Mid": "illustration_buttons_mid",
+                 "Low": "illustration_buttons_low"}
+HUMP_ADVISED = {Grip.PALM: ("Mid", "Front"), Grip.CLAW: ("Rear", "Mid")}
+CLAW_HUMP_ADVISED = {ClawVariant.RELACHEE: ("Rear",), ClawVariant.AGGRESSIVE: ("Mid",),
+                     ClawVariant.PINCEE: ("Rear",)}
+BUTTONS_ADVISED = {Grip.PALM: ("High",), Grip.CLAW: ("Low",), Grip.FINGERTIP: ("Mid", "Low")}
 
+# Étape 1 : (prise, ce que fait la main — texte de l'étape, résumé du menu). L'ORDRE est celui de
+# l'illustration T09 (Paume, Griffe, Bout des doigts) : on lit de haut en bas ce qu'on voit de gauche
+# à droite. Le nom affiché vient de ``GRIP_NAMES``, le nom anglais d'usage de ``GRIP_LABELS``.
 GRIP_OPTIONS = (
-    (Grip.PALM, "Palm Grip", "Paume posée sur la coque"),
-    (Grip.CLAW, "Claw Grip", "Doigts arqués, pulpes en contact"),
-    (Grip.FINGERTIP, "Fingertip Grip", "Bout des doigts — parcours raccourci"),
+    (Grip.PALM, "toute la paume repose sur la souris, les doigts à plat.",
+     "Toute la paume repose sur la souris"),
+    (Grip.CLAW, "seul le bas de la paume touche la souris, les doigts sont arqués.",
+     "Bas de la paume posé, doigts arqués"),
+    (Grip.FINGERTIP, "la paume ne touche pas la souris : seuls les doigts la tiennent.",
+     "La paume ne touche pas la souris"),
 )
+# Étape de l'éminence thénar : l'ordre est celui de l'illustration T10 (Petite, Moyenne, Grande).
 THENAR_OPTIONS = (
-    (Thenar.PETITE, "Petite", "Thénar peu développé"),
-    (Thenar.MOYENNE, "Moyenne", "Thénar dans la moyenne"),
-    (Thenar.GRANDE, "Grande", "Thénar bien développé"),
+    (Thenar.PETITE, "Petite", "Coussinet peu développé"),
+    (Thenar.MOYENNE, "Moyenne", "Coussinet dans la moyenne"),
+    (Thenar.GRANDE, "Grande", "Coussinet bien développé"),
 )
-# Étape supplémentaire, posée UNIQUEMENT en Claw (méthode Oblivity : trois variantes de prise).
+# Étape « type de griffe », posée UNIQUEMENT en Griffe (méthode Oblivity : trois façons de tenir la
+# souris) : (type, ce que fait la main — texte de l'étape, résumé du menu). L'ordre est celui de
+# l'illustration T16 ; les noms viennent de ``CLAW_VARIANT_LABELS``, ceux des pastilles.
 CLAW_VARIANT_OPTIONS = (
-    (ClawVariant.RELACHEE, "Claw relâchée",
-     "Main posée, doigts légèrement arqués — l'arrière de la souris remplit la paume"),
-    (ClawVariant.AGGRESSIVE, "Claw agressive",
-     "Doigts très arqués, paume peu posée — appui au-dessus du milieu de la souris"),
-    (ClawVariant.PINCEE, "Claw pincée",
-     "Souris pincée, auriculaire posé plus loin sur le flanc"),
+    (ClawVariant.RELACHEE, "doigts légèrement arqués, la paume bien posée sur l'arrière de la souris.",
+     "Doigts légèrement arqués, paume posée à l'arrière"),
+    (ClawVariant.AGGRESSIVE, "doigts très arqués, la paume touche à peine la souris.",
+     "Doigts très arqués, la paume touche à peine"),
+    (ClawVariant.PINCEE, "souris pincée entre le pouce et l'auriculaire, posé plus en arrière sur le flanc.",
+     "Souris pincée entre le pouce et l'auriculaire"),
 )
+# Résultat, bloc du type de griffe déclaré : sa photo (T04–T06). Le texte du bloc reprend la phrase de
+# l'étape ; la bosse attendue, elle, est décrite une seule fois, dans CLAW_HUMP_GUIDE.
+CLAW_VARIANT_IMAGES = {
+    ClawVariant.RELACHEE: "illustration_grip_relaxed",
+    ClawVariant.AGGRESSIVE: "illustration_grip_aggressive",
+    ClawVariant.PINCEE: "illustration_grip_pincer",
+}
 BUDGET_OPTIONS = (
-    (BudgetMode.ECONOMIQUE, "Économique", "Le moins cher de la zone compatible"),
-    (BudgetMode.QUALITE_PRIX, "Rapport Qualité/Prix", "Meilleur points/€ (indicatif)"),
-    (BudgetMode.HAUT_DE_GAMME, "Haut de Gamme", "Performances documentées les plus élevées"),
+    (BudgetMode.ECONOMIQUE, "Économique", "La moins chère des souris adaptées à votre main"),
+    (BudgetMode.QUALITE_PRIX, "Rapport qualité/prix", "Le meilleur compromis entre la forme et le prix"),
+    (BudgetMode.HAUT_DE_GAMME, "Haut de gamme", "Les performances documentées les plus élevées"),
     (BudgetMode.PEU_IMPORTE_PRIX, "Peu importe le prix",
-     "La forme la plus adaptée, puis les composants les plus actuels"),
-    (BudgetMode.CUSTOM, "Budget personnalisé", "Saisir un prix maximum en €"),
+     "La forme la plus adaptée, puis les composants les plus récents"),
+    (BudgetMode.CUSTOM, "Budget personnalisé", "Vous fixez un prix maximum en euros"),
 )
 # Libellés courts utilisés dans le récapitulatif (le catalogue garde ses libellés complets).
 BUDGET_RECAP_LABELS = {mode: label for mode, label, _ in BUDGET_OPTIONS}
@@ -402,13 +424,13 @@ def _recap(session: FinderSession) -> str:
     """Récapitulatif d'une ligne (mobile) : prise, thénar, main, gamme — seules les données connues."""
     parts = []
     if session.grip:
-        grip = f"✋ **{GRIP_LABELS[session.grip]}**"
-        if session.claw_variant is not None:
-            # La variante ne s'affiche que pour la prise Claw, sous forme courte (« (relâchée) »).
-            grip += f" ({CLAW_VARIANT_LABELS[session.claw_variant].removeprefix('Claw ')})"
-        parts.append(grip)
+        if session.grip is Grip.CLAW and session.claw_variant is not None:
+            # Le type de griffe déclaré remplace le nom de la prise : « Griffe relâchée » le contient déjà.
+            parts.append(f"✋ **{CLAW_VARIANT_LABELS[session.claw_variant]}**")
+        else:
+            parts.append(f"✋ **{GRIP_NAMES[session.grip]}**")
     if session.thenar:
-        parts.append(f"🖐️ Thénar **{THENAR_LABELS[session.thenar]}**")
+        parts.append(f"🖐️ Éminence thénar **{THENAR_LABELS[session.thenar].lower()}**")
     if session.hand_length_mm and session.hand_width_mm:
         parts.append(f"📏 **{_num(session.hand_length_mm)} × {_num(session.hand_width_mm)} mm**")
     if session.budget_mode is not None:
@@ -460,7 +482,7 @@ def _match_summary(score: MouseScore) -> str:
         # dès qu'une grande main cherche une souris fine (mesuré au banc d'essai).
         weak.append("largeur de prise un peu hors de la cible")
     if score.breakdown.grip_pts > 0:
-        good.append(f"prise {score.grip.label} bien soutenue")
+        good.append(f"prise {GRIP_PHRASES[score.grip]} bien soutenue")
     if score.breakdown.thenar_pts > 0:
         good.append("arrière marqué qui soutient votre thénar")
     elif score.breakdown.thenar_pts < 0:
@@ -480,7 +502,7 @@ def _match_summary(score: MouseScore) -> str:
         # Critère non documenté (2026-10-12) : la souris est notée sans lui, et on le dit.
         weak.append("hauteur des boutons non documentée : ce critère n'est pas noté")
     sentence = ", ".join(good[:3]) if good else "géométrie proche de votre profil"
-    sentence = sentence[0].upper() + sentence[1:]       # première lettre — SANS écraser « Palm Grip »
+    sentence = sentence[0].upper() + sentence[1:]       # première lettre seule : le reste est intact
     sentence += f". À noter : {', '.join(weak[:1])}." if weak else "."
     return sentence[:1024]
 
@@ -555,10 +577,9 @@ def banner_embed() -> discord.Embed:
     embed = discord.Embed(
         title="🖱️ AzeMouse — Mouse Shape Finder",
         description=(
-            "Trouvez la souris dont la géométrie épouse **votre** main.\n\n"
-            "Quelques questions rapides : prise, mesures, budget — thénar et variante de Claw "
-            "selon la prise.\n\n"
-            "*Réponses privées : seul vous voyez la recommandation.*"
+            "Trouvez la souris dont la forme épouse **votre** main.\n\n"
+            "Quelques questions rapides : votre prise, les mesures de votre main, votre budget.\n\n"
+            "*Vos réponses restent privées : vous seul voyez la recommandation.*"
         ),
         color=COLOR,
     )
@@ -566,19 +587,18 @@ def banner_embed() -> discord.Embed:
 
 
 def grip_step_embed() -> discord.Embed:
-    description = "\n\n".join(f"**{label}** — {desc}" for _, label, desc in GRIP_OPTIONS)
+    lines = "\n\n".join(f"**{GRIP_NAMES[grip]}** ({GRIP_LABELS[grip]}) — {description}"
+                        for grip, description, _ in GRIP_OPTIONS)
     embed = discord.Embed(
         # Pas de dénominateur : le nombre d'étapes dépend de la prise choisie (3 en Fingertip,
         # 4 en Palm, 5 en Claw) et la prise n'est pas encore connue à cette étape. Le numéro, lui,
         # vient de la table (GRIP_STEP_NUMBER) : il n'est pas réécrit ici.
         title=f"Étape {GRIP_STEP_NUMBER} — Votre prise",
         description=(
-            f"Quelle prise utilisez-vous le plus souvent ?\n\n{description}\n\n"
-            # 2026-11-11 : beaucoup de membres ne connaissent pas le nom de leur prise. Un test en
-            # trois secondes, sur leur souris actuelle, évite un mauvais choix dès la première étape.
-            "**Pas sûr ?** Posez la main sur votre souris comme en jeu : la paume repose sur l'arrière "
-            "→ **Palm** ; seul le bas de la paume touche et les doigts sont arqués → **Claw** ; "
-            "la paume ne touche pas du tout → **Fingertip**."
+            # Le geste d'abord : beaucoup de membres ne connaissent pas le nom de leur prise, mais la
+            # reconnaissent sur le dessin. Les trois lignes suivent l'ordre des trois panneaux.
+            "Posez la main sur votre souris comme en jeu, puis choisissez le dessin qui lui ressemble.\n\n"
+            f"{lines}"
         ),
         color=COLOR,
     )
@@ -586,28 +606,32 @@ def grip_step_embed() -> discord.Embed:
 
 
 def claw_variant_step_embed() -> discord.Embed:
-    description = "\n\n".join(f"**{label}** — {desc}" for _, label, desc in CLAW_VARIANT_OPTIONS)
+    lines = "\n\n".join(f"**{CLAW_VARIANT_LABELS[variant]}** — {description}"
+                        for variant, description, _ in CLAW_VARIANT_OPTIONS)
     embed = discord.Embed(
-        title=_step_title(_step_number("claw_variant", Grip.CLAW), Grip.CLAW, "Votre variante de Claw"),
+        title=_step_title(_step_number("claw_variant", Grip.CLAW), Grip.CLAW, "Votre type de griffe"),
         description=(
-            "Les trois variantes de Claw ne placent pas la bosse au même endroit.\n\n"
-            f"{description}\n\n"
-            "Cette réponse **ne change pas le score** : elle précise le conseil de bosse."
+            "La prise en griffe se tient de trois façons. Choisissez la photo qui ressemble le plus à "
+            "votre main.\n\n"
+            f"{lines}\n\n"
+            "Cette réponse **ne change pas le score** : elle précise le conseil de bosse du résultat."
         ),
         color=COLOR,
     )
-    return _image(embed, "illustration_grip_relaxed")
+    # Les trois photos côte à côte, dans l'ordre des trois lignes : avant le 2026-11-11, l'étape
+    # décrivait trois façons de tenir la souris et n'en montrait qu'une.
+    return _image(embed, "step2_claw_variant")
 
 
 def thenar_step_embed(grip: Grip = Grip.PALM) -> discord.Embed:
     embed = discord.Embed(
         title=_step_title(_step_number("thenar", grip), grip, "Votre éminence thénar"),
         description=(
-            "Votre réponse indique l'arrière de souris qui vous convient : un petit ou un moyen thénar "
-            "préfère un arrière étroit, en « pilule » ; la référence ne donne aucune consigne d'arrière "
-            "pour un grand thénar.\n\n"
-            "**Information seule : le thénar ne modifie pas le score** (recommandation morphologique "
-            "indicative, non prise en compte dans le calcul)."
+            "L'éminence thénar est le coussinet charnu à la base du pouce. Ouvrez la main et comparez-la "
+            "aux trois dessins (zones jaunes) : la vôtre est-elle **petite**, **moyenne** ou **grande** ?\n\n"
+            "Cette réponse **ne modifie pas le score**. Elle sert à un seul conseil, sur l'arrière de la "
+            "souris : un arrière étroit est conseillé pour une éminence petite ou moyenne ; pour une "
+            "grande, il n'y a aucune consigne d'arrière."
         ),
         color=COLOR,
     )
@@ -619,9 +643,9 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
         title=_step_title(_step_number("measure", session), session, "Vos mesures"),
         description=(
             f"{_recap(session)}\n\n"
-            "Avec une règle :\n\n"
-            "• **Longueur** : pli du poignet → bout du majeur.\n"
-            "• **Largeur** : articulations, **sans le pouce**.\n\n"
+            "Avec une règle, main à plat :\n\n"
+            "**Longueur** — du pli du poignet au bout du majeur.\n"
+            "**Largeur** — d'un bord à l'autre de la paume, au niveau des articulations, **sans le pouce**.\n\n"
             "Millimètres ou centimètres : les deux sont acceptés."
         ),
         color=COLOR,
@@ -630,33 +654,17 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
 
 
 def budget_step_embed(session: FinderSession) -> discord.Embed:
+    lines = "\n".join(f"**{label}** — {summary[0].lower()}{summary[1:]}." for _, label, summary in BUDGET_OPTIONS)
     embed = discord.Embed(
         title=_step_title(_step_number("budget", session), session, "Budget et gamme"),
-        description=f"{_recap(session)}\n\nChoisissez votre gamme de prix.",
+        description=(
+            f"{_recap(session)}\n\n"
+            "Dernière question : comment départager les souris adaptées à votre main ?\n\n"
+            f"{lines}"
+        ),
         color=COLOR,
     )
     return _image(embed, "step3_budget")
-
-
-def _hump_family(mouse) -> str | None:
-    """Famille de bosse d'une souris : « Front », « Mid », « Rear » — None si inconnue."""
-    tokens = set((mouse.hump_position or "").split("-"))
-    for family in ("Rear", "Front", "Mid"):
-        if family in tokens:
-            return family
-    return None
-
-
-def result_image_key(winner: MouseScore | None, grip: Grip | None) -> str | None:
-    """Illustration la plus utile : la bosse d'abord (ressenti), les boutons ensuite. Une seule image."""
-    if winner is None:
-        return None
-    mouse = winner.mouse
-    if grip in (Grip.PALM, Grip.CLAW):
-        family = _hump_family(mouse)
-        if family:
-            return HUMP_IMAGE_BY_FAMILY[family]
-    return BUTTON_IMAGE_BY_HEIGHT.get(mouse.button_height)
 
 
 def _hand_of(session: FinderSession) -> HandMeasure | None:
@@ -666,29 +674,19 @@ def _hand_of(session: FinderSession) -> HandMeasure | None:
     return HandMeasure(float(session.hand_length_mm), float(session.hand_width_mm))
 
 
-def _dimensions_embed(session: FinderSession, ideal: MouseScore,
-                      explanation: str) -> discord.Embed | None:
-    """Bloc « repères de taille » : les plages cibles, la souris retenue en clair, le pourquoi du choix.
+def _why_embed(ideal: MouseScore | None, explanation: str) -> discord.Embed | None:
+    """Bloc « pourquoi ce choix » : le score du match idéal, la souris en clair, le rôle de la gamme.
 
-    ``None`` si le parcours est incomplet : aucun repère n'est alors inventé.
+    Aucune image : ce bloc ne parle que de la souris retenue, il n'a aucun dessin à commenter.
+    ``None`` s'il n'y a pas de match idéal : rien n'est alors expliqué, ni inventé.
     """
-    hand = _hand_of(session)
-    if session.grip is None or hand is None:
+    if ideal is None:
         return None
-    ranges = compute_target_ranges(hand, session.grip)
-    length = (
-        f"jusqu'à {_num(ranges.length_max, 1)} mm"
-        if session.grip is Grip.FINGERTIP
-        else f"{_num(ranges.length_min, 1)}–{_num(ranges.length_max, 1)} mm"
-    )
     embed = discord.Embed(
-        title="📐 Vos repères de taille",
+        title="🧭 Pourquoi ce choix ?",
         description=(
-            f"**Longueur cible : {length}**\n"
-            "du talon arrière de la souris à la pointe avant.\n\n"
-            f"**Largeur de prise : {_num(ranges.width_min, 1)}–{_num(ranges.width_max, 1)} mm**\n"
-            "souris retournée, à hauteur du capteur.\n\n"
-            f"Score : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %** du maximum théorique\n"
+            f"Score du match idéal : **{ideal.total}/{MAX_SCORE} — {compatibility_percent(ideal)} %** "
+            "du maximum théorique\n"
             "(longueur, largeur de prise, compatibilité de prise, bosse, boutons)."
             + (
                 "\n\n**Hauteur des boutons non documentée** pour cette souris : ce critère n'est pas "
@@ -703,7 +701,36 @@ def _dimensions_embed(session: FinderSession, ideal: MouseScore,
         value=f"{_size_text(ideal.mouse)} · {_price_text(ideal)}\n{_match_summary(ideal)}"[:1024],
         inline=False,
     )
-    embed.add_field(name="🧭 Pourquoi ce choix ?", value=explanation[:1024], inline=False)
+    embed.add_field(name="🎚️ Le rôle de votre gamme", value=explanation[:1024], inline=False)
+    return embed
+
+
+def _dimensions_embed(session: FinderSession) -> discord.Embed | None:
+    """Bloc « repères de taille » : les deux plages cibles, puis le dessin qui montre où elles se mesurent.
+
+    Le bloc ne porte que ces deux cotes : l'illustration (« Longueur », « Largeur ») arrive donc juste
+    sous les lignes qu'elle explique. ``None`` si le parcours est incomplet : aucun repère n'est inventé.
+    """
+    hand = _hand_of(session)
+    if session.grip is None or hand is None:
+        return None
+    ranges = compute_target_ranges(hand, session.grip)
+    length = (
+        f"jusqu'à {_num(ranges.length_max, 1)} mm"
+        if session.grip is Grip.FINGERTIP
+        else f"{_num(ranges.length_min, 1)}–{_num(ranges.length_max, 1)} mm"
+    )
+    embed = discord.Embed(
+        title="📐 Vos repères de taille",
+        description=(
+            "La taille de souris à viser pour votre main :\n\n"
+            f"**Longueur cible : {length}**\n"
+            "du talon arrière de la souris à la pointe avant.\n\n"
+            f"**Largeur de prise : {_num(ranges.width_min, 1)}–{_num(ranges.width_max, 1)} mm**\n"
+            "souris retournée, à hauteur du capteur."
+        ),
+        color=COLOR,
+    )
     return _image(embed, "illustration_mouse_dimensions")
 
 
@@ -715,92 +742,117 @@ def _narrow_rear_embed(thenar: Thenar = Thenar.PETITE) -> discord.Embed:
     et « are average sized » (moyenne) — et ne dit **rien** pour un grand thénar. Le bot, lui,
     réservait le bloc à « Petite » (écart assumé, écrit dans `docs/MASTER_PROMPT_AZEMOUSE.md` §7.6).
     Décision du propriétaire du 2026-10-14 : le bot suit la référence, et la phrase s'accorde au
-    thénar déclaré. Aucun effet sur le score : c'est un repère morphologique, comme le bloc le dit.
+    thénar déclaré. Aucun effet sur le score : c'est un repère morphologique, comme le bloc le dit,
+    avec les mots mêmes du propriétaire (`docs/MASTER_PROMPT_AZEMOUSE.md` §7.6 : « Recommandation
+    morphologique indicative, non prise en compte dans le score »).
     """
     precision = "petite" if thenar is Thenar.PETITE else "de taille moyenne"
     embed = discord.Embed(
         title="🖐️ Un arrière étroit pour votre thénar",
         description=(
-            f"Votre éminence thénar est **{precision}** : un arrière étroit, en « pilule », laisse la "
-            "main se poser sans forcer.\n\n"
-            "**Information seule** : le thénar ne modifie pas le score — c'est un repère "
-            "morphologique, pas un critère de calcul."
+            f"Votre éminence thénar est **{precision}** : préférez une souris à l'arrière étroit, en "
+            "« pilule ». La main s'y pose sans forcer.\n\n"
+            "Recommandation morphologique indicative, **non prise en compte dans le score**."
         ),
         color=COLOR,
     )
     return _image(embed, "illustration_rear_narrow")
 
 
+def _advised_image(advised: Sequence[str], offered: set[str], images: dict[str, str]) -> str:
+    """Illustration d'un conseil : la forme conseillée que porte le match idéal, sinon la première."""
+    return images[next((value for value in advised if value in offered), advised[0])]
+
+
 def _hump_guide_embed(session: FinderSession, ideal: MouseScore) -> discord.Embed | None:
     """Bloc « la bosse et la forme » : où placer la bosse et quelle coque choisir pour la prise choisie.
 
-    Rien en Fingertip : cette prise n'utilise ni l'arrière ni la bosse (barème et outil de référence
-    sont d'accord là-dessus).
+    Le dessin montre la bosse CONSEILLÉE (son libellé est un mot de la première phrase) ; la bosse et
+    la forme du match idéal sont dites dans la dernière phrase. Rien en Fingertip : cette prise
+    n'utilise ni l'arrière ni la bosse (barème et outil de référence sont d'accord là-dessus).
     """
     grip = session.grip
     if grip not in HUMP_GUIDE:
         return None
+    mouse = ideal.mouse
     if grip is Grip.CLAW and session.claw_variant is not None:
-        # La variante déclarée précise la bosse attendue (Claw relâchée ≠ agressive ≠ pincée).
+        # Le type de griffe déclaré précise la bosse attendue (relâchée ≠ agressive ≠ pince).
         position, why = CLAW_HUMP_GUIDE[session.claw_variant]
         entete = f"**{CLAW_VARIANT_LABELS[session.claw_variant]} → bosse {position}.**"
+        advised = CLAW_HUMP_ADVISED[session.claw_variant]
+        # Le type de griffe n'entre dans aucun calcul : le score juge la bosse sur la prise en griffe
+        # seule. Le bloc le dit, sinon « bosse arrière adaptée » (plus haut) et « bosse centrale »
+        # (ici, griffe agressive) se liraient comme une contradiction.
+        why = (f"{why} Ce conseil précise celui de la prise en griffe (bosse {HUMP_GUIDE[grip][0]}), "
+               "le seul qui compte dans le score.")
     else:
         position, why = HUMP_GUIDE[grip]
-        entete = f"**{grip.label} → bosse {position}.**"
-    shape = SHAPE_DISPLAY.get(ideal.mouse.shape, SHAPE_DISPLAY["Inconnu"])
+        entete = f"**{GRIP_NAMES[grip]} → bosse {position}.**"
+        advised = HUMP_ADVISED[grip]
+    shape = SHAPE_DISPLAY.get(mouse.shape, SHAPE_DISPLAY["Inconnu"])
+    hump = HUMP_DISPLAY.get(mouse.hump_position)
+    # Position de bosse non documentée : la phrase ne cite que la forme (rien n'est deviné).
+    fact = f"bosse **{hump}**, forme **{shape}**" if hump else f"forme **{shape}**"
     embed = discord.Embed(
         title="⛰️ La bosse et la forme",
         description=(
             f"{entete}\n\n{why[0].upper()}{why[1:]}\n\n"
             f"**Forme** — {SHAPE_GUIDE[grip]}\n\n"
-            f"La souris retenue est **{shape}**."
+            f"Votre match idéal, **{mouse.label}** : {fact}."
         ),
         color=COLOR,
     )
-    # L'image montre la bosse conseillée pour la prise (la souris retenue, elle, illustre le bloc du haut).
-    return _image(embed, HUMP_IMAGE_BY_GRIP[grip])
+    offered = set((mouse.hump_position or "").split("-"))
+    return _image(embed, _advised_image(advised, offered, HUMP_IMAGES))
 
 
 def _claw_variant_embeds(session: FinderSession) -> list[discord.Embed]:
-    """La variante de Claw déclarée, illustrée (T04–T06). Affichée pour cette prise seulement.
+    """Le type de griffe, illustré. Affiché pour cette prise seulement (liste vide sinon).
 
-    Repli : si la variante n'a pas été demandée (parcours ouvert avant l'ajout de l'étape), les trois
-    variantes sont présentées, faute de savoir laquelle s'applique.
+    Type déclaré : sa photo (T04–T06) et la phrase de l'étape qui le décrit ; la bosse qu'il appelle est
+    le bloc suivant. Repli, si le type n'a pas été demandé (parcours ouvert avant l'ajout de l'étape) :
+    les trois types sur UNE image (T16), dans l'ordre des trois lignes, avec la bosse attendue pour chacun.
     """
     if session.grip is not Grip.CLAW:
         return []
     if session.claw_variant is None:
-        # Repli : les trois variantes, avec la bosse attendue pour chacune.
-        embeds = []
-        for variant, (image_key, title, _) in CLAW_VARIANTS.items():
-            position, why = CLAW_HUMP_GUIDE[variant]
-            embeds.append(_image(
-                discord.Embed(title=f"🦾 {title}", description=f"Bosse **{position}** : {why}", color=COLOR),
-                image_key,
-            ))
-        return embeds
-    image_key, title, tip = CLAW_VARIANTS[session.claw_variant]
-    embed = discord.Embed(title=f"🦾 {title}",
-                          description=f"**Votre variante.** {tip}",
-                          color=COLOR)
-    return [_image(embed, image_key)]
+        lines = "\n".join(f"**{CLAW_VARIANT_LABELS[variant]}** → bosse {CLAW_HUMP_GUIDE[variant][0]}."
+                          for variant, _, _ in CLAW_VARIANT_OPTIONS)
+        embed = discord.Embed(
+            title="🦾 Les trois types de griffe",
+            description=f"La bosse conseillée dépend de la façon de tenir la souris :\n\n{lines}",
+            color=COLOR,
+        )
+        return [_image(embed, "step2_claw_variant")]
+    hold = next(description for variant, description, _ in CLAW_VARIANT_OPTIONS
+                if variant is session.claw_variant)
+    embed = discord.Embed(
+        title=f"🦾 {CLAW_VARIANT_LABELS[session.claw_variant]}",
+        description=(f"**Votre type de griffe.** {hold[0].upper()}{hold[1:]} "
+                     "La bosse qui lui convient est décrite juste en dessous."),
+        color=COLOR,
+    )
+    return [_image(embed, CLAW_VARIANT_IMAGES[session.claw_variant])]
 
 
-def _buttons_guide_embed(session: FinderSession) -> discord.Embed | None:
-    """Bloc « la hauteur des boutons » : le niveau conseillé pour la prise choisie.
+def _buttons_guide_embed(session: FinderSession, ideal: MouseScore | None = None) -> discord.Embed | None:
+    """Bloc « la hauteur des boutons » : le niveau conseillé pour la prise, puis celui du match idéal.
 
+    Le dessin montre un niveau CONSEILLÉ (son libellé est un mot de la première phrase).
     ``None`` si la prise n'est pas encore connue (aucun conseil inventé).
     """
     grip = session.grip
     if grip not in BUTTON_GUIDE:
         return None
     level, why = BUTTON_GUIDE[grip]
-    embed = discord.Embed(
-        title="🖱️ La hauteur des boutons",
-        description=f"**{grip.label} → boutons {level}.**\n\n{why[0].upper()}{why[1:]}",
-        color=COLOR,
-    )
-    return _image(embed, BUTTON_IMAGE_BY_GRIP[grip])
+    description = f"**{GRIP_NAMES[grip]} → boutons {level}.**\n\n{why[0].upper()}{why[1:]}"
+    height = ideal.mouse.button_height if ideal is not None else None
+    if ideal is not None:
+        known = BUTTON_DISPLAY.get(height)
+        description += (f"\n\nVotre match idéal, **{ideal.mouse.label}** : "
+                        + (f"boutons **{known}**." if known else "hauteur des boutons non documentée."))
+    embed = discord.Embed(title="🖱️ La hauteur des boutons", description=description, color=COLOR)
+    return _image(embed, _advised_image(BUTTONS_ADVISED[grip], {height}, BUTTON_IMAGES))
 
 
 def results_embeds(session: FinderSession, selection: Selection) -> list[discord.Embed]:
@@ -808,12 +860,13 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
 
     Bloc 1 — **la recommandation** : la ligne du parcours, puis le match idéal, l'alternative et, si
     elle existe, l'économie (nom · prix · pourcentage du maximum théorique). Rien d'autre à l'écran :
-    ni score, ni badge, ni terme technique.
+    ni score, ni badge, ni terme technique, ni image.
 
-    Puis les blocs de compréhension, dans l'ordre de l'outil de référence : repères de taille,
-    arrière (thénar « Petite » ou « Moyenne »), bosse — et ses trois variantes en Claw —, hauteur
-    des boutons.
-    Chaque bloc porte son illustration (assets/images.json) ; aucun n'est affiché « pour rien ».
+    Puis les blocs de compréhension, du plus particulier au plus général : pourquoi ce choix (le score,
+    la souris en clair, le rôle de la gamme), puis, dans l'ordre de l'outil de référence, les repères
+    de taille, l'arrière (thénar « Petite » ou « Moyenne »), la bosse — précédée du type de griffe
+    déclaré en Claw —, la hauteur des boutons. Un bloc ne porte qu'un sujet : son illustration
+    (assets/images.json) suit donc directement le texte qu'elle explique, et n'apparaît qu'une fois.
     """
     main = discord.Embed(title="🎯 Votre recommandation", color=COLOR)
     header = _recap(session)
@@ -849,9 +902,6 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
     if economy is not None:
         main.add_field(name=third_slot_title(economy, ideal, alternative, selection.reference_score),
                        value=_slot_text(economy, session.budget_mode, partial_hint=True), inline=False)
-    image_key = result_image_key(ideal, session.grip)
-    if image_key:
-        main = _image(main, image_key)
 
     if session.grip is None or not session.has_measures:
         # Parcours incomplet : rien à expliquer, et surtout aucune valeur inventée — et donc aucun
@@ -860,22 +910,24 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         return [main]
 
     embeds = [main]
-    dimensions = _dimensions_embed(session, ideal, selection.explanation)
+    why = _why_embed(ideal, selection.explanation)
+    if why is not None:
+        embeds.append(why)
+    dimensions = _dimensions_embed(session)
     if dimensions is not None:
         embeds.append(dimensions)
     if session.thenar in (Thenar.PETITE, Thenar.MOYENNE) and session.grip is not Grip.FINGERTIP:
         embeds.append(_narrow_rear_embed(session.thenar))
-    hump = _hump_guide_embed(session, ideal)
-    if hump is not None:
-        embeds.append(hump)
-    embeds.extend(_claw_variant_embeds(session))
-    buttons = _buttons_guide_embed(session)
+    hump = [block for block in (_hump_guide_embed(session, ideal),) if block is not None]
+    claw = _claw_variant_embeds(session)
+    # Type de griffe déclaré : sa photo d'abord, puis la bosse qu'il appelle. Type inconnu (repli) :
+    # le conseil général d'abord, puis les trois types.
+    embeds.extend(claw + hump if session.claw_variant is not None else hump + claw)
+    buttons = _buttons_guide_embed(session, ideal)
     if buttons is not None:
         embeds.append(buttons)
-    _une_illustration_par_message(embeds)
     # Le renvoi n'est ajouté que si le bloc « Pourquoi ce choix ? » est bien dans le message.
-    embeds[-1].set_footer(
-        text=SCORE_DISCLAIMER + (EXPLANATION_REFERENCE if dimensions is not None else ""))
+    embeds[-1].set_footer(text=SCORE_DISCLAIMER + (EXPLANATION_REFERENCE if why is not None else ""))
     return embeds
 
 
@@ -898,24 +950,6 @@ def _piste_hors_budget(session: FinderSession) -> str:
     moins_chere = min(notees, key=lambda score: (score.mouse.price_eur, -score.total))
     return (f"\n\nLa moins chère des souris notées pour votre main : **{moins_chere.mouse.label}** "
             f"à **{_price_text(moins_chere)}** ({compatibility_percent(moins_chere)} %).")
-
-
-def _une_illustration_par_message(embeds: list[discord.Embed]) -> None:
-    """Une même illustration n'apparaît qu'UNE fois dans le message : dans le dernier bloc qui la porte.
-
-    Mesuré le 2026-10-15 (80e passe) : 10 448 profils sur les 21 736 du banc (48 %, 74 % en Fingertip —
-    rejouable : le banc actuel lancé sur le ``cogs/finder_flow.py`` du commit a447cce) montraient deux fois la même image — la bosse ou les boutons de la souris retenue en
-    haut, puis la même image dans le bloc de conseil qui l'explique. On la garde dans ce bloc-là (le
-    texte qui l'explique est à côté) et la recommandation, en tête, devient plus courte sur mobile.
-    """
-    vues: set[str] = set()
-    for embed in reversed(embeds):
-        url = embed.image.url if embed.image else None
-        if not url:
-            continue
-        if url in vues:
-            embed.set_image(url=None)
-        vues.add(url)
 
 
 def expired_embed() -> discord.Embed:
@@ -1047,8 +1081,9 @@ class GripSelect(discord.ui.Select):
             min_values=1,
             max_values=1,
             options=[
-                discord.SelectOption(label=label, value=grip.value, description=desc)
-                for grip, label, desc in GRIP_OPTIONS
+                discord.SelectOption(label=f"{GRIP_NAMES[grip]} ({GRIP_LABELS[grip]})", value=grip.value,
+                                     description=summary)
+                for grip, _, summary in GRIP_OPTIONS
             ],
         )
 
@@ -1078,18 +1113,19 @@ class GripView(FinderView):
 
 
 # ---------------------------------------------------------------------------
-# Étape 2 (Claw uniquement) : variante de la prise — n'entre dans aucun calcul, précise le conseil
+# Étape 2 (Claw uniquement) : type de griffe — n'entre dans aucun calcul, précise le conseil
 # ---------------------------------------------------------------------------
 class ClawVariantSelect(discord.ui.Select):
     def __init__(self) -> None:
         super().__init__(
             custom_id=CLAW_VARIANT_CUSTOM_ID,
-            placeholder="Choisissez votre variante de Claw…",
+            placeholder="Choisissez votre type de griffe…",
             min_values=1,
             max_values=1,
             options=[
-                discord.SelectOption(label=label, value=variant.value, description=desc)
-                for variant, label, desc in CLAW_VARIANT_OPTIONS
+                discord.SelectOption(label=CLAW_VARIANT_LABELS[variant], value=variant.value,
+                                     description=summary)
+                for variant, _, summary in CLAW_VARIANT_OPTIONS
             ],
         )
 
@@ -1115,7 +1151,7 @@ class ThenarSelect(discord.ui.Select):
     def __init__(self) -> None:
         super().__init__(
             custom_id=THENAR_CUSTOM_ID,
-            placeholder="Choisissez la taille de votre thénar…",
+            placeholder="Choisissez la taille de votre éminence thénar…",
             min_values=1,
             max_values=1,
             options=[

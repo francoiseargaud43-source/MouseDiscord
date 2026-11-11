@@ -34,12 +34,12 @@ puis un flux de messages éphémères (une seule fenêtre qui se met à jour) av
 | Étape | Ce que voit l'utilisateur | Action |
 |---|---|---|
 | Accueil | Message persistant : bannière AzeMouse (`T08`) | Bouton **Start Mouse Shape Finder** |
-| 1/… Prise | Message éphémère + illustration des 3 prises (`T09`) | Menu : Palm / Claw / Fingertip Grip |
-| 2/5. Variante de Claw | Le même message + les trois variantes (`T04`) | Menu : Claw relâchée / agressive / pincée — **prise Claw uniquement**, aucun effet sur le score (précise le conseil de bosse) |
-| 2/4 – 3/5. Thénar | Le même message est mis à jour + tailles de thénar (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise Fingertip** (parcours en 3 étapes : 1 → 2/3 → 3/3) |
+| 1/… Prise | Message éphémère + les 3 prises dessinées **dans l'ordre du texte** : Paume, Griffe, Bout des doigts (`T09`) | Menu : Paume (Palm Grip) / Griffe (Claw Grip) / Bout des doigts (Fingertip Grip) |
+| 2/5. Type de griffe | Le même message + les trois types côte à côte, dans l'ordre du texte (`T16`) | Menu : Griffe relâchée / Griffe agressive / Griffe pince — **prise en griffe uniquement**, aucun effet sur le score (précise le conseil de bosse) |
+| 2/4 – 3/5. Éminence thénar | Le même message est mis à jour + les trois tailles (`T10`) | Menu : Petite / Moyenne / Grande — **informatif** (aucun effet sur le score). **Étape sautée avec la prise du bout des doigts** (Fingertip ; parcours en 3 étapes : 1 → 2/3 → 3/3) |
 | 3/4 – 4/5. Mesures | Le même message + main mesurée à la règle (`T11`) | Bouton **Saisir mes mesures** → modal (longueur, largeur sans pouce) |
-| 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport Qualité/Prix, Haut de Gamme, **Peu importe le prix**, Budget personnalisé (→ modal prix max) |
-| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, troisième place — « 💸 L'économie », « ➕ L'autre option » ou « 🔎 Autre piste » — pourcentages **ordonnés du haut vers le bas** et prix non attestés **signalés** depuis le 2026-10-13), les deux dernières lignes étant remplies **dès que le budget le permet** depuis le 2026-10-12 — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), puis 📐 vos repères de taille, 🖐️ l'arrière étroit (thénar « Petite » ou « Moyenne »), ⛰️ la bosse, 🦾 les variantes de Claw et 🖱️ la hauteur des boutons conseillée | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
+| 4/4 – 5/5. Budget | Le même message est mis à jour + récapitulatif | Menu : Économique, Rapport qualité/prix, Haut de gamme, **Peu importe le prix**, Budget personnalisé (→ modal prix max) |
+| Résultat | **Un message privé, plusieurs blocs illustrés** : la recommandation (match idéal, alternative, troisième place — « 💸 L'économie », « ➕ L'autre option » ou « 🔎 Autre piste » — pourcentages **ordonnés du haut vers le bas** et prix non attestés **signalés** depuis le 2026-10-13), les deux dernières lignes étant remplies **dès que le budget le permet** depuis le 2026-10-12 — nom, **poids**, prix, pourcentage, puis **symétrique / ergonomique** tout à droite), sans image ; puis 🧭 pourquoi ce choix, 📐 vos repères de taille, 🖐️ l'arrière étroit (éminence thénar petite ou moyenne), 🦾 votre type de griffe, ⛰️ la bosse et la forme, 🖱️ la hauteur des boutons — **chaque dessin est placé sous le texte qu'il illustre et montre la forme conseillée** | Boutons 🛒 d'achat (liens réels), ou « 🔗 Liens à venir » |
 
 **Thénar (étape 2/4)** : collecté et affiché à titre **informatif** — aucune source ne définit de règle thénar → dimensions,
 il n'entre donc dans **aucun** calcul (ni points, ni classement, ni exclusion) : voir `docs/audit/AUDIT.md`.
@@ -68,16 +68,25 @@ et ne font pas avancer le flux. Les réponses sont visibles uniquement par l'uti
 
 **Premier écran** : la ligne du parcours, puis les souris utiles — nom, prix et **pourcentage du maximum
 théorique** pour le match idéal, l'alternative et la troisième place (remplies dès que le budget le permet : « 💸 économie » si elle en est une, « ➕ autre option » sinon, « 🔎 autre piste » quand la souris vient du dernier palier ; les pourcentages **ne remontent jamais** d'une ligne à l'autre, une souris dont le prix n'est pas attesté l'annonce : « 74,90 € (prix non vérifié) », et une souris dont la hauteur des boutons n'est pas documentée — donc notée sans ce critère — porte « · boutons non documentés » quand elle occupe une 2e ou 3e place). Ni score /40, ni souris
-écartées à ce niveau : le détail vient **plus bas dans le même message privé**, en petits blocs illustrés,
-dans l'ordre de l'outil de référence (Oblivity) :
+écartées à ce niveau : le détail vient **plus bas dans le même message privé**, en petits blocs,
+dans l'ordre de l'outil de référence (Oblivity) — à une exception près : le type de griffe déclaré passe
+**avant** la bosse qu'il appelle.
 
 | Bloc | Contenu | Image |
 |---|---|---|
-| 📐 Vos repères de taille | longueur cible, largeur de prise, score `/40 — %`, la souris retenue « en clair », le pourquoi du choix | T12 |
-| 🖐️ Un arrière étroit pour votre thénar | si le thénar est « Petite » ou « Moyenne » (jamais en Fingertip) | T13 |
-| ⛰️ La bosse et la forme | où placer la bosse (**selon la variante de Claw déclarée**), quelle forme de coque convient (symétrique / ergonomique) et la forme de la souris retenue ; absent en Fingertip | T14 ou T07 |
-| 🦾 Votre variante de Claw | la variante déclarée (ou les trois à titre indicatif si le parcours a été ouvert sans cette étape) | T04, T05 ou T06 |
-| 🖱️ La hauteur des boutons | niveau conseillé (Palm : hauts ; Claw : bas ; Fingertip : médians à bas) | T01, T02 ou T03 |
+| 🎯 Votre recommandation | le récapitulatif du parcours et les trois places | aucune |
+| 🧭 Pourquoi ce choix ? | le score `/40 — %` du match idéal, la souris retenue « en clair », le rôle de la gamme choisie | aucune |
+| 📐 Vos repères de taille | longueur cible puis largeur de prise, dans l'ordre du dessin | T12 |
+| 🖐️ Un arrière étroit pour votre thénar | si l'éminence thénar est petite ou moyenne (jamais pour la prise du bout des doigts) | T13 |
+| 🦾 Griffe relâchée, agressive ou pince | prise en griffe : le type déclaré et sa photo. Sans type déclaré (parcours ouvert avant l'ajout de l'étape), un seul bloc « 🦾 Les trois types de griffe », placé **après** la bosse | T04, T05 ou T06 (T16 pour les trois) |
+| ⛰️ La bosse et la forme | la bosse conseillée (**selon le type de griffe déclaré**), la forme de coque qui convient, puis la bosse et la forme du match idéal ; absent pour la prise du bout des doigts | la bosse **conseillée** : T14, T15 ou T07 |
+| 🖱️ La hauteur des boutons | le niveau conseillé (paume : hauts ; griffe : bas ; bout des doigts : moyens à bas), puis celui du match idéal | le niveau **conseillé** : T01, T02 ou T03 |
+
+**Les mots et les images** (demande du propriétaire, 2026-11-11 : « l'ordre des images n'est pas logique suivant
+l'écriture ») : un texte emploie **les mots imprimés sur l'image placée dessous, dans le même ordre** — Paume / Griffe /
+Bout des doigts, Griffe relâchée / agressive / pince, bosse centrale / avant / arrière, boutons hauts / moyens / bas. Les
+noms anglais (Palm, Claw, Fingertip Grip) ne sont cités qu'entre parenthèses, à l'étape 1 et dans son menu. Le dessin d'un
+conseil montre toujours une forme **conseillée** ; ce que porte la souris retenue est dit dans la dernière phrase du bloc.
 
 Les détails du barème (`Longueur … : 10 pts`) ne sont jamais affichés : ils restent dans `MouseScore.details` et
 dans `docs/audit/matrice_profils.md`. Ce n'est **ni une probabilité d'achat, ni une validation biomécanique** :
@@ -201,7 +210,8 @@ Deux façons de renseigner une image (elles peuvent cohabiter) :
 ```json
 {
   "banner": "T08_azemouse_banniere.png",
-  "step1_grip": "T09_griffe_paume_doigts.png",
+  "step1_grip": "T09_paume_griffe_doigts.png",
+  "step2_claw_variant": "T16_griffe_relachee_agressive_pince.png",
   "step2_thenar": "T10_tailles_de_main.png",
   "step2_measure": "T11_mesurer_la_main.png",
   "step3_budget": "",
@@ -212,25 +222,33 @@ Deux façons de renseigner une image (elles peuvent cohabiter) :
 | Clé | Affichée à | Illustration livrée |
 |---|---|---|
 | `banner` | Message persistant d'accueil | `T08_azemouse_banniere.png` |
-| `step1_grip` | Étape 1/4 — les 3 prises | `T09_griffe_paume_doigts.png` |
-| `step2_thenar` | Étape 2/4 — thénar (informatif) | `T10_tailles_de_main.png` |
-| `step2_measure` | Étape 3/4 — main mesurée à la règle | `T11_mesurer_la_main.png` |
-| `step3_budget` | Étape 4/4 — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
-| `illustration_mouse_dimensions` | Repères de taille du résultat | `T12_souris_longueur_largeur.png` |
-| `illustration_rear_narrow` | Résultat, si thénar « Petite » ou « Moyenne » (indicatif) | `T13_arriere_etroit.png` |
-| `illustration_grip_relaxed` | Étape « variante de Claw » (illustration générique de l'étape) et résultat quand la variante choisie est « Claw relâchée » | `T04_griffe_relachee.png` |
-| `illustration_hump_mid` | Résultat — bosse centrale de la souris retenue, et conseil « bosse au milieu ou à l'avant » (Palm) | `T14_bosse_centrale.png` |
-| `illustration_hump_front` | Résultat — bosse avant / Mid-Front de la souris retenue | `T15_bosse_avant.png` |
-| `illustration_hump_rear` | Résultat — bosse arrière de la souris retenue, et conseil « bosse au milieu ou à l'arrière » (Claw) | `T07_bosse_arriere.png` |
-| `illustration_buttons_high` | Résultat — boutons hauts (souris retenue ou conseil Palm) | `T01_boutons_hauts.png` |
-| `illustration_buttons_low` | Résultat — boutons bas (souris retenue ou conseil Claw) | `T02_boutons_bas.png` |
-| `illustration_buttons_mid` | Résultat — boutons moyens (souris retenue ou conseil Fingertip) | `T03_boutons_moyens.png` |
-| `illustration_grip_aggressive` | Résultat, prise Claw — variante « Claw agressive » | `T05_griffe_agressive.png` |
-| `illustration_grip_pincer` | Résultat, prise Claw — variante « Claw pincée » | `T06_griffe_pince.png` |
+| `step1_grip` | Étape 1 — les 3 prises, dans l'ordre du texte : Paume, Griffe, Bout des doigts | `T09_paume_griffe_doigts.png` |
+| `step2_claw_variant` | Étape « type de griffe » — les trois types côte à côte, dans l'ordre du texte ; et bloc « 🦾 Les trois types de griffe » du résultat quand le type n'a pas été déclaré | `T16_griffe_relachee_agressive_pince.png` |
+| `step2_thenar` | Étape « éminence thénar » (informatif) | `T10_tailles_de_main.png` |
+| `step2_measure` | Étape « mesures » — main mesurée à la règle | `T11_mesurer_la_main.png` |
+| `step3_budget` | Étape « budget » — facultatif (vide = aucune image). Ancien nom `step4_budget`, encore lu en repli. | *(vide)* |
+| `illustration_mouse_dimensions` | Résultat — repères de taille | `T12_souris_longueur_largeur.png` |
+| `illustration_rear_narrow` | Résultat, si l'éminence thénar est petite ou moyenne (indicatif) | `T13_arriere_etroit.png` |
+| `illustration_grip_relaxed` | Résultat, prise en griffe — type déclaré « Griffe relâchée » | `T04_griffe_relachee.png` |
+| `illustration_grip_aggressive` | Résultat, prise en griffe — type déclaré « Griffe agressive » | `T05_griffe_agressive.png` |
+| `illustration_grip_pincer` | Résultat, prise en griffe — type déclaré « Griffe pince » | `T06_griffe_pince.png` |
+| `illustration_hump_mid` | Résultat — bosse **conseillée** « centrale » : paume, griffe agressive, griffe sans type quand le match idéal a une bosse centrale | `T14_bosse_centrale.png` |
+| `illustration_hump_front` | Résultat — bosse **conseillée** « avant » : paume, quand le match idéal a une bosse avant | `T15_bosse_avant.png` |
+| `illustration_hump_rear` | Résultat — bosse **conseillée** « arrière » : griffe relâchée, griffe pince, griffe sans type | `T07_bosse_arriere.png` |
+| `illustration_buttons_high` | Résultat — boutons **conseillés** « hauts » : paume | `T01_boutons_hauts.png` |
+| `illustration_buttons_low` | Résultat — boutons **conseillés** « bas » : griffe, et bout des doigts quand le match idéal a des boutons bas | `T02_boutons_bas.png` |
+| `illustration_buttons_mid` | Résultat — boutons **conseillés** « moyens » : bout des doigts | `T03_boutons_moyens.png` |
 
 Les URL doivent être publiques et commencer par `https://`. Une valeur vide ou invalide n'affiche simplement pas d'image.
-Les 15 fichiers sont livrés dans `assets/illustrations/` (copie de `ImageUse/`) : il suffit de les publier et de
-renseigner `IMAGES_BASE_URL`. Les fichiers Discord (pièces jointes) ne sont pas utilisés : hébergez les images ailleurs.
+Les 16 fichiers sont livrés dans `assets/illustrations/` : il suffit de les publier et de renseigner
+`IMAGES_BASE_URL`. Quatorze sont la copie des originaux de `ImageUse/` ; deux en sont **dérivés** par
+`tools/compose_illustrations.py`, pour suivre le texte : `T09_paume_griffe_doigts.png` (l'original T09, ses deux premiers
+panneaux échangés, aucun dessin retouché) et `T16_griffe_relachee_agressive_pince.png` (les photos T04, T05 et T06 côte à
+côte, pastilles au format de T09). Les fichiers Discord (pièces jointes) ne sont pas utilisés : hébergez les images ailleurs.
+
+**Une image modifiée prend un nouveau nom de fichier.** Discord garde en mémoire l'image d'une adresse déjà affichée, et la
+mise en ligne automatique (`deploiement/`) ne remplace jamais un fichier déjà publié : sous l'ancien nom, les membres
+continueraient de voir l'ancienne image.
 
 ---
 
@@ -377,8 +395,9 @@ Le pourcentage n'est jamais présenté comme une probabilité.
 **Forme de coque** : `shape` (`Symmetrical` / `Ergonomic`) est renseignée pour les **36 souris** (26 le 2026-10-11,
 plus 10 Pulsar le 2026-10-12), chacune sourcée (fiche ATK/VXE/Pulsar, EloShapes, test indépendant) — jamais devinée. Elle sert au bloc « ⛰️ La bosse et la forme » :
 une forme symétrique convient aux trois prises, une ergonomique épouse un peu mieux l'arche de la main en Palm.
-En Claw, la **variante déclarée** précise la bosse attendue (relâchée → arrière marquée, agressive → médiane,
-pincée → arrière à flancs plats) : conseil d'affichage uniquement, aucun point ni classement ne change.
+En Claw, le **type de griffe déclaré** précise la bosse attendue (griffe relâchée → arrière marquée, agressive →
+centrale marquée, pince → arrière à flancs peu bombés) : conseil d'affichage uniquement, aucun point ni classement ne
+change, et le bloc le dit (« le seul qui compte dans le score » est le conseil de la prise en griffe).
 
 **Niveau de confiance** (calculé, **non affiché**) : `élevée` si dimensions vérifiées et largeur de prise mesurée ;
 `moyenne` si dimensions vérifiées mais largeur estimée ; `faible` sinon (dimensions d'une seule source, non
@@ -447,7 +466,7 @@ MouseDiscord/
 │   └── commercial_links.json # Liens d'achat (36/36 fournis et vérifiés ; les clés _ sont de la documentation)
 ├── assets/
 │   ├── images.json           # Clé -> nom de fichier (résolu par IMAGES_BASE_URL) ou URL https complète
-│   └── illustrations/        # Les 15 assets ImageUse (T01–T15), à publier en https (voir REPORTE_DESIGN.md)
+│   └── illustrations/        # Les 16 illustrations (T01–T16 : 14 originaux ImageUse, 2 dérivées), à publier en https
 ├── tools/
 │   ├── check_deployment.py   # Contrôle de déploiement (fichiers, token, JSON, state/) — sans afficher le token
 │   ├── check_bytecode.py     # Python charge-t-il bien le CODE LIVRÉ ? (bytecode périmé utilisé, résidus,
@@ -469,6 +488,9 @@ MouseDiscord/
 │   │                         #   (--retrait : mesure aussi le retrait de souris, catalogue réduit)
 │   ├── recommendation_stats.py # Combien de fois chaque souris est recommandée (rapport dans docs/audit/)
 │   ├── render_preview.py     # Aperçu PNG du parcours, du résultat et du prix libre (+ empreinte des sources)
+│   ├── compose_illustrations.py # Les 2 illustrations dérivées des originaux (T09 dans l'ordre du texte, T16) ;
+│   │                         #   --verifier : celles du dépôt sont-elles bien celles que l'outil compose ?
+│   ├── polices/              # Syne ExtraBold (pastilles des illustrations) et sa licence SIL OFL
 │   ├── privacy_scan.py       # Contrôle statique de confidentialité (0 violation attendue)
 │   └── compare_profiles.py   # Génère docs/audit/matrice_profils.md
 ├── docs/
@@ -510,6 +532,7 @@ python tools/image_identity_check.py --reference IMG --candidate IMG  # même co
 python tools/recommendation_stats.py # régénère docs/audit/STATISTIQUES_RECOMMANDATIONS_2026-10-12.md
 python tools/render_preview.py       # régénère les trois aperçus livrés (docs/apercu_*.png)
 python tools/render_preview.py --sortie-dossier /tmp/apercus   # les rend sans toucher aux fichiers livrés
+python tools/compose_illustrations.py --verifier   # T09 et T16 du dépôt = ce que l'outil compose (n'écrit rien)
 python tools/measure_button_height.py IMG --length-mm 122.5 --height-mm 42.4   # classe de hauteur des boutons
 python tools/campagne_boutons.py campagne manifeste.csv --rapport rapport.md --json releve.json   # campagne EloShapes
 python tools/campagne_boutons.py analyser docs/campagne_boutons/releve_2026-10-15.json --essai essai.json   # rejoue la campagne du 15/10
@@ -527,6 +550,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_bot_runtime.py` : comportements de `bot.py` mesurés le 2026-10-13 (couverture de `bot.py` : 67 % → **100 %**, lignes de script comprises, démarrage rejoué deux fois) — purge périodique des parcours expirés (et son silence quand rien n'a expiré), erreur d'événement journalisée sans arrêter le bot, commande inconnue totalement muette, erreur de commande tracée sans rien publier, message de connexion, démarrage refusé sans jeton.
 - `tests/test_privacy_scan.py` : contrôle statique `tools/privacy_scan.py` (envois non éphémères, éditions hors fonctions autorisées, alias, appels dynamiques) : cas valides, violations injectées, dépôt réel.
 - `tests/test_apercus.py` : **les trois aperçus PNG doivent être de la même date que les données qu'ils montrent** — chaque image porte dans ses métadonnées une empreinte du catalogue, des liens, des images et des modules qui composent le message ; un aperçu périmé (celui du mode « Peu importe le prix » montrait encore un ancien nom de modèle) est refusé avec la commande à relancer.
+- `tests/test_compose_illustrations.py` : **les deux illustrations dérivées suivent le texte, sans qu'un dessin soit retouché** (demande du propriétaire du 2026-11-11) — l'ordre des panneaux est celui des lignes du texte et des options du menu (lu dans `GRIP_OPTIONS` et `CLAW_VARIANT_OPTIONS`) ; chaque panneau de `T09_paume_griffe_doigts.png` est comparé **au pixel près** à celui de l'original de `ImageUse/` ; le triptyque T16 reprend les cotes de T09 (filets, pastilles, fond) ; les images du dépôt sont celles que `tools/compose_illustrations.py` compose, et la comparaison **carré par carré** refuse un accent oublié sur une pastille, que l'écart moyen de l'image entière laissait passer (0,01 pour une tolérance de 2). Sans la mise en forme « Raqm » de Pillow, l'outil refuse de composer T16 (libellés sans crénage) et les tests concernés sont sautés avec la raison.
 - `tests/test_doc_references.py` : chemins cités dans la documentation existants, titres de section exacts, et **renvois « fichier + §numéro » valides** (aucune citation ne doit pointer vers une section qui n'existe pas) — y compris dans les **données** (`data/*.json`), où une note de prix renvoyait à une section qui n'a jamais existé. Depuis le 2026-10-14, les numéros cités **sans nom de fichier** sont vérifiés eux aussi, sur les trois plages sans ambiguïté du dépôt : `§19.x` à `§26.x` → ROBUSTESSE, `§12.x` → guide de déploiement, `C##` → AUDIT — quatre renvois vers la section « 21.6 », qui n'existe pas depuis la renumérotation de la 33e passe, dormaient dans le document de robustesse. — et, depuis le 2026-10-14 (66e passe), les **noms de tests cités** : chacun doit exister dans la suite, sinon c'est un renvoi mort (dix-sept citations désignaient des tests renommés ou disparus ; les noms retirés sont consignés dans `docs/audit/NOMS_DE_TESTS_RETIRES.md`, ancien nom → test du jour, et les deux rapports datés du 10 et du 11 octobre gardent les noms de leur jour, c'est leur sujet).
 - `tests/test_config.py` : chemins indépendants du répertoire courant, entiers invalides signalés clairement, et **`.env.example`** qui doit documenter toutes les variables lues par `config.py` (chacune expliquée sur la ligne juste au-dessus, dont le `FINDER_CHANNEL_ID=0` = « le salon où la commande est tapée »).
 - `tests/test_deployment_check.py` : diagnostics de `tools/check_deployment.py` sur un projet factice (dont `IMAGES_BASE_URL` et illustrations manquantes).

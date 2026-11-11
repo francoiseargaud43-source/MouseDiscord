@@ -5,10 +5,13 @@ une description 4 096 — et personne ne savait si ces coupes pouvaient mordre u
 
 | Texte coupé | Où | Coupe |
 |---|---|---|
-| Le résumé du parcours (« ✋ Palm Grip • 📏 175 × 82,5 mm », gamme comprise) | description de « 🎯 Votre recommandation » | `header[:4096]` |
+| Le résumé du parcours (« ✋ Paume • 📏 175 × 82,5 mm », gamme comprise) | description de « 🎯 Votre recommandation » | `header[:4096]` |
 | Le **sommaire morphologique** (« Longueur dans la cible, largeur de prise dans la cible… ») | fin de `_match_summary` | `sentence[:1024]` |
 | La ligne « en clair » (cotes · prix · sommaire) | champ « 🔎 … en clair » | `[:1024]` |
-| La **justification du choix** (« Forme d'abord : … ») | champ « 🧭 Pourquoi ce choix ? » | `explanation[:1024]` |
+| La **justification du choix** (« Forme d'abord : … ») | champ « 🎚️ Le rôle de votre gamme » | `explanation[:1024]` |
+
+Les deux champs vivent dans le bloc « 🧭 Pourquoi ce choix ? », le deuxième du message depuis le 2026-11-11
+(ils étaient auparavant sous les repères de taille, entre les cotes et leur dessin).
 
 **Mesure du 2026-10-13, grille complète (18 522 profils, `cogs` réel, 46 s)** : ces quatre textes font au
 plus **107 caractères** (résumé), **160** (sommaire), **211** (ligne en clair) et **320** (justification),
@@ -49,8 +52,8 @@ from utils.selection import MAX_PERFORMANCE_INDEX, _explanation  # noqa: E402
 LIMITE_CHAMP_EMBED = 1024       # limite Discord d'un champ d'embed, appliquée par `explanation[:1024]`
 LIMITE_DESCRIPTION = 4096       # limite Discord d'une description, appliquée par `header[:4096]`
 LIMITE_MOBILE = 700             # plafond de lisibilité mobile du projet (tests/test_flow.py)
-CHAMP_EN_CLAIR = 0              # 1er champ du bloc « 📐 Vos repères de taille »
-CHAMP_JUSTIFICATION = 1         # 2e champ du même bloc : « 🧭 Pourquoi ce choix ? »
+CHAMP_EN_CLAIR = 0              # 1er champ du bloc « 🧭 Pourquoi ce choix ? »
+CHAMP_JUSTIFICATION = 1         # 2e champ du même bloc : « 🎚️ Le rôle de votre gamme »
 
 
 def _resume(session) -> str:
@@ -62,7 +65,7 @@ def _resume(session) -> str:
 
 
 def _en_clair(ideal) -> str:
-    """La ligne « en clair » d'une souris, telle que le bloc des repères la compose."""
+    """La ligne « en clair » d'une souris, telle que le bloc « Pourquoi ce choix ? » la compose."""
     return f"{flow._size_text(ideal.mouse)} · {flow._price_text(ideal)}\n{flow._match_summary(ideal)}"
 
 
@@ -87,7 +90,8 @@ def test_la_plus_longue_justification_du_parcours_garde_la_moitie_du_champ_libre
 
     guide = flow.results_embeds(session, selection)[1]
     champ = guide.fields[CHAMP_JUSTIFICATION]
-    assert champ.name == "🧭 Pourquoi ce choix ?"
+    assert guide.title == "🧭 Pourquoi ce choix ?"
+    assert champ.name == "🎚️ Le rôle de votre gamme"
     assert champ.value == phrase, "le bloc ne porte plus la phrase entière : la coupe de 1 024 a mordu"
 
 
@@ -150,7 +154,7 @@ def test_les_quatre_textes_coupes_des_cartes_portent_toujours_leur_texte_entier(
     assert embeds[0].description == pires["résumé"][1]
     assert "…" not in embeds[0].description[-3:], "la description finit sur des points de suspension"
 
-    # La justification : deuxième champ du bloc des repères, entière.
+    # La justification : deuxième champ du bloc « Pourquoi ce choix ? », entière.
     guide = flow.results_embeds(pires["justification"][2], pires["justification"][3])[1]
     assert guide.fields[CHAMP_JUSTIFICATION].value == pires["justification"][1]
 

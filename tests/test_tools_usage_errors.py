@@ -40,8 +40,8 @@ FRAGMENT_OPTION_INCONNUE = "unrecognized arguments"
 # required: … »), ce qui est tout aussi juste — le contrat vérifié reste le même.
 SANS_ARGUMENT_OBLIGATOIRE = [
     "build_ai_bundle", "build_mouse_db", "check_bytecode", "check_deployment", "compare_profiles",
-    "flow_effect", "image_corpus_check", "privacy_scan", "qa_flow_matrix", "recommendation_stats",
-    "render_preview",
+    "compose_illustrations", "flow_effect", "image_corpus_check", "privacy_scan", "qa_flow_matrix",
+    "recommendation_stats", "render_preview",
 ]
 
 # Entrée invalide « métier » : le chemin d'un fichier ou d'un dossier qui n'existe pas.
@@ -64,6 +64,13 @@ CAS_ENTREE_INVALIDE = [
      "image introuvable"),
     ("campagne_boutons", lambda d: ["campagne", str(d / "absent.csv")], "manifeste introuvable"),
     ("campagne_boutons", lambda d: ["analyser", str(d / "absent.json")], "relevé introuvable"),
+    ("compose_illustrations", lambda d: ["--originaux", str(d / "dossier-absent")],
+     "dossier introuvable (originaux)"),
+    ("compose_illustrations", lambda d: ["--sortie", str(d / "dossier-absent")],
+     "dossier introuvable (sortie)"),
+    ("compose_illustrations", lambda d: ["--police", str(d / "absente.ttf")], "police introuvable"),
+    # Un dossier qui existe mais ne contient aucun des originaux attendus (T09, T04, T05, T06).
+    ("compose_illustrations", lambda d: ["--originaux", str(d)], "original introuvable"),
 ]
 
 

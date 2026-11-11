@@ -29,7 +29,7 @@ from utils.session import LOOKUP_OK, SessionStore
 TITRES_ATTENDUS = {
     Grip.PALM: ["Étape 1 — Votre prise", "Étape 2/4 — Votre éminence thénar",
                 "Étape 3/4 — Vos mesures", "Étape 4/4 — Budget et gamme"],
-    Grip.CLAW: ["Étape 1 — Votre prise", "Étape 2/5 — Votre variante de Claw",
+    Grip.CLAW: ["Étape 1 — Votre prise", "Étape 2/5 — Votre type de griffe",
                 "Étape 3/5 — Votre éminence thénar", "Étape 4/5 — Vos mesures",
                 "Étape 5/5 — Budget et gamme"],
     Grip.FINGERTIP: ["Étape 1 — Votre prise", "Étape 2/3 — Vos mesures",

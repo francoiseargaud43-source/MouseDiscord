@@ -274,9 +274,10 @@ def test_les_trois_variantes_de_claw_suivent_la_bosse_decrirte_par_la_reference(
     for variante, motif in attendu.items():
         assert phrases[variante] == {motif}, f"{variante.value} : la référence dit {phrases[variante]}"
 
-    # Et le texte du bot dit la même chose : arrière marquée / médiane marquée / arrière à flancs plats.
+    # Et le texte du bot dit la même chose : arrière marquée / centrale marquée / arrière à flancs plats
+    # (« centrale » est le mot de l'illustration de la bosse du milieu, T14 « Bosse centrale »).
     assert "arrière" in flow.CLAW_HUMP_GUIDE[ClawVariant.RELACHEE][0]
-    assert "médiane" in flow.CLAW_HUMP_GUIDE[ClawVariant.AGGRESSIVE][0]
+    assert "centrale" in flow.CLAW_HUMP_GUIDE[ClawVariant.AGGRESSIVE][0]
     assert "flancs" in flow.CLAW_HUMP_GUIDE[ClawVariant.PINCEE][0]
 
 

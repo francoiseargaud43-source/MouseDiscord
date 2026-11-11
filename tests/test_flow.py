@@ -132,7 +132,7 @@ async def test_grip_selection_edits_message_to_thenar_step():
 
 @pytest.mark.asyncio
 async def test_claw_selection_asks_the_variant_before_the_thenar_step():
-    """Claw : étape 2/5 = variante de la prise (aucun effet sur le score), puis thénar 3/5."""
+    """Claw : étape 2/5 = type de griffe (aucun effet sur le score), puis thénar 3/5."""
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
     inter = make_interaction(store=store)
@@ -144,8 +144,9 @@ async def test_claw_selection_asks_the_variant_before_the_thenar_step():
     assert isinstance(kwargs["view"], flow.ClawVariantView)
     assert "Étape 2/5" in kwargs["embed"].title
     options = [(o.label, o.value) for o in kwargs["view"].children[0].options]
-    assert options == [("Claw relâchée", "relachee"), ("Claw agressive", "aggressive"),
-                       ("Claw pincée", "pincee")]
+    # Les libellés du menu sont ceux des pastilles de l'illustration, dans le même ordre (T16).
+    assert options == [("Griffe relâchée", "relachee"), ("Griffe agressive", "aggressive"),
+                       ("Griffe pince", "pincee")]
 
     suite = make_interaction(store=store)
     select = kwargs["view"].children[0]
@@ -156,12 +157,12 @@ async def test_claw_selection_asks_the_variant_before_the_thenar_step():
     assert isinstance(suivant["view"], flow.ThenarView)
     assert "Étape 3/5" in suivant["embed"].title
 
-    # Le récapitulatif des étapes suivantes porte la variante, sous forme courte.
+    # Le récapitulatif des étapes suivantes porte le type de griffe, tel qu'il est écrit sur la photo.
     fin = make_interaction(store=store)
     select_thenar = suivant["view"].children[0]
     select_values(select_thenar, "moyenne")
     await select_thenar.callback(fin)
-    assert "(relâchée)" in fin.response.edit_message.call_args.kwargs["embed"].description
+    assert "✋ **Griffe relâchée**" in fin.response.edit_message.call_args.kwargs["embed"].description
 
 
 @pytest.mark.asyncio
@@ -176,13 +177,13 @@ async def test_thenar_selection_stores_value_and_moves_to_measures():
     assert store.get(s.session_id, 99).thenar is Thenar.MOYENNE
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.MeasureView)
-    assert "Étape 4/5" in kwargs["embed"].title       # Claw : variante (2/5) puis thénar (3/5)
-    assert "Thénar" in kwargs["embed"].description
+    assert "Étape 4/5" in kwargs["embed"].title       # Claw : type de griffe (2/5) puis thénar (3/5)
+    assert "Éminence thénar **moyenne**" in kwargs["embed"].description
 
 
 @pytest.mark.asyncio
 async def test_full_claw_walkthrough_follows_the_five_steps():
-    """Claw : prise (1/5) → variante (2/5) → thénar (3/5) → mesures (4/5) → budget (5/5) → résultat."""
+    """Claw : prise (1/5) → type de griffe (2/5) → thénar (3/5) → mesures (4/5) → budget (5/5) → résultat."""
     store = SessionStore(ttl_seconds=600)
     s = store.start(99)
 
@@ -215,12 +216,13 @@ async def test_full_claw_walkthrough_follows_the_five_steps():
     await budget_view.children[0].callback(resultat)
     embeds = resultat.response.edit_message.call_args.kwargs["embeds"]
     assert [e.title for e in embeds] == [
-        "🎯 Votre recommandation", "📐 Vos repères de taille",
-        "🖐️ Un arrière étroit pour votre thénar", "⛰️ La bosse et la forme",
-        "🦾 Claw pincée", "🖱️ La hauteur des boutons",
+        "🎯 Votre recommandation", "🧭 Pourquoi ce choix ?", "📐 Vos repères de taille",
+        "🖐️ Un arrière étroit pour votre thénar", "🦾 Griffe pince", "⛰️ La bosse et la forme",
+        "🖱️ La hauteur des boutons",
     ]
-    assert "(pincée)" in embeds[0].description                      # la variante apparaît en haut
-    assert "Claw pincée → bosse arrière, flancs peu bombés" in embeds[3].description
+    assert "✋ **Griffe pince**" in embeds[0].description            # le type de griffe apparaît en haut
+    # La photo du type de griffe déclaré (bloc 5), puis la bosse qu'il appelle (bloc 6).
+    assert "Griffe pince → bosse arrière, flancs peu bombés" in embeds[5].description
     # Parcours terminé : conservé quelques minutes pour un clic rejoué, plus jamais sur disque.
     assert store.get(s.session_id, 99).finished is True
 
@@ -268,21 +270,27 @@ async def test_fingertip_result_has_no_thenar_note_nor_rear_illustration(monkeyp
     ideal, _, _ = flow.result_slots(selection)
     embeds = flow.results_embeds(session, selection)
     # Fingertip : ni thénar, ni arrière étroit, ni conseil de bosse (elle n'y travaille pas).
-    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "📐 Vos repères de taille",
-                                         "🖱️ La hauteur des boutons"]
+    assert [e.title for e in embeds] == ["🎯 Votre recommandation", "🧭 Pourquoi ce choix ?",
+                                         "📐 Vos repères de taille", "🖱️ La hauteur des boutons"]
+    assert not any("thénar" in (embed.to_dict().get("description") or "").lower() for embed in embeds)
     assert not any("Thénar" in field.name for embed in embeds for field in embed.fields)
     assert all("arriere_etroit" not in (embed.image.url or "") for embed in embeds)
-    # Boss ignorée en Fingertip → l'illustration est celle des BOUTONS, et elle suit la classe de la
-    # souris retenue (toutes les classes possibles sont vérifiées : la souris du scénario peut changer
-    # quand le catalogue gagne une valeur mesurée — c'est la règle d'affichage qui est testée ici).
-    attendues = {"High": "T01_boutons_hauts", "Low": "T02_boutons_bas", "Mid": "T03_boutons_moyens"}
+    # Bosse ignorée en Fingertip → la seule illustration de conseil est celle des BOUTONS. Elle montre
+    # toujours un niveau CONSEILLÉ pour la prise (« moyens à bas ») : celui de la souris retenue quand il
+    # en fait partie, sinon le premier (« Boutons moyens »). Toutes les classes sont vérifiées : la souris
+    # du scénario peut changer quand le catalogue gagne une valeur mesurée — c'est la règle d'affichage
+    # qui est testée ici.
+    attendues = {"High": "T03_boutons_moyens", "Low": "T02_boutons_bas", "Mid": "T03_boutons_moyens",
+                 "Inconnu": "T03_boutons_moyens"}
     illustration = attendues.get(ideal.mouse.button_height)
     assert illustration is not None, f"{ideal.mouse.label} : classe {ideal.mouse.button_height!r} inattendue"
-    # 2026-10-15 (80e passe) : l'illustration est dans le message UNE seule fois — en tête, ou dans le
-    # bloc « La hauteur des boutons » quand c'est la même image que le conseil (on la garde là).
+    # L'illustration est dans le message UNE seule fois, dans le bloc « La hauteur des boutons », sous
+    # le texte qui l'explique : la recommandation, en tête, ne porte plus d'image (2026-11-11).
     images = [embed.image.url for embed in embeds if embed.image and embed.image.url]
     assert sum(illustration in url for url in images) == 1
     assert len(images) == len(set(images))
+    assert embeds[0].image.url is None and embeds[1].image.url is None
+    assert illustration in embeds[-1].image.url
 
 
 def test_steps_total_follows_the_grip():
@@ -471,9 +479,9 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     # Aucun bouton interactif : seuls des liens d'achat, ou le rappel désactivé « Liens à venir ».
     assert all(getattr(c, "url", None) or getattr(c, "disabled", False) for c in kwargs["view"].children)
     # La recommandation (courte) puis les blocs d'explication, plus bas : ici Palm **thénar moyen**, donc
-    # quatre blocs — repères, arrière étroit (le conseil de la référence pour Petite ET Moyenne, depuis
-    # la décision du 2026-10-14), bosse et hauteur des boutons.
-    assert len(kwargs["embeds"]) == 5
+    # cinq blocs — pourquoi ce choix, repères, arrière étroit (le conseil de la référence pour Petite ET
+    # Moyenne, depuis la décision du 2026-10-14), bosse et hauteur des boutons.
+    assert len(kwargs["embeds"]) == 6
     main, guide = kwargs["embeds"][0], kwargs["embeds"][1]
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
@@ -488,13 +496,13 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
     assert "ATK Z1 V2 Ultimate" in alt
-    assert guide.title == "📐 Vos repères de taille"
+    assert guide.title == "🧭 Pourquoi ce choix ?"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
     assert "35/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
     # La donnée manquante est annoncée en clair, dans le bloc bas (jamais en haut du message).
     assert "Hauteur des boutons non documentée" in guide_text
-    assert "Pourquoi ce choix" in " ".join(f.name for f in guide.fields)
-    # La souris choisie est reliée aux repères de taille, juste au-dessus.
+    assert "Le rôle de votre gamme" in " ".join(f.name for f in guide.fields)
+    # La souris choisie est décrite en clair dans le même bloc.
     assert any(f.name.startswith("🔎 ATK Phantom Ultimate") and "en clair" in f.name for f in guide.fields)
     assert "Confiance" not in " ".join(str(e.to_dict()) for e in kwargs["embeds"])
     assert "ni une probabilité" in kwargs["embeds"][-1].footer.text
@@ -521,7 +529,7 @@ async def test_un_fichier_de_liens_casse_ne_prive_pas_le_membre_de_son_resultat(
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.ResultsView)
-    assert len(kwargs["embeds"]) == 5                       # le résultat, entier (thénar moyen)
+    assert len(kwargs["embeds"]) == 6                       # le résultat, entier (thénar moyen)
     ideal = next(v for k, v in fields_of(kwargs["embeds"][0]).items() if "match idéal" in k)
     assert "ATK Phantom Ultimate" in ideal                  # la recommandation est bien là
     placeholders = [c for c in kwargs["view"].children if getattr(c, "disabled", False)]
@@ -544,12 +552,15 @@ async def test_result_never_mentions_the_excluded_mice():
     assert "Scyrox V8" not in text and "F1 V3 Ultimate+" not in text and "Xlite v4 Large" not in text
 
 
-def test_result_sections_follow_the_reference_tool_order():
-    """Recommandation, puis repères de taille, arrière étroit, bosse et boutons — l'ordre de la référence.
 
-    Le bloc « arrière étroit » vient juste après les repères, comme la section « Rear Design » de
-    l'outil d'origine (qui la place entre la taille et la bosse) ; pour le thénar moyen de ce scénario
-    il est là depuis la décision du 2026-10-14.
+def test_result_sections_follow_the_reference_tool_order():
+    """Recommandation, pourquoi ce choix, puis repères de taille, arrière étroit, bosse et boutons.
+
+    Les blocs de conseil suivent l'ordre de la référence : le bloc « arrière étroit » vient juste après
+    les repères, comme la section « Rear Design » de l'outil d'origine (qui la place entre la taille et
+    la bosse) ; pour le thénar moyen de ce scénario il est là depuis la décision du 2026-10-14.
+    Le bloc « Pourquoi ce choix ? » est le deuxième depuis le 2026-11-11 : il ne parle que de la souris
+    retenue et ne porte aucune image, ce qui laisse le dessin des repères juste sous les deux cotes.
     """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
@@ -557,6 +568,7 @@ def test_result_sections_follow_the_reference_tool_order():
     embeds = flow.results_embeds(session, flow.compute_selection(session))
     assert [e.title for e in embeds] == [
         "🎯 Votre recommandation",
+        "🧭 Pourquoi ce choix ?",
         "📐 Vos repères de taille",
         "🖐️ Un arrière étroit pour votre thénar",
         "⛰️ La bosse et la forme",
@@ -567,17 +579,20 @@ def test_result_sections_follow_the_reference_tool_order():
     assert "/40" in (guide.description or "")
     names = [f.name for f in guide.fields]
     assert names[0].startswith("🔎 ") and names[0].endswith(" en clair")
-    assert names[1] == "🧭 Pourquoi ce choix ?"
+    assert names[1] == "🎚️ Le rôle de votre gamme"
+    # Le bloc des repères ne porte plus que les deux cotes : son dessin les suit directement.
+    assert embeds[2].fields == [] and "/40" not in embeds[2].description
+
 
 
 def test_result_guides_describe_the_grip_and_show_the_matching_illustrations(monkeypatch):
-    """Chaque bloc d'explication porte l'illustration de sa consigne (assets/images.json)."""
+    """Chaque bloc de conseil porte l'illustration de SA consigne, et le texte emploie le mot du dessin."""
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     titles = lambda embeds: [e.title for e in embeds]
     image = lambda embed: embed.image.url.split("/")[-1].removesuffix(".png")
 
     def embeds_for(grip, thenar=None, variant=None):
-        """Résultat pour une prise donnée (la variante de Claw peut être précisée)."""
+        """Résultat pour une prise donnée (le type de griffe peut être précisé)."""
         store = SessionStore(ttl_seconds=600)
         session = start_for(store, grip=grip, length=180.0, width=90.0, thenar=thenar)
         session.claw_variant = variant
@@ -586,34 +601,49 @@ def test_result_guides_describe_the_grip_and_show_the_matching_illustrations(mon
         return flow.results_embeds(session, selection)
 
     palm = embeds_for(Grip.PALM, thenar=Thenar.PETITE)
-    assert "T13_arriere_etroit" in image(palm[2])          # arrière étroit, juste après les repères
-    assert "T14_bosse_centrale" in image(palm[3])          # la bosse conseillée pour Palm
-    assert "T01_boutons_hauts" in image(palm[4])           # les boutons conseillés pour Palm
-    assert "Palm Grip → bosse" in palm[3].description and "Palm Grip → boutons hauts" in palm[4].description
-    assert "**Forme**" in palm[3].description              # la forme de coque est conseillée ici aussi
+    assert palm[0].image.url is None and palm[1].image.url is None   # la recommandation et son « pourquoi »
+    assert "T12_souris_longueur_largeur" in image(palm[2])  # le dessin des cotes, juste sous les cotes
+    assert "T13_arriere_etroit" in image(palm[3])          # arrière étroit, juste après les repères
+    assert "T14_bosse_centrale" in image(palm[4])          # une bosse conseillée en paume
+    assert "T01_boutons_hauts" in image(palm[5])           # les boutons conseillés en paume
+    assert "Paume → bosse centrale ou avant" in palm[4].description
+    assert "Paume → boutons hauts" in palm[5].description
+    assert "**Forme**" in palm[4].description              # la forme de coque est conseillée ici aussi
 
-    # Claw avec variante déclarée : un seul bloc de variante, illustré, et le conseil de bosse adapté.
+    # Griffe avec un type déclaré : sa photo d'abord, puis la bosse QU'IL APPELLE (dessin compris).
     claw = embeds_for(Grip.CLAW, variant=ClawVariant.AGGRESSIVE)
-    assert titles(claw) == ["🎯 Votre recommandation", "📐 Vos repères de taille",
-                            "⛰️ La bosse et la forme", "🦾 Claw agressive",
+    assert titles(claw) == ["🎯 Votre recommandation", "🧭 Pourquoi ce choix ?", "📐 Vos repères de taille",
+                            "🦾 Griffe agressive", "⛰️ La bosse et la forme",
                             "🖱️ La hauteur des boutons"]
-    assert "T07_bosse_arriere" in image(claw[2])           # la bosse conseillée pour la prise
-    assert "T05_griffe_agressive" in image(claw[3])        # l'illustration de la variante déclarée
-    assert "T02_boutons_bas" in image(claw[4])
-    assert "Claw agressive → bosse médiane marquée" in claw[2].description
-    assert "Claw Grip → boutons bas" in claw[4].description
+    assert "T05_griffe_agressive" in image(claw[3])        # la photo du type de griffe déclaré
+    assert "T14_bosse_centrale" in image(claw[4])          # « bosse centrale » : le dessin dit le même mot
+    assert "T02_boutons_bas" in image(claw[5])
+    assert "Griffe agressive → bosse centrale marquée" in claw[4].description
+    # Le type de griffe ne change pas le score : le bloc rappelle le conseil que le score retient.
+    assert ("Ce conseil précise celui de la prise en griffe (bosse centrale ou arrière), "
+            "le seul qui compte dans le score.") in claw[4].description
+    assert "Griffe → boutons bas" in claw[5].description
+    for variant, libelle in ((ClawVariant.RELACHEE, "Griffe relâchée"), (ClawVariant.PINCEE, "Griffe pince")):
+        blocs = embeds_for(Grip.CLAW, variant=variant)
+        assert blocs[3].title == f"🦾 {libelle}"
+        assert f"{libelle} → bosse arrière" in blocs[4].description
+        assert "T07_bosse_arriere" in image(blocs[4])
 
-    # Sans variante (parcours ouvert avant l'ajout de l'étape) : les trois variantes, en repli.
+    # Sans type de griffe (parcours ouvert avant l'ajout de l'étape) : le conseil général, puis les
+    # trois types sur UNE image, celle de l'étape (T16), dans l'ordre des trois lignes.
     legacy = embeds_for(Grip.CLAW)
-    assert ["T04_griffe_relachee", "T05_griffe_agressive", "T06_griffe_pince"] == [
-        image(e) for e in legacy[3:6]]
-    assert "Claw Grip → bosse au milieu ou à l'arrière" in legacy[2].description
+    assert titles(legacy)[3:5] == ["⛰️ La bosse et la forme", "🦾 Les trois types de griffe"]
+    assert "Griffe → bosse centrale ou arrière" in legacy[3].description
+    assert "le seul qui compte dans le score" not in legacy[3].description   # rien à préciser sans type
+    assert "T16_griffe_relachee_agressive_pince" in image(legacy[4])
+    lignes = legacy[4].description
+    assert lignes.index("Griffe relâchée") < lignes.index("Griffe agressive") < lignes.index("Griffe pince")
 
     fingertip = embeds_for(Grip.FINGERTIP)
-    assert titles(fingertip) == ["🎯 Votre recommandation", "📐 Vos repères de taille",
-                                 "🖱️ La hauteur des boutons"]
-    assert "T03_boutons_moyens" in image(fingertip[2])
-    assert "médians à bas" in fingertip[2].description
+    assert titles(fingertip) == ["🎯 Votre recommandation", "🧭 Pourquoi ce choix ?",
+                                 "📐 Vos repères de taille", "🖱️ La hauteur des boutons"]
+    assert image(fingertip[3]) in ("T03_boutons_moyens", "T02_boutons_bas")   # un niveau conseillé
+    assert "Bout des doigts → boutons moyens à bas" in fingertip[3].description
 
 
 @pytest.mark.asyncio
@@ -909,8 +939,9 @@ def test_embeds_respect_discord_limits_and_stay_short():
     session = start_for(store, grip=Grip.CLAW, length=180.0, width=90.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    # Cas le plus long : recommandation, repères, arrière étroit, bosse, 3 variantes de Claw, boutons.
-    assert len(embeds) == 8
+    # Cas le plus long : recommandation, pourquoi ce choix, repères, arrière étroit, bosse, les trois
+    # types de griffe (une seule image depuis le 2026-11-11), boutons.
+    assert len(embeds) == 7
     total = 0
     for embed in embeds:
         assert len(embed) <= 6000
@@ -936,16 +967,45 @@ def test_result_never_exposes_internal_scoring_details():
     assert "35/40" in text and "maximum théorique" in text
 
 
-def test_result_image_key_prioritises_the_hump_then_the_buttons():
-    def score(hump: str, button: str, grip: Grip = Grip.PALM) -> SimpleNamespace:
-        return SimpleNamespace(mouse=SimpleNamespace(hump_position=hump, button_height=button), grip=grip)
 
-    assert flow.result_image_key(score("Rear", "Low", Grip.CLAW), Grip.CLAW) == "illustration_hump_rear"
-    assert flow.result_image_key(score("Mid-Front", "High"), Grip.PALM) == "illustration_hump_front"
-    assert flow.result_image_key(score("Mid", "Mid"), Grip.PALM) == "illustration_hump_mid"
-    assert flow.result_image_key(score("Inconnu", "High"), Grip.PALM) == "illustration_buttons_high"
-    assert flow.result_image_key(score("Inconnu", "Low", Grip.FINGERTIP), Grip.FINGERTIP) == "illustration_buttons_low"
-    assert flow.result_image_key(None, Grip.PALM) is None
+def test_l_illustration_d_un_conseil_montre_toujours_une_forme_conseillee():
+    """Le dessin d'un bloc de conseil : la forme conseillée que porte le match idéal, sinon la première.
+
+    Avant le 2026-11-11, la recommandation portait en tête l'image de la bosse (ou des boutons) de la
+    souris retenue, sans une phrase pour l'expliquer, et le bloc « bosse » d'une griffe agressive
+    montrait « Bosse arrière » sous un texte qui conseillait une bosse au milieu. La règle est maintenant
+    la même partout : le dessin est TOUJOURS une forme conseillée, et son libellé est un mot de la phrase.
+    """
+    image = flow._advised_image
+    paume, griffe = flow.HUMP_ADVISED[Grip.PALM], flow.HUMP_ADVISED[Grip.CLAW]
+    assert image(paume, {"Mid"}, flow.HUMP_IMAGES) == "illustration_hump_mid"
+    assert image(paume, {"Front"}, flow.HUMP_IMAGES) == "illustration_hump_front"
+    assert image(paume, {"Rear"}, flow.HUMP_IMAGES) == "illustration_hump_mid"        # pas conseillée : la première
+    assert image(paume, {"Inconnu"}, flow.HUMP_IMAGES) == "illustration_hump_mid"     # pas documentée : la première
+    assert image(griffe, {"Mid"}, flow.HUMP_IMAGES) == "illustration_hump_mid"
+    assert image(griffe, {"Mid", "Rear"}, flow.HUMP_IMAGES) == "illustration_hump_rear"
+    assert image(griffe, {"Front"}, flow.HUMP_IMAGES) == "illustration_hump_rear"
+    doigts = flow.BUTTONS_ADVISED[Grip.FINGERTIP]
+    assert image(doigts, {"Low"}, flow.BUTTON_IMAGES) == "illustration_buttons_low"
+    assert image(doigts, {"High"}, flow.BUTTON_IMAGES) == "illustration_buttons_mid"
+    assert image(doigts, {None}, flow.BUTTON_IMAGES) == "illustration_buttons_mid"
+
+    # Les formes dessinées sont exactement celles que le barème récompense : le conseil affiché ne peut
+    # pas s'écarter du calcul sans que ce test tombe.
+    from utils.matcher import BUTTON_IDEAL, HUMP_IDEAL
+    assert {grip: set(formes) for grip, formes in flow.HUMP_ADVISED.items()} == {
+        grip: set(formes) for grip, formes in HUMP_IDEAL.items()}
+    assert {grip: set(formes) for grip, formes in flow.BUTTONS_ADVISED.items()} == {
+        grip: set(formes) for grip, formes in BUTTON_IDEAL.items()}
+    assert all(set(formes) <= HUMP_IDEAL[Grip.CLAW] for formes in flow.CLAW_HUMP_ADVISED.values())
+
+    # Et chaque phrase de conseil contient le mot écrit sur chacun de ses dessins possibles.
+    for grip, formes in flow.HUMP_ADVISED.items():
+        assert all(flow.HUMP_DISPLAY[forme] in flow.HUMP_GUIDE[grip][0] for forme in formes), grip
+    for variante, formes in flow.CLAW_HUMP_ADVISED.items():
+        assert all(flow.HUMP_DISPLAY[forme] in flow.CLAW_HUMP_GUIDE[variante][0] for forme in formes), variante
+    for grip, formes in flow.BUTTONS_ADVISED.items():
+        assert all(flow.BUTTON_DISPLAY[forme] in flow.BUTTON_GUIDE[grip][0] for forme in formes), grip
 
 
 def test_thenar_never_changes_the_recommendation():
@@ -1004,11 +1064,14 @@ def test_thenar_petite_ou_moyenne_ajoute_le_paragraphe_arriere_etroit(monkeypatc
         assert "arrière étroit" in narrow.title
         assert "pilule" in narrow.description
         assert accord in narrow.description, f"thénar {thenar.label} : phrase non accordée"
-        # Règle « zéro effet » : le paragraphe dit lui-même que le thénar ne modifie pas le score.
-        assert "ne modifie pas le score" in narrow.description
+        # Règle « zéro effet » : le paragraphe le dit lui-même, avec la phrase que le propriétaire a
+        # écrite dans docs/MASTER_PROMPT_AZEMOUSE.md (§7.6).
+        assert "Recommandation morphologique indicative, **non prise en compte dans le score**." in narrow.description
         assert narrow.image is not None and "T13_arriere_etroit" in narrow.image.url
-        # Le bloc « comment lire ce résultat » garde l'illustration des repères de taille.
-        assert "T12_souris_longueur_largeur" in embeds[1].image.url
+        # Le bloc des repères de taille garde son illustration, juste avant celui de l'arrière.
+        reperes = embeds[embeds.index(narrow) - 1]
+        assert reperes.title == "📐 Vos repères de taille"
+        assert "T12_souris_longueur_largeur" in reperes.image.url
 
     # Aucun conseil d'arrière pour un grand thénar : la référence n'en donne pas.
     assert not any("arrière étroit" in e.title for e in resultat(Thenar.GRANDE))
@@ -1022,22 +1085,24 @@ def test_l_etape_thenar_annonce_la_regle_de_la_reference_entierement():
     thénar). Corrigé le 2026-10-14 en même temps que le bloc du résultat.
     """
     description = flow.thenar_step_embed(Grip.PALM).description
-    assert "un petit ou un moyen thénar" in description
+    assert "un arrière étroit est conseillé pour une éminence petite ou moyenne" in description
     assert "aucune consigne d'arrière" in description
     assert "soutenu par un arrière marqué" not in description
 
 
 def test_step_illustrations_are_branched_when_image_base_url_is_set(monkeypatch):
-    """Assets ImageUse : bannière T08, grips T09, thénar T10, mesures T11 (résolution IMAGES_BASE_URL)."""
+    """Illustrations des étapes : bannière T08, prises T09, types de griffe T16, thénar T10, mesures T11."""
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     assert "T08_azemouse_banniere" in flow.banner_embed().image.url
-    assert "T09_griffe_paume_doigts" in flow.grip_step_embed().image.url
+    # T09 et T16 sont composées à partir des originaux pour suivre l'ordre du texte (2026-11-11).
+    assert "T09_paume_griffe_doigts" in flow.grip_step_embed().image.url
+    assert "T16_griffe_relachee_agressive_pince" in flow.claw_variant_step_embed().image.url
     assert "T10_tailles_de_main" in flow.thenar_step_embed().image.url
     session = start_for(SessionStore(ttl_seconds=600), grip=Grip.PALM, length=180.0, width=90.0)
     assert "T11_mesurer_la_main" in flow.measure_step_embed(session).image.url
     session.budget_mode = BudgetMode.QUALITE_PRIX
     embeds = flow.results_embeds(session, flow.compute_selection(session))
-    details = embeds[1]
+    details = next(embed for embed in embeds if embed.title == "📐 Vos repères de taille")
     assert "T12_souris_longueur_largeur" in details.image.url
 
 
@@ -1047,6 +1112,7 @@ def test_without_image_base_url_no_image_is_attached_and_nothing_breaks(monkeypa
     assert flow.grip_step_embed().image.url is None
 
 
+
 def test_result_hump_illustration_follows_the_winner(monkeypatch):
     monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     store = SessionStore(ttl_seconds=600)
@@ -1054,15 +1120,19 @@ def test_result_hump_illustration_follows_the_winner(monkeypatch):
     session.budget_mode = BudgetMode.QUALITE_PRIX
     selection = flow.compute_selection(session)
     ideal = flow.result_slots(selection)[0]
-    assert flow.result_image_key(ideal, Grip.PALM) == "illustration_hump_mid"
     embeds = flow.results_embeds(session, selection)
-    # Illustration liée à la bosse de la souris RÉELLEMENT retenue : la retenue du profil Palm
-    # 180 × 90 Qualité/Prix est l'ATK Phantom Ultimate, bosse au milieu → T14. C'est aussi l'image du
-    # conseil de bosse en Palm : depuis le 2026-10-15, elle n'est montrée qu'UNE fois, dans ce bloc-là.
+    # Le dessin du bloc « bosse » est une bosse conseillée en paume (« centrale ou avant »), et c'est
+    # celle de la souris RÉELLEMENT retenue quand elle en fait partie : la retenue du profil Paume
+    # 180 × 90 Qualité/Prix est l'ATK Phantom Ultimate, bosse centrale → T14, montrée UNE fois.
+    assert ideal.mouse.hump_position == "Mid"
     images = [embed.image.url for embed in embeds if embed.image and embed.image.url]
     assert sum("T14_bosse_centrale" in url for url in images) == 1
     bosse = next(embed for embed in embeds if embed.title == "⛰️ La bosse et la forme")
     assert "T14_bosse_centrale" in bosse.image.url
+    # La phrase dit ce que porte la souris retenue, avec le mot du dessin.
+    assert f"**{ideal.mouse.label}** : bosse **centrale**" in bosse.description
+    # La recommandation, en tête, ne porte plus d'image : aucun dessin sans son explication.
+    assert embeds[0].image.url is None
 
 
 @pytest.mark.asyncio
@@ -1417,19 +1487,33 @@ def test_the_economy_label_wins_over_the_piste_label_when_the_mouse_is_cheaper()
     assert flow.third_slot_title(third, ideal, alternative, 30) == "💸 L'économie"
 
 
-def test_match_summary_does_not_lowercase_the_grip_label():
-    """« prise palm grip bien soutenue » : le libellé « Palm Grip » était écrasé par capitalize()."""
+
+def test_le_sommaire_nomme_la_prise_avec_les_mots_des_illustrations():
+    """« Prise en paume bien soutenue » : la prise est dite en français, comme sur le dessin de l'étape 1.
+
+    La phrase ne prend une majuscule qu'à sa première lettre (`capitalize()` écrasait le reste : c'est
+    le défaut d'origine de ce test, du temps où la phrase citait « Palm Grip »).
+    """
     from utils.matcher import STATUS_SCORED, MouseScore, ScoreBreakdown
 
     mouse = SimpleNamespace(label="Test M1", id="t", length_mm=120.0, width_max_mm=60.0,
                             hump_position="Mid", button_height="Low", price_eur=49.9,
                             price_status="verified", shape="Symmetrical", hump_position_label=None)
-    score = MouseScore(mouse=mouse, grip=Grip.PALM, status=STATUS_SCORED,
-                       breakdown=ScoreBreakdown(length_pts=10, width_pts=10, grip_pts=10,
-                                                hump_pts=5, button_pts=5))
-    text = flow._match_summary(score)
-    assert "Palm Grip" in text
+
+    def sommaire(grip: Grip, length_pts: int = 10) -> str:
+        return flow._match_summary(MouseScore(
+            mouse=mouse, grip=grip, status=STATUS_SCORED,
+            breakdown=ScoreBreakdown(length_pts=length_pts, width_pts=10, grip_pts=10,
+                                     hump_pts=5, button_pts=5)))
+
+    text = sommaire(Grip.PALM)
+    assert "prise en paume bien soutenue" in text
     assert text.startswith("Longueur dans la cible")
+    assert "prise en griffe bien soutenue" in sommaire(Grip.CLAW)
+    assert "prise du bout des doigts bien soutenue" in sommaire(Grip.FINGERTIP)
+    assert "Grip" not in text and "Claw" not in sommaire(Grip.CLAW)
+    # Les mots du dessin, pas un synonyme : « bosse centrale » (T14), « boutons bas » (T02).
+    assert "bosse centrale adaptée" in sommaire(Grip.PALM, length_pts=0)
 
 
 def test_le_bilan_sait_dire_le_thenar_quand_le_bareme_en_porte_un():
@@ -1943,12 +2027,14 @@ def test_aucun_repere_ni_conseil_n_est_invente_sur_un_parcours_incomplet():
 
     vide = flow.FinderSession(user_id=1)
     assert flow._hand_of(vide) is None
-    assert flow._dimensions_embed(vide, ideal, "peu importe") is None
+    assert flow._dimensions_embed(vide) is None
     assert flow._buttons_guide_embed(vide) is None
+    assert flow._buttons_guide_embed(vide, ideal) is None
+    assert flow._why_embed(None, "peu importe") is None           # pas de match idéal : rien à expliquer
 
     partielle = flow.FinderSession(user_id=1, grip=Grip.PALM)     # prise connue, mesures absentes
     assert flow._hand_of(partielle) is None
-    assert flow._dimensions_embed(partielle, ideal, "peu importe") is None
+    assert flow._dimensions_embed(partielle) is None
     assert flow._buttons_guide_embed(partielle) is not None      # le conseil de boutons reste possible
 
 
@@ -2073,34 +2159,40 @@ def test_un_resultat_a_une_seule_place_n_affiche_pas_de_lignes_vides():
     assert flow.result_slots(choix) == (ideal, None, None)
     embeds = flow.results_embeds(_session_prete(), choix)
     assert [f.name for f in embeds[0].fields] == ["🥇 Le match idéal"]
-    assert embeds[0].description.startswith("✋ **Palm Grip**")
+    assert embeds[0].description.startswith("✋ **Paume**")
 
 
-def test_une_souris_fingertip_sans_hauteur_de_boutons_connue_n_impose_pas_d_illustration():
-    """En Fingertip, seule la hauteur des boutons peut illustrer le résultat.
 
-    Quand elle n'est pas documentée, aucune image n'est posée : c'est la branche « pas d'illustration »
-    du rendu, jamais exercée avant cette passe. `atk_u2_mini` est une souris réelle dont les boutons sont
-    « Inconnu » (cas de treize souris du catalogue en Fingertip).
+def test_une_souris_sans_hauteur_de_boutons_connue_garde_le_dessin_du_conseil(monkeypatch):
+    """Boutons « Inconnu » : le dessin reste celui du CONSEIL, et la phrase dit que la donnée manque.
+
+    Avant le 2026-11-11, l'image de tête suivait la souris retenue : sans hauteur de boutons documentée,
+    aucune image n'était posée en Fingertip. Le dessin illustre désormais le conseil de la prise
+    (« Boutons moyens », premier niveau conseillé du bout des doigts) : il ne dépend plus d'une donnée
+    absente, et rien n'est deviné sur la souris — la phrase l'écrit. `atk_u2_mini` est une souris réelle
+    dont les boutons sont « Inconnu » (cas de treize souris du catalogue en Fingertip).
     """
+    monkeypatch.setattr("config.IMAGES_BASE_URL", "https://cdn.aze.test/illustrations/")
     score = _score_reel("atk_u2_mini", grip=Grip.FINGERTIP)
     assert score.mouse.button_height == "Inconnu"
-    assert flow.result_image_key(score, Grip.FINGERTIP) is None
 
     choix = selection.select([score], BudgetMode.QUALITE_PRIX, top_n=3)
     embeds = flow.results_embeds(_session_prete(grip=Grip.FINGERTIP), choix)
-    assert all("image" not in embed.to_dict() for embed in embeds)
+    boutons = embeds[-1]
+    assert boutons.title == "🖱️ La hauteur des boutons"
+    assert "T03_boutons_moyens" in boutons.image.url
+    assert "hauteur des boutons non documentée" in boutons.description
+    assert "boutons **" not in boutons.description          # aucune hauteur n'est attribuée à la souris
 
 
-def test_une_souris_sans_illustration_n_entraine_aucune_lecture_du_fichier_des_images(monkeypatch):
-    """Contre-épreuve du test précédent : la garde `if image_key` évite une lecture de fichier inutile.
 
-    Trouvé le 2026-10-13 (52e passe) par une mutation **survivante** : remplacer la garde par `if True:`
-    ne changeait pas l'affichage (`_image` ignore une clé absente), mais faisait relire `images.json`
-    une fois de plus par résultat — et il n'y a **aucun cache** dans le projet. La garantie est donc
-    mesurable : deux parcours identiques (Fingertip, une seule souris classable), l'un avec une souris
-    illustrée (`atk_a9_plus`, boutons « Mid » documentés), l'autre avec une souris dont les boutons sont
-    « Inconnu » (`atk_u2_mini`).
+def test_le_fichier_des_images_n_est_lu_que_pour_les_blocs_illustres(monkeypatch):
+    """Une lecture d'`images.json` par bloc illustré, aucune pour les deux blocs sans image.
+
+    Il n'y a **aucun cache** dans le projet (une image se change à chaud) : chaque lecture compte. Le
+    contrôle d'origine (2026-10-13, 52e passe) gardait une lecture inutile hors de la recommandation ;
+    depuis le 2026-11-11 la recommandation et le bloc « Pourquoi ce choix ? » ne portent plus d'image,
+    donc ne lisent rien. Le compte ne dépend pas de la souris retenue (boutons documentés ou non).
     """
     appels = []
     vrai = flow.load_image_urls
@@ -2111,31 +2203,33 @@ def test_une_souris_sans_illustration_n_entraine_aucune_lecture_du_fichier_des_i
 
     monkeypatch.setattr(flow, "load_image_urls", compte)
 
-    def lectures(identifiant: str) -> int:
+    def lectures(identifiant: str, grip: Grip, thenar=None) -> int:
         appels.clear()
-        score = _score_reel(identifiant, grip=Grip.FINGERTIP)
+        score = _score_reel(identifiant, grip=grip)
         choix = selection.select([score], BudgetMode.QUALITE_PRIX, top_n=3)
-        flow.results_embeds(_session_prete(grip=Grip.FINGERTIP), choix)
+        flow.results_embeds(_session_prete(grip=grip, thenar=thenar), choix)
         return len(appels)
 
-    avec = lectures("atk_a9_plus")        # boutons documentés : le résultat porte une illustration
-    sans = lectures("atk_u2_mini")        # boutons « Inconnu » : aucune illustration pour elle
-    assert sans == avec - 1, (
-        "une souris sans illustration ne doit entraîner AUCUNE lecture du fichier des images "
-        f"(avec : {avec}, sans : {sans})")
+    # Fingertip : repères de taille et hauteur des boutons, que les boutons soient documentés ou non.
+    assert lectures("atk_a9_plus", Grip.FINGERTIP) == 2
+    assert lectures("atk_u2_mini", Grip.FINGERTIP) == 2
+    # Paume, thénar moyen : repères, arrière étroit, bosse, boutons.
+    assert lectures("atk_phantom_ultimate", Grip.PALM, Thenar.MOYENNE) == 4
 
 
 def test_le_resultat_complet_porte_toujours_les_deux_blocs_d_explication():
     """Pourquoi deux gardes du rendu ne peuvent pas être fausses — dites ici plutôt que supposées.
 
     `results_embeds` sort plus tôt quand la prise ou les mesures manquent : au moment de construire les
-    blocs, `_dimensions_embed` et `_buttons_guide_embed` ne peuvent donc **jamais** renvoyer ``None``
-    (prise connue + mesures saisies). Vérifié sur les trois prises, avec les vraies souris du catalogue.
+    blocs, `_why_embed`, `_dimensions_embed` et `_buttons_guide_embed` ne peuvent donc **jamais**
+    renvoyer ``None`` (match idéal trouvé + prise connue + mesures saisies). Vérifié sur les trois
+    prises, avec les vraies souris du catalogue.
     """
     for grip in Grip:
         session = _session_prete(grip=grip)
         selection = flow.compute_selection(session)
         titres = [embed.title for embed in flow.results_embeds(session, selection)]
+        assert "🧭 Pourquoi ce choix ?" in titres, grip
         assert "📐 Vos repères de taille" in titres, grip
         assert "🖱️ La hauteur des boutons" in titres, grip
 
@@ -2174,36 +2268,41 @@ def test_le_recapitulatif_ne_montre_que_les_reponses_deja_donnees():
 
     vierge.grip = Grip.PALM
     vierge.hand_length_mm, vierge.hand_width_mm = 175.0, 82.5
-    assert flow._recap(vierge) == "✋ **Palm Grip**  •  📏 **175 × 82,5 mm**"
+    assert flow._recap(vierge) == "✋ **Paume**  •  📏 **175 × 82,5 mm**"
 
 
 def test_un_bloc_qui_ne_peut_pas_etre_construit_ne_ressert_pas_de_renvoi_mort(monkeypatch):
-    """Gardes défensives de `results_embeds` : les deux branches « bloc absent ».
+    """Gardes défensives de `results_embeds` : les trois branches « bloc absent ».
 
     Le test précédent prouve qu'aujourd'hui ces branches ne peuvent pas s'ouvrir (prise connue +
-    mesures saisies ⇒ les deux blocs existent toujours). Celui-ci verrouille le comportement du
+    mesures saisies ⇒ les trois blocs existent toujours). Celui-ci verrouille le comportement du
     **rendu** pour le jour où un bloc déclinera de se construire — p. ex. une nouvelle règle qui
-    supprime les repères de taille : la carte ne doit pas garder un renvoi vers un bloc absent. C'est
+    supprime l'explication du choix : la carte ne doit pas garder un renvoi vers un bloc absent. C'est
     exactement le défaut corrigé le 2026-10-13 (le pied de message renvoyait à « Comment lire ce
     résultat », un bloc disparu depuis le 2026-10-11).
     """
     session = _session_prete()
     selection = flow.compute_selection(session)
 
+    monkeypatch.setattr(flow, "_why_embed", lambda *a, **k: None)
     monkeypatch.setattr(flow, "_dimensions_embed", lambda *a, **k: None)
     monkeypatch.setattr(flow, "_buttons_guide_embed", lambda *a, **k: None)
     embeds = flow.results_embeds(session, selection)
 
     titres = [embed.title for embed in embeds]
+    assert "🧭 Pourquoi ce choix ?" not in titres
     assert "📐 Vos repères de taille" not in titres
     assert "🖱️ La hauteur des boutons" not in titres
     assert flow.EXPLANATION_REFERENCE not in embeds[-1].footer.text, (
         "le pied de message renvoie au bloc « 🧭 Pourquoi ce choix ? », qui n'existe plus")
 
-    # Retour à la normale : les deux blocs reviennent, avec le renvoi dans le pied de message.
+    # Retour à la normale : les trois blocs reviennent, avec le renvoi dans le pied de message.
     monkeypatch.undo()
-    revenus = [embed.title for embed in flow.results_embeds(session, selection)]
+    retour = flow.results_embeds(session, selection)
+    revenus = [embed.title for embed in retour]
+    assert "🧭 Pourquoi ce choix ?" in revenus
     assert "📐 Vos repères de taille" in revenus and "🖱️ La hauteur des boutons" in revenus
+    assert flow.EXPLANATION_REFERENCE in retour[-1].footer.text
 
 
 def test_le_renvoi_du_pied_ne_s_affiche_que_quand_l_explication_est_presente():
