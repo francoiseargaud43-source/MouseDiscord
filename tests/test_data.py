@@ -695,7 +695,7 @@ def test_every_configured_illustration_exists_in_assets_illustrations():
     """Intégration graphique : chaque nom de fichier de assets/images.json existe vraiment (bons fichiers au bon endroit)."""
     raw = json.loads(IMAGES_CONFIG_PATH.read_text(encoding="utf-8"))
     names = [v for k, v in raw.items() if not k.startswith("_") and isinstance(v, str) and v]
-    assert names, "les 15 assets ImageUse doivent être référencés"
+    assert names, "les illustrations de assets/illustrations/ doivent être référencées"
     for name in names:
         assert not name.startswith("http"), f"{name} doit rester un nom de fichier local (assets/illustrations/)"
         assert (ROOT / "assets" / "illustrations" / name).is_file(), f"illustration absente du dépôt : {name}"

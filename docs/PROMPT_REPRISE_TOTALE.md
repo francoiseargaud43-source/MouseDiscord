@@ -64,9 +64,9 @@ Le propriétaire l'a formulé ainsi (2026-10-15, ses mots) :
 **Le parcours** (boutons et menus Discord, jamais de commande à taper) :
 
 ```
-Étape 1 — Votre prise (palm / claw / fingertip)
-   ├─ si claw : variante (relâchée / agressive / pincée)
-   ├─ si palm ou claw : éminence thénar (petite / moyenne / grande)   ← informatif, n'enlève aucun point
+Étape 1 — Votre prise : Paume / Griffe / Bout des doigts (dans le code : palm / claw / fingertip)
+   ├─ si griffe : type de griffe (relâchée / agressive / pince)       ← informatif, précise le conseil de bosse
+   ├─ si paume ou griffe : éminence thénar (petite / moyenne / grande) ← informatif, n'enlève aucun point
    ├─ mesures : longueur et largeur de la main en mm (modal)
    └─ budget : Économique / Qualité-Prix / Haut de Gamme / Peu importe / budget libre en €
 ```
@@ -79,7 +79,7 @@ Puis **un seul message** : le résultat. Trois lignes au maximum —
 | 💡 **Alternative** | idem | un peu moins bien, souvent moins chère |
 | 💸 / ➕ / 🔎 **3ᵉ place** | la 3ᵉ place, remplie **même vide de sens** ; titre selon son rôle réel : « 💸 L'économie » (strictement moins chère), « ➕ L'autre option » (dans la fenêtre, pas moins chère), « 🔎 Autre piste » (dernier palier) | peut être un peu plus chère (décision du propriétaire) ; la 2ᵉ place peut aussi devenir « 🔎 Autre piste » (`cogs/finder_flow.py`, `third_slot_title` / `alternative_slot_title`) |
 
-Plus, en dessous : un bloc **« 📐 Vos repères de taille »** (les plages cibles calculées pour **cette** main), et tout en bas, en petit, **« 🧭 Pourquoi ce choix ? »** (le calcul expliqué). **Aucun score de confiance en tête, aucun tableau des souris écartées, aucune matrice** : ce que l'utilisateur voit tient sur un écran.
+Plus, en dessous, dans le même message : **« 🧭 Pourquoi ce choix ? »** (le calcul expliqué, en petit, sans image), puis les blocs illustrés — **« 📐 Vos repères de taille »** (les plages cibles calculées pour **cette** main), l'arrière étroit, le type de griffe, la bosse et la forme, la hauteur des boutons. Depuis le 2026-11-11, **chaque image suit le texte qu'elle illustre et un texte emploie les mots imprimés sur son image** (`docs/ARCHITECTURE.md` §4). **Aucun score de confiance en tête, aucun tableau des souris écartées, aucune matrice.**
 
 **Ce que le bot ne fait pas** : pas de compte, pas de base de données de membres, pas de commande slash obligatoire, pas de publicité mensongère — les liens d'achat sont **affiliés** (`?ref=aze`, `?ref=AZE`, Scyrox `?bg_ref=…`) et **un par un**, jamais en masse.
 
@@ -109,13 +109,13 @@ data/
   mouse_db.json            36 souris · 268 sources   LE CATALOGUE
   commercial_links.json    36 liens affiliés (+ 3 clés `_` de commentaire)
 assets/
-  images.json              17 clés → fichiers `assets/illustrations/T01…T15`
-  illustrations/           les 15 images du bot (bannière, étapes, illustrations du résultat)
+  images.json              17 clés → fichiers `assets/illustrations/T01…T16`
+  illustrations/           les 16 images du bot (bannière, étapes, illustrations du résultat)
 tools/                     17 outils · 5 074 l.   mesures, bancs d'essai, contrôles, aperçus (2026-10-16)
 tests/                    38 fichiers · 10 839 l. · 865 tests · couverture 100 % (2026-10-16)
 docs/                     28 fichiers .md · 14 053 l.  (dont ROBUSTESSE 5 076 l. et DEPLOYMENT 2 895 l.)
 Reverse/                  10 fichiers    LA PREUVE PRIMAIRE : sorties datées de l'outil d'origine (Oblivity)
-ImageAct/ ImageEx/ ImageUse/   images de travail (fiches, exemples, les 15 illustrations livrées)
+ImageAct/ ImageEx/ ImageUse/   images de travail (fiches, exemples, les 15 illustrations d'origine)
 .env.example              le gabarit de configuration (le vrai `.env` n'est JAMAIS dans le dépôt)
 ```
 
@@ -469,7 +469,8 @@ find . -name __pycache__ -type d -not -path "./.venv/*" -exec rm -rf {} +
 - **« Le pourquoi »** : en petit encadré, **en bas**.
 - **3ᵉ place** : remplie **même incomplète**, titre selon son rôle (« 💸 L'économie », « ➕ L'autre option » ou « 🔎 Autre piste »), % affiché ; une souris un peu plus chère est acceptée ; le **marqueur discret** signale un score partiel.
 - **Ne pas afficher** : les souris écartées, la matrice, les données de debug.
-- **Images** : les 15 illustrations `T01`–`T15` (bannière, étapes, illustrations du résultat), hébergées par le propriétaire, lisibles en thème **sombre et clair**.
+- **Images** : les 16 illustrations `T01`–`T16` (bannière, étapes, illustrations du résultat), hébergées par le propriétaire, lisibles en thème **sombre et clair**.
+- **Les images suivent l'écriture** (2026-11-11 : « l'ordre des images n'est pas logique suivant l'écriture ») : une image montre ses éléments dans l'ordre du texte placé au-dessus, et le texte emploie les mots imprimés sur l'image. Une image modifiée prend un **nouveau nom de fichier**.
 - **Poids** affiché près des deux premières places.
 - **Boutons « tranche toi-même »** : non bloquants, l'utilisateur peut explorer.
 - **Prix** : boutique officielle, en euros, marqueur « (prix non vérifié) » quand la donnée n'est pas attestée.
@@ -487,7 +488,7 @@ find . -name __pycache__ -type d -not -path "./.venv/*" -exec rm -rf {} +
 | **§26.x** | une section du journal de chasse (`docs/audit/ROBUSTESSE_2026-10-12.md`) |
 | **§12.x** | une mise à jour du guide de déploiement (`docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md`) |
 | **`Reverse/`** | la preuve primaire : 10 sorties datées de l'outil d'origine (Oblivity), non modifiables |
-| **T01–T15** | les 15 illustrations du bot (`ImageUse/`), mappées dans `assets/images.json` |
+| **T01–T16** | les 16 illustrations du bot (`assets/illustrations/`), mappées dans `assets/images.json` : 14 originaux de `ImageUse/` publiés tels quels, T09 réordonnée et T16 composées par `tools/compose_illustrations.py` |
 | **banc / grille** | `tools/qa_flow_matrix.py` : passe tous les profils dans le moteur et vérifie les invariants |
 | **mutation** | casser volontairement le code pour vérifier qu'un test échoue bien |
 | **`shell_id`** | identifiant de **coque** : deux souris de même coque n'occupent pas deux places, sauf repli quand aucun autre candidat ne reste |

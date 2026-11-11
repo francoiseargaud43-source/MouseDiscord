@@ -319,7 +319,7 @@ pour un statut `verified`.
 | `hump_position` | `Front`, `Mid`, `Rear`, `Mid-Front`, `Mid-Rear`, `Any` ou `Inconnu`. |
 | `button_height` | `Low`, `Mid`, `High` ou `Inconnu`. |
 | `fit_status` | `owner_spec` (cahier des charges, ou coque jumelle de la même forme), `manufacturer_guide` (recommandation écrite du fabricant), `third_party_guide` (recommandation écrite d'une source tierce autorisée — mouseshape.com — pour une prise que le fabricant ne publie pas : jamais « Faible », jamais à la place d'une valeur fabricant) ou `unverified` (tout `Inconnu`). |
-| `fit_rationale` | Justification écrite de la compatibilité de prise (renseignée pour les 36 souris, obligatoire dès qu'un `*_grip_fit` l'est) : **le bot ne l'affiche pas** — le bloc « 🧭 Pourquoi ce choix ? » vient du calcul (`selection.explanation`), pas du catalogue (contrôle : `tests/test_code_hygiene.py`). |
+| `fit_rationale` | Justification écrite de la compatibilité de prise (renseignée pour les 46 souris, obligatoire dès qu'un `*_grip_fit` l'est) : **le bot ne l'affiche pas** — le bloc « 🧭 Pourquoi ce choix ? » vient du calcul (`selection.explanation`), pas du catalogue (contrôle : `tests/test_code_hygiene.py`). |
 
 **Commercial** (ne modifie jamais le score géométrique)
 
@@ -392,8 +392,8 @@ Le pourcentage n'est jamais présenté comme une probabilité.
 - `pending` : aucune exclusion, mais grip, bosse, boutons ou longueur `Inconnu` / en conflit. Le score partiel est affiché, jamais classé.
 - `scored` : toutes les données présentes.
 
-**Forme de coque** : `shape` (`Symmetrical` / `Ergonomic`) est renseignée pour les **36 souris** (26 le 2026-10-11,
-plus 10 Pulsar le 2026-10-12), chacune sourcée (fiche ATK/VXE/Pulsar, EloShapes, test indépendant) — jamais devinée. Elle sert au bloc « ⛰️ La bosse et la forme » :
+**Forme de coque** : `shape` (`Symmetrical` / `Ergonomic`) est renseignée pour les **46 souris** (26 le 2026-10-11,
+plus 10 Pulsar le 2026-10-12 et 10 autres le 2026-11-11), chacune sourcée (fiche ATK/VXE/Pulsar, EloShapes, test indépendant) — jamais devinée. Elle sert au bloc « ⛰️ La bosse et la forme » :
 une forme symétrique convient aux trois prises, une ergonomique épouse un peu mieux l'arche de la main en Palm.
 En Claw, le **type de griffe déclaré** précise la bosse attendue (griffe relâchée → arrière marquée, agressive →
 centrale marquée, pince → arrière à flancs peu bombés) : conseil d'affichage uniquement, aucun point ni classement ne
@@ -463,7 +463,7 @@ MouseDiscord/
 │   └── validation.py         # Validation des saisies des modals
 ├── data/
 │   ├── mouse_db.json         # Catalogue v2 (géométrie + sources, compatibilité, prix)
-│   └── commercial_links.json # Liens d'achat (36/36 fournis et vérifiés ; les clés _ sont de la documentation)
+│   └── commercial_links.json # Liens d'achat (46/46 fournis et vérifiés ; les clés _ sont de la documentation)
 ├── assets/
 │   ├── images.json           # Clé -> nom de fichier (résolu par IMAGES_BASE_URL) ou URL https complète
 │   └── illustrations/        # Les 16 illustrations (T01–T16 : 14 originaux ImageUse, 2 dérivées), à publier en https
@@ -543,7 +543,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 
 - `tests/test_matcher.py` : plages cibles, points pour 180 × 90 mm en Palm (non-régression), bornes strictes, largeur mesurée vs estimée, statuts `scored` / `pending` / `excluded`, budget personnalisé.
 - `tests/test_selection.py` : effet réel de chaque mode, tolérances, prix inconnus, candidats à vérifier jamais classés.
-- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs (**dont 14 valeurs numériques hostiles** — `NaN`, infini, booléen, poids en texte — et un lien à espace, refusés au chargement), absence de valeur inventée, liens et images, résolution `IMAGES_BASE_URL` (nom de fichier), existence réelle des 15 illustrations, repli de clé d'image.
+- `tests/test_catalog_lookup.py` et `tests/test_data.py` : schéma v2, validation des erreurs (**dont 14 valeurs numériques hostiles** — `NaN`, infini, booléen, poids en texte — et un lien à espace, refusés au chargement), absence de valeur inventée, liens et images, résolution `IMAGES_BASE_URL` (nom de fichier), existence réelle des 16 illustrations, repli de clé d'image.
 - `tests/test_validation.py` : saisies valides, invalides et hors bornes des modals.
 - `tests/test_session.py` : rattachement au membre, remplacement d'un parcours, expiration, enregistrement/relecture du fichier d'état, et **14 contenus de fichier d'état hostiles** (tronqué, version inconnue, dossier à la place du fichier, âge négatif…) qui ne doivent jamais empêcher le bot de démarrer.
 - `tests/test_privacy.py` : scénarios de confidentialité et de robustesse **P02–P18** (parcours complet, deux utilisateurs simultanés, intrus, expiration, redémarrage, clic rejoué, erreur inattendue, fichier d'état) — voir `docs/audit/AUDIT_CONFIDENTIALITE.md` et `docs/audit/ROBUSTESSE_2026-10-12.md`.
@@ -614,7 +614,7 @@ python tools/build_mouse_db.py       # traçabilité du premier relevé — refu
 - `tests/test_measure_grip_width.py` : largeur au capteur depuis une vue de dessus, précision et cas limites.
 - `tests/test_qa_flow_matrix.py` : garde-fous du banc d'essai lui-même (lecture des places **par rôle**, libellés des trois lignes, comptage des places au prix non attesté, et le comptage des **coques partagées** — toutes les paires de places, comme le rapport statistique : jusqu'au 2026-10-14, les deux outils annonçaient deux chiffres différents pour la même phrase — et la **grille elle-même** : ses 21 736 entrées (576 en grille réduite) sont figées **sans doublon**, le même jour où 5 434 profils Fingertip mesurés trois fois faussaient tout pourcentage « sur 27 170 » — les **limites Discord** — les neuf d'un bloc et les huit d'une vue, sur les écrans fixes, les étapes du profil et le résultat (le banc publie la limite la plus remplie du passage : « description d'option 78/100 » au 2026-10-14) — et la **répartition des places** — tout profil à moins de trois lignes doit venir d'un budget personnalisé épuisé, jamais d'un mode normal) — un banc qui se trompe de rôle produit des milliers d'alertes fantômes.
 - `tests/test_setup_command.py` : publication, édition sans doublon, message supprimé, autre salon, fichier d'état corrompu.
-- `tests/test_liens_achat.py` : **les 36 liens d'achat ouverts un par un** — le tableau §8.1 de
+- `tests/test_liens_achat.py` : **les 46 liens d'achat ouverts un par un** — le tableau §8.1 de
   `docs/VERIFICATION_LIENS_SPONSORISES_2026-10-11.md` est relu contre `data/commercial_links.json` (handle
   et variante figée) et `data/mouse_db.json` (prix publié), dans les deux sens ; une note qui annonce
   « la variante que le bouton ouvre » exige un lien qui la fige ; la **liste de travail**

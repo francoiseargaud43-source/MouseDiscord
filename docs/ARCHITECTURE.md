@@ -6,9 +6,9 @@ chiffres sont relus par `tests/test_architecture.py` contre le code : s'ils dive
 
 ## 1. En une phrase
 
-Un bot Discord pose trois à cinq questions selon la prise (prise, variante, thénar, mesures de la main,
-budget), note
-chacune des 36 souris du catalogue sur 40 points selon sa géométrie, et montre **trois souris** dans un
+Un bot Discord pose trois à cinq questions selon la prise (prise, type de griffe, éminence thénar, mesures
+de la main, budget), note
+chacune des 46 souris du catalogue sur 40 points selon sa géométrie, et montre **trois souris** dans un
 seul message privé, avec l'explication du choix.
 
 ## 2. Le parcours
@@ -16,9 +16,9 @@ seul message privé, avec l'explication du choix.
 ```
 Panneau public « Start Mouse Shape Finder »   (cogs/mouse_finder.py, commande !setup_finder)
    └─ message privé (éphémère) :
-      1. Prise ............ Palm / Claw / Fingertip
-      2. Variante ......... Claw seulement : relâchée / agressive / pincée   (aucun effet sur le score)
-      3. Thénar ........... sauf Fingertip : petite / moyenne / grande        (aucun effet sur le score)
+      1. Prise ............ Paume / Griffe / Bout des doigts   (dans le code : Palm / Claw / Fingertip)
+      2. Type de griffe ... Griffe seulement : relâchée / agressive / pince  (aucun effet sur le score)
+      3. Éminence thénar .. sauf Bout des doigts : petite / moyenne / grande (aucun effet sur le score)
       4. Mesures .......... longueur et largeur de la main (mm), formulaire
       5. Budget ........... Économique · Qualité/Prix · Haut de gamme · Peu importe · budget libre (€)
    └─ résultat : un message, trois places + blocs d'explication
@@ -54,9 +54,10 @@ une probabilité. Une donnée **inconnue** ne rapporte aucun point et n'est jama
 donnée manquante est la hauteur des boutons, la souris est quand même classée (« score partiel », signalé
 à l'écran) ; toute autre donnée manquante la met « en attente », hors classement.
 
-> **Le point faible du calcul** : 18 souris sur 36 n'ont pas de hauteur de boutons. Selon ce qu'elles
-> vaudront, le match idéal peut changer pour 27 % des profils (`tools/campagne_boutons.py sensibilite`).
-> La campagne EloShapes du 2026-10-15 propose une classe pour 7 d'entre elles et laisse 10 non tranchées ;
+> **Le point faible du calcul** : 28 souris sur 46 n'ont pas de hauteur de boutons (mesure du 2026-11-11).
+> Selon ce qu'elles vaudront, le match idéal peut changer pour 27 % des profils
+> (`tools/campagne_boutons.py sensibilite`).
+> La campagne EloShapes du 2026-10-15 propose une classe pour 7 d'entre elles et en laisse 10 non tranchées ;
 > rien n'est publié avant la décision du propriétaire (`docs/audit/MESURE_BOUTONS_2026-10-12.md` §18.1).
 
 ### 3.2 Le classement selon le budget — `utils/selection.py`
@@ -87,19 +88,29 @@ banc d'essai compte le cas.
 
 ## 4. Le message de résultat — `cogs/finder_flow.py`
 
-Un seul message privé : « 🎯 Votre recommandation » (récapitulatif + trois lignes : nom · poids · prix ·
-pourcentage · forme), puis les blocs d'explication — « 📐 Vos repères de taille » (avec « 🧭 Pourquoi ce
-choix ? »), l'arrière étroit (thénar petit ou moyen), la bosse et la forme, la variante de Claw, la hauteur
-des boutons. Chaque bloc porte une illustration (`assets/images.json`) ; une illustration n'apparaît
-qu'**une fois** par message. Sous le message, un lien d'achat par souris affichée.
+Un seul message privé, en blocs, dans cet ordre :
+
+1. « 🎯 Votre recommandation » : le récapitulatif et trois lignes (nom · poids · prix · pourcentage · forme),
+   **sans image** ;
+2. « 🧭 Pourquoi ce choix ? » : le score du match idéal, la souris « en clair », le rôle de la gamme, sans image ;
+3. « 📐 Vos repères de taille » ;
+4. l'arrière étroit (éminence thénar petite ou moyenne, jamais pour la prise du bout des doigts) ;
+5. en griffe, le type déclaré et sa photo, puis « ⛰️ La bosse et la forme » (sans type déclaré : la bosse
+   d'abord, puis les trois types sur une image) ;
+6. « 🖱️ La hauteur des boutons ».
+
+**Les mots et les images** (règle du 2026-11-11) : un texte emploie les mots imprimés sur l'illustration
+placée dessous, dans le même ordre ; un bloc ne porte qu'un sujet, donc qu'une image, et une illustration
+n'apparaît qu'**une fois** par message ; le dessin d'un conseil montre toujours une forme **conseillée**, et
+ce que porte la souris retenue est dit dans la phrase. Sous le message, un lien d'achat par souris affichée.
 
 ## 5. Les données
 
 | Fichier | Contenu | Règle |
 | --- | --- | --- |
-| `data/mouse_db.json` | les 36 souris : cotes, forme, prises, prix, composants, **sources** | chaque valeur renseignée cite une source datée qui la déclare ; inconnu = vide, jamais estimé ; relu à chaque recherche |
+| `data/mouse_db.json` | les 46 souris : cotes, forme, prises, prix, composants, **sources** | chaque valeur renseignée cite une source datée qui la déclare ; inconnu = vide, jamais estimé ; relu à chaque recherche |
 | `data/commercial_links.json` | un lien d'achat affilié par souris | boutique officielle, variante figée quand le prix en dépend |
-| `assets/images.json` | les illustrations T01–T15 | hébergées par le propriétaire (`IMAGES_BASE_URL`) |
+| `assets/images.json` | les illustrations T01–T16 (T09 et T16 dérivées des originaux par `tools/compose_illustrations.py`) | hébergées par le propriétaire (`IMAGES_BASE_URL`) ; une image modifiée prend un nouveau nom de fichier |
 
 Validation stricte au chargement : `utils/catalog.py`. Prix en euros, relevés sur la boutique officielle,
 jamais convertis.

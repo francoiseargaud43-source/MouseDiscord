@@ -324,3 +324,41 @@ Le propriétaire a demandé de récupérer **toutes les souris disponibles** sur
    classées ; les autres restent « à vérifier » et ne sont jamais affichées. Il manque donc, pour la plupart des
    modèles, **la hauteur des boutons** et les **compatibilités de prise** : ce sont les deux relevés à compléter
    en priorité (liste à compléter : `docs/audit/PULSAR_CATALOGUE_2026-10-12.md` §5).
+
+## 14. Les images suivent le texte, les textes emploient les mots des images (2026-11-11)
+
+Demande du propriétaire : « l'ordre des images n'est pas logique suivant l'écriture », « réécrire tout s'il
+faut pour que ce soit au propre ». Aucun calcul, seuil, score ni identifiant n'est modifié : la refonte ne
+touche que les textes, l'ordre des blocs et deux images.
+
+**Règle retenue** — un texte emploie exactement les mots imprimés sur l'image placée sous lui, dans le même
+ordre, et le dessin d'un conseil montre toujours une forme **conseillée** (ce que porte la souris retenue se
+lit dans la dernière phrase du bloc).
+
+| Écran | Constat | Correction |
+|---|---|---|
+| Étape 1 — prise | Le texte et le menu listaient « Palm Grip », « Claw Grip », « Fingertip Grip » ; le dessin montrait Griffe, Paume, Bout des doigts : ni le même ordre, ni les mêmes mots. | `T09_paume_griffe_doigts.png` : les trois panneaux remis dans l'ordre Paume, Griffe, Bout des doigts. Texte et menu disent « Paume (Palm Grip) », « Griffe (Claw Grip) », « Bout des doigts (Fingertip Grip) », dans cet ordre. |
+| Étape « type de griffe » | Trois façons de tenir la souris décrites (« Claw relâchée », « agressive », « pincée »), une seule montrée (T04). | `T16_griffe_relachee_agressive_pince.png` : les trois photos T04, T05, T06 côte à côte, chacune avec sa pastille : « Griffe relâchée », « Griffe agressive », « Griffe pince ». Le texte reprend ces trois noms dans cet ordre. |
+| Étapes thénar, mesures, gamme | L'étape thénar ne disait pas quoi regarder sur le dessin ; le menu des gammes parlait en abrégé (« Meilleur points/€ (indicatif) »). | Thénar : où se trouve l'éminence, quoi comparer aux trois dessins, à quoi sert la réponse. Mesures : « Longueur » puis « Largeur », les deux mots du dessin. Gamme : les cinq choix expliqués en une ligne chacun. |
+| Résultat — repères de taille | Le score, la souris « en clair » et « Pourquoi ce choix ? » s'intercalaient entre les deux cotes et leur dessin T12. | Bloc « 🧭 Pourquoi ce choix ? » à part, sans image, juste sous la recommandation ; « 📐 Vos repères de taille » ne porte plus que les deux cotes, T12 juste dessous. |
+| Résultat — bosse | « Bosse médiane », « au milieu » dans le texte, « Bosse centrale » sur le dessin ; pour un type de griffe déclaré, le dessin restait celui de la prise (bosse arrière), même quand le conseil était une bosse centrale. | Mots du dessin (« centrale », « avant », « arrière ») ; le dessin suit le conseil réellement donné (griffe agressive : bosse centrale). |
+| Résultat — boutons | « Boutons médians » dans le texte, « Boutons moyens » sur le dessin. | « hauts », « moyens », « bas », comme sur les dessins. |
+| Résultat — type de griffe | Bloc placé après la bosse, alors que le conseil de bosse en dépend. | Type déclaré : sa photo d'abord (T04, T05 ou T06), puis « ⛰️ La bosse et la forme ». Sans type déclaré (parcours ancien) : la bosse, puis un seul bloc « 🦾 Les trois types de griffe » avec T16. |
+
+Ordre du message de résultat : 🎯 recommandation (sans image), 🧭 pourquoi ce choix (sans image), 📐 repères
+de taille (T12), 🖐️ arrière étroit (T13, éminence thénar petite ou moyenne), 🦾 type de griffe et ⛰️ bosse
+et forme (ordre ci-dessus), 🖱️ hauteur des boutons, puis le pied de message inchangé.
+
+**Fabrication des deux images** — `tools/compose_illustrations.py` les recompose à partir des originaux de
+`ImageUse/`, qui ne sont pas modifiés. T09 : les trois panneaux sont découpés et recollés, aucun pixel des
+dessins n'est redessiné (seul le filet entre Paume et Griffe est retracé, l'ancien portait le bout des traits
+de l'avant-bras). T16 : fond Encre, filets et pastilles bordeaux aux cotes mesurées sur T09, police Syne
+ExtraBold (licence OFL, `tools/polices/`). `python tools/compose_illustrations.py --verifier` compare les
+fichiers livrés à ce que l'outil produit ; `tests/test_compose_illustrations.py` verrouille l'ordre des
+panneaux contre l'ordre du texte et du menu.
+
+**Une image modifiée prend un nouveau nom de fichier** : Discord garde longtemps en mémoire une image déjà
+affichée, et la mise en ligne ne remplace jamais une image déjà présente sur le serveur. L'ancienne
+`T09_griffe_paume_doigts.png` n'est plus appelée ; les lignes T09 des §1 et §2 décrivent l'état du 2026-10-11.
+
+Aperçus régénérés : `docs/apercu_parcours.png`, `docs/apercu_resultat.png`, `docs/apercu_prix_libre.png`.

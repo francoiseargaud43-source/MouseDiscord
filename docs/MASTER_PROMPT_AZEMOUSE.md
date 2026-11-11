@@ -373,7 +373,8 @@ largeur de prise est donc **estimée** (coque − 3 mm) pour les 36. Ne pas inve
   jamais présenter un prix du cahier des charges comme un prix vérifié.
 - **Score partiel annoncé** : une souris dont la hauteur des boutons n'est pas documentée est notée sans ce
   critère (`PARTIAL_SCORING_ALLOWED`), donc son pourcentage est **sous-estimé**. Le match idéal l'explique
-  en clair dans le bloc « 📐 Vos repères de taille » ; les 2e et 3e places portent le marqueur discret
+  en clair dans le bloc « 🧭 Pourquoi ce choix ? » (bloc à part depuis le 2026-11-11 ; la note vivait
+  auparavant sous « 📐 Vos repères de taille ») ; les 2e et 3e places portent le marqueur discret
   « · boutons non documentés » à la fin de leur ligne (`PARTIAL_HINT`), après la forme de coque pour ne pas
   casser l'alignement tout à droite. Jamais de doublon des deux sur la même place.
 

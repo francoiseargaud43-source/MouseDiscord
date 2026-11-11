@@ -107,7 +107,7 @@ doit se trouver exactement à `/home/[compte]/MouseDiscord/bot.py`.
 │   └── commercial_links.json   ← liens d'achat (requis ; peut être vide)
 ├── assets/
 │   ├── images.json             ← clé -> nom de fichier ou URL https (requis ; peut être vide)
-│   └── illustrations/          ← les 15 images T01–T15 (facultatif : sans elles, aucun embed n'affiche d'image)
+│   └── illustrations/          ← les 16 images T01–T16 (facultatif : sans elles, aucun embed n'affiche d'image)
 ├── tools/
 │   └── check_deployment.py     ← contrôle de déploiement (facultatif, recommandé)
 ├── .venv/                      ← créé SUR LE SERVEUR à l'étape 6 (ne pas transférer)
@@ -128,7 +128,7 @@ directement sur le serveur.
 | `data/mouse_db.json` | Oui | Oui | Catalogue des souris | Relu à chaque recherche |
 | `data/commercial_links.json` | Oui | Oui (fichier) | Liens d'achat officiels (36 souris au 2026-10-12) | Relu à chaque résultat. **Voir §2.5** |
 | `assets/images.json` | Oui | Oui (fichier) | Images des étapes et du résultat | Peut être vide (aucune illustration, sans erreur) |
-| `assets/illustrations/` | Oui | Non (recommandé) | Les 15 images `T01`–`T15` prêtes à publier | **Voir §2.7** |
+| `assets/illustrations/` | Oui | Non (recommandé) | Les 16 images `T01`–`T16` prêtes à publier | **Voir §2.7** |
 | `requirements.txt` | Oui | Oui | Dépendances de production (`discord.py`, `python-dotenv`) | Installé à l'étape 6 |
 | `.env` (votre vrai fichier) | **Non** (créez-le sur le serveur) | Oui | Token et réglages | **Secret** : voir §2.4 |
 | `.env.example` | Oui | Non | Modèle de `.env` | Ne contient pas de secret |
@@ -187,7 +187,7 @@ détermine ce qui est transféré.
 
 ### 2.7 Les illustrations : publier les images et renseigner `IMAGES_BASE_URL`
 
-Les 15 images livrées dans `assets/illustrations/` (bannière, triptyques de prises, schémas de bosse et de boutons)
+Les 16 images livrées dans `assets/illustrations/` (bannière, triptyques de prises, schémas de bosse et de boutons)
 sont référencées par `assets/images.json` **par leur nom de fichier**. Discord exige des adresses publiques en `https://` :
 il faut donc les publier, puis indiquer au bot où les trouver.
 
@@ -213,8 +213,13 @@ il faut donc les publier, puis indiquer au bot où les trouver.
    IMAGES_BASE_URL=https://[compte].alwaysdata.net/illustrations/
    ```
 
-4. Contrôler : `python tools/check_deployment.py` doit afficher `images configurées : 15/15`.
+4. Contrôler : `python tools/check_deployment.py` doit afficher `images configurées : 16/16`.
    Sinon, les `ATTENTION` indiquent la cause exacte (base absente, schéma non `https://`, fichier manquant).
+
+**Une image modifiée prend un nouveau nom de fichier** (règle du 2026-11-11, §12.62). Discord garde en mémoire
+l'image d'une adresse déjà affichée : sous l'ancien nom, les membres continueraient de voir l'ancienne image.
+La mise en ligne automatique (`deploiement/LISEZMOI.md`) applique la même règle : elle ajoute les images
+absentes de `~/www/illustrations` et ne remplace jamais un fichier déjà publié.
 
 Sans `IMAGES_BASE_URL`, le bot fonctionne normalement mais **aucun embed n'affiche d'image** (aucune erreur, aucun plantage).
 Le fichier `assets/images.json` (et le `.env`) est relu à chaque interaction : **aucun redémarrage** n'est nécessaire après
@@ -268,7 +273,7 @@ Aucune modification de code n'est nécessaire pour faire fonctionner le bot. Vé
 | Fichier | Action | Obligatoire |
 |---|---|---|
 | `data/commercial_links.json` | Remplacer ou vider les URL `https://url.com/…` (§2.5) | Recommandé avant mise en ligne publique |
-| `assets/images.json` | Rien à faire : les 15 images sont déjà référencées par leur nom de fichier | Non |
+| `assets/images.json` | Rien à faire : les 16 images sont déjà référencées par leur nom de fichier | Non |
 | `assets/illustrations/` | Transférer le dossier, puis publier les images et renseigner `IMAGES_BASE_URL` (§2.7) | Recommandé |
 | `.env` | **Ne pas le créer sur votre PC pour le transférer** : vous le créerez sur le serveur (§6.5) | — |
 
@@ -469,7 +474,7 @@ cd ~/MouseDiscord
 ```
 
 Résultat attendu (exemple de lecture) :
-- `[OK]` partout, dont `images configurées : 15/15` si l'étape §2.7 est faite ;
+- `[OK]` partout, dont `images configurées : 16/16` si l'étape §2.7 est faite ;
 - `[ATTENTION]` pour les liens d'exemple `url.com` (§2.5) et pour `IMAGES_BASE_URL` manquant (§2.7) :
   n'empêche pas le lancement ;
 - **`0 erreur(s) bloquante(s).`** : condition pour continuer.
@@ -596,8 +601,8 @@ ps -ef | grep "[b]ot.py"
 # 3. Contrôle complet : fichiers, token (jamais affiché), catalogue, liens, images, state/
 .venv/bin/python tools/check_deployment.py       # attendu : 0 erreur(s) bloquante(s)
 
-# 4. Les 15 illustrations sont-elles en place, et le .env est-il protégé ?
-ls assets/illustrations | wc -l                  # attendu : 15
+# 4. Les 16 illustrations sont-elles en place, et le .env est-il protégé ?
+ls assets/illustrations | wc -l                  # attendu : 16
 ls -l .env                                       # attendu : -rw-------  (et non rw-r--r--)
 
 # 5. JSON valides (une erreur de syntaxe ne fait pas tomber le bot mais bloque le parcours)
@@ -643,7 +648,7 @@ tail -f ~/admin/logs/services/[fichier]         # suivi en direct (Ctrl+C pour q
 **E. Vérifier que les illustrations sont bien publiées**
 
 ```bash
-ls -l ~/www/illustrations | head                # attendu : les 15 fichiers T0*.png
+ls -l ~/www/illustrations | head                # attendu : les 16 fichiers T*.png
 curl -s -o /dev/null -w "%{http_code}
 " https://aze129.alwaysdata.net/illustrations/T08_azemouse_banniere.png
 # attendu : 200
@@ -873,7 +878,7 @@ Consultez d'abord les journaux (§7.2), puis ce tableau.
 |---|---|
 | `~/MouseDiscord/.env` | Token et réglages propres au serveur |
 | `~/MouseDiscord/data/commercial_links.json` | **Liens d'achat** : depuis le 2026-10-11, le dépôt contient les liens officiels vérifiés (36 depuis le 2026-10-12) — c'est donc le fichier du dépôt qu'il faut installer (§12.9). Ne l'écrasez avec une version plus ancienne que si vous y avez ajouté vos propres liens à la main (comparez d'abord, §2.5) |
-| `~/MouseDiscord/assets/images.json` | Conservé **seulement** si vous y avez mis vos propres URL. Depuis le 2026-10-11, le fichier du dépôt contient les clés attendues et les noms de fichiers des 15 illustrations : c'est **lui** qu'il faut installer (voir §12.5) |
+| `~/MouseDiscord/assets/images.json` | Conservé **seulement** si vous y avez mis vos propres URL. Depuis le 2026-10-11, le fichier du dépôt contient les clés attendues et les noms de fichiers des 16 illustrations (15 jusqu'au 2026-11-11, §12.62) : c'est **lui** qu'il faut installer (voir §12.5) |
 | `~/MouseDiscord/state/` | Mémoire du message d'accueil (évite les doublons) |
 | `~/MouseDiscord/.venv/` | Environnement Python du serveur |
 
@@ -2104,12 +2109,12 @@ vous le souhaitez, `tools/` (les quatorze outils, dont quatre qui répondent mai
 erreur d'usage). **Redémarrage** : la tâche planifiée s'en charge (ou `pkill -f "bot.py"`) ; aucun texte
 affiché ne change. Le compteur du contrôle ci-dessous passe de 558 (valeur du jour du §12.22) à **676** à cette date.
 Les compteurs des §12.16 à §12.22 gardent la valeur du jour de leur mise à jour — **le bloc de contrôle
-ci-dessous est le seul tenu à jour** (dernière valeur : §12.60).
+ci-dessous est le seul tenu à jour** (dernière valeur : §12.62).
 
 ```bash
 cd ~/MouseDiscord
-.venv/bin/python -m pytest -q                      # attendu : 865 passed
-.venv/bin/python tools/check_deployment.py         # attendu : 36 souris, 36 liens, 1 erreur (.env du serveur)
+.venv/bin/python -m pytest -q                      # attendu : 887 passed
+.venv/bin/python tools/check_deployment.py         # attendu : 46 souris, 46 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?
@@ -2867,6 +2872,52 @@ la documentation changent ; le catalogue n'est **pas** modifié. **Redémarrage*
   en laisse 10 non tranchées ; rien n'entre au catalogue avant la décision du propriétaire
   (`docs/audit/MESURE_BOUTONS_2026-10-12.md` §18.1).
 - Le compteur du contrôle ci-dessus passe de 858 à **865** tests.
+
+### 12.62 Mise à jour du 2026-11-11 (53e) : les images suivent le texte, les textes emploient les mots des images
+
+**Fichiers à envoyer** : `cogs/finder_flow.py`, `utils/models.py`, `utils/assets.py`, `assets/images.json`, et
+deux **nouvelles images** — `assets/illustrations/T09_paume_griffe_doigts.png` et
+`assets/illustrations/T16_griffe_relachee_agressive_pince.png` — à déposer aussi dans `~/www/illustrations`
+(§2.7). Publiez les deux images **avant** d'envoyer `assets/images.json` : ce fichier est relu à chaque
+interaction, et une image appelée avant d'être en ligne ne s'affiche pas. L'ancienne
+`T09_griffe_paume_doigts.png` peut rester en ligne : plus rien ne l'appelle. **Redémarrage** : nécessaire
+(`pkill -f "bot.py"`, la tâche planifiée relance le bot).
+
+Avec la mise en ligne automatique (`deploiement/LISEZMOI.md`), une demande `deployer` met d'abord en ligne
+les deux images, puis envoie ces fichiers, contrôle et redémarre : rien n'est à glisser dans FileZilla.
+
+- **Demande du propriétaire** : « l'ordre des images n'est pas logique suivant l'écriture », « réécrire tout
+  s'il faut pour que ce soit au propre ».
+- **Étape 1** : le texte et le menu énuméraient Palm, Claw, Fingertip ; l'image dessinait Griffe, Paume, Bout
+  des doigts. Le texte, le menu et l'image disent maintenant **Paume, Griffe, Bout des doigts**, dans cet
+  ordre (nouvelle image T09 : les panneaux de l'original, recopiés au pixel près dans l'ordre du texte).
+- **Étape « type de griffe »** (prise en griffe) : le texte décrivait trois façons de tenir la souris, l'image
+  n'en montrait qu'une. La nouvelle image T16 montre les trois photos côte à côte, dans l'ordre du texte.
+- **Résultat** : la recommandation ne porte plus d'image ; « 🧭 Pourquoi ce choix ? » devient un bloc à part ;
+  chaque dessin suit le texte qu'il illustre et montre la forme **conseillée** (ce que porte la souris retenue
+  est dit dans la dernière phrase du bloc) ; en griffe, le type déclaré et sa photo viennent avant la bosse
+  qu'il appelle.
+- **Vocabulaire** : un texte emploie les mots imprimés sur l'image placée dessous — Paume, Griffe, Bout des
+  doigts ; Griffe relâchée, agressive, pince ; bosse centrale, avant, arrière ; boutons hauts, moyens, bas.
+- **Aucun calcul ne change** : `utils/matcher.py`, `utils/selection.py` et `utils/slots.py` ne sont pas
+  modifiés. Les identifiants des menus et des boutons non plus : un parcours en cours survit à la mise à jour.
+- `tools/compose_illustrations.py` fabrique les deux images à partir des originaux de `ImageUse/` et les
+  revérifie (`--verifier`) ; `tests/test_compose_illustrations.py` prouve l'ordre et la recopie.
+- Le compteur du bloc de contrôle (§12.23) passe de 865 à **887** tests (869 avant cette mise à jour).
+
+**Vérification en 60 secondes dans Discord**
+
+1. Taper `!setup_finder` : c'est cette commande qui rafraîchit le texte du panneau public (elle modifie le
+   message existant, sans doublon).
+2. Cliquer sur **Start Mouse Shape Finder** : l'étape 1 énumère Paume, Griffe, Bout des doigts, et le dessin
+   les montre dans le même ordre, de gauche à droite.
+3. Choisir **Griffe** : l'étape 2/5 montre trois photos côte à côte — Griffe relâchée, Griffe agressive,
+   Griffe pince.
+4. Aller au bout (par exemple Griffe pince, éminence thénar petite, 180 × 100, Rapport qualité/prix) : le
+   résultat s'ouvre sur « 🎯 Votre recommandation » **sans image**, puis « 🧭 Pourquoi ce choix ? », « 📐 Vos
+   repères de taille », « 🖐️ Un arrière étroit pour votre thénar », « 🦾 Griffe pince », « ⛰️ La bosse et la
+   forme » (dessin « Bosse arrière ») et « 🖱️ La hauteur des boutons » (dessin « Boutons bas »).
+5. Sur le serveur, `python tools/check_deployment.py` affiche `images configurées : 16/16`.
 
 ---
 

@@ -34,7 +34,7 @@ Contrôles effectués, profil par profil :
   vérifié) » à côté de son prix (décision du propriétaire, 2026-10-13) ;
 - **score partiel annoncé** : une souris au score partiel (hauteur des boutons non documentée) affichée
   en 2e ou 3e place porte « boutons non documentés » (décision du propriétaire, 2026-10-13) ; pour le
-  match idéal, la note longue du bloc « 📐 Vos repères de taille » en tient lieu ;
+  match idéal, la note longue du bloc « 🧭 Pourquoi ce choix ? » en tient lieu ;
 - **toutes** les limites Discord, blocs et composants : aucune n'était mesurée avant le 2026-10-14 en
   dehors de cinq limites de bloc sur le seul résultat ; le banc mesure désormais les neuf limites d'un
   bloc et les huit limites d'une vue, sur les écrans fixes, les étapes du profil et le résultat, et

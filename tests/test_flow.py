@@ -1754,7 +1754,7 @@ def test_une_place_au_score_partiel_l_annonce_sur_sa_ligne():
 
     Une souris dont la hauteur des boutons n'est pas documentée est notée sur les critères disponibles
     : son pourcentage est donc calculé SANS ce critère, donc **sous-estimé** (le critère ne peut que
-    rapporter des points, jamais en retirer). La note longue du bloc « 📐 Vos repères de taille » n'est
+    rapporter des points, jamais en retirer). La note longue du bloc « 🧭 Pourquoi ce choix ? » n'est
     écrite que pour le match idéal : sans le marqueur, les 2e et 3e places affichaient un pourcentage
     amputé comme s'il était complet (**8 187 places** sur 27 170 profils, mesuré le 2026-10-13).
     """
