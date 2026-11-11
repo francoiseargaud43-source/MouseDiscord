@@ -156,13 +156,26 @@ restaurer() {
 }
 
 publier_images() {
-  local cible="$HOME/www/illustrations"
+  local cible="$HOME/www/illustrations" fichier nom ajoutees=0 conservees=0
   if [ -L "$cible" ]; then
     echo "lien symbolique vers $(readlink "$cible") : rien à copier"
   elif [ -d "$HOME/www" ]; then
     mkdir -p "$cible"
-    cp -u "$projet"/assets/illustrations/* "$cible"/
-    echo "$(ls "$cible" | wc -l) fichier(s) dans $cible"
+    # Une image déjà en ligne n'est jamais remplacée : Discord garde longtemps en mémoire une image
+    # déjà affichée, donc une nouvelle version se publie sous un NOUVEAU nom (assets/images.json).
+    for fichier in "$projet"/assets/illustrations/*; do
+      [ -f "$fichier" ] || continue
+      nom="$(basename "$fichier")"
+      if [ ! -e "$cible/$nom" ]; then
+        cp "$fichier" "$cible/$nom"
+        ajoutees=$((ajoutees + 1))
+        echo "  + $nom"
+      elif ! cmp -s "$fichier" "$cible/$nom"; then
+        conservees=$((conservees + 1))
+        echo "  ~ $nom : la version en ligne est différente, elle est conservée"
+      fi
+    done
+    echo "$ajoutees image(s) ajoutée(s), $conservees différente(s) conservée(s), $(ls "$cible" | wc -l) fichier(s) dans $cible"
   else
     echo "pas de dossier ~/www : images non publiées"
   fi

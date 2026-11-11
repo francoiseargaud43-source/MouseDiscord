@@ -49,4 +49,7 @@ Tout passe par `deploiement/demande.txt`. Changer la ligne `action:`, augmenter 
 - Avant chaque envoi, l'état précédent est gardé dans `~/MouseDiscord_sauvegardes/` (cinq dernières sauvegardes).
 - Si `tools/check_deployment.py` signale une erreur bloquante, l'état précédent est restauré et le bot n'est pas redémarré.
 - Seul le processus `bot.py` lancé depuis `~/MouseDiscord` est redémarré.
-- La clé du serveur est épinglée dans `deploiement/cle_serveur.txt` dès la première connexion réussie.
+- La clé du serveur est épinglée dans `deploiement/cle_serveur.txt` (relevée le 2026-11-11 par le contrôle
+  public) : si le serveur en présente une autre, la connexion est refusée.
+- Une image déjà en ligne dans `~/www/illustrations` n'est jamais remplacée (Discord garde longtemps en
+  mémoire une image déjà affichée) : une nouvelle version se publie sous un nouveau nom de fichier.
