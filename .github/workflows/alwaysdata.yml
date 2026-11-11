@@ -1,0 +1,47 @@
+# Agit sur le serveur Alwaysdata quand deploiement/demande.txt change.
+# Mode d'emploi : deploiement/LISEZMOI.md
+name: Alwaysdata
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+      - 'arena/**'
+    paths:
+      - 'deploiement/demande.txt'
+
+concurrency:
+  group: alwaysdata
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  serveur:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AD_HOST: ${{ secrets.ALWAYSDATA_SSH_HOST }}
+      AD_USER: ${{ secrets.ALWAYSDATA_SSH_USER }}
+      SSHPASS: ${{ secrets.ALWAYSDATA_SSH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier les secrets
+        id: secrets
+        run: |
+          if [ -z "$AD_HOST" ] || [ -z "$AD_USER" ] || [ -z "$SSHPASS" ]; then
+            echo "pret=non" >> "$GITHUB_OUTPUT"
+            echo "::notice::Secrets Alwaysdata absents : rien n'a été fait sur le serveur. Voir deploiement/LISEZMOI.md."
+          else
+            echo "pret=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Installer sshpass
+        if: steps.secrets.outputs.pret == 'oui'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass rsync
+
+      - name: Exécuter la demande
+        if: steps.secrets.outputs.pret == 'oui'
+        run: bash deploiement/executer.sh
