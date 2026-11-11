@@ -236,7 +236,7 @@ def test_la_sensibilite_mesure_ce_que_les_hauteurs_inconnues_peuvent_changer(tmp
     réduite : avec le vrai catalogue, des résultats dépendent des inconnues ; une fois chaque hauteur
     renseignée (catalogue de test, sources ajoutées), plus aucun — l'incertitude est alors nulle."""
     reel = cb.sensibilite(rapide=True)
-    assert reel["_inconnues"] == {"souris": 18, "total": 36}
+    assert reel["_inconnues"] == {"souris": 23, "total": 41}
     assert sum(ligne["ideal"] for cle, ligne in reel.items() if cle != "_inconnues") > 0
 
     catalogue = json.loads((ROOT / "data" / "mouse_db.json").read_text(encoding="utf-8"))
@@ -247,7 +247,7 @@ def test_la_sensibilite_mesure_ce_que_les_hauteurs_inconnues_peuvent_changer(tmp
     complet = tmp_path / "complet.json"
     complet.write_text(json.dumps(catalogue, ensure_ascii=False), encoding="utf-8")
     plein = cb.sensibilite(complet, rapide=True)
-    assert plein.pop("_inconnues") == {"souris": 0, "total": 36}
+    assert plein.pop("_inconnues") == {"souris": 0, "total": 41}
     assert all(ligne["ideal"] == 0 and ligne["une_place"] == 0 for ligne in plein.values())
 
 
@@ -332,7 +332,7 @@ def test_le_catalogue_d_essai_est_une_copie_et_jamais_le_vrai(tmp_path, capsys):
     sys.path.insert(0, str(ROOT))
     from utils.catalog import load_catalog
     souris = load_catalog(essai)
-    assert len(souris) == 36 and sum(m.button_height == "Inconnu" for m in souris) == 11
+    assert len(souris) == 41 and sum(m.button_height == "Inconnu" for m in souris) == 16
     with pytest.raises(SystemExit):
         cb.main(["analyser", releve, "--rapport", str(tmp_path / "r.md"), "--essai", str(vrai)])
     assert vrai.read_bytes() == avant

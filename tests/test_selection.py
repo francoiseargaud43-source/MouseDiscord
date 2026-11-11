@@ -245,6 +245,8 @@ def test_top_choice_is_always_within_tolerance_of_reference(mode):
 SENSORS_SANS_RANG_ASSUME = {
     "PAW3315": "capteur d'entrée de gamme (VXE X3) : aucune classe publique comparable",
     "Xhero AI / PAW3395 SE": "variante « SE » du PAW3395 (VXE V3) : rang de la version SE non publié, jamais deviné",
+    "Pulsar XS-2": "capteur maison Pulsar de nouvelle génération (Susanto-X 2.0, 2026-11-11) : rang non tranché, "
+                   "jamais deviné — à classer avec source",
 }
 MCUS_SANS_RANG_ASSUME = {
     "": "aucun MCU publié sur la fiche (ATK U2, Pulsar X2 / X2H / Xlite : le fabricant ne le donne pas)",

@@ -351,7 +351,9 @@ Le tableau ci-dessous est **lu par un test** (`tests/test_liens_achat.py`) : il 
 ligne, à `data/commercial_links.json` (handle et variante figée) et à `data/mouse_db.json` (prix
 publié). Modifier un lien ou un prix sans mettre à jour ce tableau fait **échouer la suite**.
 
-### 8.1 Les 36 liens (handle, variante figée, prix de la boutique, prix publié)
+### 8.1 Les 41 liens (handle, variante figée, prix de la boutique, prix publié)
+
+Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les cinq lignes Pulsar marquées « 2026-11-11 » ont été ajoutées ce jour-là avec leurs souris (fiche officielle Pulsar EU relue, prix EUR affiché).
 
 | id | handle | variante figée | libellé de la variante (ou du produit) | prix boutique | prix publié | verdict |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -389,6 +391,11 @@ publié). Modifier un lien ou un prix sans mettre à jour ce tableau fait **éch
 | `pulsar_xlite_v4_mini` | `xlite-v4-mini-gaming-mouse` | — | Xlite v4 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
 | `pulsar_xlite_v4_medium` | `xlite-v4-gaming-mouse` | — | Xlite v4 Medium (taille `Size/Medium`) | 119,99 € | 119,99 € | ✅ |
 | `pulsar_xlite_v4_large` | `xlite-v4-large-gaming-mouse` | — | Xlite v4 Large (taille `Size/Large`) | 119,99 € | 119,99 € | ✅ |
+| `pulsar_x3_crazylight_medium` | `x3-crazylight-medium-gaming-mouse` | — | X3 CrazyLight Medium (2026-11-11) | 149,99 € | 149,99 € | ✅ |
+| `pulsar_zywoo_chosen_gen2_mini` | `zywoo-the-chosen-mouse-gen-2-mini` | — | ZywOo The Chosen Mouse Gen.2 Mini (2026-11-11) | 159,99 € | 159,99 € | ✅ |
+| `pulsar_zywoo_chosen_gen2_medium` | `zywoo-the-chosen-mouse-gen-2-medium-1` | — | ZywOo The Chosen Mouse Gen.2 Medium (2026-11-11) | 149,99 € | 149,99 € | ✅ |
+| `pulsar_susanto_x_2_medium` | `pro-series-susanto-x-2-0-medium-gaming-mouse` | — | Susanto-X 2.0 Medium (2026-11-11) | 159,99 € | 159,99 € | ✅ |
+| `pulsar_es_fs1` | `pulsar-es-fs-1-gaming-mouse` | — | eS FS-1 (2026-11-11) | 179,99 € | 179,99 € | ✅ |
 | `scyrox_v8` | `scyrox-v8` | — | Scyrox V8 (6 variantes) | 69,99 USD | 74,90 € | ⚠️ monnaie ≠ EUR (voir §8.3) |
 | `scyrox_v6` | `scyrox-v6` | — | Scyrox V6 | 69,99 USD | 74,90 € | ⚠️ monnaie ≠ EUR (voir §8.3) |
 
