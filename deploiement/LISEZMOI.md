@@ -40,7 +40,7 @@ Tout passe par `deploiement/demande.txt`. Changer la ligne `action:`, augmenter 
 | Action | Effet sur le serveur |
 |---|---|
 | `etat` | Lecture seule : fichiers comparés au dépôt, processus du bot, images publiées, contrôle, fin du journal |
-| `deployer` | Sauvegarde, envoi des fichiers de production, dépendances, images, contrôle, redémarrage |
+| `deployer` | Sauvegarde, nouvelles images mises en ligne, envoi des fichiers de production, dépendances, contrôle, redémarrage |
 | `redemarrer` | Redémarrage du bot seulement |
 
 ## Garde-fous
@@ -51,5 +51,7 @@ Tout passe par `deploiement/demande.txt`. Changer la ligne `action:`, augmenter 
 - Seul le processus `bot.py` lancé depuis `~/MouseDiscord` est redémarré.
 - La clé du serveur est épinglée dans `deploiement/cle_serveur.txt` (relevée le 2026-11-11 par le contrôle
   public) : si le serveur en présente une autre, la connexion est refusée.
-- Une image déjà en ligne dans `~/www/illustrations` n'est jamais remplacée (Discord garde longtemps en
-  mémoire une image déjà affichée) : une nouvelle version se publie sous un nouveau nom de fichier.
+- Une image déjà présente sur le serveur n'est jamais remplacée, ni en ligne dans `~/www/illustrations`
+  ni dans `~/MouseDiscord/assets/illustrations` (les deux dossiers peuvent n'en faire qu'un, par lien
+  symbolique) : Discord garde longtemps en mémoire une image déjà affichée, donc une nouvelle version se
+  publie sous un nouveau nom de fichier. Les images absentes du serveur, elles, sont ajoutées.

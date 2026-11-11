@@ -181,6 +181,13 @@ publier_images() {
   fi
 }
 
+# Étape à part, lancée AVANT l'envoi de assets/images.json : le bot en marche relit ce fichier à chaque
+# interaction, une image doit donc être en ligne avant d'y être nommée.
+publier() {
+  titre "Images publiées"
+  publier_images
+}
+
 redemarrer() {
   titre "Redémarrage du bot"
   local avant apres="" pid encore i
@@ -233,9 +240,6 @@ activer() {
   "$python_venv" -m pip install -q -r requirements.txt
   echo "dépendances à jour"
 
-  titre "Images publiées"
-  publier_images
-
   titre "Contrôle de déploiement"
   if ! "$python_venv" tools/check_deployment.py; then
     echo "ÉCHEC du contrôle : le bot n'est pas redémarré."
@@ -246,7 +250,7 @@ activer() {
 }
 
 case "$etape" in
-  etat | sommes | sauvegarde | activer | redemarrer) "$etape" ;;
+  etat | sommes | sauvegarde | publier | activer | redemarrer) "$etape" ;;
   *)
     echo "Étape inconnue : $etape"
     exit 2

@@ -83,8 +83,10 @@ sur_le_serveur() {
   distant "bash -s -- $1" < deploiement/serveur.sh
 }
 
+# -c : c'est le contenu qui décide de l'envoi, pas la date ni la taille (un fichier de même taille et de
+# même date que celui du serveur, mais au contenu différent, serait sinon laissé tel quel).
 envoyer() {
-  "${lanceur[@]}" rsync -rltz -e "ssh ${options_ssh[*]}" "$@"
+  "${lanceur[@]}" rsync -rltzc -e "ssh ${options_ssh[*]}" "$@"
 }
 
 # Copie de travail : exactement ce qui doit se trouver sur le serveur (docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md §2.3).
@@ -151,10 +153,20 @@ case "$action" in
   deployer)
     preparer
     sur_le_serveur sauvegarde
-    printf '\n=== Envoi des fichiers (commit %s) ===\n' "$(git rev-parse --short HEAD)"
+    printf '\n=== Envoi des illustrations (commit %s) ===\n' "$(git rev-parse --short HEAD)"
+    # Les illustrations d'abord, et leur mise en ligne : le bot en marche relit assets/images.json à chaque
+    # interaction, ce fichier ne doit donc arriver qu'une fois ses images publiées.
+    # Une illustration déjà présente sur le serveur n'est jamais remplacée, pas même dans le dossier du
+    # projet : ~/www/illustrations peut être un lien vers ce dossier, et la bannière en ligne n'est pas
+    # celle du dépôt (contrôle public du 2026-11-11). Une nouvelle version = un nouveau nom de fichier.
+    distant "mkdir -p MouseDiscord/assets/illustrations"
+    envoyer --ignore-existing "$prepa/assets/illustrations/" "$AD_USER@$AD_HOST:MouseDiscord/assets/illustrations/"
+    echo "illustrations envoyées (seules les nouvelles sont ajoutées)"
+    sur_le_serveur publier
+    printf '\n=== Envoi des fichiers ===\n'
     envoyer --delete --exclude '__pycache__/' "$prepa/cogs/" "$AD_USER@$AD_HOST:MouseDiscord/cogs/"
     envoyer --delete --exclude '__pycache__/' "$prepa/utils/" "$AD_USER@$AD_HOST:MouseDiscord/utils/"
-    envoyer --exclude 'cogs/' --exclude 'utils/' "$prepa/" "$AD_USER@$AD_HOST:MouseDiscord/"
+    envoyer --exclude 'cogs/' --exclude 'utils/' --exclude 'assets/illustrations/' "$prepa/" "$AD_USER@$AD_HOST:MouseDiscord/"
     echo "fichiers envoyés"
     sur_le_serveur activer
     ;;
