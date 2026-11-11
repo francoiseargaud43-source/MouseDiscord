@@ -60,3 +60,14 @@ def test_non_latin_digits_get_the_clear_message_not_a_crash():
     """Un chiffre non latin doit produire une InputError lisible, jamais une exception technique."""
     with pytest.raises(InputError, match="n'est pas un nombre valide"):
         parse_number("\u0661\u0668\u0660", "Longueur", (100, 260), "mm")
+
+
+def test_hand_measures_typed_in_centimetres_are_converted():
+    """2026-11-11 : « 18,5 » ou « 18,5 cm » pour une main se lit en centimètres (une main de 18 mm n'existe pas)."""
+    assert parse_hand_measures("18,5", "9") == (185.0, 90.0)
+    assert parse_hand_measures("18.5 cm", "9,2 CM") == (185.0, 92.0)
+    assert parse_hand_measures("185", "92 mm") == (185.0, 92.0)
+    with pytest.raises(InputError):
+        parse_hand_measures("40 cm", "9")      # 400 mm : hors limites, jamais tronqué
+    with pytest.raises(InputError):
+        parse_budget("18 cm")                  # le budget n'accepte pas d'unité de longueur

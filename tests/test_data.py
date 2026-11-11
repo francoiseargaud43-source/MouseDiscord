@@ -798,6 +798,28 @@ def test_links_file_skips_invalid_entries(tmp_path):
     assert load_commercial_links(f) == {"a": "https://shop.test/a"}
 
 
+def test_un_lien_partenaire_sans_parametre_d_affiliation_est_ecarte(tmp_path):
+    """2026-11-11 : un lien ATK, Scyrox ou Pulsar EU sans son paramètre ferait acheter sans commission."""
+    f = tmp_path / "links.json"
+    f.write_text(json.dumps({
+        "atk_ok": "https://www.atk.store/en-fr/products/x?country=FR&ref=aze",
+        "atk_sans_ref": "https://www.atk.store/en-fr/products/x?country=FR",
+        "atk_ref_vide": "https://atk.store/products/x?ref=",
+        "scyrox_ok": "https://scyrox.com/products/scyrox-v8?bg_ref=Q0rHhhBRNv",
+        "scyrox_mauvais_param": "https://scyrox.com/products/scyrox-v8?ref=aze",
+        "pulsar_ok": "https://eu.pulsar.gg/products/x?ref=AZE",
+        "pulsar_sans_ref": "https://eu.pulsar.gg/products/x",
+        "autre_boutique": "https://shop.test/a",
+    }), encoding="utf-8")
+    assert set(load_commercial_links(f)) == {"atk_ok", "scyrox_ok", "pulsar_ok", "autre_boutique"}
+
+
+def test_le_fichier_livre_ne_perd_aucun_lien_au_controle_d_affiliation():
+    brut = {k: v for k, v in json.loads(COMMERCIAL_LINKS_PATH.read_text(encoding="utf-8")).items()
+            if not k.startswith("_")}
+    assert load_commercial_links(COMMERCIAL_LINKS_PATH) == brut
+
+
 def test_un_lien_trop_long_pour_discord_est_ecarte_et_les_autres_survivent(tmp_path):
     """C56 (2026-10-13) : Discord refuse une URL de bouton de plus de 512 caractères.
 
