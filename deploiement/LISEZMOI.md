@@ -7,17 +7,19 @@ envoie les fichiers, contrôle l'installation et redémarre le bot. Le guide man
 ## Mise en place, une seule fois
 
 Dans GitHub, ouvrir le dépôt puis **Settings > Secrets and variables > Actions > New repository secret**
-et créer trois secrets. Ce sont les valeurs déjà saisies dans le Gestionnaire de sites de FileZilla.
+et créer trois secrets. L'hôte et l'identifiant sont ceux du Gestionnaire de sites de FileZilla.
 
 | Nom du secret | Valeur |
 |---|---|
 | `ALWAYSDATA_SSH_HOST` | l'hôte, de la forme `ssh-[compte].alwaysdata.net` |
 | `ALWAYSDATA_SSH_USER` | l'identifiant SSH |
-| `ALWAYSDATA_SSH_PASSWORD` | le mot de passe SSH |
+| `ALWAYSDATA_SSH_KEY` **ou** `ALWAYSDATA_SSH_PASSWORD` | une clé privée réservée au déploiement (sa clé publique est dans `~/.ssh/authorized_keys` du serveur), ou à défaut le mot de passe SSH |
+
+Si les deux existent, la clé est utilisée.
 
 Un secret enregistré ne peut plus être relu par personne, et GitHub le masque dans tous les journaux.
-Pour retirer l'accès : supprimer les secrets, ou changer le mot de passe SSH dans Alwaysdata
-(**Remote access > SSH**).
+Pour retirer l'accès : supprimer les secrets, puis retirer la ligne de la clé dans `~/.ssh/authorized_keys`
+ou changer le mot de passe SSH dans Alwaysdata (**Remote access > SSH**).
 
 ## Utilisation
 

@@ -7,7 +7,8 @@ etape="${1:?étape manquante}"
 projet="$HOME/MouseDiscord"
 sauvegardes="$HOME/MouseDiscord_sauvegardes"
 python_venv="$projet/.venv/bin/python"
-journaux="$HOME/admin/logs/services"
+# Journaux d'Alwaysdata : services/ si le bot est un service, jobs/ s'il est lancé par une tâche planifiée.
+journaux="$HOME/admin/logs/services $HOME/admin/logs/jobs"
 
 titre() { printf '\n=== %s ===\n' "$1"; }
 
@@ -22,20 +23,22 @@ pids_du_bot() {
   done
 }
 
-# Fin du journal du service qui parle du bot (logger « mouse_discord »).
-journal_du_service() {
-  local lignes="${1:-40}" fichier
-  if [ ! -d "$journaux" ]; then
-    echo "(pas de dossier $journaux)"
-    return 0
-  fi
-  fichier="$(grep -ls 'mouse_discord' "$journaux"/* 2>/dev/null | xargs -r ls -t 2>/dev/null | head -n 1 || true)"
+# Fin du journal le plus récent qui parle du bot (logger « mouse_discord »).
+journal_du_bot() {
+  local lignes="${1:-40}" fichier dossier
+  # shellcheck disable=SC2086
+  fichier="$(grep -rls 'mouse_discord' $journaux 2>/dev/null | xargs -r ls -t 2>/dev/null | head -n 1 || true)"
   if [ -z "$fichier" ]; then
     echo "(aucun journal ne mentionne mouse_discord)"
-    ls -lt "$journaux" | head -n 8 || true
+    for dossier in $journaux; do
+      if [ -d "$dossier" ]; then
+        echo "--- $dossier"
+        ls -lt "$dossier" | head -n 6 || true
+      fi
+    done
     return 0
   fi
-  echo "--- fin de $(basename "$fichier")"
+  echo "--- fin de $fichier"
   tail -n "$lignes" "$fichier" | cut -c1-300
 }
 
@@ -110,8 +113,8 @@ etat() {
     echo "(contrôle impossible : venv ou tools/check_deployment.py absent)"
   fi
 
-  titre "Journal du service"
-  journal_du_service 40
+  titre "Journal du bot"
+  journal_du_bot 40
 
   titre "Sauvegardes"
   ls -lt "$sauvegardes" 2>/dev/null | head -n 8 || echo "(aucune)"
@@ -170,12 +173,12 @@ redemarrer() {
   local avant apres="" pid encore i
   avant="$(pids_du_bot | tr '\n' ' ')"
   if [ -z "$avant" ]; then
-    echo "AUCUN processus du bot en cours : le service est arrêté ou désactivé."
-    echo "À démarrer dans l'administration Alwaysdata (Advanced > Services)."
-    journal_du_service 30
+    echo "AUCUN processus du bot en cours : le service ou la tâche planifiée est à l'arrêt."
+    echo "À relancer dans l'administration Alwaysdata (Advanced > Services, ou Tâches planifiées)."
+    journal_du_bot 30
     exit 3
   fi
-  echo "arrêt du processus $avant(Alwaysdata relance le service tout seul)"
+  echo "arrêt du processus $avant(Alwaysdata le relance tout seul : service, ou tâche planifiée au créneau suivant)"
   # shellcheck disable=SC2086
   kill -TERM $avant 2>/dev/null || true
   for i in $(seq 1 10); do
@@ -189,20 +192,21 @@ redemarrer() {
   for pid in $avant; do
     if kill -0 "$pid" 2>/dev/null; then kill -KILL "$pid" 2>/dev/null || true; fi
   done
-  for i in $(seq 1 45); do
-    sleep 2
+  # Une tâche planifiée « toutes les 5 minutes » peut mettre jusqu'à 5 minutes à relancer le bot.
+  for i in $(seq 1 110); do
+    sleep 3
     apres="$(pids_du_bot | tr '\n' ' ')"
     if [ -n "$apres" ] && [ "$apres" != "$avant" ]; then break; fi
     apres=""
   done
   if [ -z "$apres" ]; then
-    echo "Le bot n'a pas été relancé au bout de 90 secondes."
-    journal_du_service 40
+    echo "Le bot n'a pas été relancé au bout de 5 minutes 30."
+    journal_du_bot 40
     exit 4
   fi
-  echo "nouveau processus : $apres"
-  sleep 10
-  journal_du_service 25
+  echo "nouveau processus : $apres(relancé après environ $((i * 3)) s)"
+  sleep 12
+  journal_du_bot 25
 }
 
 activer() {

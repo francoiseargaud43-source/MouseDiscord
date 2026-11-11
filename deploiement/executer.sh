@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Lancé par .github/workflows/alwaysdata.yml sur une machine GitHub.
 # Lit deploiement/demande.txt puis agit sur le serveur Alwaysdata par SSH.
-# Les identifiants viennent des secrets GitHub (AD_HOST, AD_USER, SSHPASS) :
+# Les identifiants viennent des secrets GitHub (AD_HOST, AD_USER, puis AD_KEY ou SSHPASS) :
 # ils ne sont ni affichés ni écrits dans le dépôt.
 set -euo pipefail
 
@@ -17,8 +17,10 @@ case "$action" in
 esac
 : "${AD_HOST:?secret ALWAYSDATA_SSH_HOST absent}"
 : "${AD_USER:?secret ALWAYSDATA_SSH_USER absent}"
-: "${SSHPASS:?secret ALWAYSDATA_SSH_PASSWORD absent}"
-export SSHPASS
+if [ -z "${AD_KEY:-}" ] && [ -z "${SSHPASS:-}" ]; then
+  echo "Ni clé (ALWAYSDATA_SSH_KEY) ni mot de passe (ALWAYSDATA_SSH_PASSWORD) dans les secrets."
+  exit 2
+fi
 
 # --- Clé du serveur : épinglée dans deploiement/cle_serveur.txt dès qu'elle est connue ---
 mkdir -p "$HOME/.ssh"
@@ -39,16 +41,29 @@ options_ssh=(
   -o "StrictHostKeyChecking=$verification"
   -o "UserKnownHostsFile=$connus"
   -o HashKnownHosts=no
-  -o PreferredAuthentications=password,keyboard-interactive
-  -o PubkeyAuthentication=no
-  -o NumberOfPasswordPrompts=1
   -o ConnectTimeout=20
   -o ServerAliveInterval=15
   -o LogLevel=ERROR
 )
 
+# Connexion par clé si le secret ALWAYSDATA_SSH_KEY existe, sinon par mot de passe.
+if [ -n "${AD_KEY:-}" ]; then
+  cle="$HOME/.ssh/alwaysdata_deploiement"
+  printf '%s\n' "$AD_KEY" | tr -d '\r' > "$cle"
+  chmod 600 "$cle"
+  options_ssh+=(-i "$cle" -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -o BatchMode=yes)
+  lanceur=(env)
+  echo "connexion par clé"
+else
+  export SSHPASS
+  command -v sshpass > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq sshpass; }
+  options_ssh+=(-o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1)
+  lanceur=(sshpass -e)
+  echo "connexion par mot de passe"
+fi
+
 distant() {
-  sshpass -e ssh "${options_ssh[@]}" "$AD_USER@$AD_HOST" "$@"
+  "${lanceur[@]}" ssh "${options_ssh[@]}" "$AD_USER@$AD_HOST" "$@"
 }
 
 # sur_le_serveur <étape> : exécute deploiement/serveur.sh sur le serveur.
@@ -57,7 +72,7 @@ sur_le_serveur() {
 }
 
 envoyer() {
-  sshpass -e rsync -rltz -e "ssh ${options_ssh[*]}" "$@"
+  "${lanceur[@]}" rsync -rltz -e "ssh ${options_ssh[*]}" "$@"
 }
 
 # Copie de travail : exactement ce qui doit se trouver sur le serveur (docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md §2.3).
@@ -105,10 +120,16 @@ case "$action" in
     sommes_locales > /tmp/sommes_depot.txt
     if sur_le_serveur sommes > /tmp/sommes_serveur.txt; then
       comparer /tmp/sommes_depot.txt /tmp/sommes_serveur.txt
+      printf '\n=== Données : serveur comparé au dépôt ===\n'
       for f in data/commercial_links.json data/mouse_db.json assets/images.json; do
-        if distant "cat MouseDiscord/$f" > /tmp/distant.json 2>/dev/null && ! cmp -s /tmp/distant.json "$prepa/$f"; then
-          printf '\n--- %s : différences serveur -> dépôt (120 premières lignes)\n' "$f"
-          diff -u /tmp/distant.json "$prepa/$f" | head -n 120 || true
+        if distant "cat MouseDiscord/$f" > /tmp/distant.json 2>/dev/null; then
+          if cmp -s /tmp/distant.json "$prepa/$f"; then
+            echo "$f : identique"
+          else
+            python3 deploiement/comparer_donnees.py "$f" /tmp/distant.json "$prepa/$f"
+          fi
+        else
+          echo "$f : absent du serveur"
         fi
       done
     else
