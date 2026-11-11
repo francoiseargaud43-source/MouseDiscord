@@ -15,6 +15,7 @@ import re
 from dataclasses import fields
 from pathlib import Path
 from typing import Any, Mapping
+from urllib.parse import parse_qs, urlsplit
 
 from utils.models import (
     BUTTON_HEIGHTS,
@@ -201,6 +202,28 @@ def _lien_utilisable(url: str) -> bool:
             and _LIEN_INUTILISABLE.search(url) is None)
 
 
+# Boutiques partenaires du propriétaire et paramètre d'affiliation qu'elles attendent (fournis le
+# 2026-10-12, voir data/commercial_links.json « _affiliation »). 2026-11-11 : un lien vers l'une de ces
+# boutiques SANS son paramètre ferait acheter le membre sans commission — le bouton s'afficherait,
+# l'erreur passerait inaperçue. Jusqu'ici seuls les tests le vérifiaient ; le chargeur l'écarte désormais
+# (avertissement dans les journaux, repli « Liens à venir » si c'était le seul lien).
+AFFILIATE_PARAMS = {
+    "atk.store": "ref",
+    "www.atk.store": "ref",
+    "scyrox.com": "bg_ref",
+    "www.scyrox.com": "bg_ref",
+    "eu.pulsar.gg": "ref",
+}
+
+
+def _affiliation_manquante(url: str) -> bool:
+    parts = urlsplit(url)
+    param = AFFILIATE_PARAMS.get((parts.hostname or "").lower())
+    if param is None:
+        return False
+    return not any(v.strip() for v in parse_qs(parts.query).get(param, []))
+
+
 def load_commercial_links(path: Path) -> dict[str, str]:
     """Retourne {mouse_id: url}. Les entrées invalides sont ignorées avec un avertissement."""
     try:
@@ -225,8 +248,10 @@ def load_commercial_links(path: Path) -> dict[str, str]:
     for mouse_id, url in raw.items():
         if mouse_id.startswith("_"):
             continue
-        if isinstance(url, str) and _lien_utilisable(url):
-            links[mouse_id] = url
-        else:
+        if not (isinstance(url, str) and _lien_utilisable(url)):
             log.warning("Lien ignoré pour %s : URL invalide", mouse_id)
+        elif _affiliation_manquante(url):
+            log.warning("Lien ignoré pour %s : paramètre d'affiliation absent (%s)", mouse_id, url)
+        else:
+            links[mouse_id] = url
     return links

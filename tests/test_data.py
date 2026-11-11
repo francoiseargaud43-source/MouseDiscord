@@ -34,6 +34,14 @@ PULSAR_IDS = [
     "pulsar_xlite_crazylight_medium", "pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium",
     "pulsar_xlite_v4_large",
 ]
+# Ajouts du 2026-11-11 : souris Pulsar en vente sur la boutique européenne, relevées sur la fiche
+# officielle du modèle (cotes, poids, capteur, fréquence, forme, prises recommandées par le fabricant).
+PULSAR_2026_11_11_IDS = [
+    "pulsar_x3_crazylight_medium", "pulsar_zywoo_chosen_gen2_mini", "pulsar_zywoo_chosen_gen2_medium",
+    "pulsar_susanto_x_2_medium", "pulsar_es_fs1",
+    "pulsar_zywoo_chosen_gen3_medium", "pulsar_susanto_x_2_large", "pulsar_tenz_signature_2_medium",
+    "pulsar_feinmann_f01", "pulsar_es_xlite",
+]
 # Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
 # boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
 # droite : forme à trancher, jamais devinée (docs/audit/PULSAR_CATALOGUE_2026-10-12.md §6).
@@ -55,7 +63,9 @@ def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert set(NEW_ATK_IDS) <= set(mice)
     assert set(STORE_2026_10_11_IDS) <= set(mice)
     assert set(PULSAR_IDS) <= set(mice)
-    assert len(mice) == (len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS) + len(PULSAR_IDS))
+    assert set(PULSAR_2026_11_11_IDS) <= set(mice)
+    assert len(mice) == (len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS) + len(PULSAR_IDS)
+                         + len(PULSAR_2026_11_11_IDS))
 
 
 def price_is_either_absent_or_sourced(mouse) -> bool:
@@ -112,7 +122,11 @@ def test_small_shape_gap_is_filled_by_the_pulsar_minis(mice):
         if not m.id.startswith("pulsar_") and m.id != "vxe_v3" and m.length_mm is not None
     ]
     assert min(others) > 116.6
-    assert min(m.length_mm for m in mice.values() if m.length_mm is not None) == 115.6
+    # 2026-11-11 : la ZywOo Gen.2 Mini (114,5 mm, fiche officielle Pulsar EU) devient la plus courte.
+    assert mice["pulsar_zywoo_chosen_gen2_mini"].length_mm == 114.5
+    assert min(m.length_mm for m in mice.values() if m.length_mm is not None) == 114.5
+    assert min(m.length_mm for m in mice.values()
+               if m.length_mm is not None and m.id != "pulsar_zywoo_chosen_gen2_mini") == 115.6
 
 
 def test_owner_models_keep_their_compatibility_values(mice):
@@ -661,7 +675,7 @@ def test_commercial_links_are_official_and_verified():
     assert all(
         "ref=AZE" in url for key, url in links.items() if key.startswith("pulsar_")
     )
-    assert len([key for key in links if key.startswith("pulsar_")]) == len(PULSAR_IDS)
+    assert len([key for key in links if key.startswith("pulsar_")]) == len(PULSAR_IDS) + len(PULSAR_2026_11_11_IDS)
 
 
 def test_commercial_links_reference_known_mice():
@@ -784,6 +798,28 @@ def test_links_file_skips_invalid_entries(tmp_path):
     f = tmp_path / "links.json"
     f.write_text(json.dumps({"_aide": "x", "a": "https://shop.test/a", "b": "javascript:x", "c": 3}), encoding="utf-8")
     assert load_commercial_links(f) == {"a": "https://shop.test/a"}
+
+
+def test_un_lien_partenaire_sans_parametre_d_affiliation_est_ecarte(tmp_path):
+    """2026-11-11 : un lien ATK, Scyrox ou Pulsar EU sans son paramètre ferait acheter sans commission."""
+    f = tmp_path / "links.json"
+    f.write_text(json.dumps({
+        "atk_ok": "https://www.atk.store/en-fr/products/x?country=FR&ref=aze",
+        "atk_sans_ref": "https://www.atk.store/en-fr/products/x?country=FR",
+        "atk_ref_vide": "https://atk.store/products/x?ref=",
+        "scyrox_ok": "https://scyrox.com/products/scyrox-v8?bg_ref=Q0rHhhBRNv",
+        "scyrox_mauvais_param": "https://scyrox.com/products/scyrox-v8?ref=aze",
+        "pulsar_ok": "https://eu.pulsar.gg/products/x?ref=AZE",
+        "pulsar_sans_ref": "https://eu.pulsar.gg/products/x",
+        "autre_boutique": "https://shop.test/a",
+    }), encoding="utf-8")
+    assert set(load_commercial_links(f)) == {"atk_ok", "scyrox_ok", "pulsar_ok", "autre_boutique"}
+
+
+def test_le_fichier_livre_ne_perd_aucun_lien_au_controle_d_affiliation():
+    brut = {k: v for k, v in json.loads(COMMERCIAL_LINKS_PATH.read_text(encoding="utf-8")).items()
+            if not k.startswith("_")}
+    assert load_commercial_links(COMMERCIAL_LINKS_PATH) == brut
 
 
 def test_un_lien_trop_long_pour_discord_est_ecarte_et_les_autres_survivent(tmp_path):
@@ -977,6 +1013,25 @@ def test_every_mouse_weight_is_known_and_sourced():
         assert mouse.weight_g, f"{mouse.id} : poids manquant"
         assert 20 <= mouse.weight_g <= 120, f"{mouse.id} : poids invraisemblable ({mouse.weight_g})"
         assert any("weight_g" in source.fields for source in mouse.sources), mouse.id
+
+
+def test_pulsar_2026_11_11_entries_follow_the_official_product_pages(mice):
+    """2026-11-11 : mêmes règles que les fiches Pulsar du 2026-10-12, sauf la fréquence.
+
+    Ces modèles livrent leur récepteur 8K DANS la boîte (« Package Contents ») : 8 000 Hz est alors
+    la fréquence réellement obtenue par l'acheteur, et la note doit le dire.
+    """
+    for mid in PULSAR_2026_11_11_IDS:
+        mouse = mice[mid]
+        assert mouse.brand == "Pulsar" and mouse.budget_tier == "Haut de Gamme"
+        assert price_is_either_absent_or_sourced(mouse), mid
+        assert mouse.price_status == "verified" and mouse.price_eur, mid
+        assert any(s.url.startswith("https://eu.pulsar.gg/") for s in mouse.sources), mid
+        assert mouse.dimension_status == "verified", mid
+        assert not mouse.mcu, f"{mid} : MCU non publié par Pulsar, il doit rester vide"
+        assert mouse.fit_status == "manufacturer_guide", mid
+        assert grip_fields_are_sourced_or_unknown(mouse), mid
+        assert mouse.polling_hz == 8000 and "fourni" in mouse.notes.lower(), mid
 
 
 def test_pulsar_entries_are_sourced_and_never_invent_components(mice):

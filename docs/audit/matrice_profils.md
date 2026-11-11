@@ -1,6 +1,6 @@
 # Matrices de comparaison par profil
 
-_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-10-14**. Ne pas modifier à la main : relancer le script._
+_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-11-11**. Ne pas modifier à la main : relancer le script._
 
 **Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; « ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.
 
@@ -49,6 +49,16 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | Pulsar X2H CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (écart 3.2 mm) | 59.0 mm (estimée, écart 0.0) | Inconnu | Rear | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.4) | Élevé | Mid | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (écart 2.8 mm) | 66.5 mm (estimée, écart 6.9) | Élevé | Mid | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X3 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 124.7 mm (écart 0.9 mm) | 66.5 mm (estimée, écart 6.9) | Élevé | Mid | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.2 Mini | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 114.5 mm (écart 4.3 mm) | 61.8 mm (estimée, écart 2.2) | Élevé | Inconnu | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.2 Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 119.4 mm (dans la plage) | 64.5 mm (estimée, écart 4.9) | Élevé | Inconnu | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Susanto-X 2.0 Medium | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 118.7 mm (écart 0.1 mm) | 59.3 mm (estimée, écart 0.0) | Inconnu | Inconnu | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar eS FS-1 | ❌ exclue — Prix 179.99 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 0.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Inconnu | Inconnu | — | Prix 179.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.3 Medium | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 119.4 mm (dans la plage) | 64.5 mm (estimée, écart 4.9) | Élevé | Inconnu | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Susanto-X 2.0 Large | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 0.2 mm) | 62.3 mm (estimée, écart 2.7) | Inconnu | Inconnu | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar TenZ Signature Edition 2.0 Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.4) | Inconnu | Inconnu | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Feinmann F01 | ❌ exclue — Prix 139.99 € au-dessus du budget maximal 75.00 € | 118.6 mm (écart 0.2 mm) | 62.3 mm (estimée, écart 2.7) | Élevé | Inconnu | Inconnu | — | Prix 139.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar eS Xlite | ❌ exclue — Prix 179.99 € au-dessus du budget maximal 75.00 € | 123.5 mm (dans la plage) | 63.3 mm (estimée, écart 3.7) | Élevé | Inconnu | Inconnu | — | Prix 179.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil P, calculé comme dans le bot)**
 
@@ -105,6 +115,16 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Pulsar X2H CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 59.0 mm (estimée, écart 0.6) | Élevé | Rear | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (écart 6.1 mm) | 63.0 mm (estimée, écart 4.6) | Élevé | Mid | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (écart 10.7 mm) | 66.5 mm (estimée, écart 8.1) | Élevé | Mid | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X3 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 124.7 mm (écart 8.8 mm) | 66.5 mm (estimée, écart 8.1) | Inconnu | Mid | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.2 Mini | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 114.5 mm (dans la plage) | 61.8 mm (estimée, écart 3.4) | Inconnu | Inconnu | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.2 Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 119.4 mm (écart 3.5 mm) | 64.5 mm (estimée, écart 6.1) | Inconnu | Inconnu | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Susanto-X 2.0 Medium | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 118.7 mm (écart 2.8 mm) | 59.3 mm (estimée, écart 0.9) | Élevé | Inconnu | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar eS FS-1 | ❌ exclue — Prix 179.99 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 8.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Inconnu | Inconnu | — | Prix 179.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.3 Medium | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 119.4 mm (écart 3.5 mm) | 64.5 mm (estimée, écart 6.1) | Inconnu | Inconnu | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Susanto-X 2.0 Large | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 8.1 mm) | 62.3 mm (estimée, écart 3.9) | Élevé | Inconnu | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar TenZ Signature Edition 2.0 Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.0 mm (écart 4.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Inconnu | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Feinmann F01 | ❌ exclue — Prix 139.99 € au-dessus du budget maximal 75.00 € | 118.6 mm (écart 2.7 mm) | 62.3 mm (estimée, écart 3.9) | Inconnu | Inconnu | Inconnu | — | Prix 139.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar eS Xlite | ❌ exclue — Prix 179.99 € au-dessus du budget maximal 75.00 € | 123.5 mm (écart 7.6 mm) | 63.3 mm (estimée, écart 4.9) | Inconnu | Inconnu | Inconnu | — | Prix 179.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil C, calculé comme dans le bot)**
 
@@ -161,6 +181,16 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | Pulsar X2H CrazyLight Mini | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 115.6 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite CrazyLight Medium | ❌ exclue — Prix 149.90 € au-dessus du budget maximal 75.00 € | 122.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.90 € au-dessus du budget maximal 75.00 € |
 | Pulsar Xlite v4 Large | ❌ exclue — Prix 119.99 € au-dessus du budget maximal 75.00 € | 126.6 mm (dans la plage) | 66.5 mm (estimée, écart 7.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 119.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar X3 CrazyLight Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 124.7 mm (dans la plage) | 66.5 mm (estimée, écart 7.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.2 Mini | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 114.5 mm (dans la plage) | 61.8 mm (estimée, écart 2.6) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.2 Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 119.4 mm (dans la plage) | 64.5 mm (estimée, écart 5.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Susanto-X 2.0 Medium | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 118.7 mm (dans la plage) | 59.3 mm (estimée, écart 0.1) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar eS FS-1 | ❌ exclue — Prix 179.99 € au-dessus du budget maximal 75.00 € | 124.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 179.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar ZywOo The Chosen Mouse Gen.3 Medium | ❌ exclue — Prix 159.99 € au-dessus du budget maximal 75.00 € | 119.4 mm (dans la plage) | 64.5 mm (estimée, écart 5.3) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 159.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Susanto-X 2.0 Large | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 124.0 mm (dans la plage) | 62.3 mm (estimée, écart 3.1) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar TenZ Signature Edition 2.0 Medium | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 120.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar Feinmann F01 | ❌ exclue — Prix 139.99 € au-dessus du budget maximal 75.00 € | 118.6 mm (dans la plage) | 62.3 mm (estimée, écart 3.1) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 139.99 € au-dessus du budget maximal 75.00 € |
+| Pulsar eS Xlite | ❌ exclue — Prix 179.99 € au-dessus du budget maximal 75.00 € | 123.5 mm (dans la plage) | 63.3 mm (estimée, écart 4.1) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 179.99 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil F, calculé comme dans le bot)**
 

@@ -572,7 +572,14 @@ def grip_step_embed() -> discord.Embed:
         # 4 en Palm, 5 en Claw) et la prise n'est pas encore connue à cette étape. Le numéro, lui,
         # vient de la table (GRIP_STEP_NUMBER) : il n'est pas réécrit ici.
         title=f"Étape {GRIP_STEP_NUMBER} — Votre prise",
-        description=f"Quelle prise utilisez-vous le plus souvent ?\n\n{description}",
+        description=(
+            f"Quelle prise utilisez-vous le plus souvent ?\n\n{description}\n\n"
+            # 2026-11-11 : beaucoup de membres ne connaissent pas le nom de leur prise. Un test en
+            # trois secondes, sur leur souris actuelle, évite un mauvais choix dès la première étape.
+            "**Pas sûr ?** Posez la main sur votre souris comme en jeu : la paume repose sur l'arrière "
+            "→ **Palm** ; seul le bas de la paume touche et les doigts sont arqués → **Claw** ; "
+            "la paume ne touche pas du tout → **Fingertip**."
+        ),
         color=COLOR,
     )
     return _image(embed, "step1_grip")
@@ -614,7 +621,8 @@ def measure_step_embed(session: FinderSession) -> discord.Embed:
             f"{_recap(session)}\n\n"
             "Avec une règle :\n\n"
             "• **Longueur** : pli du poignet → bout du majeur.\n"
-            "• **Largeur** : articulations, **sans le pouce**."
+            "• **Largeur** : articulations, **sans le pouce**.\n\n"
+            "Millimètres ou centimètres : les deux sont acceptés."
         ),
         color=COLOR,
     )
@@ -1138,15 +1146,15 @@ class MeasureModal(FinderModal):
     def __init__(self) -> None:
         super().__init__(title="Mesure de votre main", custom_id=MEASURE_MODAL_CUSTOM_ID)
         self.length = discord.ui.TextInput(
-            label="Longueur de la main (mm)",
-            placeholder="Ex : 180",
+            label="Longueur de la main (mm ou cm)",
+            placeholder="Ex : 180 ou 18 cm",
             required=True,
             min_length=1,
             max_length=6,
         )
         self.width = discord.ui.TextInput(
-            label="Largeur sans le pouce (mm)",
-            placeholder="Ex : 90",
+            label="Largeur sans le pouce (mm ou cm)",
+            placeholder="Ex : 90 ou 9 cm",
             required=True,
             min_length=1,
             max_length=6,
