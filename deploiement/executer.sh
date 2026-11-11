@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Lancé par .github/workflows/alwaysdata.yml sur une machine GitHub.
 # Lit deploiement/demande.txt puis agit sur le serveur Alwaysdata par SSH.
-# Les identifiants viennent des secrets GitHub (AD_HOST, AD_USER, puis AD_KEY ou SSHPASS) :
-# ils ne sont ni affichés ni écrits dans le dépôt.
+# Le mot de passe (SSHPASS) ou la clé (AD_KEY) viennent des secrets GitHub : ils ne sont ni affichés ni
+# écrits dans le dépôt. L'hôte et l'identifiant viennent des secrets ou, à défaut, de deploiement/serveur.txt.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -15,8 +15,20 @@ case "$action" in
     exit 2
     ;;
 esac
-: "${AD_HOST:?secret ALWAYSDATA_SSH_HOST absent}"
-: "${AD_USER:?secret ALWAYSDATA_SSH_USER absent}"
+# Hôte et identifiant : les secrets s'ils existent, sinon deploiement/serveur.txt (valeurs non secrètes).
+valeur_de() {
+  sed -n "s/^$1:[[:space:]]*//p" deploiement/serveur.txt 2>/dev/null | head -n 1 | tr -d '[:space:]'
+}
+AD_HOST="${AD_HOST:-$(valeur_de hote)}"
+AD_USER="${AD_USER:-$(valeur_de identifiant)}"
+: "${AD_HOST:?hôte absent (secret ALWAYSDATA_SSH_HOST ou deploiement/serveur.txt)}"
+: "${AD_USER:?identifiant absent (secret ALWAYSDATA_SSH_USER ou deploiement/serveur.txt)}"
+case "$AD_HOST$AD_USER" in
+  *[!A-Za-z0-9._-]*)
+    echo "Hôte ou identifiant invalide : lettres, chiffres, point, tiret et tiret bas seulement."
+    exit 2
+    ;;
+esac
 if [ -z "${AD_KEY:-}" ] && [ -z "${SSHPASS:-}" ]; then
   echo "Ni clé (ALWAYSDATA_SSH_KEY) ni mot de passe (ALWAYSDATA_SSH_PASSWORD) dans les secrets."
   exit 2

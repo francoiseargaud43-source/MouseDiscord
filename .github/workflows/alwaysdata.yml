@@ -29,12 +29,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Vérifier les secrets
+      # Sans identifiant : ce que tout visiteur voit (images publiées, clé publique du serveur SSH).
+      - name: Contrôle public
+        run: bash deploiement/controle_public.sh
+
+      # L'hôte et l'identifiant ont une valeur par défaut (deploiement/serveur.txt) : un seul secret suffit.
+      - name: Vérifier le secret de connexion
         id: secrets
         run: |
-          if [ -z "$AD_HOST" ] || [ -z "$AD_USER" ] || { [ -z "$AD_KEY" ] && [ -z "$SSHPASS" ]; }; then
+          if [ -z "$AD_KEY" ] && [ -z "$SSHPASS" ]; then
             echo "pret=non" >> "$GITHUB_OUTPUT"
-            echo "::notice::Secrets Alwaysdata absents : rien n'a été fait sur le serveur. Voir deploiement/LISEZMOI.md."
+            echo "::notice::Secret ALWAYSDATA_SSH_PASSWORD (ou ALWAYSDATA_SSH_KEY) absent : rien n'a été fait sur le serveur. Voir deploiement/LISEZMOI.md."
           else
             echo "pret=oui" >> "$GITHUB_OUTPUT"
           fi

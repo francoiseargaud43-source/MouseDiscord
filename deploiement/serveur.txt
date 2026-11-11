@@ -1,0 +1,7 @@
+# Adresse du serveur Alwaysdata. Rien de secret ici : ces valeurs figurent déjà dans
+# docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md (§7.6) et l'adresse des images est publique.
+# Le mot de passe (ou la clé) n'est JAMAIS écrit dans le dépôt : il vit dans les secrets GitHub.
+# Les secrets ALWAYSDATA_SSH_HOST et ALWAYSDATA_SSH_USER, s'ils existent, passent avant ce fichier.
+hote: ssh-aze129.alwaysdata.net
+identifiant: aze129
+images: https://aze129.alwaysdata.net/illustrations

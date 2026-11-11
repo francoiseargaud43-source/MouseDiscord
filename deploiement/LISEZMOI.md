@@ -6,20 +6,30 @@ envoie les fichiers, contrôle l'installation et redémarre le bot. Le guide man
 
 ## Mise en place, une seule fois
 
-Dans GitHub, ouvrir le dépôt puis **Settings > Secrets and variables > Actions > New repository secret**
-et créer trois secrets. L'hôte et l'identifiant sont ceux du Gestionnaire de sites de FileZilla.
+Un seul secret est à créer. Ouvrir
+<https://github.com/francoiseargaud43-source/mousediscord/settings/secrets/actions/new>
+(ou, dans le dépôt, **Settings > Secrets and variables > Actions > New repository secret**), puis :
 
-| Nom du secret | Valeur |
+| Case | Valeur |
 |---|---|
-| `ALWAYSDATA_SSH_HOST` | l'hôte, de la forme `ssh-[compte].alwaysdata.net` |
-| `ALWAYSDATA_SSH_USER` | l'identifiant SSH |
-| `ALWAYSDATA_SSH_KEY` **ou** `ALWAYSDATA_SSH_PASSWORD` | une clé privée réservée au déploiement (sa clé publique est dans `~/.ssh/authorized_keys` du serveur), ou à défaut le mot de passe SSH |
+| **Name** | `ALWAYSDATA_SSH_PASSWORD` |
+| **Secret** | le mot de passe SSH d'Alwaysdata, celui du Gestionnaire de sites de FileZilla |
 
-Si les deux existent, la clé est utilisée.
+L'hôte et l'identifiant ne sont pas des secrets : ils sont lus dans `deploiement/serveur.txt`
+(`ssh-aze129.alwaysdata.net`, `aze129`). S'ils sont différents dans FileZilla, corriger ce fichier, ou
+créer de la même façon les secrets `ALWAYSDATA_SSH_HOST` et `ALWAYSDATA_SSH_USER`, qui passent avant lui.
+
+Variante sans mot de passe : le secret `ALWAYSDATA_SSH_KEY` contient une clé privée réservée au
+déploiement, dont la clé publique est dans `~/.ssh/authorized_keys` du serveur. Si les deux secrets
+existent, la clé est utilisée.
 
 Un secret enregistré ne peut plus être relu par personne, et GitHub le masque dans tous les journaux.
-Pour retirer l'accès : supprimer les secrets, puis retirer la ligne de la clé dans `~/.ssh/authorized_keys`
-ou changer le mot de passe SSH dans Alwaysdata (**Remote access > SSH**).
+Pour retirer l'accès : supprimer le secret, puis changer le mot de passe SSH dans Alwaysdata
+(**Remote access > SSH**) ou retirer la ligne de la clé dans `~/.ssh/authorized_keys`.
+
+Avant toute connexion, chaque exécution fait un **contrôle public**, sans identifiant
+(`deploiement/controle_public.sh`) : les illustrations du dépôt sont-elles en ligne à l'adresse publique,
+et quelle est la clé publique du serveur SSH.
 
 ## Utilisation
 
