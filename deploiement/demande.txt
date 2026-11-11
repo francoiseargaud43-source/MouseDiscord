@@ -4,4 +4,4 @@
 #   deployer    : sauvegarde, envoie les fichiers, contrôle, redémarre le bot
 #   redemarrer  : redémarre seulement le bot
 action: etat
-demande: 3
+demande: 4
