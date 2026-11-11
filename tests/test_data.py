@@ -39,6 +39,8 @@ PULSAR_IDS = [
 PULSAR_2026_11_11_IDS = [
     "pulsar_x3_crazylight_medium", "pulsar_zywoo_chosen_gen2_mini", "pulsar_zywoo_chosen_gen2_medium",
     "pulsar_susanto_x_2_medium", "pulsar_es_fs1",
+    "pulsar_zywoo_chosen_gen3_medium", "pulsar_susanto_x_2_large", "pulsar_tenz_signature_2_medium",
+    "pulsar_feinmann_f01", "pulsar_es_xlite",
 ]
 # Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
 # boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
