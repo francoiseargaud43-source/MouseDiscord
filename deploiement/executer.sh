@@ -95,7 +95,8 @@ preparer() {
   mkdir -p "$prepa/tools"
   cp bot.py config.py requirements.txt README.md .env.example "$prepa/"
   cp -r cogs utils data assets "$prepa/"
-  cp tools/check_deployment.py "$prepa/tools/"
+  # tools/run_bot.sh : lanceur appelé par la tâche planifiée d'Alwaysdata (docs/DEPLOYMENT_ALWAYSDATA_FILEZILLA.md §7.7).
+  cp tools/check_deployment.py tools/run_bot.sh "$prepa/tools/"
   find "$prepa" -name '__pycache__' -type d -prune -exec rm -rf {} +
   git rev-parse HEAD > "$prepa/VERSION"
 }
@@ -152,10 +153,16 @@ case "$action" in
     ;;
   deployer)
     preparer
-    sur_le_serveur sauvegarde
-    printf '\n=== Envoi des illustrations (commit %s) ===\n' "$(git rev-parse --short HEAD)"
-    # Les illustrations d'abord, et leur mise en ligne : le bot en marche relit assets/images.json à chaque
-    # interaction, ce fichier ne doit donc arriver qu'une fois ses images publiées.
+    printf '\n=== Envoi des fichiers (commit %s) ===\n' "$(git rev-parse --short HEAD)"
+    # Les fichiers partent dans un dossier d'attente : le bot en service n'est pas touché tant qu'ils
+    # n'ont pas été contrôlés sur le serveur (deploiement/serveur.sh, étape « controler »).
+    distant "mkdir -p MouseDiscord_envoi"
+    envoyer --delete --exclude '/assets/illustrations/' --exclude '__pycache__/' "$prepa/" "$AD_USER@$AD_HOST:MouseDiscord_envoi/"
+    echo "fichiers envoyés dans ~/MouseDiscord_envoi (dossier d'attente)"
+    sur_le_serveur controler
+    printf '\n=== Envoi des illustrations ===\n'
+    # Les illustrations et leur mise en ligne avant la bascule : le bot en marche relit assets/images.json
+    # à chaque interaction, ce fichier ne doit donc entrer en service qu'une fois ses images publiées.
     # Une illustration déjà présente sur le serveur n'est jamais remplacée, pas même dans le dossier du
     # projet : ~/www/illustrations peut être un lien vers ce dossier, et la bannière en ligne n'est pas
     # celle du dépôt (contrôle public du 2026-11-11). Une nouvelle version = un nouveau nom de fichier.
@@ -163,11 +170,14 @@ case "$action" in
     envoyer --ignore-existing "$prepa/assets/illustrations/" "$AD_USER@$AD_HOST:MouseDiscord/assets/illustrations/"
     echo "illustrations envoyées (seules les nouvelles sont ajoutées)"
     sur_le_serveur publier
-    printf '\n=== Envoi des fichiers ===\n'
-    envoyer --delete --exclude '__pycache__/' "$prepa/cogs/" "$AD_USER@$AD_HOST:MouseDiscord/cogs/"
-    envoyer --delete --exclude '__pycache__/' "$prepa/utils/" "$AD_USER@$AD_HOST:MouseDiscord/utils/"
-    envoyer --exclude 'cogs/' --exclude 'utils/' --exclude 'assets/illustrations/' "$prepa/" "$AD_USER@$AD_HOST:MouseDiscord/"
-    echo "fichiers envoyés"
+    # Le bot est relancé à heure fixe par la tâche planifiée : la bascule se fait juste avant une relance.
+    # L'attente se passe ici, sans connexion ouverte ; « activer » revérifie le créneau en arrivant.
+    pause="$(sur_le_serveur creneau | tail -n 1 | tr -cd '0-9')"
+    if [ "${pause:-0}" -gt 5 ]; then
+      printf '\n=== Attente du créneau ===\n'
+      echo "prochaine relance du bot dans environ $((pause + 45)) s : attente de $((pause - 5)) s avant la bascule"
+      sleep "$((pause - 5))"
+    fi
     sur_le_serveur activer
     ;;
   redemarrer)

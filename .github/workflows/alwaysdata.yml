@@ -20,7 +20,8 @@ permissions:
 jobs:
   serveur:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # « deployer » attend la prochaine relance du bot par la tâche planifiée (jusqu'à deux fois dix minutes).
+    timeout-minutes: 35
     env:
       AD_HOST: ${{ secrets.ALWAYSDATA_SSH_HOST }}
       AD_USER: ${{ secrets.ALWAYSDATA_SSH_USER }}
