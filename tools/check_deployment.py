@@ -27,7 +27,7 @@ REQUIRED_FILES = (
     "cogs/__init__.py", "cogs/mouse_finder.py", "cogs/finder_flow.py",
     "utils/__init__.py", "utils/assets.py", "utils/catalog.py", "utils/matcher.py",
     "utils/models.py", "utils/selection.py", "utils/session.py", "utils/slots.py",
-    "utils/validation.py",
+    "utils/validation.py", "utils/versions.py",
     "data/mouse_db.json",
 )
 PLACEHOLDER_HOSTS = ("url.com",)  # domaine d'exemple présent dans les données initiales

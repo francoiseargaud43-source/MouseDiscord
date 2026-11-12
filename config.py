@@ -18,6 +18,7 @@ ASSETS_DIR = ROOT_DIR / "assets"
 
 MOUSE_DB_PATH = DATA_DIR / "mouse_db.json"
 COMMERCIAL_LINKS_PATH = DATA_DIR / "commercial_links.json"
+VERSIONS_PATH = DATA_DIR / "versions.json"   # versions d'une même souris (2026-11-12)
 IMAGES_CONFIG_PATH = ASSETS_DIR / "images.json"
 
 load_dotenv(ENV_FILE)  # chemin explicite : ne dépend pas du répertoire courant

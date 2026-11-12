@@ -79,7 +79,8 @@ def test_le_banc_ne_confond_pas_les_places_quand_l_alternative_est_vide():
     provoqué explicitement (l'alternative passée à ``None`` alors que le message, lui, montre trois
     lignes) : les trois places restent lues séparément.
     """
-    session = _profil(Grip.PALM, 150.0, 65.0, Thenar.PETITE, BudgetMode.CUSTOM, 25.0)
+    # Plafond de 45 € depuis le retrait de l'ATK U2 (2026-11-12) : à 25 €, ce profil n'a plus que deux lignes.
+    session = _profil(Grip.PALM, 150.0, 65.0, Thenar.PETITE, BudgetMode.CUSTOM, 45.0)
     problems, texte, (ideal, alternative, economy) = _juger(session)
     assert problems == [] and alternative is not None and economy is not None
     selection = compute_selection(session)

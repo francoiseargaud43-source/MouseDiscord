@@ -30,6 +30,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from cogs import finder_flow as flow  # noqa: E402
+from config import VERSIONS_PATH  # noqa: E402
+from utils.versions import load_versions  # noqa: E402
 from config import COMMERCIAL_LINKS_PATH, MOUSE_DB_PATH  # noqa: E402
 from utils.assets import IMAGE_KEYS  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
@@ -102,6 +104,8 @@ FICHIERS_SOURCES = (
     ROOT / "utils" / "selection.py",
     ROOT / "utils" / "slots.py",
     ROOT / "utils" / "session.py",
+    ROOT / "utils" / "versions.py",
+    ROOT / "data" / "versions.json",
     ROOT / "tools" / "render_preview.py",
 )
 
@@ -391,11 +395,13 @@ def build_resultat() -> Image.Image:
     session.claw_variant = ClawVariant.PINCEE
     session.budget_mode = BudgetMode.QUALITE_PRIX
     selection = flow.compute_selection(session)
-    embeds = flow.results_embeds(session, selection)
+    # Comme le vrai bot : les versions de data/versions.json sont montrées sous la recommandation.
+    embeds = flow.results_embeds(session, selection, load_versions(VERSIONS_PATH))
     # Légende de chaque bloc, retrouvée par son TITRE (et non par sa position : un bloc ajouté ou
     # retiré décalait toutes les légendes suivantes).
     legendes = {
         "🎯 Votre recommandation": "Résultat — message éphémère (privé) : la recommandation, sans image",
+        "🧩 Plusieurs versions de la même souris": "Juste dessous : les versions de la même forme, leur prix et ce qui change",
         "🧭 Pourquoi ce choix ?": "Plus bas : pourquoi ce choix (score, souris en clair, rôle de la gamme)",
         "📐 Vos repères de taille": "Plus bas : les repères de taille, et leur dessin juste dessous",
         "🖐️ Un arrière étroit pour votre thénar": "Plus bas : l'arrière étroit (éminence thénar petite ou moyenne)",

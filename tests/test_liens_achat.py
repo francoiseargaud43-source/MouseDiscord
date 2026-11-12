@@ -79,7 +79,7 @@ def test_le_tableau_de_relecture_couvre_les_46_liens_et_rien_d_autre():
     du_depot = sorted(k for k in LIENS if not k.startswith("_"))
     du_tableau = sorted(_lignes_du_tableau())
     assert du_tableau == du_depot
-    assert len(du_tableau) == len(CATALOGUE) == 46
+    assert len(du_tableau) == len(CATALOGUE) == 44   # 46 jusqu'au 2026-11-12 (Fierce X et U2 retirées)
 
 
 def test_le_tableau_nomme_le_handle_et_la_variante_que_chaque_lien_ouvre():
@@ -110,7 +110,7 @@ def _identifiants_du_bloc(numero: str) -> set[str]:
     return set(re.findall(r"^\| `([a-z0-9_]+)`", _bloc(numero), re.M))
 
 
-MOTS_NOMBRES = {10: "dix", 11: "onze", 12: "douze", 13: "treize", 14: "quatorze", 15: "quinze", 16: "seize"}
+MOTS_NOMBRES = {4: "quatre", 18: "dix-huit", 10: "dix", 11: "onze", 12: "douze", 13: "treize", 14: "quatorze", 15: "quinze", 16: "seize"}
 
 
 def test_le_partage_des_liens_qui_figent_une_variante_suit_les_donnees():
@@ -124,7 +124,8 @@ def test_le_partage_des_liens_qui_figent_une_variante_suit_les_donnees():
     atk = {k: v for k, v in LIENS.items() if not k.startswith("_") and "atk.store" in v}
     figées = {k for k, v in atk.items() if "variant=" in v}
     libres = set(atk) - figées
-    assert len(atk) == 24 and len(figées) == len(libres) == 12
+    # 24 liens ATK et 12/12 jusqu'au 2026-11-12 : deux souris retirées, six variantes figées ce jour-là.
+    assert len(atk) == 22 and (len(figées), len(libres)) == (18, 4)
     assert _identifiants_du_bloc("7.2") == figées, "le §7.2 ne liste pas exactement les liens qui figent une variante"
     assert _identifiants_du_bloc("7.3") == libres, "le §7.3 ne liste pas exactement les liens sans variante figée"
 
@@ -346,7 +347,9 @@ def test_la_liste_de_travail_envoie_sur_la_page_que_le_bouton_ouvre():
     sur la page « U2 Mini » — alors que les liens installés ouvrent la page **U2 V2** depuis la
     correction du §6.6. Les deux documents d'audit étaient à jour, la liste de travail non."""
     pages = _pages_de_la_liste_de_travail()
-    assert len(pages) == 26          # les 26 souris du relevé du 2026-10-11 ; les Pulsar sont ailleurs
+    # Les 26 souris du relevé du 2026-10-11, moins la Fierce X et l'U2 retirées le 2026-11-12 ; les
+    # Pulsar sont ailleurs.
+    assert len(pages) == 24
     for identifiant, handle in sorted(pages.items()):
         assert identifiant in LIENS, f"{identifiant} : la liste nomme une souris sans lien installé"
         assert f"/products/{handle}" in LIENS[identifiant], (

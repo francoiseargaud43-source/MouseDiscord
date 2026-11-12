@@ -45,9 +45,9 @@ CLIC_VARIANTE = ClawVariant.RELACHEE.value
 # 2026-10-14, une mutation échangeant les deux dernières places (et qui a fait publier au banc d'essai
 # 10 678 problèmes fantômes, tous mesurés sur le bytecode muté : voir `tools/check_bytecode.py`).
 PLACES_ATTENDUES = [
-    ("ATK Phantom Ultimate", 88, "91,95 €"),
-    ("ATK Z1 V2 Ultimate", 75, "59,95 €"),
-    ("ATK A9 Mini", 75, "59,95 €"),
+    ("ATK Phantom Ultimate", 88, "79,07 €"),
+    ("ATK Z1 V2 Ultimate", 75, "52,71 €"),
+    ("ATK A9 Mini", 75, "52,71 €"),
 ]
 
 

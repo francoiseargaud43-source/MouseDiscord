@@ -215,14 +215,15 @@ async def test_full_claw_walkthrough_follows_the_five_steps():
     select_values(budget_view.children[0], BudgetMode.QUALITE_PRIX.value)
     await budget_view.children[0].callback(resultat)
     embeds = resultat.response.edit_message.call_args.kwargs["embeds"]
+    # 2026-11-12 : les versions de la souris conseillée (data/versions.json) suivent la recommandation.
     assert [e.title for e in embeds] == [
-        "🎯 Votre recommandation", "🧭 Pourquoi ce choix ?", "📐 Vos repères de taille",
-        "🖐️ Un arrière étroit pour votre thénar", "🦾 Griffe pince", "⛰️ La bosse et la forme",
+        "🎯 Votre recommandation", "🧩 Plusieurs versions de la même souris", "🧭 Pourquoi ce choix ?",
+        "📐 Vos repères de taille", "🖐️ Un arrière étroit pour votre thénar", "🦾 Griffe pince", "⛰️ La bosse et la forme",
         "🖱️ La hauteur des boutons",
     ]
     assert "✋ **Griffe pince**" in embeds[0].description            # le type de griffe apparaît en haut
-    # La photo du type de griffe déclaré (bloc 5), puis la bosse qu'il appelle (bloc 6).
-    assert "Griffe pince → bosse arrière, flancs peu bombés" in embeds[5].description
+    # La photo du type de griffe déclaré (bloc 6), puis la bosse qu'il appelle (bloc 7).
+    assert "Griffe pince → bosse arrière, flancs peu bombés" in embeds[6].description
     # Parcours terminé : conservé quelques minutes pour un clic rejoué, plus jamais sur disque.
     assert store.get(s.session_id, 99).finished is True
 
@@ -480,9 +481,13 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     assert all(getattr(c, "url", None) or getattr(c, "disabled", False) for c in kwargs["view"].children)
     # La recommandation (courte) puis les blocs d'explication, plus bas : ici Palm **thénar moyen**, donc
     # cinq blocs — pourquoi ce choix, repères, arrière étroit (le conseil de la référence pour Petite ET
-    # Moyenne, depuis la décision du 2026-10-14), bosse et hauteur des boutons.
-    assert len(kwargs["embeds"]) == 6
-    main, guide = kwargs["embeds"][0], kwargs["embeds"][1]
+    # Moyenne, depuis la décision du 2026-10-14), bosse et hauteur des boutons. Depuis le 2026-11-12, le
+    # bloc des versions s'y ajoute juste sous la recommandation : le Phantom n'a qu'une version, mais
+    # l'alternative (Z1 V2) et la troisième place (A9 Mini) en ont deux.
+    assert len(kwargs["embeds"]) == 7
+    main, versions, guide = kwargs["embeds"][0], kwargs["embeds"][1], kwargs["embeds"][2]
+    assert versions.title == "🧩 Plusieurs versions de la même souris"
+    assert [f.name for f in versions.fields] == ["ATK Z1 V2 Ultimate", "ATK A9 Mini"]
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
     alt = next(v for k, v in fields.items() if "alternative" in k)
@@ -492,7 +497,7 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     # l'élargissement de la fenêtre, l'ATK Z1 V2 Ultimate (30/40, 75 %, 59,95 €, moins chère que
     # l'idéal) — nom de la boutique officielle depuis le 2026-10-13 (« Z1 V2 Ultra » n'existe pas).
     assert "ATK Phantom Ultimate" in ideal
-    assert "91,95 €" in ideal and "**88 %**" in ideal   # nom · poids · prix · pourcentage · forme
+    assert "79,07 €" in ideal and "**88 %**" in ideal   # nom · poids · prix · pourcentage · forme (prix du 2026-11-12)
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
     assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
     assert "ATK Z1 V2 Ultimate" in alt
@@ -529,7 +534,7 @@ async def test_un_fichier_de_liens_casse_ne_prive_pas_le_membre_de_son_resultat(
     await view.children[0].callback(inter)
     kwargs = inter.response.edit_message.call_args.kwargs
     assert isinstance(kwargs["view"], flow.ResultsView)
-    assert len(kwargs["embeds"]) == 6                       # le résultat, entier (thénar moyen)
+    assert len(kwargs["embeds"]) == 7                       # le résultat, entier (thénar moyen, versions comprises)
     ideal = next(v for k, v in fields_of(kwargs["embeds"][0]).items() if "match idéal" in k)
     assert "ATK Phantom Ultimate" in ideal                  # la recommandation est bien là
     placeholders = [c for c in kwargs["view"].children if getattr(c, "disabled", False)]
@@ -1236,7 +1241,8 @@ async def test_result_message_links_cover_exactly_the_displayed_mice():
 async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     """Décision du propriétaire (2026-10-12) : « 3 lignes partout où le budget le permet ».
 
-    Profil Budget personnalisé serré (Palm 150 × 65, plafond 25 €) : la zone du mode ne contient rien
+    Profil Budget personnalisé serré (Palm 150 × 65, plafond 45 € depuis le 2026-11-12 ; 25 € avant le
+    retrait de l'ATK U2, qui laissait alors la place à la R1 seule) : la zone du mode ne contient rien
     de comparable à la VXE V3 (13,95 €), qui gagne le classement. Les deux autres lignes sont remplies
     par le dernier palier — l'U2 (22,95 €, dans le budget) puis la R1 — et chaque ligne qui n'est pas
     une vraie alternative porte le titre « 🔎 Autre piste ». Mesure de référence (2026-10-14, grille
@@ -1250,10 +1256,10 @@ async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=150.0, width=65.0, thenar=Thenar.PETITE)
     session.budget_mode = BudgetMode.CUSTOM
-    session.max_budget_eur = 25.0
+    session.max_budget_eur = 45.0
     selection = flow.compute_selection(session)
     ideal, alternative, economy = flow.result_slots(selection)
-    assert (ideal.mouse.id, alternative.mouse.id, economy.mouse.id) == ("vxe_v3", "atk_u2", "vxe_r1")
+    assert (ideal.mouse.id, alternative.mouse.id, economy.mouse.id) == ("vxe_v3", "vxe_r1", "vxe_mad_r")
     embeds = flow.results_embeds(session, selection)
     lignes = [field.value for field in embeds[0].fields]
     montrees = [score for score in (ideal, alternative, economy) if score is not None]
@@ -1266,7 +1272,7 @@ async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     noms = [field.name for field in embeds[0].fields]
     assert noms[0] == "🥇 Le match idéal"
     assert noms[1] == noms[2] == PISTE_TITLE
-    assert all(score.mouse.price_eur is not None and score.mouse.price_eur <= 25.0 for score in montrees)
+    assert all(score.mouse.price_eur is not None and score.mouse.price_eur <= 45.0 for score in montrees)
 
 
 def _fake_score(mouse_id, total, price, shell_id=None):
@@ -2105,10 +2111,10 @@ def test_les_reperes_de_taille_ne_montrent_que_les_cotes_documentees():
 def test_la_ligne_des_composants_ne_montre_que_ce_qui_est_documente():
     """`_components_text` : un champ absent ne s'affiche pas — et ne dit jamais « None ».
 
-    `atk_u2` est une souris réelle dont le **MCU** n'est documenté nulle part (onze souris du catalogue
-    sont dans ce cas) : sa ligne technique s'arrête à ce qui existe.
+    `pulsar_x2_v3_mini` est une souris réelle dont le **MCU** n'est documenté nulle part (l'ATK U2,
+    exemple d'origine, a quitté le catalogue le 2026-11-12) : sa ligne technique s'arrête à ce qui existe.
     """
-    u2 = _mouse_du_catalogue("atk_u2")
+    u2 = _mouse_du_catalogue("pulsar_x2_v3_mini")
     assert not u2.mcu                          # la prémisse du test : la donnée manque vraiment
     attendu = " · ".join([u2.sensor, f"{u2.polling_hz:,}".replace(",", " ") + " Hz", u2.switches])
     assert flow._components_text(u2) == attendu

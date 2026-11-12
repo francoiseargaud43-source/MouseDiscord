@@ -1,0 +1,578 @@
+{
+  "_lisez_moi": "Versions d'une même souris (même coque, autres composants), affichées sous le résultat (utils/versions.py). Relevé du 2026-11-12 sur les fiches officielles ATK, page France (https://www.atk.store/en-fr/products/<handle>?country=FR) : prix en euros tels qu'affichés par la boutique (elle encaisse en dollars, au taux qu'elle affiche), aucune conversion faite ici. Autonomie : heures à 1000 Hz du comparateur officiel ATK (« Product Finder & Comparison »). Une valeur absente de la fiche reste absente. « resultat » marque la version décrite par la fiche du catalogue. Une version épuisée a « dispo » à false et n'est pas proposée. Fabriqué par tools/fabriquer_versions.py depuis docs/audit/ATK_VERSIONS_2026-11-12.csv.",
+  "_affiliation": "Programme ATK (GoAffPro) : « When people visit the store using your link, you get commissions on everything they buy » — la commission vaut quelle que soit la version achetée ; chaque lien porte quand même ?ref=aze.",
+  "atk_f1_ultimate": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 57.1,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR&ref=aze&variant=48175399370970",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 37.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54LM20",
+        "autonomie_h": 300,
+        "resultat": true
+      },
+      {
+        "nom": "Ultimate+ (Frosted Edition)",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR&ref=aze&variant=67575704092890",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 41.0,
+        "switchs": "Omron Custom Optical",
+        "mcu": "Nordic 54LM20",
+        "autonomie_h": 300
+      },
+      {
+        "nom": "Extreme+",
+        "prix_eur": 79.07,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR&ref=aze&variant=48638230429914",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 36.0,
+        "switchs": "Omron Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 80
+      }
+    ]
+  },
+  "atk_x1_ultra_max": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultra Max 2.0",
+        "prix_eur": 39.53,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=47058382782682",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800,
+        "resultat": true
+      },
+      {
+        "nom": "Ultimate 2.0",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=47058382848218",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Ultimate 2.0+",
+        "prix_eur": 57.1,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=48252639641818",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Extreme 2.0",
+        "prix_eur": 70.28,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=47058383012058",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 265
+      },
+      {
+        "nom": "Extreme 2.0+",
+        "prix_eur": 79.07,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=48252639772890",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 265
+      },
+      {
+        "nom": "Air+",
+        "prix_eur": 57.1,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-x1-v2-series-esports-wireless-mouse?country=FR&ref=aze&variant=47915601232090",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300
+      }
+    ]
+  },
+  "atk_z1_ultra": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultimate",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse?country=FR&ref=aze&variant=47222052290778",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 54.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 500,
+        "resultat": true
+      },
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 57.1,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-z1-v2-gaming-wireless-mouse?country=FR&ref=aze&variant=48228324114650",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 54.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 500
+      }
+    ]
+  },
+  "atk_u2_v2_ultimate": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultimate",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=47201864974554",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 45.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 500,
+        "resultat": true
+      },
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 65.89,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=68048755163354",
+        "hz": 8000,
+        "poids_g": 45.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 500
+      }
+    ]
+  },
+  "atk_u2_v2_mini": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Mini",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=47204034150618",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 39.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300,
+        "resultat": true
+      },
+      {
+        "nom": "Mini+",
+        "prix_eur": 65.89,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse?country=FR&ref=aze&variant=68048755294426",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 39.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300
+      }
+    ]
+  },
+  "atk_zero": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "ZERO",
+        "prix_eur": 48.31,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse?country=FR&ref=aze&variant=47655307804890",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 39.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 200,
+        "resultat": true
+      },
+      {
+        "nom": "ZERO+",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse?country=FR&ref=aze&variant=48301857636570",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 44.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 200
+      },
+      {
+        "nom": "ZERO Extreme",
+        "prix_eur": 79.07,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse?country=FR&ref=aze&variant=47655308493018",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 44.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 150
+      },
+      {
+        "nom": "ZERO Extreme+",
+        "prix_eur": 87.86,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-zero-ultralight-wireless-gaming-mouse?country=FR&ref=aze&variant=48301857702106",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 44.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 130
+      }
+    ]
+  },
+  "atk_ghost_ultimate": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultimate",
+        "prix_eur": 65.89,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425595098",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 210,
+        "resultat": true
+      },
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 74.67,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=48274437570778",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 210
+      },
+      {
+        "nom": "Extreme",
+        "prix_eur": 83.46,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425627866",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 120
+      },
+      {
+        "nom": "Extreme+",
+        "prix_eur": 92.25,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=48274437669082",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 120
+      }
+    ]
+  },
+  "atk_ghost_extreme": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultimate",
+        "prix_eur": 65.89,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425595098",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 210
+      },
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 74.67,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=48274437570778",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 210
+      },
+      {
+        "nom": "Extreme",
+        "prix_eur": 83.46,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=47320425627866",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 120,
+        "resultat": true
+      },
+      {
+        "nom": "Extreme+",
+        "prix_eur": 92.25,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse?country=FR&ref=aze&variant=48274437669082",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54H20",
+        "autonomie_h": 120
+      }
+    ]
+  },
+  "atk_a9_ultimate": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultra Max 2.0",
+        "prix_eur": 39.53,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=46878654136538",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Ultimate",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=46878654005466",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800,
+        "resultat": true
+      },
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47895182311642",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Ultimate+ (Magnetic Charging)",
+        "prix_eur": 65.89,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=48638057414874",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 350,
+        "en_plus": [
+          "base de charge magnétique"
+        ]
+      },
+      {
+        "nom": "Air",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47193565364442",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 47.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300
+      },
+      {
+        "nom": "Air+",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47895180574938",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 47.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300
+      }
+    ]
+  },
+  "atk_a9_air": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Ultra Max 2.0",
+        "prix_eur": 39.53,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=46878654136538",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Lightblade Mechanical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Ultimate",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=46878654005466",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Ultimate+",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47895182311642",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 800
+      },
+      {
+        "nom": "Ultimate+ (Magnetic Charging)",
+        "prix_eur": 65.89,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=48638057414874",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 55.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 350,
+        "en_plus": [
+          "base de charge magnétique"
+        ]
+      },
+      {
+        "nom": "Air",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47193565364442",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 47.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300,
+        "resultat": true
+      },
+      {
+        "nom": "Air+",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47895180574938",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 47.0,
+        "switchs": "ATK Swiftlight Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 300
+      }
+    ]
+  },
+  "atk_a9_mini": {
+    "releve": "2026-11-12",
+    "page": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR",
+    "versions": [
+      {
+        "nom": "Mini",
+        "prix_eur": 52.71,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47852235718874",
+        "capteur": "PAW3950 Ultra",
+        "hz": 8000,
+        "poids_g": 39.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 200,
+        "resultat": true
+      },
+      {
+        "nom": "Mini+",
+        "prix_eur": 61.49,
+        "dispo": true,
+        "lien": "https://www.atk.store/en-fr/products/atk-dragonfly-a9-ultimate-lightweight-wireless-mouse?country=FR&ref=aze&variant=47852235784410",
+        "capteur": "PAW3955 Master",
+        "hz": 8000,
+        "poids_g": 39.0,
+        "switchs": "ATK Custom Optical",
+        "mcu": "Nordic 54L15",
+        "autonomie_h": 200
+      }
+    ]
+  }
+}

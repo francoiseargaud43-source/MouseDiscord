@@ -63,7 +63,8 @@ from cogs.finder_flow import (BudgetView, ClawVariantView,  # noqa: E402
                               ThenarView, banner_embed, budget_step_embed, claw_variant_step_embed,
                               compute_selection, grip_step_embed, measure_step_embed,
                               mode_tolerance, result_slots, results_embeds, thenar_step_embed)
-from config import COMMERCIAL_LINKS_PATH  # noqa: E402
+from config import COMMERCIAL_LINKS_PATH, VERSIONS_PATH  # noqa: E402
+from utils.versions import load_versions  # noqa: E402
 from utils.catalog import load_commercial_links  # noqa: E402
 from utils.matcher import MAX_SCORE, compatibility_percent  # noqa: E402
 from utils.models import BudgetMode, ClawVariant, Grip, Thenar  # noqa: E402
@@ -597,6 +598,8 @@ def _run(fast: bool) -> int:
     ordre_repli: list[str] = []                 # profils où le plafond d'ordre n'a laissé aucun candidat
     MARGES.clear()                          # un passage = un relevé de marges
     problems.extend(check_ecrans_fixes())
+    # Comme le vrai bot (2026-11-12) : le bloc des versions compte dans les limites du message.
+    versions = load_versions(VERSIONS_PATH)
     for grip, length, width, thenar, mode, budget in grille(fast):
         cases += 1
         where = f"{grip.value}/{length:.0f}x{width:.0f}/thenar={thenar}/mode={mode}/{budget}"
@@ -609,7 +612,7 @@ def _run(fast: bool) -> int:
             session.claw_variant = ClawVariant.RELACHEE
         try:
             selection = compute_selection(session)
-            embeds = results_embeds(session, selection)
+            embeds = results_embeds(session, selection, versions)
         except Exception as exc:  # noqa: BLE001 - le banc d'essai doit tout attraper
             problems.append(f"{where} : EXCEPTION {type(exc).__name__} : {exc}")
             continue

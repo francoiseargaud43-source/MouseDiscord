@@ -55,13 +55,15 @@ suivant l'écriture ») :
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from typing import Mapping, Sequence
 
 import discord
 
-from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH, SESSION_TTL_SECONDS
+from config import COMMERCIAL_LINKS_PATH, IMAGES_CONFIG_PATH, MOUSE_DB_PATH, SESSION_TTL_SECONDS, VERSIONS_PATH
 from utils.assets import load_image_urls
 from utils.catalog import CatalogError, load_catalog, load_commercial_links
+from utils.versions import Gamme, load_versions
+from utils.versions import champs as versions_champs
 from utils.matcher import (
     LENGTH_PTS_IN_RANGE,
     MAX_SCORE,
@@ -855,7 +857,8 @@ def _buttons_guide_embed(session: FinderSession, ideal: MouseScore | None = None
     return _image(embed, _advised_image(BUTTONS_ADVISED[grip], {height}, BUTTON_IMAGES))
 
 
-def results_embeds(session: FinderSession, selection: Selection) -> list[discord.Embed]:
+def results_embeds(session: FinderSession, selection: Selection,
+                   versions: Mapping[str, Gamme] | None = None) -> list[discord.Embed]:
     """Résultat en un seul message, jamais en onglet : la recommandation, puis l'explication plus bas.
 
     Bloc 1 — **la recommandation** : la ligne du parcours, puis le match idéal, l'alternative et, si
@@ -928,7 +931,55 @@ def results_embeds(session: FinderSession, selection: Selection) -> list[discord
         embeds.append(buttons)
     # Le renvoi n'est ajouté que si le bloc « Pourquoi ce choix ? » est bien dans le message.
     embeds[-1].set_footer(text=SCORE_DISCLAIMER + (EXPLANATION_REFERENCE if why is not None else ""))
+    # Versions de la même souris (2026-11-12) : juste sous la recommandation, car c'est la question
+    # que pose le bouton d'achat (« laquelle je prends ? »). Construit en dernier pour tenir dans ce
+    # qui reste des 6 000 caractères d'un message ; rien ne s'affiche sans données.
+    block = _versions_embed((ideal, alternative, economy), versions or {},
+                            MESSAGE_CHARS_MAX - sum(len(e) for e in embeds))
+    if block is not None and len(embeds) < MESSAGE_EMBEDS_MAX:
+        embeds.insert(1, block)
     return embeds
+
+
+# Limites Discord d'un message : 10 embeds, 6 000 caractères en tout (titres, textes, champs, pieds).
+MESSAGE_EMBEDS_MAX = 10
+MESSAGE_CHARS_MAX = 6000
+# Marge gardée sous la limite : un dépassement ferait échouer l'envoi du résultat entier.
+VERSIONS_MARGIN_CHARS = 200
+
+
+def _versions_embed(displayed: Sequence[MouseScore | None], versions: Mapping[str, Gamme],
+                    room: int = MESSAGE_CHARS_MAX) -> discord.Embed | None:
+    """« 🧩 Plusieurs versions » : pour chaque souris affichée vendue en plusieurs versions, le prix de
+    chacune, ce qu'elle apporte de plus que la moins chère, son lien, et si cela vaut le supplément.
+
+    La forme est la même d'une version à l'autre : le score et le classement n'en dépendent pas. Les
+    souris passent dans l'ordre du résultat (match idéal d'abord) ; une souris dont les versions ne
+    tiennent plus dans ``room`` caractères est laissée de côté, jamais coupée au milieu.
+    """
+    embed = discord.Embed(
+        title="🧩 Plusieurs versions de la même souris",
+        description="Même forme, autres composants : choisissez selon ce que vous voulez payer.",
+        color=COLOR,
+    )
+    used = len(embed) + VERSIONS_MARGIN_CHARS
+    seen: set[str] = set()
+    for score in displayed:
+        if score is None or score.mouse.id in seen:
+            continue
+        seen.add(score.mouse.id)
+        gamme = versions.get(score.mouse.id)
+        if gamme is None:
+            continue
+        values = versions_champs(gamme)
+        names = [score.mouse.label[:256]] + ["\u200b"] * (len(values) - 1)
+        cost = sum(len(n) + len(v) for n, v in zip(names, values))
+        if used + cost > room or len(embed.fields) + len(values) > 25:
+            continue
+        used += cost
+        for name, value in zip(names, values):
+            embed.add_field(name=name, value=value, inline=False)
+    return embed if embed.fields else None
 
 
 def _piste_hors_budget(session: FinderSession) -> str:
@@ -1326,7 +1377,7 @@ async def _show_results(interaction: discord.Interaction, session: FinderSession
         )
         return
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
-    embeds = results_embeds(session, selection)
+    embeds = results_embeds(session, selection, load_versions(VERSIONS_PATH))
     # Les boutons d'achat suivent EXACTEMENT les souris affichées (match idéal, alternative,
     # économie). Avant, ils suivaient les deux premiers du classement interne — qui ne sont pas
     # toujours les souris montrées : le membre voyait une souris sans bouton, et un bouton pour une

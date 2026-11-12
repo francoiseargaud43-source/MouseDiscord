@@ -191,7 +191,7 @@ au propriétaire.
 Chaque correction est écrite dans la `price_note` de la souris (ancien prix, nouveau prix, prix normal,
 date) et **tracée par une source datée du 2026-10-13** dans `data/mouse_db.json`.
 
-### 7.2 Les douze liens qui figent une variante
+### 7.2 Les dix-huit liens qui figent une variante
 
 | id | Variante figée | Libellé réel au 2026-10-13 | Prix | Verdict |
 | --- | --- | --- | --- | --- |
@@ -207,6 +207,14 @@ date) et **tracée par une source datée du 2026-10-13** dans `data/mouse_db.jso
 | `atk_y9_ultimate` | `47178929897690` | Y9 **Ultimate** / Pink | 59,95 € | ✅ recâblé (White épuisé) |
 | `atk_u2_v2_ultimate` | `47201864974554` | U2 V2 **Ultimate** / Lake Green | 59,95 € | ✅ recâblé (White épuisé) |
 | `atk_f1_v2` | `47006581096666` | F1 V2 **Ultra Max 2.0** / Black | **41,95 €** (catalogue 40,95 €) | ⚠️ **variante figée ce jour-là** (déjà citée au §7.1 ; le prix est revenu à 40,95 € le 2026-10-14, §7.7) |
+| `atk_zero` | `47655307804890` | ZERO / Black (figée le 2026-11-12) | 48,31 € | ✅ variante figée le 2026-11-12 : le prix publié est celui de la version ouverte |
+| `atk_z1_ultra` | `47222052290778` | Ultimate / Black (figée le 2026-11-12) | 52,71 € | ✅ variante figée le 2026-11-12 : le prix publié est celui de la version ouverte |
+| `atk_phantom_ultimate` | `48530995708122` | Ultimate / Dune (Sand) (figée le 2026-11-12) | 79,07 € | ✅ variante figée le 2026-11-12 : le prix publié est celui de la version ouverte |
+| `atk_a9_nb` | `47717419581658` | Ultra / Black (figée le 2026-11-12) | 70,28 € | ✅ variante figée le 2026-11-12 : le prix publié est celui de la version ouverte |
+| `atk_duckbill` | `46737840144602` | Ultra / Metallic Purple (figée le 2026-11-12) | 79,07 € | ✅ variante figée le 2026-11-12 : le prix publié est celui de la version ouverte |
+| `atk_u2_mini` | `46798525137114` | U2 Mini / Pink (figée le 2026-11-12) | 57,10 € | ✅ variante figée le 2026-11-12 : le blanc est épuisé, le lien ouvre le rose |
+
+**Mise à jour du 2026-11-12.** Six liens qui ouvraient la page sans version (ZERO, Z1 V2, Phantom, A9 NB, Duckbill, U2 Mini) figent désormais la version relevée, et le Y9 Ultimate ouvre « Ultimate / White », de nouveau en stock. Les prix de ce tableau datent du 2026-10-13 ; les prix courants sont au §8.1.
 
 **Les trois liens recâblés** gardent le **même prix** : seul le coloris change, pour qu'un clic
 n'atterrisse jamais sur une page où l'on ne peut pas acheter :
@@ -214,7 +222,7 @@ n'atterrisse jamais sur une page où l'on ne peut pas acheter :
 `atk_y9_ultimate` → `47178929897690` (Pink). `docs/audit/LIENS_AFFILIES_2026-10-12.md` porte les trois
 nouvelles URL.
 
-### 7.3 Les douze liens ATK sans variante figée
+### 7.3 Les quatre liens ATK sans variante figée
 
 Pour ceux-là, le lien ouvre la page : l'annonce doit donc valoir le prix le moins cher affiché
 (« à partir de »). Tous ont été relus le 2026-10-13, et **chacun porte son identifiant** depuis le 2026-10-14 : ce
@@ -223,18 +231,12 @@ ce qui a laissé passer l'erreur corrigée ci-dessous.
 
 | Souris | Annoncé | Page du 2026-10-13 | Verdict |
 | --- | --- | --- | --- |
-| `atk_u2` — ATK Blazing Sky U2 | 22,95 € | 22,95 € (normal 28,95 €) | ✅ |
-| `atk_u2_mini` — ATK Blazing Sky U2 Mini | 77,95 € | 77,95 € | ✅ (blanc en rupture, rose en stock) |
-| `atk_zero` — ATK Blazing Sky ZERO | 63,95 € | 63,95 € | ✅ |
-| `atk_z1_ultra` — ATK Blazing Sky Z1 V2 (« Ultimate ») | 59,95 € | 59,95 € (normal 73,95 €) | ✅ |
-| `atk_phantom_ultimate` — ATK Blazing Sky Phantom | 91,95 € | 91,95 € (normal 109,95 €) | ✅ |
-| `atk_fierce_x` — ATK FIERCE X | 69,95 € | 69,95 € | ✅ (produit en rupture de stock) |
 | `vxe_r1` — VXE Dragonfly R1 | 13,95 € | 13,95 € | ✅ |
 | `vxe_v3` — VXE Dragonfly V3 | 13,95 € | 13,95 € | ✅ |
 | `vxe_x3` — VXE Dragonfly X3 | 27,95 € | 27,95 € | ✅ |
-| `atk_a9_nb` — ATK Dragonfly A9 NB | 72,95 € | **73,95 €** | ❌ **prix corrigé** |
-| `atk_duckbill` — ATK Blazing Sky Duckbill | 81,95 € | **82,95 €** | ❌ **prix corrigé** |
 | `vxe_mad_r` — VXE MAD R | 40,95 € | **41,95 €** | ❌ **prix corrigé** |
+
+**Mise à jour du 2026-11-12.** Six liens de ce tableau figent désormais une variante (§7.2) ; l'ATK Fierce X (épuisée) et l'ATK U2 (ancienne génération) sont retirées du catalogue. Restent ici les liens qui ouvrent une page sans version : **18 figés, 4 libres**.
 
 **Correction du 2026-10-14 (71e passe).** Ce partage annonçait « onze » et « treize » ; il devait dire
 **douze et douze**. Le 47e passage (commit `a2bdb5c`, 2026-10-13) a **figé la variante du F1 V2**
@@ -351,32 +353,30 @@ Le tableau ci-dessous est **lu par un test** (`tests/test_liens_achat.py`) : il 
 ligne, à `data/commercial_links.json` (handle et variante figée) et à `data/mouse_db.json` (prix
 publié). Modifier un lien ou un prix sans mettre à jour ce tableau fait **échouer la suite**.
 
-### 8.1 Les 46 liens (handle, variante figée, prix de la boutique, prix publié)
+### 8.1 Les 44 liens (handle, variante figée, prix de la boutique, prix publié)
 
-Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les dix lignes Pulsar marquées « 2026-11-11 » ont été ajoutées ce jour-là avec leurs souris (fiche officielle Pulsar EU relue, prix EUR affiché).
+Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les dix lignes Pulsar marquées « 2026-11-11 » ont été ajoutées ce jour-là avec leurs souris (fiche officielle Pulsar EU relue, prix EUR affiché). **Relecture du 2026-11-12** : les dix-huit lignes ATK marquées « relevé du 2026-11-12 » ont été relues version par version sur la page France (prix en euros affichés par la boutique) ; l'ATK Fierce X (épuisée) et l'ATK U2 (ancienne génération, capteur PAW3395, remplacée par la U2 V2 de même coque) sont retirées du catalogue. Les autres versions de chaque forme sont dans `data/versions.json`.
 
 | id | handle | variante figée | libellé de la variante (ou du produit) | prix boutique | prix publié | verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| `atk_a9_ultimate` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `46878654005466` | Ultimate / Black | 59,95 € | 59,95 € | ✅ |
-| `atk_a9_air` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47193565364442` | Air / Black | 59,95 € | 59,95 € | ✅ |
-| `atk_a9_mini` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47852235718874` | Mini / Black | 59,95 € | 59,95 € | ✅ |
-| `atk_a9_plus` | `atk-dragonfly-a9-series-lightweight-wireless-mouse` | `46320046047450` | A9 Plus / White | 27,95 € | 27,95 € | 🔧 prix corrigé (45,00 € → 27,95 €) |
-| `atk_a9_nb` | `atk-dragonfly-a9-nb-lightweight-wireless-mouse` | — | Ultra (4 coloris) | 72,95 € | 72,95 € | 🔧 prix corrigé (73,95 € → 72,95 €) |
-| `atk_x1_ultra_max` | `atk-blazing-sky-x1-v2-series-esports-wireless-mouse` | `47058382782682` | Ultra Max 2.0 / Black | 41,95 € | 41,95 € | ✅ (relecture du 2026-10-15 : la boutique a rebasculé d'un euro, §7.7) |
-| `atk_z1_ultra` | `atk-blazing-sky-z1-v2-gaming-wireless-mouse` | — | Ultimate (le moins cher ; l'édition Ultimate+ est à 65,95 €) | 59,95 € | 59,95 € | ✅ |
-| `atk_phantom_ultimate` | `atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse` | — | Ultimate (modèle unique de la page, 4 coloris) | 91,95 € | 91,95 € | ✅ |
-| `atk_ghost_ultimate` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425595098` | Ultimate / Silver | 68,95 € | 68,95 € | ✅ |
-| `atk_ghost_extreme` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425627866` | Extreme / Black | 86,95 € | 86,95 € | ✅ |
-| `atk_y9_ultimate` | `atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse` | `47178929897690` | Ultimate / Pink | 59,95 € | 59,95 € | ✅ |
-| `atk_f1_ultimate` | `atk-blazing-sky-f1-v3-series-esports-wireless-mouse` | `48175399370970` | Ultimate+ / Black | 59,95 € | 59,95 € | ✅ |
-| `atk_f1_v2` | `atk-blazing-sky-f1-v2-series-esports-wireless-mouse` | `47006581096666` | Ultra Max 2.0 / Black | 41,95 € | 41,95 € | 🔧 variante figée (le lien ouvrait la page des trois éditions) · relecture du 2026-10-15 |
-| `atk_u2_v2_ultimate` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47201864974554` | U2 V2 Ultimate / Lake Green | 59,95 € | 59,95 € | ✅ |
-| `atk_u2_v2_mini` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47204034150618` | U2 V2 Mini / White | 59,95 € | 59,95 € | ✅ |
-| `atk_u2` | `atk-blazing-sky-u2-series-wireless-mouse` | — | U2 (le moins cher de la série) | 22,95 € | 22,95 € | ✅ |
-| `atk_u2_mini` | `atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse` | — | U2 Mini (modèle unique) | 77,95 € | 77,95 € | ✅ |
-| `atk_zero` | `atk-blazing-sky-zero-ultralight-wireless-gaming-mouse` | — | ZERO (le moins cher) | 63,95 € | 63,95 € | ✅ |
-| `atk_duckbill` | `atk-blazing-sky-duckbill-wireless-mouse` | — | Duckbill (modèle unique) | 81,95 € | 81,95 € | ✅ (relecture du 2026-10-14 : promotion de la boutique, §7.7) |
-| `atk_fierce_x` | `atk-fierce-x-lightweight-wireless-gaming-mouse` | — | FIERCE X (3 coloris) | 69,95 € | 69,95 € | ✅ (produit épuisé) |
+| `atk_a9_ultimate` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `46878654005466` | Ultimate / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_air` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47193565364442` | Air / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_mini` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47852235718874` | Mini / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_plus` | `atk-dragonfly-a9-series-lightweight-wireless-mouse` | `46320046047450` | A9 Plus / White | 26,34 € | 26,34 € | ✅ relevé du 2026-11-12 (27,95 € le 2026-10-13, 45,00 € au cahier) |
+| `atk_a9_nb` | `atk-dragonfly-a9-nb-lightweight-wireless-mouse` | `47717419581658` | Ultra / Black | 70,28 € | 70,28 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_x1_ultra_max` | `atk-blazing-sky-x1-v2-series-esports-wireless-mouse` | `47058382782682` | Ultra Max 2.0 / Black | 39,53 € | 39,53 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_z1_ultra` | `atk-blazing-sky-z1-v2-gaming-wireless-mouse` | `47222052290778` | Ultimate / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_phantom_ultimate` | `atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse` | `48530995708122` | Ultimate / Dune (Sand) | 79,07 € | 79,07 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_ghost_ultimate` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425595098` | Ultimate / Silver | 65,89 € | 65,89 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_ghost_extreme` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425627866` | Extreme / Black | 83,46 € | 83,46 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_y9_ultimate` | `atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse` | `47178929864922` | Ultimate / White | 79,07 € | 79,07 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_f1_ultimate` | `atk-blazing-sky-f1-v3-series-esports-wireless-mouse` | `48175399370970` | Ultimate+ / Black | 57,10 € | 57,10 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_f1_v2` | `atk-blazing-sky-f1-v2-series-esports-wireless-mouse` | `47006581096666` | Ultra Max 2.0 / Black | 39,53 € | 39,53 € | ✅ relevé du 2026-11-12 (41,95 € le 2026-10-15) |
+| `atk_u2_v2_ultimate` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47201864974554` | U2 V2 Ultimate / Lake Green | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_u2_v2_mini` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47204034150618` | U2 V2 Mini / White | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_u2_mini` | `atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse` | `46798525137114` | Pink (le blanc est épuisé) | 57,10 € | 57,10 € | ✅ relevé du 2026-11-12 (77,95 € le 2026-10-13) |
+| `atk_zero` | `atk-blazing-sky-zero-ultralight-wireless-gaming-mouse` | `47655307804890` | ZERO / Black | 48,31 € | 48,31 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_duckbill` | `atk-blazing-sky-duckbill-wireless-mouse` | `46737840144602` | Ultra / Metallic Purple | 79,07 € | 79,07 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `vxe_v3` | `vxe-dragonfly-v3-series-lightweight-wireless-mouse` | — | Dragonfly V3 (le moins cher) | 13,95 € | 13,95 € | ✅ |
 | `vxe_r1` | `vxe-dragonfly-r1-series-wireless-mouse` | — | Dragonfly R1 (le moins cher) | 13,95 € | 13,95 € | ✅ |
 | `vxe_mad_r` | `vxe-mad-r-series-wireless-mouse` | — | MAD R (le moins cher) | 41,95 € | 41,95 € | ✅ (relecture du 2026-10-15) |

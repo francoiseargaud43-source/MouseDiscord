@@ -8,7 +8,7 @@ chiffres sont relus par `tests/test_architecture.py` contre le code : s'ils dive
 
 Un bot Discord pose trois à cinq questions selon la prise (prise, type de griffe, éminence thénar, mesures
 de la main, budget), note
-chacune des 46 souris du catalogue sur 40 points selon sa géométrie, et montre **trois souris** dans un
+chacune des 44 souris du catalogue sur 40 points selon sa géométrie, et montre **trois souris** dans un
 seul message privé, avec l'explication du choix.
 
 ## 2. Le parcours
@@ -108,7 +108,7 @@ ce que porte la souris retenue est dit dans la phrase. Sous le message, un lien 
 
 | Fichier | Contenu | Règle |
 | --- | --- | --- |
-| `data/mouse_db.json` | les 46 souris : cotes, forme, prises, prix, composants, **sources** | chaque valeur renseignée cite une source datée qui la déclare ; inconnu = vide, jamais estimé ; relu à chaque recherche |
+| `data/mouse_db.json` | les 44 souris : cotes, forme, prises, prix, composants, **sources** | chaque valeur renseignée cite une source datée qui la déclare ; inconnu = vide, jamais estimé ; relu à chaque recherche |
 | `data/commercial_links.json` | un lien d'achat affilié par souris | boutique officielle, variante figée quand le prix en dépend |
 | `assets/images.json` | les illustrations T01–T16 (T09 et T16 dérivées des originaux par `tools/compose_illustrations.py`) | hébergées par le propriétaire (`IMAGES_BASE_URL`) ; une image modifiée prend un nouveau nom de fichier |
 
@@ -131,6 +131,7 @@ jamais convertis.
 | `utils/session.py` | les parcours en cours (mémoire + fichier, expiration) |
 | `utils/validation.py` | les bornes des saisies |
 | `utils/assets.py` | les adresses des illustrations |
+| `utils/versions.py` | les versions d'une même souris (`data/versions.json`) : prix, ce qui change, « ça vaut le coup ? » — sans effet sur la note |
 
 ## 7. Vérifier que tout est sain
 

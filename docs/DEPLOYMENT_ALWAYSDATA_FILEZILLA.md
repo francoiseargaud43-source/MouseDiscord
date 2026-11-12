@@ -2114,7 +2114,7 @@ ci-dessous est le seul tenu à jour** (dernière valeur : §12.62).
 ```bash
 cd ~/MouseDiscord
 .venv/bin/python -m pytest -q                      # attendu : 887 passed
-.venv/bin/python tools/check_deployment.py         # attendu : 46 souris, 46 liens, 1 erreur (.env du serveur)
+.venv/bin/python tools/check_deployment.py         # attendu : 44 souris, 44 liens, 1 erreur (.env du serveur)
 .venv/bin/python tools/qa_flow_matrix.py | tail -1 # attendu : Problèmes détectés : 0
 .venv/bin/python tools/check_bytecode.py           # attendu : aucun bytecode périmé utilisé
 # facultatif (~1 min) : le rapport statistique publié est-il toujours celui des données actuelles ?

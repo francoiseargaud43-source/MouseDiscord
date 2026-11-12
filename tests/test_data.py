@@ -17,13 +17,13 @@ from utils.models import Grip, HandMeasure
 
 OWNER_IDS = ["scyrox_v8", "scyrox_v6", "atk_f1_ultimate", "atk_x1_ultra_max", "atk_z1_ultra", "atk_a9_plus"]
 NEW_ATK_IDS = [
-    "atk_phantom_ultimate", "atk_ghost_ultimate", "atk_ghost_extreme", "atk_y9_ultimate", "atk_fierce_x",
+    "atk_phantom_ultimate", "atk_ghost_ultimate", "atk_ghost_extreme", "atk_y9_ultimate",
     "atk_u2_v2_ultimate", "atk_u2_v2_mini", "atk_zero", "atk_duckbill", "atk_a9_ultimate", "atk_a9_air", "atk_a9_mini",
 ]
 # Ajouts du 2026-10-11 : souris ATK/VXE actuellement vendues sur atk.store, absentes du catalogue
 # (recherche « produits encore vendus » ; sources ATK Store + EloShapes, voir docs/audit/CATALOGUE_ATK.md §5).
 STORE_2026_10_11_IDS = [
-    "vxe_v3", "vxe_r1", "vxe_mad_r", "vxe_x3", "atk_u2_mini", "atk_a9_nb", "atk_f1_v2", "atk_u2",
+    "vxe_v3", "vxe_r1", "vxe_mad_r", "vxe_x3", "atk_u2_mini", "atk_a9_nb", "atk_f1_v2",
 ]
 # Ajouts du 2026-10-12 : souris Pulsar réellement en vente sur la boutique européenne Pulsar,
 # relevées une par une sur la fiche officielle du modèle (dimensions, poids, capteur, fréquence,
@@ -146,7 +146,7 @@ def test_le_prix_de_l_a9_plus_est_celui_de_la_variante_ouverte_par_le_bouton(mic
     pas effacés, seulement plus publiés.
     """
     a9 = mice["atk_a9_plus"]
-    assert (a9.model, a9.price_eur, a9.price_status) == ("A9 Plus", 27.95, "verified")
+    assert (a9.model, a9.price_eur, a9.price_status) == ("A9 Plus", 26.34, "verified")   # 27,95 € jusqu'au relevé du 2026-11-12
     liens = json.loads((ROOT / "data" / "commercial_links.json").read_text(encoding="utf-8"))
     assert liens["atk_a9_plus"].endswith("variant=46320046047450")   # la variante dont le prix est publié
     for montant in ("27,95", "45,00", "44,90"):
@@ -272,41 +272,31 @@ def test_la_coque_u2_change_le_resultat_sur_deux_profils_reels():
 def test_le_repli_de_coque_reste_sous_le_plafond_du_match_ideal():
     """Second sens de la règle : quand AUCUNE autre coque ne passe sous le plafond, l'ordre prime.
 
-    Profil **palm 225 × 85, mode Économique** : le match idéal est l'ATK U2 (15 pts, 22,95 €, la moins
-    chère de la zone) ; la seule souris du classement qui passe sous ses 15 points est l'ATK U2 V2
-    Ultimate (10 pts) — **même coque**. La préférence de coque cède donc, comme son propre repli le
-    prévoit, et la 2e place reste sous le plafond : le pourcentage ne remonte jamais d'une ligne à
-    l'autre (décision du 2026-10-13). L'alternative affichée est donc une variante de la coque du
-    match idéal, à sa juste place : 38 % puis 25 %.
+    Le cas réel d'origine (palm 225 × 85, Économique : ATK U2 puis U2 V2 Ultimate, même coque, 38 % puis
+    25 %) a disparu le 2026-11-12 avec le retrait de l'ATK U2 (ancienne génération, capteur PAW3395,
+    remplacée par la U2 V2 de même coque). La garantie reste vérifiée sur une grille de profils : le
+    pourcentage ne remonte jamais du match idéal à l'alternative.
     """
     from cogs.finder_flow import compute_selection, result_slots
     from utils.matcher import compatibility_percent
     from utils.models import BudgetMode, Grip
     from utils.session import FinderSession
 
-    session = FinderSession(user_id=1)
-    session.grip = Grip.PALM
-    session.thenar = None
-    session.hand_length_mm = 225.0
-    session.hand_width_mm = 85.0
-    session.budget_mode = BudgetMode.ECONOMIQUE
-    selection = compute_selection(session)
-    places = [score for score in result_slots(selection) if score is not None]
-
-    pourcentages = [compatibility_percent(score) for score in places]
-    # Le match idéal et l'alternative : la garantie de la décision du 2026-10-13 (38 % puis 25 %).
-    # La troisième place peut, elle, dépasser la deuxième par le repli documenté (« aucune souris du
-    # classement ne passe sous son plafond ») — c'est `test_le_pourcentage_ne_remonte_jamais_d_une_place_a_l_autre`
-    # (tests/test_flow.py) qui vérifie que ce repli n'est jamais pris à la légère.
-    assert pourcentages[:2] == sorted(pourcentages[:2], reverse=True), pourcentages
-    assert pourcentages[:2] == [38, 25], pourcentages
-    ideal, alternative = places[0], places[1]
-    assert alternative.total <= ideal.total
-    assert alternative.mouse.id == "atk_u2_v2_ultimate"
-    assert alternative.mouse.shell_id == ideal.mouse.shell_id == "atk_u2"
-    # La donnée qui rend ce repli légitime : rien d'autre ne passe sous le plafond du match idéal.
-    sous_plafond = [s.mouse.id for s in selection.ranked[1:] if s.total <= ideal.total]
-    assert sous_plafond == ["atk_u2_v2_ultimate"], sous_plafond
+    for grip in (Grip.PALM, Grip.CLAW):
+        for mode in (BudgetMode.ECONOMIQUE, BudgetMode.QUALITE_PRIX, BudgetMode.HAUT_DE_GAMME):
+            for longueur in range(160, 231, 10):
+                for largeur in range(70, 111, 10):
+                    session = FinderSession(user_id=1)
+                    session.grip, session.thenar = grip, None
+                    session.hand_length_mm, session.hand_width_mm = float(longueur), float(largeur)
+                    session.budget_mode = mode
+                    selection = compute_selection(session)
+                    places = [score for score in result_slots(selection) if score is not None]
+                    if len(places) < 2:
+                        continue
+                    ideal, alternative = places[0], places[1]
+                    profil = (grip, mode, longueur, largeur)
+                    assert compatibility_percent(alternative) <= compatibility_percent(ideal), profil
 
 
 def test_a9_shell_variants_share_the_owners_button_height(mice):
@@ -511,7 +501,7 @@ def test_bosse_des_xlite_et_prix_de_l_a9_mini_sont_sources(mice):
         # convient pas à une main de 180 mm), mais elle n'est plus mise en attente.
         assert not evaluate_mouse(mouse, HandMeasure(180, 90), Grip.PALM).is_pending, ident
     a9 = mice["atk_a9_mini"]
-    assert (a9.price_eur, a9.price_status) == (59.95, "verified")
+    assert (a9.price_eur, a9.price_status) == (52.71, "verified")   # relevé du 2026-11-12
     assert (a9.hump_position, a9.dimension_status) == ("Mid", "verified")
     assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields for s in a9.sources)
     score = evaluate_mouse(a9, HandMeasure(180, 90), Grip.PALM)
@@ -553,11 +543,11 @@ def test_duckbill_price_matches_the_only_variant_on_sale(mice):
     de ce modèle.
     """
     duck = mice["atk_duckbill"]
-    assert (duck.price_eur, duck.price_status) == (81.95, "verified")
+    assert (duck.price_eur, duck.price_status) == (79.07, "verified")   # relevé du 2026-11-12
     assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields
                for s in duck.sources)
-    assert "« Ultra »" in duck.price_note      # modèle unique : le prix est celui de ce modèle
-    assert "2026-10-14" in duck.price_note      # la date du relevé qui fait foi est écrite
+    assert "« Ultra / " in duck.price_note     # modèle unique : le prix est celui de ce modèle
+    assert "2026-11-12" in duck.price_note      # la date du relevé qui fait foi est écrite
     assert "81,95" in duck.price_note           # l'oscillation reste expliquée, pas effacée
     assert "82,95" in duck.price_note           # les relevés précédents restent lisibles
 
@@ -593,14 +583,15 @@ def test_ghost_prices_are_read_variant_by_variant(mice):
     remplacer par le minimum de la famille (68,95 €) ou par son maximum (95,95 €).
     """
     ultimate, extreme = mice["atk_ghost_ultimate"], mice["atk_ghost_extreme"]
-    assert (ultimate.price_eur, extreme.price_eur) == (68.95, 86.95)
+    assert (ultimate.price_eur, extreme.price_eur) == (65.89, 83.46)   # relevé du 2026-11-12
     assert extreme.price_eur > ultimate.price_eur
     for mouse, variante in ((ultimate, "Ultimate"), (extreme, "Extreme")):
         assert mouse.price_status == "verified", mouse.id
         assert any(s.url.startswith("https://www.atk.store/") and "price_eur" in s.fields
                    for s in mouse.sources), mouse.id
-        assert f"« {variante} »" in mouse.price_note, mouse.id
-    assert "95,95" in extreme.price_note     # la variante la plus chère ne doit pas être masquée
+        assert f"« {variante} / " in mouse.price_note, mouse.id
+    # Les autres variantes (Ultimate+, Extreme+) sont dans data/versions.json, montrées sous le résultat.
+    assert "data/versions.json" in extreme.price_note
 
 
 def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
@@ -614,7 +605,8 @@ def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
     - « Not ideal » n'est JAMAIS converti en « Faible » : une valeur tierce n'exclut personne.
     """
     tiers = [m for m in mice.values() if m.fit_status == "third_party_guide"]
-    assert len(tiers) >= 10, "les dix souris complétées doivent porter le statut dédié"
+    # Dix à l'origine ; neuf depuis le retrait de l'ATK Fierce X, épuisée (2026-11-12).
+    assert len(tiers) >= 9, "les neuf souris complétées doivent porter le statut dédié"
     for mouse in tiers:
         valeurs = (mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit)
         assert "Faible" not in valeurs, mouse.id
@@ -642,7 +634,7 @@ def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
     assert (x2.claw_grip_fit, x2.fingertip_grip_fit) == ("Élevé", "Élevé")
     assert x2.palm_grip_fit == "Inconnu"                  # idem pour le palm
     # Résultat : ces souris sont notées dès qu'une prise leur manque n'est PAS celle du profil.
-    for ident, grip in (("pulsar_x2h_v3_mini", Grip.FINGERTIP), ("atk_fierce_x", Grip.FINGERTIP),
+    for ident, grip in (("pulsar_x2h_v3_mini", Grip.FINGERTIP),
                         ("atk_u2_mini", Grip.FINGERTIP), ("pulsar_xlite_v4_large", Grip.CLAW)):
         score = evaluate_mouse(mice[ident], HandMeasure(175, 85), grip)
         assert score.is_scored or score.is_excluded, (ident, grip)
@@ -1398,7 +1390,8 @@ def test_la_note_de_l_x1_ne_contredit_pas_ses_champs(mice):
     """
     mouse = mice["atk_x1_ultra_max"]
     assert "non renseigné" not in mouse.notes, "la note contredit un champ renseigné"
-    assert mouse.sensor == "PAW3395 Ultra", mouse.sensor
+    # Tranché le 2026-11-12 : la fiche officielle, lue édition par édition, donne « PAW3950 Ultra ».
+    assert mouse.sensor == "PAW3950 Ultra", mouse.sensor
     declarants = [s for s in mouse.sources if "sensor" in s.fields]
     assert len(declarants) >= 3, [s.label for s in declarants]
     conflict = mouse.conflicts.get("sensor")
@@ -1511,12 +1504,12 @@ def test_le_prix_de_l_a9_ultimate_est_celui_de_sa_variante(mice):
     gèle le prix, la provenance et la variante.
     """
     a9 = mice["atk_a9_ultimate"]
-    assert (a9.price_eur, a9.price_status) == (59.95, "verified")
+    assert (a9.price_eur, a9.price_status) == (52.71, "verified")   # relevé du 2026-11-12
     assert "« Ultimate / Black »" in a9.price_note
-    assert "41,95" in a9.price_note or "41.95" in a9.price_note   # l'ancien relevé reste expliqué
+    assert "59,95" in a9.price_note                                 # l'ancien relevé reste écrit
     source = [s for s in a9.sources if "46878654005466" in s.url]
-    assert len(source) == 1, "la variante figée par le bouton doit être citée par une source datée"
-    assert "price_eur" in source[0].fields and source[0].date_checked == "2026-10-13"
+    assert len(source) == 2, "la variante figée par le bouton doit être citée par une source datée"
+    assert "price_eur" in source[-1].fields and source[-1].date_checked == "2026-11-12"
 
 
 def test_chaque_lien_a_variante_est_trace_par_une_source(mice):
