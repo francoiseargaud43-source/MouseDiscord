@@ -353,56 +353,69 @@ Le tableau ci-dessous est **lu par un test** (`tests/test_liens_achat.py`) : il 
 ligne, à `data/commercial_links.json` (handle et variante figée) et à `data/mouse_db.json` (prix
 publié). Modifier un lien ou un prix sans mettre à jour ce tableau fait **échouer la suite**.
 
-### 8.1 Les 44 liens (handle, variante figée, prix de la boutique, prix publié)
+### 8.1 Les 57 liens (handle, variante figée, prix de la boutique, prix publié)
 
-Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les dix lignes Pulsar marquées « 2026-11-11 » ont été ajoutées ce jour-là avec leurs souris (fiche officielle Pulsar EU relue, prix EUR affiché). **Relecture du 2026-11-12** : les dix-huit lignes ATK marquées « relevé du 2026-11-12 » ont été relues version par version sur la page France (prix en euros affichés par la boutique) ; l'ATK Fierce X (épuisée) et l'ATK U2 (ancienne génération, capteur PAW3395, remplacée par la U2 V2 de même coque) sont retirées du catalogue. Les autres versions de chaque forme sont dans `data/versions.json`.
+Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les dix lignes Pulsar marquées « 2026-11-11 » ont été ajoutées ce jour-là avec leurs souris (fiche officielle Pulsar EU relue, prix EUR affiché). **Relecture du 2026-11-12** : les dix-huit lignes ATK marquées « relevé du 2026-11-12 » ont été relues version par version sur la page France (prix en euros affichés par la boutique) ; l'ATK Fierce X (épuisée) et l'ATK U2 (ancienne génération, capteur PAW3395, remplacée par la U2 V2 de même coque) sont retirées du catalogue. Les autres versions de chaque forme sont dans `data/versions.json`. **Pulsar et Scyrox, même jour** : chaque lien Pulsar relu sur la boutique Pulsar EU (prix TTC en euros) et figé sur la variante en stock ; quinze souris ajoutées (dernières générations, marquées « ajout du 2026-11-12 ») ; la Xlite v4 Large et l'eS Xlite, épuisées, retirées ; la Susanto-X 2.0 Medium et la ZywOo Gen.3 Medium ouvrent désormais leur fiche à 149,99 € (au lieu de 159,99 €). Chez Scyrox, la V8 et la V6 ne sont plus vendues : les liens ouvrent la V8S et la V6S, et la boutique affiche ses prix en euros sur sa page France (elle encaisse en dollars).
 
 | id | handle | variante figée | libellé de la variante (ou du produit) | prix boutique | prix publié | verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| `atk_a9_ultimate` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `46878654005466` | Ultimate / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
-| `atk_a9_air` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47193565364442` | Air / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
-| `atk_a9_mini` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47852235718874` | Mini / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
-| `atk_a9_plus` | `atk-dragonfly-a9-series-lightweight-wireless-mouse` | `46320046047450` | A9 Plus / White | 26,34 € | 26,34 € | ✅ relevé du 2026-11-12 (27,95 € le 2026-10-13, 45,00 € au cahier) |
-| `atk_a9_nb` | `atk-dragonfly-a9-nb-lightweight-wireless-mouse` | `47717419581658` | Ultra / Black | 70,28 € | 70,28 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `scyrox_v8` | `scyrox-v8s` | `43245588971582` | Scyrox V8S (relevé du 2026-11-12) | 67,59 € | 67,59 € | ✅ relevé du 2026-11-12 (euros affichés par la boutique, qui encaisse 74,99 USD : voir §8.3) |
+| `scyrox_v6` | `scyrox-v6s` | `43245545062462` | Scyrox V6S (relevé du 2026-11-12) | 67,59 € | 67,59 € | ✅ relevé du 2026-11-12 (euros affichés par la boutique, qui encaisse 74,99 USD : voir §8.3) |
+| `atk_f1_ultimate` | `atk-blazing-sky-f1-v3-series-esports-wireless-mouse` | `48175399370970` | Ultimate+ / Black | 57,10 € | 57,10 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_x1_ultra_max` | `atk-blazing-sky-x1-v2-series-esports-wireless-mouse` | `47058382782682` | Ultra Max 2.0 / Black | 39,53 € | 39,53 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_z1_ultra` | `atk-blazing-sky-z1-v2-gaming-wireless-mouse` | `47222052290778` | Ultimate / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_plus` | `atk-dragonfly-a9-series-lightweight-wireless-mouse` | `46320046047450` | A9 Plus / White | 26,34 € | 26,34 € | ✅ relevé du 2026-11-12 (27,95 € le 2026-10-13, 45,00 € au cahier) |
 | `atk_phantom_ultimate` | `atk-blazing-sky-phantom-hollow-carbon-fiber-composite-wireless-gaming-mouse` | `48530995708122` | Ultimate / Dune (Sand) | 79,07 € | 79,07 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_ghost_ultimate` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425595098` | Ultimate / Silver | 65,89 € | 65,89 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_ghost_extreme` | `atk-blazing-sky-ghost-hollow-carbon-fiber-wireless-gaming-mouse` | `47320425627866` | Extreme / Black | 83,46 € | 83,46 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_y9_ultimate` | `atk-dragonfly-y9-series-lightweight-ergonomic-wireless-mouse` | `47178929864922` | Ultimate / White | 79,07 € | 79,07 € | ✅ relevé du 2026-11-12 (page France, version par version) |
-| `atk_f1_ultimate` | `atk-blazing-sky-f1-v3-series-esports-wireless-mouse` | `48175399370970` | Ultimate+ / Black | 57,10 € | 57,10 € | ✅ relevé du 2026-11-12 (page France, version par version) |
-| `atk_f1_v2` | `atk-blazing-sky-f1-v2-series-esports-wireless-mouse` | `47006581096666` | Ultra Max 2.0 / Black | 39,53 € | 39,53 € | ✅ relevé du 2026-11-12 (41,95 € le 2026-10-15) |
 | `atk_u2_v2_ultimate` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47201864974554` | U2 V2 Ultimate / Lake Green | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_u2_v2_mini` | `atk-blazing-sky-u2-v2-superlight-wireless-gaming-mouse` | `47204034150618` | U2 V2 Mini / White | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
-| `atk_u2_mini` | `atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse` | `46798525137114` | Pink (le blanc est épuisé) | 57,10 € | 57,10 € | ✅ relevé du 2026-11-12 (77,95 € le 2026-10-13) |
 | `atk_zero` | `atk-blazing-sky-zero-ultralight-wireless-gaming-mouse` | `47655307804890` | ZERO / Black | 48,31 € | 48,31 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `atk_duckbill` | `atk-blazing-sky-duckbill-wireless-mouse` | `46737840144602` | Ultra / Metallic Purple | 79,07 € | 79,07 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_ultimate` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `46878654005466` | Ultimate / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_air` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47193565364442` | Air / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_a9_mini` | `atk-dragonfly-a9-ultimate-lightweight-wireless-mouse` | `47852235718874` | Mini / Black | 52,71 € | 52,71 € | ✅ relevé du 2026-11-12 (page France, version par version) |
 | `vxe_v3` | `vxe-dragonfly-v3-series-lightweight-wireless-mouse` | — | Dragonfly V3 (le moins cher) | 13,95 € | 13,95 € | ✅ |
 | `vxe_r1` | `vxe-dragonfly-r1-series-wireless-mouse` | — | Dragonfly R1 (le moins cher) | 13,95 € | 13,95 € | ✅ |
 | `vxe_mad_r` | `vxe-mad-r-series-wireless-mouse` | — | MAD R (le moins cher) | 41,95 € | 41,95 € | ✅ (relecture du 2026-10-15) |
 | `vxe_x3` | `vxe-dragonfly-x3-series-lightweight-wireless-mouse` | — | Dragonfly X3 (le moins cher) | 27,95 € | 27,95 € | ✅ |
+| `atk_u2_mini` | `atk-blazing-sky-u2-mini-superlight-wireless-gaming-mouse` | `46798525137114` | Pink (le blanc est épuisé) | 57,10 € | 57,10 € | ✅ relevé du 2026-11-12 (77,95 € le 2026-10-13) |
+| `atk_a9_nb` | `atk-dragonfly-a9-nb-lightweight-wireless-mouse` | `47717419581658` | Ultra / Black | 70,28 € | 70,28 € | ✅ relevé du 2026-11-12 (page France, version par version) |
+| `atk_f1_v2` | `atk-blazing-sky-f1-v2-series-esports-wireless-mouse` | `47006581096666` | Ultra Max 2.0 / Black | 39,53 € | 39,53 € | ✅ relevé du 2026-11-12 (41,95 € le 2026-10-15) |
 | `pulsar_x2_v3_mini` | `x2-v3-mini-gaming-mouse` | — | X2 v3 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
 | `pulsar_x2h_v3_mini` | `x2h-v3-mini-gaming-mouse` | — | X2H v3 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
 | `pulsar_x2a_v3_medium` | `x2a-v3-gaming-mouse` | — | X2A v3 Medium (taille `Size/Medium`) | 119,99 € | 119,99 € | ✅ |
-| `pulsar_x2_crazylight_medium` | `x2-crazylight-medium-gaming-mouse` | — | X2 CrazyLight Medium | 149,99 € | 149,99 € | ✅ |
-| `pulsar_x2_crazylight_mini` | `x2-crazylight-gaming-mouse` | — | X2 CrazyLight Mini | 149,99 € | 149,99 € | ✅ |
-| `pulsar_x2h_crazylight_mini` | `x2h-crazylight-gaming-mouse` | — | X2H CrazyLight Mini | 149,99 € | 149,99 € | ✅ |
-| `pulsar_xlite_crazylight_medium` | `xlite-crazylight-medium-gaming-mouse` | — | Xlite CrazyLight Medium | 149,90 € | 149,90 € | ✅ |
+| `pulsar_x2_crazylight_medium` | `x2-crazylight-medium-gaming-mouse` | `53184929235273` | X2 CrazyLight Medium | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 |
 | `pulsar_xlite_v4_mini` | `xlite-v4-mini-gaming-mouse` | — | Xlite v4 Mini (taille `Size/Mini`) | 119,99 € | 119,99 € | ✅ |
 | `pulsar_xlite_v4_medium` | `xlite-v4-gaming-mouse` | — | Xlite v4 Medium (taille `Size/Medium`) | 119,99 € | 119,99 € | ✅ |
-| `pulsar_xlite_v4_large` | `xlite-v4-large-gaming-mouse` | — | Xlite v4 Large (taille `Size/Large`) | 119,99 € | 119,99 € | ✅ |
-| `pulsar_x3_crazylight_medium` | `x3-crazylight-medium-gaming-mouse` | — | X3 CrazyLight Medium (2026-11-11) | 149,99 € | 149,99 € | ✅ |
+| `pulsar_x2_crazylight_mini` | `x2-crazylight-gaming-mouse` | `51663608742217` | X2 CrazyLight Mini | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 |
+| `pulsar_x2h_crazylight_mini` | `x2h-crazylight-gaming-mouse` | `52837074272585` | X2H CrazyLight Mini | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 |
+| `pulsar_xlite_crazylight_medium` | `xlite-crazylight-medium-gaming-mouse` | `53479336935753` | Xlite CrazyLight Medium | 149,90 € | 149,90 € | ✅ relevé du 2026-11-12 |
+| `pulsar_x3_crazylight_medium` | `x3-crazylight-medium-gaming-mouse` | `54211586392393` | X3 CrazyLight Medium | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 |
 | `pulsar_zywoo_chosen_gen2_mini` | `zywoo-the-chosen-mouse-gen-2-mini` | — | ZywOo The Chosen Mouse Gen.2 Mini (2026-11-11) | 159,99 € | 159,99 € | ✅ |
 | `pulsar_zywoo_chosen_gen2_medium` | `zywoo-the-chosen-mouse-gen-2-medium-1` | — | ZywOo The Chosen Mouse Gen.2 Medium (2026-11-11) | 149,99 € | 149,99 € | ✅ |
-| `pulsar_susanto_x_2_medium` | `pro-series-susanto-x-2-0-medium-gaming-mouse` | — | Susanto-X 2.0 Medium (2026-11-11) | 159,99 € | 159,99 € | ✅ |
-| `pulsar_es_fs1` | `pulsar-es-fs-1-gaming-mouse` | — | eS FS-1 (2026-11-11) | 179,99 € | 179,99 € | ✅ |
-| `pulsar_zywoo_chosen_gen3_medium` | `zywoo-the-chosen-mouse-gen-3` | — | ZywOo The Chosen Mouse Gen.3 Medium (2026-11-11) | 159,99 € | 159,99 € | ✅ |
-| `pulsar_susanto_x_2_large` | `pro-series-susanto-x-2-0-large-gaming-mouse-1` | — | Susanto-X 2.0 Large (précommande) (2026-11-11) | 149,99 € | 149,99 € | ✅ |
-| `pulsar_tenz_signature_2_medium` | `tenz-signature-edition-2-0-gaming-mouse` | — | TenZ Signature Edition 2.0 Medium (2026-11-11) | 149,99 € | 149,99 € | ✅ |
-| `pulsar_feinmann_f01` | `feinmann-f01-gaming-mouse` | — | Feinmann F01 (2026-11-11) | 139,99 € | 139,99 € | ✅ |
-| `pulsar_es_xlite` | `pulsar-es-xlite-gaming-mouse` | — | eS Xlite (épuisée) (2026-11-11) | 179,99 € | 179,99 € | ✅ |
-| `scyrox_v8` | `scyrox-v8` | — | Scyrox V8 (6 variantes) | 69,99 USD | 74,90 € | ⚠️ monnaie ≠ EUR (voir §8.3) |
-| `scyrox_v6` | `scyrox-v6` | — | Scyrox V6 | 69,99 USD | 74,90 € | ⚠️ monnaie ≠ EUR (voir §8.3) |
+| `pulsar_susanto_x_2_medium` | `pro-series-susanto-x-2-0-gaming-mouse` | `55794341708105` | Susanto-X 2.0 Medium | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 (159,99 € au relevé précédent) |
+| `pulsar_es_fs1` | `pulsar-es-fs-1-gaming-mouse` | `53837254689097` | eS FS-1 | 179,99 € | 179,99 € | ✅ relevé du 2026-11-12 |
+| `pulsar_zywoo_chosen_gen3_medium` | `zywoo-the-chosen-mouse-gen-4` | `55875002564937` | ZywOo The Chosen Mouse Gen.3 Medium | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 (159,99 € au relevé précédent) |
+| `pulsar_susanto_x_2_large` | `pro-series-susanto-x-2-0-large-gaming-mouse-1` | `55794354585929` | Susanto-X 2.0 Large (précommande) | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 |
+| `pulsar_tenz_signature_2_medium` | `tenz-signature-edition-2-0-gaming-mouse` | `55457517207881` | TenZ Signature Edition 2.0 Medium | 149,99 € | 149,99 € | ✅ relevé du 2026-11-12 |
+| `pulsar_feinmann_f01` | `feinmann-f01-gaming-mouse` | `55360063865161` | Feinmann F01 | 139,99 € | 139,99 € | ✅ relevé du 2026-11-12 |
+| `pulsar_x2n_crazylight_mini` | `x2n-crazylight-mini-gaming-mouse` | `53914305069385` | X2N CrazyLight Mini | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_x2n_crazylight_medium` | `x2n-crazylight-medium-gaming-mouse` | `53914308706633` | X2N CrazyLight Medium | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_x2h_crazylight_medium` | `x2h-crazylight-medium-gaming-mouse` | `53628704948553` | X2H CrazyLight Medium | 149,90 € | 149,90 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_x3_crazylight_mini` | `x3-crazylight-gaming-mouse` | `53085851713865` | X3 CrazyLight Mini | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_xlite_crazylight_mini` | `xlite-crazylight-gaming-mouse` | `52550193152329` | Xlite CrazyLight Mini | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_lab_x2f_crazylight` | `pulsar-lab-x2f-crazylight-gaming-mouse` | `55417427034441` | X2F CrazyLight (Pulsar LAB) | 179,99 € | 179,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_tenz_signature_2_mini` | `tenz-signature-edition-2-0-gaming-mouse` | `55457517175113` | TenZ Signature Edition 2.0 Mini | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_zywoo_chosen_gen3_mini` | `zywoo-the-chosen-mouse-gen-4` | `55875002532169` | ZywOo The Chosen Mouse Gen.3 Mini | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_carpe_x_medium` | `pro-series-carpe-x-medium-gaming-mouse` | `54796185895241` | CARPE-X Medium | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_jinggg_x_medium` | `pro-series-jinggg-x-medium-gaming-mouse` | `54709343027529` | Jinggg-X Medium | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_sta_x_medium` | `pro-series-sta-x-medium-gaming-mouse` | `54577516216649` | STA-X Medium | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_buzz_x_medium` | `pro-series-buzz-x-medium-gaming-mouse` | `54332881338697` | BUZZ-X Medium | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `pulsar_jv_x` | `pro-series-jv-x-gaming-mouse` | `52635623194953` | JV-X | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
+| `scyrox_v12m` | `scyrox-v12` | `67994397540414` | Scyrox V12M (relevé du 2026-11-12) | 67,59 € | 67,59 € | ✅ relevé du 2026-11-12 (euros affichés par la boutique, qui encaisse 74,99 USD : voir §8.3) |
+| `scyrox_v12l` | `scyrox-v12` | `67994397671486` | Scyrox V12L (relevé du 2026-11-12) | 67,59 € | 67,59 € | ✅ relevé du 2026-11-12 (euros affichés par la boutique, qui encaisse 74,99 USD : voir §8.3) |
 
 ### 8.2 Ce que la relecture a corrigé
 

@@ -236,7 +236,7 @@ def test_la_sensibilite_mesure_ce_que_les_hauteurs_inconnues_peuvent_changer(tmp
     réduite : avec le vrai catalogue, des résultats dépendent des inconnues ; une fois chaque hauteur
     renseignée (catalogue de test, sources ajoutées), plus aucun — l'incertitude est alors nulle."""
     reel = cb.sensibilite(rapide=True)
-    assert reel["_inconnues"] == {"souris": 27, "total": 44}   # 28/46 avant le retrait de la Fierce X et de l'U2
+    assert reel["_inconnues"] == {"souris": 40, "total": 57}   # 27/44 avant les ajouts Pulsar et Scyrox du 2026-11-12
     assert sum(ligne["ideal"] for cle, ligne in reel.items() if cle != "_inconnues") > 0
 
     catalogue = json.loads((ROOT / "data" / "mouse_db.json").read_text(encoding="utf-8"))
@@ -247,7 +247,7 @@ def test_la_sensibilite_mesure_ce_que_les_hauteurs_inconnues_peuvent_changer(tmp
     complet = tmp_path / "complet.json"
     complet.write_text(json.dumps(catalogue, ensure_ascii=False), encoding="utf-8")
     plein = cb.sensibilite(complet, rapide=True)
-    assert plein.pop("_inconnues") == {"souris": 0, "total": 44}
+    assert plein.pop("_inconnues") == {"souris": 0, "total": 57}
     assert all(ligne["ideal"] == 0 and ligne["une_place"] == 0 for ligne in plein.values())
 
 
@@ -314,25 +314,25 @@ def test_la_vraie_campagne_du_15_octobre():
 
 
 def test_le_catalogue_d_essai_est_une_copie_et_jamais_le_vrai(tmp_path, capsys):
-    """``analyser --essai`` écrit une copie où les 7 classes proposées remplacent « Inconnu », chacune avec
-    sa source EloShapes datée — de quoi mesurer l'effet d'une publication avant de la décider. Le vrai
+    """``analyser --essai`` écrit une copie où les classes proposées remplacent « Inconnu », chacune avec
+    sa source EloShapes datée (6 depuis le 2026-11-12 : la Xlite v4 Large, épuisée, a quitté le catalogue) — de quoi mesurer l'effet d'une publication avant de la décider. Le vrai
     catalogue n'est jamais réécrit."""
     vrai = ROOT / "data" / "mouse_db.json"
     avant = vrai.read_bytes()
     releve = str(ROOT / "docs" / "campagne_boutons" / "releve_2026-10-15.json")
     essai = tmp_path / "essai.json"
     assert cb.main(["analyser", releve, "--rapport", str(tmp_path / "r.md"), "--essai", str(essai)]) == 0
-    assert "7 hauteur(s) de boutons renseignée(s)" in capsys.readouterr().out
+    assert "6 hauteur(s) de boutons renseignée(s)" in capsys.readouterr().out
     copie = {m["id"]: m for m in json.loads(essai.read_text(encoding="utf-8"))}
     assert copie["atk_a9_mini"]["button_height"] == "Mid"
     assert copie["atk_phantom_ultimate"]["button_height"] == "Inconnu"
-    assert copie["pulsar_xlite_v4_large"]["sources"][-1]["fields"] == ["button_height"]
-    assert copie["pulsar_xlite_v4_large"]["sources"][-1]["url"].startswith("https://www.eloshapes.com/")
+    assert copie["pulsar_xlite_v4_medium"]["sources"][-1]["fields"] == ["button_height"]
+    assert copie["pulsar_xlite_v4_medium"]["sources"][-1]["url"].startswith("https://www.eloshapes.com/")
     # La copie passe la validation stricte du bot (sinon db_effect et sensibilite la refuseraient).
     sys.path.insert(0, str(ROOT))
     from utils.catalog import load_catalog
     souris = load_catalog(essai)
-    assert len(souris) == 44 and sum(m.button_height == "Inconnu" for m in souris) == 20
+    assert len(souris) == 57 and sum(m.button_height == "Inconnu" for m in souris) == 34
     with pytest.raises(SystemExit):
         cb.main(["analyser", releve, "--rapport", str(tmp_path / "r.md"), "--essai", str(vrai)])
     assert vrai.read_bytes() == avant

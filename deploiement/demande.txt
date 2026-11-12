@@ -4,4 +4,4 @@
 #   deployer    : envoi en attente, contrôle, images, bascule avant une relance, attente de la reconnexion
 #   redemarrer  : redémarre seulement le bot
 action: deployer
-demande: 9
+demande: 10

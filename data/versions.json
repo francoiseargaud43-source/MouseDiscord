@@ -1,6 +1,6 @@
 {
-  "_lisez_moi": "Versions d'une même souris (même coque, autres composants), affichées sous le résultat (utils/versions.py). Relevé du 2026-11-12 sur les fiches officielles ATK, page France (https://www.atk.store/en-fr/products/<handle>?country=FR) : prix en euros tels qu'affichés par la boutique (elle encaisse en dollars, au taux qu'elle affiche), aucune conversion faite ici. Autonomie : heures à 1000 Hz du comparateur officiel ATK (« Product Finder & Comparison »). Une valeur absente de la fiche reste absente. « resultat » marque la version décrite par la fiche du catalogue. Une version épuisée a « dispo » à false et n'est pas proposée. Fabriqué par tools/fabriquer_versions.py depuis docs/audit/ATK_VERSIONS_2026-11-12.csv.",
-  "_affiliation": "Programme ATK (GoAffPro) : « When people visit the store using your link, you get commissions on everything they buy » — la commission vaut quelle que soit la version achetée ; chaque lien porte quand même ?ref=aze.",
+  "_lisez_moi": "Versions d'une même souris (même coque, autres composants), affichées sous le résultat (utils/versions.py). Relevé du 2026-11-12 sur les fiches officielles ATK, page France (https://www.atk.store/en-fr/products/<handle>?country=FR) : prix en euros tels qu'affichés par la boutique (elle encaisse en dollars, au taux qu'elle affiche), aucune conversion faite ici. Autonomie : heures à 1000 Hz du comparateur officiel ATK (« Product Finder & Comparison »). Une valeur absente de la fiche reste absente. « resultat » marque la version décrite par la fiche du catalogue. Une version épuisée a « dispo » à false et n'est pas proposée. Pulsar (prix réellement en euros) et Scyrox (dollars, euros affichés par la boutique) : docs/audit/VERSIONS_PULSAR_SCYROX_2026-11-12.csv, même relevé. Fabriqué par tools/fabriquer_versions.py.",
+  "_affiliation": "Programme ATK (GoAffPro) : « When people visit the store using your link, you get commissions on everything they buy » — la commission vaut quelle que soit la version achetée ; chaque lien porte quand même ?ref=aze. Pulsar (« Commissions of up to 5% on the sale of all products », cookie de 30 jours) et Scyrox (« 5% commission on each referral », cookie de 30 jours) : pages publiques des programmes, relevées le 2026-11-12.",
   "atk_f1_ultimate": {
     "releve": "2026-11-12",
     "page": "https://www.atk.store/en-fr/products/atk-blazing-sky-f1-v3-series-esports-wireless-mouse?country=FR",
@@ -572,6 +572,168 @@
         "switchs": "ATK Custom Optical",
         "mcu": "Nordic 54L15",
         "autonomie_h": 200
+      }
+    ]
+  },
+  "pulsar_tenz_signature_2_mini": {
+    "releve": "2026-11-12",
+    "versions": [
+      {
+        "nom": "Signature",
+        "prix_eur": 149.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/tenz-signature-edition-2-0-gaming-mouse?variant=55457517175113&ref=AZE",
+        "capteur": "XS-2",
+        "hz": 8000,
+        "poids_g": 42.0,
+        "resultat": true
+      },
+      {
+        "nom": "Misty Blue",
+        "prix_eur": 159.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/tenz-2-0-misty-blue-gaming-mouse?variant=55457517338953&ref=AZE",
+        "capteur": "XS-2",
+        "hz": 8000,
+        "poids_g": 43.0,
+        "en_plus": [
+          "coloris Misty Blue"
+        ]
+      }
+    ]
+  },
+  "pulsar_tenz_signature_2_medium": {
+    "releve": "2026-11-12",
+    "versions": [
+      {
+        "nom": "Signature",
+        "prix_eur": 149.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/tenz-signature-edition-2-0-gaming-mouse?variant=55457517207881&ref=AZE",
+        "capteur": "XS-2",
+        "hz": 8000,
+        "poids_g": 47.0,
+        "resultat": true
+      },
+      {
+        "nom": "Misty Blue",
+        "prix_eur": 159.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/tenz-2-0-misty-blue-gaming-mouse?variant=55457517371721&ref=AZE",
+        "capteur": "XS-2",
+        "hz": 8000,
+        "poids_g": 48.0,
+        "en_plus": [
+          "coloris Misty Blue"
+        ]
+      }
+    ]
+  },
+  "pulsar_zywoo_chosen_gen3_mini": {
+    "releve": "2026-11-12",
+    "versions": [
+      {
+        "nom": "Noir",
+        "prix_eur": 149.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-4?variant=55875002532169&ref=AZE",
+        "capteur": "XS-2",
+        "poids_g": 59.0,
+        "resultat": true
+      },
+      {
+        "nom": "Jaune",
+        "prix_eur": 159.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-3?variant=55737285706057&ref=AZE",
+        "capteur": "XS-2",
+        "poids_g": 59.0,
+        "en_plus": [
+          "coloris jaune"
+        ]
+      }
+    ]
+  },
+  "pulsar_zywoo_chosen_gen3_medium": {
+    "releve": "2026-11-12",
+    "versions": [
+      {
+        "nom": "Noir",
+        "prix_eur": 149.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-4?variant=55875002564937&ref=AZE",
+        "capteur": "XS-2",
+        "poids_g": 62.0,
+        "resultat": true
+      },
+      {
+        "nom": "Jaune",
+        "prix_eur": 159.99,
+        "dispo": true,
+        "lien": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-3?variant=55737285738825&ref=AZE",
+        "capteur": "XS-2",
+        "poids_g": 62.0,
+        "en_plus": [
+          "coloris jaune"
+        ]
+      }
+    ]
+  },
+  "scyrox_v12m": {
+    "releve": "2026-11-12",
+    "versions": [
+      {
+        "nom": "V12M",
+        "prix_eur": 67.59,
+        "dispo": true,
+        "lien": "https://scyrox.com/products/scyrox-v12?variant=67994397540414&bg_ref=Q0rHhhBRNv",
+        "capteur": "PAW NEXT I",
+        "hz": 8000,
+        "poids_g": 49.0,
+        "switchs": "KAILH Optical",
+        "resultat": true
+      },
+      {
+        "nom": "V12M Ultra",
+        "prix_eur": 72.1,
+        "dispo": true,
+        "lien": "https://scyrox.com/products/scyrox-v12?variant=67994397605950&bg_ref=Q0rHhhBRNv",
+        "capteur": "PAW NEXT I",
+        "hz": 8000,
+        "poids_g": 49.0,
+        "switchs": "KAILH Optical",
+        "en_plus": [
+          "base de recharge magnétique"
+        ]
+      }
+    ]
+  },
+  "scyrox_v12l": {
+    "releve": "2026-11-12",
+    "versions": [
+      {
+        "nom": "V12L",
+        "prix_eur": 67.59,
+        "dispo": true,
+        "lien": "https://scyrox.com/products/scyrox-v12?variant=67994397671486&bg_ref=Q0rHhhBRNv",
+        "capteur": "PAW NEXT I",
+        "hz": 8000,
+        "poids_g": 51.0,
+        "switchs": "KAILH Optical",
+        "resultat": true
+      },
+      {
+        "nom": "V12L Ultra",
+        "prix_eur": 72.1,
+        "dispo": true,
+        "lien": "https://scyrox.com/products/scyrox-v12?variant=67994397737022&bg_ref=Q0rHhhBRNv",
+        "capteur": "PAW NEXT I",
+        "hz": 8000,
+        "poids_g": 51.0,
+        "switchs": "KAILH Optical",
+        "en_plus": [
+          "base de recharge magnétique"
+        ]
       }
     ]
   }

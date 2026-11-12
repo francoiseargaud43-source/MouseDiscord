@@ -32,16 +32,24 @@ PULSAR_IDS = [
     "pulsar_x2_v3_mini", "pulsar_x2h_v3_mini", "pulsar_x2a_v3_medium", "pulsar_x2_crazylight_medium",
     "pulsar_x2_crazylight_mini", "pulsar_x2h_crazylight_mini",
     "pulsar_xlite_crazylight_medium", "pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium",
-    "pulsar_xlite_v4_large",
-]
+]   # la Xlite v4 Large, épuisée, a quitté le catalogue le 2026-11-12
 # Ajouts du 2026-11-11 : souris Pulsar en vente sur la boutique européenne, relevées sur la fiche
 # officielle du modèle (cotes, poids, capteur, fréquence, forme, prises recommandées par le fabricant).
 PULSAR_2026_11_11_IDS = [
     "pulsar_x3_crazylight_medium", "pulsar_zywoo_chosen_gen2_mini", "pulsar_zywoo_chosen_gen2_medium",
     "pulsar_susanto_x_2_medium", "pulsar_es_fs1",
     "pulsar_zywoo_chosen_gen3_medium", "pulsar_susanto_x_2_large", "pulsar_tenz_signature_2_medium",
-    "pulsar_feinmann_f01", "pulsar_es_xlite",
+    "pulsar_feinmann_f01",
+]   # l'eS Xlite, épuisée, a quitté le catalogue le 2026-11-12
+# Ajouts du 2026-11-12 : dernière génération Pulsar et Scyrox (relevé version par version sur les fiches
+# officielles, bosse et forme lues sur EloShapes) — docs/audit/VERSIONS_PULSAR_SCYROX_2026-11-12.csv.
+PULSAR_2026_11_12_IDS = [
+    "pulsar_x2n_crazylight_mini", "pulsar_x2n_crazylight_medium", "pulsar_x2h_crazylight_medium",
+    "pulsar_x3_crazylight_mini", "pulsar_xlite_crazylight_mini", "pulsar_lab_x2f_crazylight",
+    "pulsar_tenz_signature_2_mini", "pulsar_zywoo_chosen_gen3_mini", "pulsar_carpe_x_medium",
+    "pulsar_jinggg_x_medium", "pulsar_sta_x_medium", "pulsar_buzz_x_medium", "pulsar_jv_x",
 ]
+SCYROX_2026_11_12_IDS = ["scyrox_v12m", "scyrox_v12l"]
 # Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
 # boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
 # droite : forme à trancher, jamais devinée (docs/audit/PULSAR_CATALOGUE_2026-10-12.md §6).
@@ -64,8 +72,9 @@ def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert set(STORE_2026_10_11_IDS) <= set(mice)
     assert set(PULSAR_IDS) <= set(mice)
     assert set(PULSAR_2026_11_11_IDS) <= set(mice)
+    assert set(PULSAR_2026_11_12_IDS + SCYROX_2026_11_12_IDS) <= set(mice)
     assert len(mice) == (len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS) + len(PULSAR_IDS)
-                         + len(PULSAR_2026_11_11_IDS))
+                         + len(PULSAR_2026_11_11_IDS) + len(PULSAR_2026_11_12_IDS) + len(SCYROX_2026_11_12_IDS))
 
 
 def price_is_either_absent_or_sourced(mouse) -> bool:
@@ -124,9 +133,11 @@ def test_small_shape_gap_is_filled_by_the_pulsar_minis(mice):
     assert min(others) > 116.6
     # 2026-11-11 : la ZywOo Gen.2 Mini (114,5 mm, fiche officielle Pulsar EU) devient la plus courte.
     assert mice["pulsar_zywoo_chosen_gen2_mini"].length_mm == 114.5
-    assert min(m.length_mm for m in mice.values() if m.length_mm is not None) == 114.5
-    assert min(m.length_mm for m in mice.values()
-               if m.length_mm is not None and m.id != "pulsar_zywoo_chosen_gen2_mini") == 115.6
+    # 2026-11-12 : la X2F CrazyLight (Pulsar LAB, 87,5 mm, faite pour le bout des doigts) est la plus
+    # courte ; puis la TenZ 2.0 Mini (114 mm) et les ZywOo Mini (114,5 mm).
+    longueurs = sorted(m.length_mm for m in mice.values() if m.length_mm is not None)
+    assert longueurs[:4] == [87.5, 114.0, 114.5, 114.5]
+    assert mice["pulsar_lab_x2f_crazylight"].fingertip_grip_fit == "Élevé"
 
 
 def test_owner_models_keep_their_compatibility_values(mice):
@@ -491,7 +502,7 @@ def test_bosse_des_xlite_et_prix_de_l_a9_mini_sont_sources(mice):
     Aucune valeur devinée : chaque champ ajouté cite une source datée, et la souris devient classable
     (partielle) dès qu'il ne lui reste qu'UN manque.
     """
-    for ident in ("pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium", "pulsar_xlite_v4_large",
+    for ident in ("pulsar_xlite_v4_mini", "pulsar_xlite_v4_medium",
                   "pulsar_xlite_crazylight_medium"):
         mouse = mice[ident]
         assert mouse.hump_position == "Mid", ident
@@ -605,8 +616,9 @@ def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
     - « Not ideal » n'est JAMAIS converti en « Faible » : une valeur tierce n'exclut personne.
     """
     tiers = [m for m in mice.values() if m.fit_status == "third_party_guide"]
-    # Dix à l'origine ; neuf depuis le retrait de l'ATK Fierce X, épuisée (2026-11-12).
-    assert len(tiers) >= 9, "les neuf souris complétées doivent porter le statut dédié"
+    # Dix à l'origine ; huit depuis le retrait de l'ATK Fierce X et de la Pulsar Xlite v4 Large, épuisées
+    # (2026-11-12).
+    assert len(tiers) >= 8, "les huit souris complétées doivent porter le statut dédié"
     for mouse in tiers:
         valeurs = (mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit)
         assert "Faible" not in valeurs, mouse.id
@@ -635,7 +647,7 @@ def test_third_party_grip_guide_fills_only_what_the_brand_silences(mice):
     assert x2.palm_grip_fit == "Inconnu"                  # idem pour le palm
     # Résultat : ces souris sont notées dès qu'une prise leur manque n'est PAS celle du profil.
     for ident, grip in (("pulsar_x2h_v3_mini", Grip.FINGERTIP),
-                        ("atk_u2_mini", Grip.FINGERTIP), ("pulsar_xlite_v4_large", Grip.CLAW)):
+                        ("atk_u2_mini", Grip.FINGERTIP), ("pulsar_xlite_v4_medium", Grip.CLAW)):
         score = evaluate_mouse(mice[ident], HandMeasure(175, 85), grip)
         assert score.is_scored or score.is_excluded, (ident, grip)
 
@@ -667,7 +679,8 @@ def test_commercial_links_are_official_and_verified():
     assert all(
         "ref=AZE" in url for key, url in links.items() if key.startswith("pulsar_")
     )
-    assert len([key for key in links if key.startswith("pulsar_")]) == len(PULSAR_IDS) + len(PULSAR_2026_11_11_IDS)
+    assert len([key for key in links if key.startswith("pulsar_")]) == \
+        len(PULSAR_IDS) + len(PULSAR_2026_11_11_IDS) + len(PULSAR_2026_11_12_IDS)
 
 
 def test_commercial_links_reference_known_mice():
@@ -1572,3 +1585,33 @@ def test_aucune_phrase_du_catalogue_n_est_collee_a_la_suivante():
     ]
     assert not collées, "phrases sans espace après le point :\n  " + "\n  ".join(collées)
     assert sum(1 for _ in _textes_du_catalogue()) > 200, "le balayage ne lit presque rien"
+
+
+def test_pulsar_et_scyrox_du_2026_11_12_suivent_la_fiche_et_eloshapes(mice):
+    """2026-11-12 : dernière génération Pulsar et Scyrox, relevée version par version.
+
+    Règles tenues : prix vérifié et sourcé, cotes du fabricant, prises seulement là où le fabricant les
+    écrit (« Inconnu » ailleurs), bosse lue sur EloShapes (« Center » → Mid, « Back - … » → Rear), MCU
+    vide chez Pulsar (jamais publié), 1 000 Hz quand le dongle 8K est vendu à part, et un lien affilié.
+    Les souris pour gauchers (X3 LHD) ne sont pas ajoutées : le parcours ne demande pas la main.
+    """
+    links = load_commercial_links(COMMERCIAL_LINKS_PATH)
+    for mid in PULSAR_2026_11_12_IDS + SCYROX_2026_11_12_IDS:
+        mouse = mice[mid]
+        assert mouse.price_status == "verified" and mouse.price_eur, mid
+        assert price_is_either_absent_or_sourced(mouse), mid
+        assert mouse.dimension_status == "verified" and mouse.fit_status == "manufacturer_guide", mid
+        assert grip_fields_are_sourced_or_unknown(mouse), mid
+        assert "Élevé" in (mouse.palm_grip_fit, mouse.claw_grip_fit, mouse.fingertip_grip_fit), mid
+        assert mouse.hump_position in ("Mid", "Rear"), mid
+        assert any("eloshapes.com" in s.url and "hump_position" in s.fields for s in mouse.sources), mid
+        assert mouse.button_height == "Inconnu", mid           # non publiée : jamais devinée
+        assert mid in links, mid
+        if mouse.brand == "Pulsar":
+            assert not mouse.mcu, mid
+            assert "ref=AZE" in links[mid]
+            if "For 8K Dongle Requirement" in mouse.notes or "vendu à part" in mouse.notes:
+                assert mouse.polling_hz == 1000, mid
+        else:
+            assert "bg_ref=" in links[mid]
+    assert not any("lhd" in mid for mid in mice)

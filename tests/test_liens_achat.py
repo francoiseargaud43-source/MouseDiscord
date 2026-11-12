@@ -74,12 +74,12 @@ def _montant(cellule: str) -> tuple[float, str]:
     return nombre, "EUR" if trouvé.group(2) == "€" else "USD"
 
 
-def test_le_tableau_de_relecture_couvre_les_46_liens_et_rien_d_autre():
+def test_le_tableau_de_relecture_couvre_les_57_liens_et_rien_d_autre():
     """Un lien retiré ou ajouté sans toucher au tableau (ou l'inverse) casserait ce test."""
     du_depot = sorted(k for k in LIENS if not k.startswith("_"))
     du_tableau = sorted(_lignes_du_tableau())
     assert du_tableau == du_depot
-    assert len(du_tableau) == len(CATALOGUE) == 44   # 46 jusqu'au 2026-11-12 (Fierce X et U2 retirées)
+    assert len(du_tableau) == len(CATALOGUE) == 57   # 46, puis 44 le 2026-11-12 (Fierce X et U2 retirées), puis 57 (Pulsar et Scyrox)
 
 
 def test_le_tableau_nomme_le_handle_et_la_variante_que_chaque_lien_ouvre():

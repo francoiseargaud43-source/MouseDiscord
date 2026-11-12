@@ -183,8 +183,10 @@ def test_palm_180x90_ranking_keeps_the_owner_mice_on_top(catalog):
     totals = {s.mouse.id: s.total for s in scores if s.is_scored}
     assert (totals["scyrox_v6"], totals["atk_z1_ultra"], totals["atk_a9_plus"], totals["atk_x1_ultra_max"]) == (30, 30, 25, 20)
     ranked = rank_by_compatibility(scores)
-    assert (ranked[0].mouse.id, ranked[0].total) == ("atk_phantom_ultimate", 35)
-    assert {s.mouse.id for s in ranked[1:3]} == {"scyrox_v6", "atk_z1_ultra"}, "les souris du propriétaire restent juste derrière"
+    # Depuis le 2026-11-12, la Pulsar JV-X (fiche complète, prise publiée par Pulsar) égale le Phantom :
+    # deux souris à 35/40 en tête, puis les souris du propriétaire.
+    assert {(s.mouse.id, s.total) for s in ranked[:2]} == {("atk_phantom_ultimate", 35), ("pulsar_jv_x", 35)}
+    assert {s.mouse.id for s in ranked[2:4]} == {"scyrox_v6", "atk_z1_ultra"}, "les souris du propriétaire restent juste derrière"
     assert all(0 <= s.total <= MAX_SCORE for s in ranked)
 
 

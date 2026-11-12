@@ -39,15 +39,16 @@ CLIC_THENAR = Thenar.MOYENNE.value
 CLIC_VARIANTE = ClawVariant.RELACHEE.value
 
 # Les trois places attendues pour le profil de référence (Palm, 180 × 90 mm, thénar moyenne, mode
-# « Qualité-prix »), **relevées sur le moteur le 2026-10-14** et écrites ici en clair : le test ne
+# « Qualité-prix »), **relevées sur le moteur le 2026-10-14** (puis le 2026-11-12, arrivée de la
+# Pulsar JV-X à égalité avec le Phantom) et écrites ici en clair : le test ne
 # redemande jamais ses attentes au code qu'il vérifie. Un test qui les recalculait avec
 # `flow.result_slots` validait n'importe quel ordre — c'est exactement ce qui a laissé passer, le
 # 2026-10-14, une mutation échangeant les deux dernières places (et qui a fait publier au banc d'essai
 # 10 678 problèmes fantômes, tous mesurés sur le bytecode muté : voir `tools/check_bytecode.py`).
 PLACES_ATTENDUES = [
     ("ATK Phantom Ultimate", 88, "79,07 €"),
+    ("Pulsar JV-X", 88, "149,99 €"),
     ("ATK Z1 V2 Ultimate", 75, "52,71 €"),
-    ("ATK A9 Mini", 75, "52,71 €"),
 ]
 
 

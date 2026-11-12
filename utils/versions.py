@@ -154,6 +154,8 @@ def type_de_clic(switchs: str | None) -> str | None:
 # Une autonomie annoncée inférieure d'au moins un quart à celle de la base est signalée : c'est le
 # prix caché des versions « Extreme » (puce plus rapide, batterie qui tient deux à quatre fois moins).
 AUTONOMIE_PERTE_NOTABLE = 0.75
+# Une base de recharge vendue avec la souris pour au plus ce supplément est conseillée.
+BASE_DE_CHARGE_PRIX_MAX_EUR = 10
 
 
 def moins_d_autonomie(version: Version, base: Version) -> bool:
@@ -236,8 +238,25 @@ def conseil(gamme: Gamme) -> str:
         phrases.append("Attention à l'autonomie annoncée, plus courte sur certaines versions.")
     if autre_clic:
         phrases.append("Clics mécaniques ou optiques : une affaire de sensation, pas de niveau.")
-    phrases.append(f"La moins chère ({base.nom}) suffit pour la plupart des joueurs.")
+    coloris = [v for v in autres if v.en_plus and all(x.startswith("coloris") for x in v.en_plus)
+               and not ce_qui_change_hors_options(v, base)]
+    if coloris:
+        phrases.append("Un autre coloris coûte plus cher pour le seul look.")
+    base_de_charge = [v for v in autres if any(x.startswith("base de") for x in v.en_plus)
+                      and v.prix_eur - base.prix_eur <= BASE_DE_CHARGE_PRIX_MAX_EUR]
+    if base_de_charge:
+        ecart = _prix(base_de_charge[0].prix_eur - base.prix_eur)
+        phrases.append(f"La base de recharge (+{ecart}) est un vrai confort au quotidien : à ce prix, "
+                       "elle vaut le coup.")
+        phrases.append(f"Sans elle, la moins chère ({base.nom}) fait aussi bien en jeu.")
+    else:
+        phrases.append(f"La moins chère ({base.nom}) suffit pour la plupart des joueurs.")
     return " ".join(phrases)
+
+
+def ce_qui_change_hors_options(version: Version, base: Version) -> list[str]:
+    """Ce qui change, sans les options écrites à la main (coloris, accessoires)."""
+    return [x for x in ce_qui_change(version, base) if x not in version.en_plus]
 
 
 def champs(gamme: Gamme, limite: int = 1024) -> list[str]:

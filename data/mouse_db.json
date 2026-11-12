@@ -2,25 +2,25 @@
   {
     "id": "scyrox_v8",
     "brand": "Scyrox",
-    "model": "V8 / V8S",
+    "model": "V8S",
     "category": "Autre",
     "family": "Scyrox V8",
     "budget_tier": "Haut de Gamme",
     "length_mm": 118.0,
     "width_max_mm": 63.0,
-    "height_mm": 40.0,
+    "height_mm": 38.0,
     "hump_position": "Rear",
     "button_height": "Low",
     "palm_grip_fit": "Faible",
     "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Élevé",
     "fit_status": "owner_spec",
-    "dimension_status": "owner_spec_unverified",
-    "price_eur": 74.9,
+    "dimension_status": "verified",
+    "price_eur": 67.59,
     "price_status": "verified",
-    "price_note": "Prix EUR issu du cahier des charges (74,90 €), confirmé le 2026-10-11 par le prix public français (74,90 €, noir, en stock ; blanc en promotion à 59,90 €) chez Maxesport. La boutique officielle affiche ses prix en dollars (« Scyrox V8 » 69,99 USD, « V8S » 74,99 USD) : aucune conversion n'est faite (règle du 2026-10-11), donc aucun prix en euros ne peut venir de là — relevé du 2026-10-13.",
+    "price_note": "Prix EUR affiché le 2026-11-12 par la boutique Scyrox (page France, variante 43245588971582, en stock) : 67,59 €. La boutique encaisse en dollars (74,99 USD) et affiche les euros à son propre taux : aucune conversion faite ici. Historique : Prix EUR issu du cahier des charges (74,90 €), confirmé le 2026-10-11 par le prix public français (74,90 €, noir, en stock ; blanc en promotion à 59,90 €) chez Maxesport. La boutique officielle affiche ses prix en dollars (« Scyrox V8 » 69,99 USD, « V8S » 74,99 USD) : aucune conversion n'est faite (règle du 2026-10-11), donc aucun prix en euros ne peut venir de là — relevé du 2026-10-13.",
     "fit_rationale": "La bosse arrière verrouille parfaitement le Claw grip. Très légère pour le Fingertip.",
-    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK (Maxesport : 74,90 €). V8 : 36 ±3 g, capteur PAW3950, 8 000 Hz, switchs optiques, MCU Nordic nRF52840 (inputarena / MouseCompare / PotentGaming, 2026-10-11). La variante V8S partage la coque : poids non vérifié séparément ici. Variante V8S : 40 ±3 g (batterie 400 mAh) — poids propre de la V8S, plus lourde que la V8 (36 g).",
+    "notes": "Mise à jour du 2026-11-12 : la V8 est épuisée ; le catalogue décrit désormais la V8S, même coque (fiche officielle : 118 × 63 × 38 mm, 40 g (±3), « Claw Grip , Claw-palm Grip », capteur PAW NEXT I, « Wired & Wireless Dual 8K », MCU Nordic 54L15, switchs Kailh optiques, batterie 400 mAh). Les compatibilités de prise du cahier des charges sont conservées. Historique : Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK (Maxesport : 74,90 €). V8 : 36 ±3 g, capteur PAW3950, 8 000 Hz, switchs optiques, MCU Nordic nRF52840 (inputarena / MouseCompare / PotentGaming, 2026-10-11). La variante V8S partage la coque : poids non vérifié séparément ici. Variante V8S : 40 ±3 g (batterie 400 mAh) — poids propre de la V8S, plus lourde que la V8 (36 g).",
     "sources": [
       {
         "label": "Maxesport (revendeur FR, expédition depuis la France) — Scyrox V8 8K Wireless Black",
@@ -100,19 +100,49 @@
           "price_note"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "Scyrox — fiche officielle V8S (tableau « SPECIFICATION »), relevée le 2026-11-12 : 67,59 € affichés, en stock",
+        "url": "https://scyrox.com/products/scyrox-v8s?variant=43245588971582",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
       }
     ],
     "shape": "Symmetrical",
-    "weight_g": 36.0,
-    "sensor": "PAW3950",
+    "weight_g": 40.0,
+    "sensor": "PAW NEXT I",
     "polling_hz": 8000,
-    "switches": "Optiques (Omron / Kailh)",
-    "mcu": "Nordic nRF52840"
+    "switches": "Optiques Kailh",
+    "mcu": "Nordic 54L15",
+    "conflicts": {
+      "height_mm": {
+        "values": [
+          40.0,
+          38.0
+        ],
+        "sources": [
+          "Cahier des charges du propriétaire (V8 / V8S)",
+          "Scyrox — fiche officielle V8S (tableau « SPECIFICATION ») et EloShapes"
+        ],
+        "note": "Tranché le 2026-11-12 : la V8 (épuisée) est remplacée par la V8S ; la fiche officielle et EloShapes donnent 38 mm. La valeur du fabricant est retenue, l'ancienne reste écrite ici."
+      }
+    }
   },
   {
     "id": "scyrox_v6",
     "brand": "Scyrox",
-    "model": "V6",
+    "model": "V6S",
     "category": "Autre",
     "family": "Scyrox V6",
     "budget_tier": "Qualité-Prix",
@@ -126,11 +156,11 @@
     "fingertip_grip_fit": "Élevé",
     "fit_status": "owner_spec",
     "dimension_status": "owner_spec_unverified",
-    "price_eur": 74.9,
-    "price_status": "owner_spec_unverified",
-    "price_note": "Prix EUR issu du cahier des charges du propriétaire (74,90 €, cahier non daté). Constat du 2026-10-13 : la boutique officielle Scyrox n'affiche aucun prix en euros (prix en dollars, et aucune conversion n'est faite) ; le seul prix public français retrouvé reste celui du revendeur Maxesport (74,90 € le 2026-10-11 pour la V8, son prix V6 n'étant pas publié ce jour-là). Le montant est donc conservé tel quel, et la fiche reste marquée « prix non vérifié » à l'affichage. La boutique officielle affiche ses prix en dollars (« Scyrox V8 » 69,99 USD, « V8S » 74,99 USD) : aucune conversion n'est faite (règle du 2026-10-11), donc aucun prix en euros ne peut venir de là — relevé du 2026-10-13.",
+    "price_eur": 67.59,
+    "price_status": "verified",
+    "price_note": "Prix EUR affiché le 2026-11-12 par la boutique Scyrox (page France, variante 43245545062462, en stock) : 67,59 €. La boutique encaisse en dollars (74,99 USD) et affiche les euros à son propre taux : aucune conversion faite ici. Historique : Prix EUR issu du cahier des charges du propriétaire (74,90 €, cahier non daté). Constat du 2026-10-13 : la boutique officielle Scyrox n'affiche aucun prix en euros (prix en dollars, et aucune conversion n'est faite) ; le seul prix public français retrouvé reste celui du revendeur Maxesport (74,90 € le 2026-10-11 pour la V8, son prix V6 n'étant pas publié ce jour-là). Le montant est donc conservé tel quel, et la fiche reste marquée « prix non vérifié » à l'affichage. La boutique officielle affiche ses prix en dollars (« Scyrox V8 » 69,99 USD, « V8S » 74,99 USD) : aucune conversion n'est faite (règle du 2026-10-11), donc aucun prix en euros ne peut venir de là — relevé du 2026-10-13.",
     "fit_rationale": "Bosse centrale très polyvalente, parfaite pour le Relaxed Claw.",
-    "notes": "Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK. Poids 40 g, capteur PAW3950, 8 000 Hz, switchs optiques et MCU Nordic nRF52840 : fiches MaxGaming / EloShapes / MouseCompare (2026-10-11).",
+    "notes": "Mise à jour du 2026-11-12 : la V6 est épuisée ; le catalogue décrit désormais la V6S, même coque (fiche officielle : 119 × 61 × 40 mm, 42 g (±3), « Claw Grip , Claw-palm Grip , Palm Grip », capteur PAW NEXT I, « Wired & Wireless Dual 8K », MCU Nordic 54L15, switchs Kailh optiques, batterie 400 mAh). Les compatibilités de prise du cahier des charges sont conservées. Historique : Non-ATK. Dimensions et compatibilités fournies par le cahier des charges, non revérifiées. Prix officiel EUR constaté le 2026-10-11 : non vendu sur le store ATK. Poids 40 g, capteur PAW3950, 8 000 Hz, switchs optiques et MCU Nordic nRF52840 : fiches MaxGaming / EloShapes / MouseCompare (2026-10-11).",
     "sources": [
       {
         "label": "MouseCompare — Scyrox V6 (fiche : Shape « Symmetrical »)",
@@ -197,14 +227,28 @@
           "price_note"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "Scyrox — fiche officielle V6S (tableau « SPECIFICATION »), relevée le 2026-11-12 : 67,59 € affichés, en stock",
+        "url": "https://scyrox.com/products/scyrox-v6s?variant=43245545062462",
+        "fields": [
+          "model",
+          "sensor",
+          "switches",
+          "mcu",
+          "weight_g",
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ],
     "shape": "Symmetrical",
-    "weight_g": 40.0,
-    "sensor": "PAW3950",
+    "weight_g": 42.0,
+    "sensor": "PAW NEXT I",
     "polling_hz": 8000,
-    "switches": "Optiques (Omron / Kailh)",
-    "mcu": "Nordic nRF52840"
+    "switches": "Optiques Kailh",
+    "mcu": "Nordic 54L15"
   },
   {
     "id": "atk_f1_ultimate",
@@ -3390,7 +3434,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 53184929235273, en stock) : 149,99 €. Relevé précédent : 149,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (Fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -3433,6 +3477,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X2 CrazyLight Medium, variante 53184929235273 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-medium-gaming-mouse?variant=53184929235273",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -3516,6 +3569,14 @@
           "price_eur"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — Xlite CrazyLight Mini : cotes publiées 115,6 × 63,4 × 40,7 mm, celles de la Xlite v4 Mini — coque partagée « pulsar_xlite_v4_mini » (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/xlite-crazylight-gaming-mouse?variant=52550193152329",
+        "fields": [
+          "shell_id"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -3625,7 +3686,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 51663608742217, en stock) : 149,99 €. Relevé précédent : 149,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -3677,6 +3738,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X2 CrazyLight Mini, variante 51663608742217 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/x2-crazylight-gaming-mouse?variant=51663608742217",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -3704,7 +3774,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 52837074272585, en stock) : 149,99 €. Relevé précédent : 149,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
     "dimension_status": "verified",
     "fit_status": "third_party_guide",
     "conflicts": {},
@@ -3761,6 +3831,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-13"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X2H CrazyLight Mini, variante 52837074272585 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/x2h-crazylight-gaming-mouse?variant=52837074272585",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -3788,7 +3867,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.9,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU : 149,90 €.",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 53479336935753, en stock) : 149,90 €. Relevé précédent : 149,90 €. Historique : Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU : 149,90 €.",
     "dimension_status": "verified",
     "fit_status": "third_party_guide",
     "conflicts": {},
@@ -3843,88 +3922,15 @@
           "price_eur"
         ],
         "date_checked": "2026-10-13"
-      }
-    ]
-  },
-  {
-    "id": "pulsar_xlite_v4_large",
-    "brand": "Pulsar",
-    "model": "Xlite v4 Large",
-    "category": "Pulsar",
-    "family": "Xlite",
-    "shell_id": "pulsar_xlite_v4_large",
-    "budget_tier": "Haut de Gamme",
-    "length_mm": 126.6,
-    "width_max_mm": 69.5,
-    "height_mm": 44.5,
-    "weight_g": 58.0,
-    "shape": "Ergonomic",
-    "hump_position": "Mid",
-    "button_height": "Inconnu",
-    "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Élevé",
-    "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Coque ergonomique main droite haut de gamme « recommandée pour le palm grip » par le fabricant ; prises claw et fingertip non publiées. Complément apporté par une source tierce AUTORISÉE (mouseshape.com, « Grip Fit Guide » du Pulsar Xlite v4 Large, relevé du 2026-10-12) pour la ou les prises que le fabricant ne publie pas : claw : Recommended. Lecture : « Recommended » → « Élevé », « Okay » → « Moyen ». « Not ideal » n'est JAMAIS converti en « Faible » : l'élimination reste réservée au fabricant et au propriétaire (la source tierce contredit d'ailleurs le fabricant sur plusieurs prises, dont le palm des Xlite, donc elle ne sert pas à écarter une souris), et aucune valeur publiée par le fabricant n'est remplacée.",
-    "sensor": "Pulsar XS-1",
-    "polling_hz": 1000,
-    "switches": "Optiques Pulsar",
-    "price_eur": 119.99,
-    "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-10-12 sur la boutique Pulsar EU (fiche du modèle + collection « Mice »).",
-    "dimension_status": "verified",
-    "fit_status": "third_party_guide",
-    "conflicts": {},
-    "notes": "La plus grand format de la gamme Xlite v4 (58 g ±1) : coque ergonomique main droite « Recommended for Palm Grip ». Coque ergonomique main droite (« Ergonomic right hand »), recommandée par le fabricant pour le palm grip : seule prise renseignée. Position de la bosse et hauteur des boutons : aucune valeur publiée par le fabricant (aucune fiche MouseShape pour ces générations) → champs laissés « Inconnu », la souris reste « à vérifier » jusqu'au relevé. Aucun point inventé. Capteur maison Pulsar XS-1 (32 000 dpi, 750 IPS, 50 g d'accélération) et switchs optiques (100 millions de clics) publiés sur la fiche officielle ; processeur 32 bits ARM. Fréquence de base 1 000 Hz : « 1000Hz/1ms Polling Rate », le 8 000 Hz n'est atteignable qu'avec le dongle 8K Pulsar vendu séparément — la valeur retenue est donc 1 000 Hz, jamais le maximum commercial. MCU non publié par le fabricant : champ laissé vide, jamais deviné. Compatibilités de prise reprises des recommandations officielles Pulsar : « Élevé » n'est inscrit que là où le fabricant l'écrit ; les autres prises restent « Inconnu » — aucun point inventé, aucune exclusion. Bosse « Center » relevée sur EloShapes le 2026-10-12 → Mid (règle de correspondance du projet) : la souris n'est plus « à vérifier » en Palm ni en Claw. Prises : le fabricant garde la main sur ce qu'il publie ; la ou les prises qu'il ne publie pas sont complétées par mouseshape.com (source tierce autorisée, claw : Recommended, statut `third_party_guide`), sans jamais écraser une valeur fabricant ni convertir un « Not ideal » en « Faible ». La prise fingertip reste « Inconnu » : ni le fabricant ni la source tierce autorisée (mouseshape.com/mice/pulsar-xlite-v4-large, relevé du 2026-10-12 : « Not ideal ») ne la recommandent, et un « Not ideal » n'est jamais converti en « Faible » — une valeur tierce ne sert donc pas à écarter une souris.",
-    "sources": [
+      },
       {
-        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite v4 Large",
-        "url": "https://eu.pulsar.gg/products/xlite-v4-large-gaming-mouse",
+        "label": "Pulsar Gaming Gears EU — Xlite CrazyLight Medium, variante 53479336935753 : 149,90 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/xlite-crazylight-medium-gaming-mouse?variant=53479336935753",
         "fields": [
           "price_eur",
-          "length_mm",
-          "width_max_mm",
-          "height_mm",
-          "weight_g",
-          "shape",
-          "sensor",
-          "polling_hz",
-          "switches",
-          "palm_grip_fit"
+          "price_note"
         ],
-        "date_checked": "2026-10-12"
-      },
-      {
-        "label": "Pulsar Gaming Gears EU — collection « Mice » (prix TTC en EUR relevé)",
-        "url": "https://eu.pulsar.gg/collections/mice",
-        "fields": [
-          "price_eur"
-        ],
-        "date_checked": "2026-10-12"
-      },
-      {
-        "label": "EloShapes — Xlite v4 Large (Hump placement « Center » → Mid, règle de correspondance du projet)",
-        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-xlite-v4-large",
-        "fields": [
-          "hump_position"
-        ],
-        "date_checked": "2026-10-12"
-      },
-      {
-        "label": "MouseShape — Pulsar Xlite v4 Large (guide d'adaptation des prises ; source tierce autorisée le 2026-10-12)",
-        "url": "https://mouseshape.com/mice/pulsar-xlite-v4-large",
-        "fields": [
-          "claw_grip_fit"
-        ],
-        "date_checked": "2026-10-12"
-      },
-      {
-        "label": "Pulsar EU — fiche officielle (Xlite v4 Large) : prix EUR affiché en France, relevé du 2026-10-13 : 119.99 € — inchangé ; produit en rupture de stock (aucun coloris disponible à cette date)",
-        "url": "https://eu.pulsar.gg/products/xlite-v4-large-gaming-mouse",
-        "fields": [
-          "price_note",
-          "price_eur"
-        ],
-        "date_checked": "2026-10-13"
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -3951,7 +3957,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 54211586392393, en stock) : 149,99 €. Relevé précédent : 149,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -3974,6 +3980,15 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — X3 CrazyLight Medium, variante 54211586392393 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/x3-crazylight-medium-gaming-mouse?variant=54211586392393",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -3989,7 +4004,7 @@
     "height_mm": 41.8,
     "weight_g": 59.0,
     "shape": "Ergonomic",
-    "hump_position": "Inconnu",
+    "hump_position": "Mid",
     "button_height": "Inconnu",
     "palm_grip_fit": "Élevé",
     "claw_grip_fit": "Inconnu",
@@ -4004,7 +4019,7 @@
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
-    "notes": "Fiche officielle : « ZywOo-Perfected Palm Grip », forme ergonomique, 114,5 × 64,8 × 41,8 mm, 59 ±2 g, module de lest 5,8 g. 8 000 Hz avec le récepteur LINK 8K fourni. Position de la bosse non publiée : « Inconnu ». Ajout du 2026-11-11 : MCU non publié (« 32bit ARM Processor »), champ laissé vide ; hauteur des boutons non publiée, laissée « Inconnu ». Compatibilités de prise reprises des recommandations écrites du fabricant : « Élevé » n'est inscrit que là où il l'écrit, les autres prises restent « Inconnu ».",
+    "notes": "Fiche officielle : « ZywOo-Perfected Palm Grip », forme ergonomique, 114,5 × 64,8 × 41,8 mm, 59 ±2 g, module de lest 5,8 g. 8 000 Hz avec le récepteur LINK 8K fourni. Position de la bosse non publiée : « Inconnu ». Ajout du 2026-11-11 : MCU non publié (« 32bit ARM Processor »), champ laissé vide ; hauteur des boutons non publiée, laissée « Inconnu ». Compatibilités de prise reprises des recommandations écrites du fabricant : « Élevé » n'est inscrit que là où il l'écrit, les autres prises restent « Inconnu ». Bosse renseignée le 2026-11-12 : « Mid », lue sur EloShapes pour la Gen.3 Mini, même coque (cotes publiées identiques).",
     "sources": [
       {
         "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — ZywOo The Chosen Mouse Gen.2 Mini — fiche relevée le 2026-11-11",
@@ -4022,8 +4037,25 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — ZywOo The Chosen Mouse Gen.3 Mini : cotes publiées 114,5 × 64,8 × 41,8 mm, celles de la Gen.2 Mini — coque partagée (règle du catalogue : cotes publiées identiques, deux entrées jamais proposées ensemble) « pulsar_zywoo_mini » (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-4?variant=55875002532169",
+        "fields": [
+          "shell_id"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar ZywOo The Chosen Mouse Gen.3 Mini : « Hump placement » « Center » → « Mid » ; même coque que la Gen.2 Mini (règle « une propriété de coque se partage »), relevé du 2026-11-12",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-zywoo-the-chosen-mouse-gen-3-mini",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
       }
-    ]
+    ],
+    "shell_id": "pulsar_zywoo_mini"
   },
   {
     "id": "pulsar_zywoo_chosen_gen2_medium",
@@ -4096,9 +4128,9 @@
     "sensor": "Pulsar XS-2",
     "polling_hz": 8000,
     "switches": "Optiques Pulsar",
-    "price_eur": 159.99,
+    "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 55794341708105, en stock) : 149,99 €. Relevé précédent : 159,99 €. Le lien ouvre désormais la fiche à 149,99 € ; l'ancienne page (159,99 €) vend la même souris plus cher. Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -4120,6 +4152,15 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — Susanto-X 2.0 Medium, variante 55794341708105 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/pro-series-susanto-x-2-0-gaming-mouse?variant=55794341708105",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -4146,7 +4187,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 179.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 53837254689097, en stock) : 179,99 €. Relevé précédent : 179,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -4169,6 +4210,15 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — eS FS-1, variante 53837254689097 : 179,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/pulsar-es-fs-1-gaming-mouse?variant=53837254689097",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -4193,9 +4243,9 @@
     "sensor": "Pulsar XS-2",
     "polling_hz": 8000,
     "switches": "Optiques Pulsar",
-    "price_eur": 159.99,
+    "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 55875002564937, en stock) : 149,99 €. Relevé précédent : 159,99 €. Le lien ouvre désormais la version « Noir » (149,99 €) ; la version jaune (159,99 €) est montrée dans « Plusieurs versions ». Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -4218,6 +4268,15 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — ZywOo The Chosen Mouse Gen.3 Medium, variante 55875002564937 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-4?variant=55875002564937",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ],
     "shell_id": "pulsar_zywoo_medium"
@@ -4245,7 +4304,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU). En précommande ce jour (expédition annoncée à partir du 16 novembre).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 55794354585929, en stock) : 149,99 €. Relevé précédent : 149,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU). En précommande ce jour (expédition annoncée à partir du 16 novembre).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -4267,6 +4326,15 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — Susanto-X 2.0 Large, variante 55794354585929 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/pro-series-susanto-x-2-0-large-gaming-mouse-1?variant=55794354585929",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -4293,7 +4361,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 55457517207881, en stock) : 149,99 €. Relevé précédent : 149,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -4315,6 +4383,15 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — TenZ Signature Edition 2.0 Medium, variante 55457517207881 : 149,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/tenz-signature-edition-2-0-gaming-mouse?variant=55457517207881",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
@@ -4341,7 +4418,7 @@
     "switches": "Optiques Pulsar",
     "price_eur": 139.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la boutique Pulsar EU (variante 55360063865161, en stock) : 139,99 €. Relevé précédent : 139,99 €. Historique : Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
@@ -4363,54 +4440,921 @@
           "width_max_mm"
         ],
         "date_checked": "2026-11-11"
+      },
+      {
+        "label": "Pulsar Gaming Gears EU — Feinmann F01, variante 55360063865161 : 139,99 € affichés, en stock (relevé du 2026-11-12)",
+        "url": "https://eu.pulsar.gg/products/feinmann-f01-gaming-mouse?variant=55360063865161",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   },
   {
-    "id": "pulsar_es_xlite",
+    "id": "pulsar_x2n_crazylight_mini",
     "brand": "Pulsar",
-    "model": "eS Xlite",
+    "model": "X2N CrazyLight Mini",
     "category": "Pulsar",
-    "family": "Xlite",
+    "family": "X2N",
     "budget_tier": "Haut de Gamme",
-    "length_mm": 123.5,
-    "width_max_mm": 66.3,
-    "height_mm": 42.1,
-    "weight_g": 51.0,
-    "shape": "Ergonomic",
-    "hump_position": "Inconnu",
+    "length_mm": 118.4,
+    "width_max_mm": 62.4,
+    "height_mm": 38.2,
+    "weight_g": 38.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
     "button_height": "Inconnu",
-    "palm_grip_fit": "Élevé",
-    "claw_grip_fit": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
     "fingertip_grip_fit": "Inconnu",
-    "fit_rationale": "Forme ergonomique « Built around a palm grip » selon le fabricant ; autres prises non publiées.",
-    "sensor": "Pulsar XS-2",
-    "polling_hz": 8000,
+    "fit_rationale": "Coque symétrique : le fabricant écrit « the X2N CrazyLight is perfectly optimized for Claw and Relaxed Claw grips » ; seules les prises qu'il nomme (claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
     "switches": "Optiques Pulsar",
-    "price_eur": 179.99,
+    "price_eur": 149.99,
     "price_status": "verified",
-    "price_note": "Prix TTC officiel en EUR relevé le 2026-11-11 sur la fiche du modèle (boutique Pulsar EU). Épuisée ce jour sur la boutique (« Sold Out »).",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 53914305069385, en stock).",
     "dimension_status": "verified",
     "fit_status": "manufacturer_guide",
     "conflicts": {},
-    "notes": "Fiche officielle : « Ergonomic Shape for Palm Grip », 123,5 × 66,3 × 42,1 mm, 51 ±2 g. Bosse « mid-to-high » mais aussi « raised rear hump » : position non tranchée → « Inconnu ». Capteur XS-2, jusqu'à 8 000 Hz avec le dongle eS Link fourni (« eS Link Dongle x 1 »). Ajout du 2026-11-11 : MCU non publié, champ laissé vide ; hauteur des boutons non publiée, laissée « Inconnu ». Compatibilités de prise reprises des recommandations écrites du fabricant : « Élevé » n'est inscrit que là où il l'écrit, les autres prises restent « Inconnu ».",
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 118.4 × 62.4 × 38.2 mm, 38 g ±2 g avec patins « dot skates », 40 g ±2 g avec patins classiques. Fréquence : « 1000Hz/1ms Polling Rate » + « Up to 8K » avec un dongle 8K vendu à part (« For 8K Dongle Requirement ») → 1000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - moderate » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide.",
     "sources": [
       {
-        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — eS Xlite — fiche relevée le 2026-11-11",
-        "url": "https://eu.pulsar.gg/products/pulsar-es-xlite-gaming-mouse",
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2N CrazyLight Mini — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/x2n-crazylight-mini-gaming-mouse?variant=53914305069385",
         "fields": [
+          "claw_grip_fit",
           "height_mm",
           "length_mm",
-          "palm_grip_fit",
           "polling_hz",
           "price_eur",
+          "price_note",
           "sensor",
           "shape",
           "switches",
           "weight_g",
           "width_max_mm"
         ],
-        "date_checked": "2026-11-11"
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar X2N CrazyLight Mini : « Shape category » « Symmetrical », « Hump placement » « Back - moderate »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2n-crazylight-mini",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ],
+    "shell_id": "pulsar_x2n_mini"
+  },
+  {
+    "id": "pulsar_x2n_crazylight_medium",
+    "brand": "Pulsar",
+    "model": "X2N CrazyLight Medium",
+    "category": "Pulsar",
+    "family": "X2N",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 124.0,
+    "width_max_mm": 65.5,
+    "height_mm": 40.0,
+    "weight_g": 43.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « the X2N CrazyLight is perfectly optimized for Claw and Relaxed Claw grips » ; seules les prises qu'il nomme (claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 53914308706633, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 124 × 65.5 × 40 mm, 43 g ±2 g avec patins « dot skates », 45 g ±2 g avec patins classiques. Fréquence : « 1000Hz/1ms Polling Rate » + « Up to 8K » avec un dongle 8K vendu à part (« For 8K Dongle Requirement ») → 1000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - moderate » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2N CrazyLight Medium — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/x2n-crazylight-medium-gaming-mouse?variant=53914308706633",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar X2N CrazyLight Medium : « Shape category » « Symmetrical », « Hump placement » « Back - moderate »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2n-crazylight-medium",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ],
+    "shell_id": "pulsar_x2n_medium"
+  },
+  {
+    "id": "pulsar_x2h_crazylight_medium",
+    "brand": "Pulsar",
+    "model": "X2H CrazyLight Medium",
+    "category": "Pulsar",
+    "family": "X2H",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 120.4,
+    "width_max_mm": 65.0,
+    "height_mm": 39.0,
+    "weight_g": 43.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « Optimized for claw and relaxed claw grips » ; seules les prises qu'il nomme (claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 53628704948553, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 120.4 × 65 × 39 mm, 43 g ±1 g avec patins « dot skates », 45 g ±1 g avec patins classiques. Fréquence : « 1000Hz/1ms Polling Rate » + « Up to 8K » avec un dongle 8K vendu à part (« For 8K Dongle Requirement ») → 1000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - aggressive » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. EloShapes donne 39,1 mm de haut, la fiche 39 mm : la fiche du fabricant est retenue.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2H CrazyLight Medium — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/x2h-crazylight-medium-gaming-mouse?variant=53628704948553",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar X2H CrazyLight Medium : « Shape category » « Symmetrical », « Hump placement » « Back - aggressive »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h-crazylight-medium",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ],
+    "shell_id": "pulsar_x2h_medium"
+  },
+  {
+    "id": "pulsar_x3_crazylight_mini",
+    "brand": "Pulsar",
+    "model": "X3 CrazyLight Mini",
+    "category": "Pulsar",
+    "family": "X3",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 119.6,
+    "width_max_mm": 67.1,
+    "height_mm": 41.0,
+    "weight_g": 43.0,
+    "shape": "Ergonomic",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque ergonomique : le fabricant écrit « Optimized for right-handed palm grip » ; seules les prises qu'il nomme (palm) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 53085851713865, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 119.6 × 67.1 × 41 mm, 43 g ±1 g avec patins « dot skates », 44 g ±1 g avec patins classiques. Fréquence : « 1000Hz/1ms Polling Rate » + « Up to 8K » avec un dongle 8K vendu à part (« For 8K Dongle Requirement ») → 1000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - moderate » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. EloShapes mesure 119,8 × 66,6 × 41,4 mm, la fiche 119,6 × 67,1 × 41 mm : la fiche du fabricant est retenue.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X3 CrazyLight Mini — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/x3-crazylight-gaming-mouse?variant=53085851713865",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar X3 CrazyLight Mini : « Shape category » « Ergonomic », « Hump placement » « Back - moderate »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x3-crazylight-mini",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ],
+    "shell_id": "pulsar_x3_mini"
+  },
+  {
+    "id": "pulsar_xlite_crazylight_mini",
+    "brand": "Pulsar",
+    "model": "Xlite CrazyLight Mini",
+    "category": "Pulsar",
+    "family": "Xlite",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 115.6,
+    "width_max_mm": 63.4,
+    "height_mm": 40.7,
+    "weight_g": 41.0,
+    "shape": "Ergonomic",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque ergonomique : le fabricant écrit « Optimized for right-handed palm grip » ; seules les prises qu'il nomme (palm) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 52550193152329, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 115.6 × 63.4 × 40.7 mm, ±41 g avec patins « dot skates », ±43 g avec patins classiques. Fréquence : « 1000Hz/1ms Polling Rate » + « Up to 8K » avec un dongle 8K vendu à part (« For 8K Dongle Requirement ») → 1000 Hz retenu. Bosse : EloShapes « Hump placement » « Center » → « Mid » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Cotes identiques à la Xlite v4 Mini (115,6 × 63,4 × 40,7 mm) : même coque, la v4 quitte le catalogue le 2026-11-12.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Xlite CrazyLight Mini — fiche relevée le 2026-11-12 ; cotes publiées identiques à celles de la Xlite v4 Mini : coque partagée",
+        "url": "https://eu.pulsar.gg/products/xlite-crazylight-gaming-mouse?variant=52550193152329",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "shell_id",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar Xlite CrazyLight Mini : « Shape category » « Ergonomic », « Hump placement » « Center »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-xlite-crazylight-mini",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ],
+    "shell_id": "pulsar_xlite_v4_mini"
+  },
+  {
+    "id": "pulsar_lab_x2f_crazylight",
+    "brand": "Pulsar",
+    "model": "X2F CrazyLight (Pulsar LAB)",
+    "category": "Pulsar",
+    "family": "X2F",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 87.5,
+    "width_max_mm": 61.1,
+    "height_mm": 31.6,
+    "weight_g": 29.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « Recommended for Fingertip Grip » ; seules les prises qu'il nomme (fingertip) sont renseignées.",
+    "sensor": "Pulsar XS-2",
+    "polling_hz": 1000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 179.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 55417427034441, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 87.5 × 61.1 × 31.6 mm, 29 g ±2 g. Fréquence : « Up to 8K Polling Rate » avec un dongle 8K vendu à part (« For 8K Dongle Requirement ») → 1000 Hz retenu. Bosse : EloShapes « Hump placement » « Center » → « Mid » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Souris courte (87,5 mm) pensée pour le bout des doigts : « Fingertip mouse designed by Pulsar Lab ».",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — X2F CrazyLight (Pulsar LAB) — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/pulsar-lab-x2f-crazylight-gaming-mouse?variant=55417427034441",
+        "fields": [
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar X2F CrazyLight (Pulsar LAB) : « Shape category » « Symmetrical », « Hump placement » « Center »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_tenz_signature_2_mini",
+    "brand": "Pulsar",
+    "model": "TenZ Signature Edition 2.0 Mini",
+    "category": "Pulsar",
+    "family": "TenZ",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 114.0,
+    "width_max_mm": 61.0,
+    "height_mm": 38.0,
+    "weight_g": 42.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « Symmetrical Shape Recommended for claw grip » ; seules les prises qu'il nomme (claw) sont renseignées.",
+    "sensor": "Pulsar XS-2",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 55457517175113, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 114 × 61 × 38 mm, 42 g ±2 g. Fréquence : « 8000Hz / 0.125ms Polling Rate », « LINK 2 Wireless Receiver Included » → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - moderate » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Page EloShapes « TenZ 2Mini » (pas de page Signature séparée).",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — TenZ Signature Edition 2.0 Mini — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/tenz-signature-edition-2-0-gaming-mouse?variant=55457517175113",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar TenZ Signature Edition 2.0 Mini : « Shape category » « Symmetrical », « Hump placement » « Back - moderate »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-tenz-2-0-mini",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_zywoo_chosen_gen3_mini",
+    "brand": "Pulsar",
+    "model": "ZywOo The Chosen Mouse Gen.3 Mini",
+    "category": "Pulsar",
+    "family": "ZywOo",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 114.5,
+    "width_max_mm": 64.8,
+    "height_mm": 41.8,
+    "weight_g": 59.0,
+    "shape": "Ergonomic",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Inconnu",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque ergonomique : le fabricant écrit « ZywOo-Perfected Palm Grip … superior palm support » ; seules les prises qu'il nomme (palm) sont renseignées.",
+    "sensor": "Pulsar XS-2",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 55875002532169, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 114.5 × 64.8 × 41.8 mm, 59 g. Fréquence : « LINK 2 8K Wireless Receiver … up to 8,000Hz polling » présenté avec la souris, comme pour la taille Medium déjà au catalogue → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Center » → « Mid » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Version « Noir » à 149,99 € ; la version jaune (159,99 €) est la même souris, montrée dans « Plusieurs versions ».",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — ZywOo The Chosen Mouse Gen.3 Mini — fiche relevée le 2026-11-12 ; cotes publiées identiques à celles de la ZywOo Gen.2 Mini : coque partagée",
+        "url": "https://eu.pulsar.gg/products/zywoo-the-chosen-mouse-gen-4?variant=55875002532169",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "shell_id",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar ZywOo The Chosen Mouse Gen.3 Mini : « Shape category » « Ergonomic », « Hump placement » « Center »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-zywoo-the-chosen-mouse-gen-3-mini",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ],
+    "shell_id": "pulsar_zywoo_mini"
+  },
+  {
+    "id": "pulsar_carpe_x_medium",
+    "brand": "Pulsar",
+    "model": "CARPE-X Medium",
+    "category": "Pulsar",
+    "family": "Pro Series",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 126.0,
+    "width_max_mm": 65.0,
+    "height_mm": 40.3,
+    "weight_g": 60.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « optimized for palm and claw grip users » ; seules les prises qu'il nomme (palm, claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 54796185895241, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 126 × 65 × 40.3 mm, 60 g ±2 g. Fréquence : « 8000Hz/1ms Polling Rate » (fréquence de la fiche, récepteur « LINK 8K Receiver » décrit avec la souris) → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - minimal » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Forme du joueur Carpe (série Pro).",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — CARPE-X Medium — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/pro-series-carpe-x-medium-gaming-mouse?variant=54796185895241",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar CARPE-X Medium : « Shape category » « Symmetrical », « Hump placement » « Back - minimal »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-pro-series-carpe-x",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_jinggg_x_medium",
+    "brand": "Pulsar",
+    "model": "Jinggg-X Medium",
+    "category": "Pulsar",
+    "family": "Pro Series",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 120.1,
+    "width_max_mm": 62.4,
+    "height_mm": 40.5,
+    "weight_g": 53.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Inconnu",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « optimized for fingertip and relaxed claw grip users » ; seules les prises qu'il nomme (claw, fingertip) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 54709343027529, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 120.1 × 62.4 × 40.5 mm, 53 g ±2 g. Fréquence : « 8000Hz/1ms Polling Rate » (fréquence de la fiche, récepteur « LINK 8K Receiver » décrit avec la souris) → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Center » → « Mid » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Forme du joueur Jinggg (série Pro). La fiche ne nomme pas la forme : « Symmetrical » vient d'EloShapes.",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — Jinggg-X Medium — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/pro-series-jinggg-x-medium-gaming-mouse?variant=54709343027529",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar Jinggg-X Medium : « Shape category » « Symmetrical », « Hump placement » « Center »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-pro-series-jinggg-x",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_sta_x_medium",
+    "brand": "Pulsar",
+    "model": "STA-X Medium",
+    "category": "Pulsar",
+    "family": "Pro Series",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 124.6,
+    "width_max_mm": 62.3,
+    "height_mm": 39.7,
+    "weight_g": 60.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « optimized for both claw and palm grip users » ; seules les prises qu'il nomme (palm, claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 54577516216649, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 124.6 × 62.3 × 39.7 mm, 60 g ±2 g. Fréquence : « 8000Hz/1ms Polling Rate » (fréquence de la fiche, récepteur « LINK 8K Receiver » décrit avec la souris) → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Center » → « Mid » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Forme du joueur stax (série Pro).",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — STA-X Medium — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/pro-series-sta-x-medium-gaming-mouse?variant=54577516216649",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar STA-X Medium : « Shape category » « Symmetrical », « Hump placement » « Center »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-pro-series-sta-x",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_buzz_x_medium",
+    "brand": "Pulsar",
+    "model": "BUZZ-X Medium",
+    "category": "Pulsar",
+    "family": "Pro Series",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 124.6,
+    "width_max_mm": 65.4,
+    "height_mm": 40.0,
+    "weight_g": 61.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque symétrique : le fabricant écrit « optimized for claw and palm grip » ; seules les prises qu'il nomme (palm, claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 54332881338697, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 124.6 × 65.4 × 40 mm, 61 g ±2 g. Fréquence : « 8000Hz/1ms Polling Rate » (fréquence de la fiche, récepteur « LINK 8K Receiver » décrit avec la souris) → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Back - moderate » → « Rear » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Forme du joueur BuZz (série Pro) : « The low hump and wide waist structure ».",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — BUZZ-X Medium — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/pro-series-buzz-x-medium-gaming-mouse?variant=54332881338697",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar BUZZ-X Medium : « Shape category » « Symmetrical », « Hump placement » « Back - moderate »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-pro-series-buzz-x",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "pulsar_jv_x",
+    "brand": "Pulsar",
+    "model": "JV-X",
+    "category": "Pulsar",
+    "family": "Pro Series",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 121.0,
+    "width_max_mm": 62.0,
+    "height_mm": 40.6,
+    "weight_g": 56.0,
+    "shape": "Ergonomic",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "Coque ergonomique : le fabricant écrit « Recommended for Palm or Relaxed Claw Grip » ; seules les prises qu'il nomme (palm, claw) sont renseignées.",
+    "sensor": "Pulsar XS-1",
+    "polling_hz": 8000,
+    "switches": "Optiques Pulsar",
+    "price_eur": 149.99,
+    "price_status": "verified",
+    "price_note": "Prix TTC officiel en EUR affiché le 2026-11-12 sur la fiche du modèle (boutique Pulsar EU, variante 52635623194953, en stock).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-12 (dernière génération Pulsar, capteur maison au niveau du PAW3950 ou mieux). Fiche officielle : 121 × 62 × 40.6 mm, ±56 g. Fréquence : « 8000Hz/1ms Polling Rate » → 8000 Hz retenu. Bosse : EloShapes « Hump placement » « Center » → « Mid » (règle de correspondance du projet). Hauteur des boutons non publiée : « Inconnu ». MCU non publié : champ vide. Forme du joueur JV (série Pro).",
+    "sources": [
+      {
+        "label": "Pulsar Gaming Gears EU (boutique officielle, prix TTC en EUR) — JV-X — fiche relevée le 2026-11-12",
+        "url": "https://eu.pulsar.gg/products/pro-series-jv-x-gaming-mouse?variant=52635623194953",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Pulsar JV-X : « Shape category » « Ergonomic », « Hump placement » « Center »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=pulsar-pro-series-jv-x",
+        "fields": [
+          "hump_position"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "scyrox_v12m",
+    "brand": "Scyrox",
+    "model": "V12M",
+    "category": "Autre",
+    "family": "Scyrox V12",
+    "shell_id": "scyrox_v12m",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 122.0,
+    "width_max_mm": 62.7,
+    "height_mm": 38.0,
+    "weight_g": 49.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque symétrique ; le fabricant recommande « Fingertip grip, Claw grip, Claw-palm grip, Palm grip » : les trois prises sont renseignées.",
+    "sensor": "PAW NEXT I",
+    "polling_hz": 8000,
+    "switches": "Optiques Kailh",
+    "mcu": "Nordic 54H20",
+    "price_eur": 67.59,
+    "price_status": "verified",
+    "price_note": "Prix EUR affiché le 2026-11-12 par la boutique Scyrox (page France, variante 67994397540414, en stock) : 67,59 €. La boutique encaisse en dollars (74,99 USD) et affiche les euros à son propre taux : aucune conversion faite ici.",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {
+      "width_max_mm": {
+        "values": [
+          62.7,
+          58.0
+        ],
+        "sources": [
+          "Scyrox — dessin coté de la fiche V12 / EloShapes",
+          "Scyrox — tableau « SPECIFICATION » de la fiche V12"
+        ],
+        "note": "Le tableau donne une largeur plus faible que le dessin coté et qu'EloShapes : la largeur maximale du dessin est retenue (le moteur en déduit lui-même la largeur de prise)."
+      }
+    },
+    "notes": "Ajout du 2026-11-12. Fiche officielle (tableau « SPECIFICATION ») : 122 × 62.7 × 38 mm, 49 g (±3), capteur PAW NEXT I, « Wired & Wireless Dual 8K » avec « 8K Dongle×1 » dans la boîte → 8 000 Hz, MCU Nordic 54H20, switchs Kailh optiques, batterie 250 mAh. Bosse : EloShapes « Back - minimal » → « Rear » (règle du projet). Hauteur des boutons non publiée : « Inconnu ». Taille de main conseillée par Scyrox : « Small hands (<175mm) / Medium hands (175-190mm) : V12M ». Largeur : le dessin coté de la fiche donne 62,69 mm, EloShapes 63 mm ; le tableau de la fiche dit 58 mm (largeur de prise probable) — la largeur maximale du dessin est retenue, l'écart est consigné. La version « Ultra » (+4,51 €) ajoute une base de recharge magnétique : voir data/versions.json.",
+    "sources": [
+      {
+        "label": "Scyrox — fiche officielle V12 (tableau « SPECIFICATION » et dessin coté), variante V12M, relevée le 2026-11-12",
+        "url": "https://scyrox.com/products/scyrox-v12?variant=67994397540414",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Scyrox V12M : « Symmetrical », « Hump placement » « Back - minimal »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v12m",
+        "fields": [
+          "hump_position",
+          "shape",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      }
+    ]
+  },
+  {
+    "id": "scyrox_v12l",
+    "brand": "Scyrox",
+    "model": "V12L",
+    "category": "Autre",
+    "family": "Scyrox V12",
+    "shell_id": "scyrox_v12l",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 126.0,
+    "width_max_mm": 64.0,
+    "height_mm": 40.0,
+    "weight_g": 51.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "Coque symétrique ; le fabricant recommande « Fingertip grip, Claw grip, Claw-palm grip, Palm grip » : les trois prises sont renseignées.",
+    "sensor": "PAW NEXT I",
+    "polling_hz": 8000,
+    "switches": "Optiques Kailh",
+    "mcu": "Nordic 54H20",
+    "price_eur": 67.59,
+    "price_status": "verified",
+    "price_note": "Prix EUR affiché le 2026-11-12 par la boutique Scyrox (page France, variante 67994397671486, en stock) : 67,59 €. La boutique encaisse en dollars (74,99 USD) et affiche les euros à son propre taux : aucune conversion faite ici.",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {
+      "width_max_mm": {
+        "values": [
+          64.0,
+          59.0
+        ],
+        "sources": [
+          "Scyrox — dessin coté de la fiche V12 / EloShapes",
+          "Scyrox — tableau « SPECIFICATION » de la fiche V12"
+        ],
+        "note": "Le tableau donne une largeur plus faible que le dessin coté et qu'EloShapes : la largeur maximale du dessin est retenue (le moteur en déduit lui-même la largeur de prise)."
+      }
+    },
+    "notes": "Ajout du 2026-11-12. Fiche officielle (tableau « SPECIFICATION ») : 126 × 64 × 40 mm, 51 g (±3), capteur PAW NEXT I, « Wired & Wireless Dual 8K » avec « 8K Dongle×1 » dans la boîte → 8 000 Hz, MCU Nordic 54H20, switchs Kailh optiques, batterie 250 mAh. Bosse : EloShapes « Back - minimal » → « Rear » (règle du projet). Hauteur des boutons non publiée : « Inconnu ». Taille de main conseillée par Scyrox : « Large hands (>190mm) : V12L ». Largeur : le dessin coté de la fiche donne 64,01 mm, EloShapes 64 mm ; le tableau de la fiche dit 59 mm (largeur de prise probable) — la largeur maximale du dessin est retenue, l'écart est consigné. La version « Ultra » (+4,51 €) ajoute une base de recharge magnétique : voir data/versions.json.",
+    "sources": [
+      {
+        "label": "Scyrox — fiche officielle V12 (tableau « SPECIFICATION » et dessin coté), variante V12L, relevée le 2026-11-12",
+        "url": "https://scyrox.com/products/scyrox-v12?variant=67994397671486",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "palm_grip_fit",
+          "polling_hz",
+          "price_eur",
+          "price_note",
+          "sensor",
+          "shape",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
+      },
+      {
+        "label": "EloShapes — Scyrox V12L : « Symmetrical », « Hump placement » « Back - minimal »",
+        "url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v12l",
+        "fields": [
+          "hump_position",
+          "shape",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-12"
       }
     ]
   }

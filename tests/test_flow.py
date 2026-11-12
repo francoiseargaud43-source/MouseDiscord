@@ -3,6 +3,8 @@ isolation des parcours et confidentialité (aucune publication dans le salon).
 """
 from __future__ import annotations
 
+import dataclasses
+
 import logging
 import re
 
@@ -482,25 +484,25 @@ async def test_standard_budget_shows_results_with_percentage_wording():
     # La recommandation (courte) puis les blocs d'explication, plus bas : ici Palm **thénar moyen**, donc
     # cinq blocs — pourquoi ce choix, repères, arrière étroit (le conseil de la référence pour Petite ET
     # Moyenne, depuis la décision du 2026-10-14), bosse et hauteur des boutons. Depuis le 2026-11-12, le
-    # bloc des versions s'y ajoute juste sous la recommandation : le Phantom n'a qu'une version, mais
-    # l'alternative (Z1 V2) et la troisième place (A9 Mini) en ont deux.
+    # bloc des versions s'y ajoute juste sous la recommandation : le Phantom et la Pulsar JV-X (arrivée
+    # le 2026-11-12, à égalité avec lui) n'ont qu'une version, mais la Z1 V2 en a deux.
     assert len(kwargs["embeds"]) == 7
     main, versions, guide = kwargs["embeds"][0], kwargs["embeds"][1], kwargs["embeds"][2]
     assert versions.title == "🧩 Plusieurs versions de la même souris"
-    assert [f.name for f in versions.fields] == ["ATK Z1 V2 Ultimate", "ATK A9 Mini"]
+    assert [f.name for f in versions.fields] == ["ATK Z1 V2 Ultimate"]
     fields = fields_of(main)
     ideal = next(v for k, v in fields.items() if "match idéal" in k)
     alt = next(v for k, v in fields.items() if "alternative" in k)
     # 18e passe (2026-10-12) : la prise publiée par ATK pour le Phantom Ultimate a été relevée sur la
     # fiche officielle, il n'est donc plus « en attente » et passe en tête du profil Palm 180 × 90 en
     # Qualité/Prix (35/40, 88 %, 91,95 €) ; l'alternative est une AUTRE coque trouvée dans
-    # l'élargissement de la fenêtre, l'ATK Z1 V2 Ultimate (30/40, 75 %, 59,95 €, moins chère que
-    # l'idéal) — nom de la boutique officielle depuis le 2026-10-13 (« Z1 V2 Ultra » n'existe pas).
+    # l'élargissement de la fenêtre. Depuis le 2026-11-12 c'est la Pulsar JV-X (35/40, 88 %, 149,99 €),
+    # autre coque à égalité de points ; l'ATK Z1 V2 Ultimate (30/40, 75 %) passe en troisième place.
     assert "ATK Phantom Ultimate" in ideal
     assert "79,07 €" in ideal and "**88 %**" in ideal   # nom · poids · prix · pourcentage · forme (prix du 2026-11-12)
     assert "Score" not in ideal and "Confiance" not in ideal and "pts" not in ideal
-    assert "**75 %**" in alt                            # l'alternative porte aussi son pourcentage
-    assert "ATK Z1 V2 Ultimate" in alt
+    assert "**88 %**" in alt                            # l'alternative porte aussi son pourcentage
+    assert "Pulsar JV-X" in alt
     assert guide.title == "🧭 Pourquoi ce choix ?"
     guide_text = (guide.description or "") + " ".join(f.value for f in guide.fields)
     assert "35/40" in guide_text and "maximum théorique" in guide_text   # le score s'explique ici
@@ -895,7 +897,9 @@ def test_result_lines_show_the_weight_then_the_shape_at_the_far_right():
     for cle in ("🥇 Le match idéal", "🥈 L'alternative"):
         ligne = fields[cle]
         assert re.search(r"· \d+ g ·", ligne), ligne
-        assert ligne.rstrip().endswith(("Symétrique", "Ergonomique")), ligne
+        # Le marqueur « boutons non documentés » (2026-10-13) vient seul après la forme, en 2e et 3e place.
+        ligne = ligne.rstrip().removesuffix(" · " + flow.PARTIAL_HINT)
+        assert ligne.endswith(("Symétrique", "Ergonomique")), ligne
 
 
 def test_shape_is_not_invented_when_the_mouse_has_no_verified_shape():
@@ -1144,8 +1148,9 @@ def test_result_hump_illustration_follows_the_winner(monkeypatch):
 async def test_two_slots_never_show_the_same_shell():
     """2026-10-12 : le match idéal et l'alternative ne sont jamais deux variantes de la même coque.
 
-    Avec l'ATK Phantom Ultimate en tête (35/40, 18ᵉ passe), l'alternative vient de l'élargissement de
-    la fenêtre : l'ATK Z1 V2 Ultimate (30/40, 59,95 €), autre coque et strictement moins chère que l'idéal.
+    Avec l'ATK Phantom Ultimate en tête (35/40, 18ᵉ passe), l'alternative est depuis le 2026-11-12 la
+    Pulsar JV-X, autre coque à égalité de points (35/40) ; l'ATK Z1 V2 Ultimate (30/40) passe en
+    troisième place, moins chère que l'idéal.
     """
     store = SessionStore(ttl_seconds=600)
     session = start_for(store, grip=Grip.PALM, length=180.0, width=90.0, thenar=Thenar.MOYENNE)
@@ -1153,12 +1158,12 @@ async def test_two_slots_never_show_the_same_shell():
     ideal, alternative, troisieme = flow.result_slots(flow.compute_selection(session))
     assert ideal is not None and alternative is not None
     assert not selection._same_shell(ideal, alternative)
-    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK Phantom Ultimate", "ATK Z1 V2 Ultimate")
+    assert (ideal.mouse.label, alternative.mouse.label) == ("ATK Phantom Ultimate", "Pulsar JV-X")
     # Troisième place (décision du 2026-10-12) : elle est remplie, d'une TROISIÈME coque, et son titre
-    # dit la vérité — l'ATK A9 Mini est au même prix que l'alternative (59,95 €), donc « L'autre option ».
-    assert troisieme is not None and troisieme.mouse.label == "ATK A9 Mini"
+    # dit la vérité : la Z1 V2 est moins chère que l'idéal et que l'alternative, donc « L'économie ».
+    assert troisieme is not None and troisieme.mouse.label == "ATK Z1 V2 Ultimate"
     assert not selection._same_shell(ideal, troisieme) and not selection._same_shell(alternative, troisieme)
-    assert flow.third_slot_title(troisieme, ideal, alternative) == "➕ L'autre option"
+    assert flow.third_slot_title(troisieme, ideal, alternative) == "💸 L'économie"
 
 
 @pytest.mark.asyncio
@@ -1718,14 +1723,18 @@ def test_le_match_ideal_ne_change_pas_avec_la_regle_d_ordre():
         assert ideal is not None and ideal.mouse.id == selection.ranked[0].mouse.id
 
 
-def test_a_prix_non_verifie_le_message_le_dit():
+def test_a_prix_non_verifie_le_message_le_dit(monkeypatch):
     """Marqueur de prix (décision du propriétaire, 2026-10-13) : le message ne fait pas passer un prix
 
     non attesté pour un prix vérifié. Le master prompt le montrait dans ses exemples, mais l'onglet
     « Détails » qui le portait a été retiré le 2026-10-11 : plus rien ne l'affichait (16 % des profils).
     """
-    # Profil où le catalogue affiche bien une souris à prix non attesté (Scyrox V6, prix du cahier
-    # des charges : la boutique du fabricant vend en dollars, jamais convertis).
+    # Depuis le relevé du 2026-11-12, tous les prix du vrai catalogue sont attestés : le test marque donc
+    # la Scyrox V6 (montrée pour ce profil) « prix du cahier des charges », sur une copie du catalogue.
+    vrai = flow.load_catalog
+    monkeypatch.setattr(flow, "load_catalog", lambda chemin: tuple(
+        dataclasses.replace(m, price_status="owner_spec_unverified") if m.id == "scyrox_v6" else m
+        for m in vrai(chemin)))
     session, selection, _ = _trois_places(None, None, Grip.PALM, 160.0, 70.0)
     embeds = flow.results_embeds(session, selection)
     texte = "\n".join((embed.description or "") + "".join(f.value for f in embed.fields) for embed in embeds)

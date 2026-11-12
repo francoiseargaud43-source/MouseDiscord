@@ -5,7 +5,8 @@ France, une ligne par version en vente ; l'autonomie vient du fichier de complé
 (``ATK_VERSIONS_COMPLEMENTS_2026-11-12.csv``). Rien n'est converti ni deviné : une case vide reste absente.
 
 Usage :
-    python tools/fabriquer_versions.py docs/audit/ATK_VERSIONS_2026-11-12.csv data/versions.json
+    python tools/fabriquer_versions.py docs/audit/ATK_VERSIONS_2026-11-12.csv data/versions.json \\
+        --autres docs/audit/VERSIONS_PULSAR_SCYROX_2026-11-12.csv
 """
 from __future__ import annotations
 
@@ -39,12 +40,16 @@ LISEZ_MOI = (
     "Autonomie : heures à 1000 Hz du comparateur officiel ATK (« Product Finder & Comparison »). "
     "Une valeur absente de la fiche reste absente. « resultat » marque la version décrite par la "
     "fiche du catalogue. Une version épuisée a « dispo » à false et n'est pas proposée. "
-    "Fabriqué par tools/fabriquer_versions.py depuis docs/audit/ATK_VERSIONS_2026-11-12.csv."
+    "Pulsar (prix réellement en euros) et Scyrox (dollars, euros affichés par la boutique) : "
+    "docs/audit/VERSIONS_PULSAR_SCYROX_2026-11-12.csv, même relevé. "
+    "Fabriqué par tools/fabriquer_versions.py."
 )
 AFFILIATION = (
     "Programme ATK (GoAffPro) : « When people visit the store using your link, you get commissions "
     "on everything they buy » — la commission vaut quelle que soit la version achetée ; chaque "
-    "lien porte quand même ?ref=aze."
+    "lien porte quand même ?ref=aze. Pulsar (« Commissions of up to 5% on the sale of all products », "
+    "cookie de 30 jours) et Scyrox (« 5% commission on each referral », cookie de 30 jours) : pages "
+    "publiques des programmes, relevées le 2026-11-12."
 )
 
 
@@ -107,17 +112,45 @@ def fabriquer(releve: Path, complements: Path | None) -> dict:
     return donnees
 
 
+def ajouter_autres(donnees: dict, chemin: Path) -> None:
+    """Versions d'autres boutiques, déjà au format du bot (souris;nom;prix_eur;dispo;lien;…)."""
+    for ligne in _lire(chemin):
+        version: dict = {"nom": ligne["nom"], "prix_eur": float(ligne["prix_eur"]),
+                         "dispo": ligne["dispo"] == "oui", "lien": ligne["lien"]}
+        if ligne["capteur"]:
+            version["capteur"] = ligne["capteur"]
+        if ligne["hz"]:
+            version["hz"] = int(ligne["hz"])
+        if ligne["poids_g"]:
+            version["poids_g"] = float(ligne["poids_g"])
+        if ligne["switchs"]:
+            version["switchs"] = ligne["switchs"]
+        if ligne["en_plus"]:
+            version["en_plus"] = [ligne["en_plus"]]
+        if ligne["resultat"] == "oui":
+            version["resultat"] = True
+        entree = donnees.setdefault(ligne["souris"], {"releve": "2026-11-12", "versions": []})
+        entree["versions"].append(version)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Fabrique data/versions.json depuis le relevé ATK.")
     parser.add_argument("releve", type=Path, help="relevé CSV (docs/audit/ATK_VERSIONS_2026-11-12.csv)")
     parser.add_argument("sortie", type=Path, help="fichier JSON à écrire (data/versions.json)")
+    parser.add_argument("--autres", type=Path, action="append", default=[],
+                        help="versions d'autres boutiques (docs/audit/VERSIONS_PULSAR_SCYROX_2026-11-12.csv)")
     args = parser.parse_args(argv)
+    for autre in args.autres:
+        if not autre.is_file():
+            parser.exit(2, f"relevé introuvable : {autre}\n")
     if not args.releve.is_file():
         parser.exit(2, f"relevé introuvable : {args.releve}\n")
     if not args.sortie.parent.is_dir():
         parser.exit(2, f"dossier de destination introuvable : {args.sortie.parent}\n")
     complements = args.releve.with_name(args.releve.name.replace("ATK_VERSIONS_", "ATK_VERSIONS_COMPLEMENTS_"))
     donnees = fabriquer(args.releve, complements)
+    for autre in args.autres:
+        ajouter_autres(donnees, autre)
     args.sortie.write_text(json.dumps(donnees, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Écrit : {args.sortie} ({sum(1 for k in donnees if not k.startswith('_'))} souris)")
     return 0
