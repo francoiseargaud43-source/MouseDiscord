@@ -3,5 +3,5 @@
 #   etat        : lecture seule, compare le serveur au dépôt et affiche les journaux
 #   deployer    : envoi en attente, contrôle, images, bascule avant une relance, attente de la reconnexion
 #   redemarrer  : redémarre seulement le bot
-action: etat
-demande: 6
+action: deployer
+demande: 7
