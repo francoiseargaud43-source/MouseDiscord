@@ -1,0 +1,50 @@
+# Agit sur le serveur Alwaysdata quand deploiement/demande.txt change.
+# Mode d'emploi : deploiement/LISEZMOI.md
+name: Alwaysdata
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+      - 'arena/**'
+    paths:
+      - 'deploiement/demande.txt'
+
+concurrency:
+  group: alwaysdata
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  serveur:
+    runs-on: ubuntu-latest
+    # « deployer » attend la prochaine relance du bot par la tâche planifiée (jusqu'à deux fois dix minutes).
+    timeout-minutes: 35
+    env:
+      AD_HOST: ${{ secrets.ALWAYSDATA_SSH_HOST }}
+      AD_USER: ${{ secrets.ALWAYSDATA_SSH_USER }}
+      AD_KEY: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+      SSHPASS: ${{ secrets.ALWAYSDATA_SSH_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Sans identifiant : ce que tout visiteur voit (images publiées, clé publique du serveur SSH).
+      - name: Contrôle public
+        run: bash deploiement/controle_public.sh
+
+      # L'hôte et l'identifiant ont une valeur par défaut (deploiement/serveur.txt) : un seul secret suffit.
+      - name: Vérifier le secret de connexion
+        id: secrets
+        run: |
+          if [ -z "$AD_KEY" ] && [ -z "$SSHPASS" ]; then
+            echo "pret=non" >> "$GITHUB_OUTPUT"
+            echo "::notice::Secret ALWAYSDATA_SSH_PASSWORD (ou ALWAYSDATA_SSH_KEY) absent : rien n'a été fait sur le serveur. Voir deploiement/LISEZMOI.md."
+          else
+            echo "pret=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Exécuter la demande
+        if: steps.secrets.outputs.pret == 'oui'
+        run: bash deploiement/executer.sh
