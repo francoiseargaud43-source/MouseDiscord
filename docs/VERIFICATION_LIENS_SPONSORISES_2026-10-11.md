@@ -353,7 +353,7 @@ Le tableau ci-dessous est **lu par un test** (`tests/test_liens_achat.py`) : il 
 ligne, à `data/commercial_links.json` (handle et variante figée) et à `data/mouse_db.json` (prix
 publié). Modifier un lien ou un prix sans mettre à jour ce tableau fait **échouer la suite**.
 
-### 8.1 Les 57 liens (handle, variante figée, prix de la boutique, prix publié)
+### 8.1 Les 58 liens (handle, variante figée, prix de la boutique, prix publié)
 
 Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les dix lignes Pulsar marquées « 2026-11-11 » ont été ajoutées ce jour-là avec leurs souris (fiche officielle Pulsar EU relue, prix EUR affiché). **Relecture du 2026-11-12** : les dix-huit lignes ATK marquées « relevé du 2026-11-12 » ont été relues version par version sur la page France (prix en euros affichés par la boutique) ; l'ATK Fierce X (épuisée) et l'ATK U2 (ancienne génération, capteur PAW3395, remplacée par la U2 V2 de même coque) sont retirées du catalogue. Les autres versions de chaque forme sont dans `data/versions.json`. **Pulsar et Scyrox, même jour** : chaque lien Pulsar relu sur la boutique Pulsar EU (prix TTC en euros) et figé sur la variante en stock ; quinze souris ajoutées (dernières générations, marquées « ajout du 2026-11-12 ») ; la Xlite v4 Large et l'eS Xlite, épuisées, retirées ; la Susanto-X 2.0 Medium et la ZywOo Gen.3 Medium ouvrent désormais leur fiche à 149,99 € (au lieu de 159,99 €). Chez Scyrox, la V8 et la V6 ne sont plus vendues : les liens ouvrent la V8S et la V6S, et la boutique affiche ses prix en euros sur sa page France (elle encaisse en dollars).
 
@@ -416,6 +416,7 @@ Les 36 premières lignes sont l'inventaire du 2026-10-13 ; les dix lignes Pulsar
 | `pulsar_jv_x` | `pro-series-jv-x-gaming-mouse` | `52635623194953` | JV-X | 149,99 € | 149,99 € | ✅ ajout du 2026-11-12 (fiche officielle, en stock) |
 | `scyrox_v12m` | `scyrox-v12` | `67994397540414` | Scyrox V12M (relevé du 2026-11-12) | 67,59 € | 67,59 € | ✅ relevé du 2026-11-12 (euros affichés par la boutique, qui encaisse 74,99 USD : voir §8.3) |
 | `scyrox_v12l` | `scyrox-v12` | `67994397671486` | Scyrox V12L (relevé du 2026-11-12) | 67,59 € | 67,59 € | ✅ relevé du 2026-11-12 (euros affichés par la boutique, qui encaisse 74,99 USD : voir §8.3) |
+| `lamzu_maya_x_v2` | `lamzu-maya-x-v2` | `69503978111010` | LAMZU Maya X V2 / Arctic-Blue (ajout du 2026-11-13) | 119,99 USD | 134,90 € | ✅ ajout du 2026-11-13 : LAMZU ne vend qu'en dollars, prix publié = Maxesport (revendeur FR), choix du propriétaire |
 
 ### 8.2 Ce que la relecture a corrigé
 

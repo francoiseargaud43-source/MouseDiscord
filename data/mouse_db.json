@@ -5357,5 +5357,74 @@
         "date_checked": "2026-11-12"
       }
     ]
+  },
+  {
+    "id": "lamzu_maya_x_v2",
+    "brand": "LAMZU",
+    "model": "Maya X V2",
+    "category": "Autre",
+    "family": "Maya X",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 124.0,
+    "width_max_mm": 64.0,
+    "height_mm": 40.0,
+    "weight_g": 47.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "La fiche LAMZU présente la souris pour les trois prises dans son encadré « Grip Guiding » (Palm Grip, Claw Grip, Fingertip Grip), sans en écarter aucune.",
+    "sensor": "PAW NEXT I",
+    "polling_hz": 8000,
+    "switches": "Optiques",
+    "mcu": "Nordic 54LM20",
+    "price_eur": 134.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-13 par Maxesport (revendeur français) : 134,90 €. La boutique LAMZU, vers laquelle mène le bouton d'achat (lien affilié du propriétaire), ne vend qu'en dollars (119.99 USD pour la France) : aucune conversion faite ici, le prix montré est celui du revendeur français (même principe que la Scyrox V8 avant le 2026-11-12).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-13 (programme d'affiliation LAMZU du propriétaire). Fiche officielle : 124 × 64 × 40 mm, 47 g (±2), capteur PAW NEXT I, MCU Nordic 54LM20, switchs optiques ; récepteur « Orbit 8K Receiver » fourni dans la boîte → 8 000 Hz retenu. EloShapes : symétrique, bosse « Center » → « Mid » ; cotes 124,4 × 64,9 × 39,6 mm (écart ≤ 0,9 mm, valeurs du fabricant retenues). Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "LAMZU — fiche officielle Maya X V2 (tableau « SPECIFICATION », liste du contenu de la boîte), variante 69503978111010 en stock, relevée le 2026-11-13",
+        "url": "https://lamzu.com/products/lamzu-maya-x-v2?variant=69503978111010",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "palm_grip_fit",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "EloShapes — Maya X V2 (forme et position de la bosse, informations publiques et gratuites), relevé le 2026-11-13",
+        "url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x-v2",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — Lamzu Maya X V2 8K Wireless - Arctic Blue : 134,90 € affichés, en stock, relevé le 2026-11-13",
+        "url": "https://maxesport.gg/products/lamzu-maya-x-v2-8k-wireless-arctic-blue",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-13"
+      }
+    ]
   }
 ]

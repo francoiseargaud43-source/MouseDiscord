@@ -1,6 +1,6 @@
 # Matrices de comparaison par profil
 
-_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-11-12**. Ne pas modifier à la main : relancer le script._
+_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-11-13**. Ne pas modifier à la main : relancer le script._
 
 **Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; « ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.
 
@@ -70,6 +70,7 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | Pulsar JV-X | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 121.0 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Scyrox V12M | ✅ 25/40 (boutons non documentés) | 122.0 mm (dans la plage) | 59.7 mm (estimée, écart 0.1) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | Scyrox V12L | ✅ 20/40 (boutons non documentés) | 126.0 mm (écart 2.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
+| LAMZU Maya X V2 | ❌ exclue — Prix 134.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 0.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Inconnu | — | Prix 134.90 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil P, calculé comme dans le bot)**
 
@@ -147,6 +148,7 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Pulsar JV-X | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 121.0 mm (écart 5.1 mm) | 59.0 mm (estimée, écart 0.6) | Élevé | Mid | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Scyrox V12M | ✅ 20/40 (boutons non documentés) | 122.0 mm (écart 6.1 mm) | 59.7 mm (estimée, écart 1.3) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | Scyrox V12L | ❌ exclue — Longueur hors plage de 10.1 mm (> 8 mm) | 126.0 mm (écart 10.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Rear | Inconnu | — | Longueur hors plage de 10.1 mm (> 8 mm) |
+| LAMZU Maya X V2 | ❌ exclue — Prix 134.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 8.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Inconnu | — | Prix 134.90 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil C, calculé comme dans le bot)**
 
@@ -224,6 +226,7 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | Pulsar JV-X | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 121.0 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Scyrox V12M | ✅ 25/40 (boutons non documentés) | 122.0 mm (dans la plage) | 59.7 mm (estimée, écart 0.5) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
 | Scyrox V12L | ✅ 25/40 (boutons non documentés) | 126.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
+| LAMZU Maya X V2 | ❌ exclue — Prix 134.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 134.90 € au-dessus du budget maximal 75.00 € |
 
 **Classement par mode (profil F, calculé comme dans le bot)**
 
