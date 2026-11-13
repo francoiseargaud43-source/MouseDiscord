@@ -213,6 +213,9 @@ AFFILIATE_PARAMS = {
     "scyrox.com": "bg_ref",
     "www.scyrox.com": "bg_ref",
     "eu.pulsar.gg": "ref",
+    # 2026-11-13 : programme LAMZU du propriétaire (BixGrow), même paramètre que Scyrox.
+    "lamzu.com": "bg_ref",
+    "www.lamzu.com": "bg_ref",
 }
 
 

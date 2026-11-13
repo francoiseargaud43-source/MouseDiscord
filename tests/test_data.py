@@ -50,6 +50,10 @@ PULSAR_2026_11_12_IDS = [
     "pulsar_jinggg_x_medium", "pulsar_sta_x_medium", "pulsar_buzz_x_medium", "pulsar_jv_x",
 ]
 SCYROX_2026_11_12_IDS = ["scyrox_v12m", "scyrox_v12l"]
+# Ajouts du 2026-11-13 : souris LAMZU en stock (programme d'affiliation du propriétaire), cotes et prises
+# lues sur la fiche officielle, forme et bosse sur EloShapes, prix EUR du revendeur Maxesport (LAMZU ne
+# vend qu'en dollars ; choix du propriétaire du 2026-11-13).
+LAMZU_2026_11_13_IDS = ["lamzu_maya_x_v2", "lamzu_thorn_v2", "lamzu_paro_aurora"]
 # Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
 # boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
 # droite : forme à trancher, jamais devinée (docs/audit/PULSAR_CATALOGUE_2026-10-12.md §6).
@@ -73,8 +77,10 @@ def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert set(PULSAR_IDS) <= set(mice)
     assert set(PULSAR_2026_11_11_IDS) <= set(mice)
     assert set(PULSAR_2026_11_12_IDS + SCYROX_2026_11_12_IDS) <= set(mice)
+    assert set(LAMZU_2026_11_13_IDS) <= set(mice)
     assert len(mice) == (len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS) + len(PULSAR_IDS)
-                         + len(PULSAR_2026_11_11_IDS) + len(PULSAR_2026_11_12_IDS) + len(SCYROX_2026_11_12_IDS))
+                         + len(PULSAR_2026_11_11_IDS) + len(PULSAR_2026_11_12_IDS) + len(SCYROX_2026_11_12_IDS)
+                         + len(LAMZU_2026_11_13_IDS))
 
 
 def price_is_either_absent_or_sourced(mouse) -> bool:
@@ -665,7 +671,8 @@ def test_commercial_links_are_official_and_verified():
     links = load_commercial_links(COMMERCIAL_LINKS_PATH)
     assert links, "les liens d'achat vérifiés doivent être livrés"
     assert all(
-        url.startswith(("https://www.atk.store/", "https://scyrox.com/", "https://eu.pulsar.gg/"))
+        url.startswith(("https://www.atk.store/", "https://scyrox.com/", "https://eu.pulsar.gg/",
+                        "https://lamzu.com/"))
         for url in links.values()
     )
     assert not any("url.com" in url for url in links.values())
@@ -1233,7 +1240,7 @@ CHAMPS_TRAÇABLES = (
 )
 COTES_MM = ("length_mm", "width_max_mm", "height_mm")
 # Boutiques du FABRICANT (pas des revendeurs) : une cote qui n'y figure que là est tenue pour établie.
-DOMAINES_FABRICANT = frozenset({"www.atk.store", "atk.store", "eu.pulsar.gg", "scyrox.com"})
+DOMAINES_FABRICANT = frozenset({"www.atk.store", "atk.store", "eu.pulsar.gg", "scyrox.com", "lamzu.com"})
 # Tolérance de concordance déjà appliquée aux données (voir « verified » dans README) : deux sources
 # qui divergent de plus de 0,5 mm ne concordent pas ; deux entrées d'une même coque non plus.
 TOLERANCE_CONCORDANCE_MM = 0.5
