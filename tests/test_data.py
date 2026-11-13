@@ -50,10 +50,10 @@ PULSAR_2026_11_12_IDS = [
     "pulsar_jinggg_x_medium", "pulsar_sta_x_medium", "pulsar_buzz_x_medium", "pulsar_jv_x",
 ]
 SCYROX_2026_11_12_IDS = ["scyrox_v12m", "scyrox_v12l"]
-# Ajouts du 2026-11-13 : souris LAMZU en stock (programme d'affiliation du propriétaire), cotes et prises
+# Ajout du 2026-11-13 : souris LAMZU en stock (programme d'affiliation du propriétaire), cotes et prises
 # lues sur la fiche officielle, forme et bosse sur EloShapes, prix EUR du revendeur Maxesport (LAMZU ne
 # vend qu'en dollars ; choix du propriétaire du 2026-11-13).
-LAMZU_2026_11_13_IDS = ["lamzu_maya_x_v2", "lamzu_thorn_v2", "lamzu_paro_aurora"]
+LAMZU_2026_11_13_IDS = ["lamzu_maya_x_v2"]   # Thorn V2 et Paro Aurora écartées : presque jamais recommandées (banc du 2026-11-13)
 # Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
 # boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
 # droite : forme à trancher, jamais devinée (docs/audit/PULSAR_CATALOGUE_2026-10-12.md §6).
