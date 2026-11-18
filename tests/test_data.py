@@ -57,6 +57,9 @@ LAMZU_2026_11_13_IDS = ["lamzu_maya_x_v2"]   # Thorn V2 et Paro Aurora écartée
 # Non retenue à ce stade : « Xlite CrazyLight Mini » (handle `xlite-crazylight-gaming-mouse`) — la
 # boutique la range sous « Shape/Symmetrical » alors que toute la famille Xlite est ergonomique main
 # droite : forme à trancher, jamais devinée (docs/audit/PULSAR_CATALOGUE_2026-10-12.md §6).
+# Ajouts du 2026-11-18 : MCHOSE en PAW3950 (programme d'affiliation du propriétaire), cotes et capteur sur la
+# fiche officielle, forme et bosse sur EloShapes, prix EUR Maxesport, prises fournies par le propriétaire.
+MCHOSE_2026_11_18_IDS = ["mchose_a7_v2_ultra", "mchose_k7_ultra", "mchose_l7_ultra"]
 
 
 @pytest.fixture(scope="module")
@@ -78,9 +81,10 @@ def test_catalog_contains_owner_models_and_new_verified_variants(mice):
     assert set(PULSAR_2026_11_11_IDS) <= set(mice)
     assert set(PULSAR_2026_11_12_IDS + SCYROX_2026_11_12_IDS) <= set(mice)
     assert set(LAMZU_2026_11_13_IDS) <= set(mice)
+    assert set(MCHOSE_2026_11_18_IDS) <= set(mice)
     assert len(mice) == (len(OWNER_IDS) + len(NEW_ATK_IDS) + len(STORE_2026_10_11_IDS) + len(PULSAR_IDS)
                          + len(PULSAR_2026_11_11_IDS) + len(PULSAR_2026_11_12_IDS) + len(SCYROX_2026_11_12_IDS)
-                         + len(LAMZU_2026_11_13_IDS))
+                         + len(LAMZU_2026_11_13_IDS) + len(MCHOSE_2026_11_18_IDS))
 
 
 def price_is_either_absent_or_sourced(mouse) -> bool:
@@ -134,9 +138,12 @@ def test_small_shape_gap_is_filled_by_the_pulsar_minis(mice):
     assert mice["vxe_v3"].length_mm == 116.6
     others = [
         m.length_mm for m in mice.values()
-        if not m.id.startswith("pulsar_") and m.id != "vxe_v3" and m.length_mm is not None
+        if not m.id.startswith("pulsar_") and m.id != "vxe_v3" and m.id != "mchose_l7_ultra"
+        and m.length_mm is not None
     ]
     assert min(others) > 116.6
+    # 2026-11-18 : la MCHOSE L7 Ultra (taille « Small », 115,62 mm, fiche officielle) rejoint les petites.
+    assert mice["mchose_l7_ultra"].length_mm == 115.62
     # 2026-11-11 : la ZywOo Gen.2 Mini (114,5 mm, fiche officielle Pulsar EU) devient la plus courte.
     assert mice["pulsar_zywoo_chosen_gen2_mini"].length_mm == 114.5
     # 2026-11-12 : la X2F CrazyLight (Pulsar LAB, 87,5 mm, faite pour le bout des doigts) est la plus
@@ -672,7 +679,7 @@ def test_commercial_links_are_official_and_verified():
     assert links, "les liens d'achat vérifiés doivent être livrés"
     assert all(
         url.startswith(("https://www.atk.store/", "https://scyrox.com/", "https://eu.pulsar.gg/",
-                        "https://lamzu.com/"))
+                        "https://lamzu.com/", "https://www.mchose.store/"))
         for url in links.values()
     )
     assert not any("url.com" in url for url in links.values())
@@ -1240,7 +1247,7 @@ CHAMPS_TRAÇABLES = (
 )
 COTES_MM = ("length_mm", "width_max_mm", "height_mm")
 # Boutiques du FABRICANT (pas des revendeurs) : une cote qui n'y figure que là est tenue pour établie.
-DOMAINES_FABRICANT = frozenset({"www.atk.store", "atk.store", "eu.pulsar.gg", "scyrox.com", "lamzu.com"})
+DOMAINES_FABRICANT = frozenset({"www.atk.store", "atk.store", "eu.pulsar.gg", "scyrox.com", "lamzu.com", "www.mchose.store"})
 # Tolérance de concordance déjà appliquée aux données (voir « verified » dans README) : deux sources
 # qui divergent de plus de 0,5 mm ne concordent pas ; deux entrées d'une même coque non plus.
 TOLERANCE_CONCORDANCE_MM = 0.5

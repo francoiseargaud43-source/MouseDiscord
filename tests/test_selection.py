@@ -249,12 +249,15 @@ SENSORS_SANS_RANG_ASSUME = {
                    "jamais deviné — à classer avec source",
     "PAW NEXT I": "nouveau capteur PixArt des Scyrox V8S / V6S / V12 (2026-11-12) : aucun comparatif public "
                   "de rang, jamais deviné — à classer avec source",
+    "PAW3950 TI": "nom donné par MCHOSE sur la fiche de l'A7 V2 Ultra (2026-11-18) : variante non publiée "
+                  "par PixArt, rang jamais deviné — à classer avec source",
 }
 MCUS_SANS_RANG_ASSUME = {
     "": "aucun MCU publié sur la fiche (ATK U2, Pulsar X2 / X2H / Xlite : le fabricant ne le donne pas)",
     "Broadcom CX52850SE": "puce Broadcom des VXE X3 : aucun comparatif public de génération",
     "Puce BK Custom Esports": "puce maison de l'ATK A9 NB Ultra : aucun comparatif public",
     "Puce NearLink / HiSilicon": "radio NearLink (ATK A9 Plus / A9 Ultimate) : aucun comparatif public",
+    "Realtek": "puce Realtek des MCHOSE (2026-11-18) : référence exacte non publiée, aucun comparatif public",
 }
 # Capteurs classés « haut de gamme » (rang ≥ 3) mais absents de PERFORMANCE_SENSORS, qui décide du
 # mode Haut de Gamme : incohérence DOCUMENTÉE, mesurée sans effet (1 309 profils → 0 recommandation

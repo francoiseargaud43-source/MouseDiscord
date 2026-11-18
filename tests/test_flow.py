@@ -1730,10 +1730,14 @@ def test_a_prix_non_verifie_le_message_le_dit(monkeypatch):
     « Détails » qui le portait a été retiré le 2026-10-11 : plus rien ne l'affichait (16 % des profils).
     """
     # Depuis le relevé du 2026-11-12, tous les prix du vrai catalogue sont attestés : le test marque donc
-    # la Scyrox V6 (montrée pour ce profil) « prix du cahier des charges », sur une copie du catalogue.
+    # « prix du cahier des charges », sur une copie du catalogue, la dernière souris montrée pour ce
+    # profil (la Scyrox V6 jusqu'à l'ajout des MCHOSE du 2026-11-18 ; le statut du prix ne change pas
+    # le classement, seulement son affichage).
+    _, _, places = _trois_places(None, None, Grip.PALM, 160.0, 70.0)
+    marquee = [s for s in places if s is not None][-1].mouse.id
     vrai = flow.load_catalog
     monkeypatch.setattr(flow, "load_catalog", lambda chemin: tuple(
-        dataclasses.replace(m, price_status="owner_spec_unverified") if m.id == "scyrox_v6" else m
+        dataclasses.replace(m, price_status="owner_spec_unverified") if m.id == marquee else m
         for m in vrai(chemin)))
     session, selection, _ = _trois_places(None, None, Grip.PALM, 160.0, 70.0)
     embeds = flow.results_embeds(session, selection)
@@ -1774,7 +1778,9 @@ def test_une_place_au_score_partiel_l_annonce_sur_sa_ligne():
     amputé comme s'il était complet (**8 187 places** sur 27 170 profils, mesuré le 2026-10-13).
     """
     session, selection, (ideal, alternative, economy) = _trois_places(
-        BudgetMode.ECONOMIQUE, None, Grip.CLAW, 140.0, 60.0)
+        BudgetMode.ECONOMIQUE, None, Grip.CLAW, 140.0, 65.0)
+    # Largeur passée de 60 à 65 mm le 2026-11-18 : à 60 mm, la MCHOSE L7 Ultra (hauteur des boutons non
+    # documentée) devient le match idéal, et le profil ne montrait plus un idéal au score complet.
     assert ideal is not None and not ideal.is_partial, "le profil de contrôle doit avoir un idéal complet"
     assert alternative is not None and alternative.is_partial
     assert economy is not None and economy.is_partial

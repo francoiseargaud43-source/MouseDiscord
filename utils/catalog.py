@@ -216,6 +216,9 @@ AFFILIATE_PARAMS = {
     # 2026-11-13 : programme LAMZU du propriétaire (BixGrow), même paramètre que Scyrox.
     "lamzu.com": "bg_ref",
     "www.lamzu.com": "bg_ref",
+    # 2026-11-18 : programme MCHOSE du propriétaire (GoAffPro).
+    "www.mchose.store": "ref",
+    "mchose.store": "ref",
 }
 
 
