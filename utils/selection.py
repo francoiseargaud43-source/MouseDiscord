@@ -44,7 +44,7 @@ TOLERANCE_BY_MODE = {
 
 # Caractéristiques de performance DOCUMENTÉES retenues pour le mode haut de gamme.
 PERFORMANCE_POLLING_HZ = 8000
-PERFORMANCE_SENSORS = frozenset({"PAW3950", "PAW3950 Ultra", "PAW3955", "PAW3955 Master"})
+PERFORMANCE_SENSORS = frozenset({"PAW3950", "PAW3950 TI", "PAW3950 Ultra", "PAW3955", "PAW3955 Master"})
 MAX_PERFORMANCE_INDEX = 2
 
 
@@ -62,6 +62,10 @@ SENSOR_TIERS = {
     # sont celles de la classe PAW3950 — rang aligné, aucune valeur inventée. Le classement reste un
     # départage de composants DOCUMENTÉS, jamais un score morphologique.
     "Pulsar XS-1": 3,
+    # Nom donné par MCHOSE (A7 V2 Ultra, fiche officielle relevée le 2026-11-18) : « PAW3950 TI Sensor —
+    # Up to 42,000 DPI … Up to 750 IPS … Up to 50G » — un PAW3950, caractéristiques publiées de la même
+    # classe : rang aligné sur le PAW3950, aucune valeur inventée.
+    "PAW3950 TI": 3,
     "PAW3395 Ultra": 2,
     "PAW3395": 1,
 }
@@ -93,11 +97,13 @@ def components_index(mouse: Mouse) -> tuple[int, int, int, int]:
     lexicographique : le capteur d'abord (génération), puis le MCU, puis les switchs, puis la
     fréquence. À ne pas confondre avec ``performance_index`` (mode haut de gamme, inchangé).
     """
+    # getattr : une donnée absente vaut 0 (jamais devinée), y compris sur une souris minimale de test.
+    polling = getattr(mouse, "polling_hz", None)
     return (
-        SENSOR_TIERS.get((mouse.sensor or "").strip(), 0),
-        MCU_TIERS.get((mouse.mcu or "").strip(), 0),
-        _switch_tier(mouse.switches),
-        1 if mouse.polling_hz is not None and mouse.polling_hz >= PERFORMANCE_POLLING_HZ else 0,
+        SENSOR_TIERS.get((getattr(mouse, "sensor", None) or "").strip(), 0),
+        MCU_TIERS.get((getattr(mouse, "mcu", None) or "").strip(), 0),
+        _switch_tier(getattr(mouse, "switches", None)),
+        1 if polling is not None and polling >= PERFORMANCE_POLLING_HZ else 0,
     )
 
 
@@ -137,20 +143,27 @@ def _order_for_mode(mode: BudgetMode, pool: list[MouseScore], rest: list[MouseSc
     def idx(s: MouseScore) -> int:
         return catalog_index[s.mouse.id]
 
+    # Règle du propriétaire du 2026-11-18 (« Composants à % égal ») : la main d'abord ; à pourcentage
+    # égal, le meilleur capteur, puis le MCU, puis les switchs (puis la fréquence), puis la moins chère.
+    # Chaque gamme garde son propre critère de tête (le prix en Économique, les points/€ en
+    # Qualité-Prix, les performances en Haut de gamme) ; les composants départagent ensuite.
+    def comps(s: MouseScore) -> tuple[int, ...]:
+        return tuple(-v for v in components_index(s.mouse))
+
     if mode is BudgetMode.ECONOMIQUE:
-        key = lambda s: (_price_key(s), -s.total, idx(s))
+        key = lambda s: (_price_key(s), -s.total, comps(s), idx(s))
     elif mode is BudgetMode.QUALITE_PRIX:
-        key = lambda s: (-(s.total / s.mouse.price_eur), -s.total, idx(s))
+        key = lambda s: (-(s.total / s.mouse.price_eur), -s.total, comps(s), idx(s))
     elif mode is BudgetMode.HAUT_DE_GAMME:
-        key = lambda s: (-performance_index(s.mouse), -s.total, idx(s))
+        key = lambda s: (-performance_index(s.mouse), -s.total, comps(s), _price_key(s), idx(s))
     elif mode is BudgetMode.PEU_IMPORTE_PRIX:
         # Forme d'abord : le score reste maître ; à score égal, les composants documentés les plus
         # récents (capteur, MCU, switchs, fréquence), puis la moins chère. Le prix n'est jamais un
         # critère de premier rang.
         key = lambda s: (-s.total, tuple(-v for v in components_index(s.mouse)), _price_key(s), idx(s))
-    else:  # CUSTOM : à score égal, le moins cher (ne pas dépenser le budget par défaut)
-        key = lambda s: (-s.total, _price_key(s), idx(s))
-    return sorted(pool, key=key) + sorted(rest, key=lambda s: (-s.total, _price_key(s), idx(s)))
+    else:  # CUSTOM : à score égal, les meilleurs composants, puis le moins cher
+        key = lambda s: (-s.total, comps(s), _price_key(s), idx(s))
+    return sorted(pool, key=key) + sorted(rest, key=lambda s: (-s.total, comps(s), _price_key(s), idx(s)))
 
 
 def _explanation(mode: BudgetMode, top: MouseScore, pool: list[MouseScore], reference: int) -> str:
@@ -177,7 +190,7 @@ def _explanation(mode: BudgetMode, top: MouseScore, pool: list[MouseScore], refe
                 "puis le prix le plus bas. "
                 "Le budget ne limite jamais le choix.")
     return (f"Budget personnalisé : meilleur score conforme au budget{zone} ; "
-            "à score égal, la moins chère.")
+            "à score égal, les meilleurs composants (capteur, MCU, switchs), puis la moins chère.")
 
 
 def select(

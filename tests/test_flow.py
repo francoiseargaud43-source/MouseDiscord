@@ -1264,7 +1264,9 @@ async def test_the_result_always_shows_three_lines_when_the_budget_allows_it():
     session.max_budget_eur = 45.0
     selection = flow.compute_selection(session)
     ideal, alternative, economy = flow.result_slots(selection)
-    assert (ideal.mouse.id, alternative.mouse.id, economy.mouse.id) == ("vxe_v3", "vxe_r1", "vxe_mad_r")
+    # 2026-11-18 (« Composants à % égal ») : la Mad R et la R1 ont le même score ; la Mad R passe devant
+    # (switchs optiques et 8 000 Hz documentés, contre mécaniques et 2 000 Hz pour la R1).
+    assert (ideal.mouse.id, alternative.mouse.id, economy.mouse.id) == ("vxe_v3", "vxe_mad_r", "vxe_r1")
     embeds = flow.results_embeds(session, selection)
     lignes = [field.value for field in embeds[0].fields]
     montrees = [score for score in (ideal, alternative, economy) if score is not None]

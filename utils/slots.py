@@ -30,9 +30,10 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from utils.matcher import MouseScore
+from utils.matcher import MouseScore, compatibility_percent
 from utils.models import BudgetMode
-from utils.selection import QUALITE_PRIX_TOLERANCE_POINTS, TOLERANCE_BY_MODE, Selection, _same_shell
+from utils.selection import (QUALITE_PRIX_TOLERANCE_POINTS, TOLERANCE_BY_MODE, Selection, _same_shell,
+                             components_index)
 
 ALTERNATIVE_EXTENSION_POINTS = 5      # élargissement unique de la zone de l'alternative
 ECONOMY_SLOT_TOLERANCE_POINTS = 5     # fenêtre propre de la troisième place
@@ -41,6 +42,8 @@ ALTERNATIVE_TITLE = "🥈 L'alternative"
 ECONOMY_TITLE = "💸 L'économie"
 OTHER_OPTION_TITLE = "➕ L'autre option"
 PISTE_TITLE = "🔎 Autre piste"
+EQUAL_TITLE = "🟰 Au même pourcentage"
+EQUAL_CHOICES_MAX = 3                 # souris listées dans le bloc « au même pourcentage »
 
 
 def mode_tolerance(mode: BudgetMode | None) -> int:
@@ -53,8 +56,10 @@ def _price_or_inf(score: MouseScore) -> float:
 
 
 def _best(candidates: Sequence[MouseScore]) -> MouseScore | None:
-    """Le meilleur score ; à égalité, la moins chère ; à égalité encore, l'ordre du classement."""
-    return max(candidates, key=lambda score: (score.total, -_price_or_inf(score))) if candidates else None
+    """Le meilleur score ; à égalité, les meilleurs composants (capteur, MCU, switchs, fréquence — règle
+    du propriétaire du 2026-11-18), puis la moins chère ; à égalité encore, l'ordre du classement."""
+    return max(candidates, key=lambda score: (score.total, components_index(score.mouse),
+                                              -_price_or_inf(score))) if candidates else None
 
 
 def _under(candidates: Sequence[MouseScore], ceiling: int) -> list[MouseScore]:
@@ -128,6 +133,38 @@ def result_slots(selection: Selection) -> tuple[MouseScore | None, MouseScore | 
     reference = selection.reference_score if selection.reference_score is not None else ideal.total
     alternative = _alternative(ideal, rest, reference, mode_tolerance(selection.mode))
     return ideal, alternative, _third(ideal, alternative, rest, reference)
+
+
+def equal_choices(selection: Selection, limit: int = EQUAL_CHOICES_MAX) -> tuple[tuple[MouseScore, ...], int]:
+    """Les autres souris au MÊME pourcentage que le match idéal (demande du propriétaire, 2026-11-18).
+
+    « Si elles ont le même taux de correspondance, l'utilisateur a le choix » : une souris aussi bien
+    notée que le match idéal, mais plus chère ou moins bien placée par le mode, n'avait aucune place
+    à l'écran (l'alternative cherche une autre coque, de préférence moins chère). Ce bloc les liste
+    sous le match idéal, sans recalculer ni modifier aucun score. Ordre du bloc (règle du propriétaire du
+    2026-11-18) : le meilleur capteur, puis le meilleur MCU, puis les meilleurs switchs (et la fréquence),
+    puis la moins chère ; à égalité complète, l'ordre du mode.
+
+    Une souris par coque : ni une souris déjà montrée dans les trois places, ni une variante de leur
+    coque (ATK A9 Air à côté d'une A9 Plus, par exemple), ni deux variantes l'une de l'autre. Le bloc
+    sert à proposer une AUTRE forme aussi bien notée ; les versions d'une même souris ont déjà leur
+    bloc « 🧩 Plusieurs versions ».
+
+    Renvoie ``(souris listées, nombre d'autres au même pourcentage non listées)``.
+    """
+    ideal, alternative, economy = result_slots(selection)
+    if ideal is None:
+        return (), 0
+    taken = [score for score in (ideal, alternative, economy) if score is not None]
+    target = compatibility_percent(ideal)
+    same: list[MouseScore] = []
+    candidates = sorted((score for score in selection.ranked if compatibility_percent(score) == target),
+                        key=lambda score: (tuple(-v for v in components_index(score.mouse)), _price_or_inf(score)))
+    for score in candidates:
+        if not any(_same_shell(score, other) for other in taken):
+            same.append(score)
+            taken.append(score)
+    return tuple(same[:limit]), max(0, len(same) - limit)
 
 
 def alternative_slot_title(alternative: MouseScore, ideal: MouseScore,

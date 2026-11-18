@@ -249,8 +249,6 @@ SENSORS_SANS_RANG_ASSUME = {
                    "jamais deviné — à classer avec source",
     "PAW NEXT I": "nouveau capteur PixArt des Scyrox V8S / V6S / V12 (2026-11-12) : aucun comparatif public "
                   "de rang, jamais deviné — à classer avec source",
-    "PAW3950 TI": "nom donné par MCHOSE sur la fiche de l'A7 V2 Ultra (2026-11-18) : variante non publiée "
-                  "par PixArt, rang jamais deviné — à classer avec source",
 }
 MCUS_SANS_RANG_ASSUME = {
     "": "aucun MCU publié sur la fiche (ATK U2, Pulsar X2 / X2H / Xlite : le fabricant ne le donne pas)",
