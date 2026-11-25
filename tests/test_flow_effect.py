@@ -55,6 +55,10 @@ def test_le_controle_d_equivalence_voit_un_changement_et_rien_d_autre(monkeypatc
     grille_d_origine = flow_effect.banc.grille
     monkeypatch.setattr(flow_effect.banc, "grille", lambda rapide: grille_d_origine(True))
     ancien = flow_effect.charger_ancienne_version("c6a268b")
+    # 2026-11-18 : à score égal, les places départagent désormais par les composants (règle du
+    # propriétaire « Composants à % égal »), un changement VOULU. Neutralisé ici pour que la comparaison
+    # porte toujours sur le découpage de la 80e passe, qui, lui, ne devait rien changer.
+    monkeypatch.setattr(slots, "components_index", lambda mouse: (0, 0, 0, 0))
     profils, ecarts, _ = flow_effect.equivalence(ancien, 2)
     assert profils == 3 * 576 and ecarts == 0
     monkeypatch.setattr(slots, "ALTERNATIVE_EXTENSION_POINTS", 0)

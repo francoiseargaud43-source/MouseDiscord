@@ -88,7 +88,8 @@ from utils.models import (
 from utils.selection import Selection, select
 # Le choix des trois places est un calcul pur, sans Discord : il vit dans ``utils/slots.py``. Ses noms
 # restent accessibles ici (``finder_flow.result_slots``…) pour les outils de mesure et les tests.
-from utils.slots import alternative_slot_title, mode_tolerance, result_slots, third_slot_title
+from utils.slots import (EQUAL_TITLE, alternative_slot_title, equal_choices, mode_tolerance, result_slots,
+                         third_slot_title)
 from utils.session import LOOKUP_OK, FinderSession
 from utils.validation import InputError, parse_budget, parse_hand_measures
 
@@ -857,12 +858,29 @@ def _buttons_guide_embed(session: FinderSession, ideal: MouseScore | None = None
     return _image(embed, _advised_image(BUTTONS_ADVISED[grip], {height}, BUTTON_IMAGES))
 
 
+EQUAL_INTRO = "-# Même note que le match idéal : elles iront aussi bien à votre main, choisissez au prix ou au goût."
+
+
+def _equal_text(selection: Selection, mode: BudgetMode | None) -> str:
+    """Bloc « 🟰 Au même pourcentage » (2026-11-18) : les autres souris aussi bien notées que le match
+    idéal, une par ligne, au format des trois places. Vide quand il n'y en a aucune."""
+    listed, others = equal_choices(selection)
+    if not listed:
+        return ""
+    lines = [EQUAL_INTRO] + [_slot_text(score, mode, partial_hint=True) for score in listed]
+    if others:
+        lines.append(f"-# Et {others} autre{'s' if others > 1 else ''} au même pourcentage.")
+    return "\n".join(lines)[:1024]
+
+
 def results_embeds(session: FinderSession, selection: Selection,
                    versions: Mapping[str, Gamme] | None = None) -> list[discord.Embed]:
     """Résultat en un seul message, jamais en onglet : la recommandation, puis l'explication plus bas.
 
     Bloc 1 — **la recommandation** : la ligne du parcours, puis le match idéal, l'alternative et, si
-    elle existe, l'économie (nom · prix · pourcentage du maximum théorique). Rien d'autre à l'écran :
+    elle existe, l'économie (nom · prix · pourcentage du maximum théorique). Sous le match idéal, le
+    bloc « 🟰 Au même pourcentage » liste jusqu'à trois autres souris aussi bien notées (2026-11-18).
+    Rien d'autre à l'écran :
     ni score, ni badge, ni terme technique, ni image.
 
     Puis les blocs de compréhension, du plus particulier au plus général : pourquoi ce choix (le score,
@@ -898,6 +916,9 @@ def results_embeds(session: FinderSession, selection: Selection,
         return [main]
 
     main.add_field(name="🥇 Le match idéal", value=_slot_text(ideal, session.budget_mode), inline=False)
+    equal = _equal_text(selection, session.budget_mode)
+    if equal:
+        main.add_field(name=EQUAL_TITLE, value=equal, inline=False)
     if alternative is not None:
         main.add_field(name=alternative_slot_title(alternative, ideal, selection.reference_score,
                                                   mode_tolerance(selection.mode)),
@@ -1383,6 +1404,7 @@ async def _show_results(interaction: discord.Interaction, session: FinderSession
     # toujours les souris montrées : le membre voyait une souris sans bouton, et un bouton pour une
     # souris absente du message.
     displayed = [score for score in result_slots(selection) if score is not None]
+    displayed += list(equal_choices(selection)[0])     # boutons d'achat du bloc « au même pourcentage »
     # Minimisation : le parcours est TERMINÉ (ses réponses sont retirées du fichier d'état) ; il
     # reste quelques minutes en mémoire pour qu'un clic rejoué par Discord reçoive le même résultat
     # au lieu du message « ce parcours n'est plus actif ».
@@ -1401,6 +1423,9 @@ def persistent_views() -> tuple[discord.ui.BaseView, ...]:
             MeasureModal(), BudgetModal())
 
 
+BUTTONS_PER_ROW = 5                  # limite Discord : 5 boutons par rangée
+
+
 class ResultsView(discord.ui.View):
     """Boutons d'achat du résultat : des LIENS, gérés par Discord, jamais par le bot.
 
@@ -1413,7 +1438,8 @@ class ResultsView(discord.ui.View):
 
     def __init__(self, displayed: Sequence[MouseScore], links: dict[str, str]) -> None:
         """``displayed`` : les souris MONTREÉES dans le message, dans l'ordre (match idéal,
-        alternative, économie). Un bouton par souris affichée — jamais pour une souris absente."""
+        alternative, économie, puis le bloc « au même pourcentage »). Un bouton par souris affichée —
+        jamais pour une souris absente."""
         super().__init__(timeout=None)
         purchases = 0
         seen: set[str] = set()
@@ -1429,7 +1455,7 @@ class ResultsView(discord.ui.View):
                         style=discord.ButtonStyle.link,
                         url=url,
                         emoji="🛒",
-                        row=0,
+                        row=purchases // BUTTONS_PER_ROW,
                     )
                 )
                 purchases += 1

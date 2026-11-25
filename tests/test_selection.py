@@ -255,6 +255,7 @@ MCUS_SANS_RANG_ASSUME = {
     "Broadcom CX52850SE": "puce Broadcom des VXE X3 : aucun comparatif public de génération",
     "Puce BK Custom Esports": "puce maison de l'ATK A9 NB Ultra : aucun comparatif public",
     "Puce NearLink / HiSilicon": "radio NearLink (ATK A9 Plus / A9 Ultimate) : aucun comparatif public",
+    "Realtek": "puce Realtek des MCHOSE (2026-11-18) : référence exacte non publiée, aucun comparatif public",
 }
 # Capteurs classés « haut de gamme » (rang ≥ 3) mais absents de PERFORMANCE_SENSORS, qui décide du
 # mode Haut de Gamme : incohérence DOCUMENTÉE, mesurée sans effet (1 309 profils → 0 recommandation

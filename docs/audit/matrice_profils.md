@@ -1,6 +1,6 @@
 # Matrices de comparaison par profil
 
-_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-11-12**. Ne pas modifier à la main : relancer le script._
+_Généré par `tools/compare_profiles.py` à partir de `data/mouse_db.json` le **2026-11-18**. Ne pas modifier à la main : relancer le script._
 
 **Lecture** : « ✅ » = score final sur 40 ; « ⏳ » = données manquantes, score partiel NON classable ; « ❌ » = exclusion. Le pourcentage du barème n'est pas une probabilité.
 
@@ -70,6 +70,13 @@ Cible longueur : 118.8–123.8 mm · Cible largeur de prise : 55.6–59.6 mm
 | Pulsar JV-X | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 121.0 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Élevé | Mid | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Scyrox V12M | ✅ 25/40 (boutons non documentés) | 122.0 mm (dans la plage) | 59.7 mm (estimée, écart 0.1) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | Scyrox V12L | ✅ 20/40 (boutons non documentés) | 126.0 mm (écart 2.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
+| LAMZU Maya X V2 | ❌ exclue — Prix 134.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 0.2 mm) | 61.0 mm (estimée, écart 1.4) | Élevé | Mid | Inconnu | — | Prix 134.90 € au-dessus du budget maximal 75.00 € |
+| LAMZU Thorn V2 | ❌ exclue — Prix 129.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 0.2 mm) | 63.0 mm (estimée, écart 3.4) | Élevé | Mid | Inconnu | — | Prix 129.90 € au-dessus du budget maximal 75.00 € |
+| LAMZU Paro Aurora | ❌ exclue — Prix 99.90 € au-dessus du budget maximal 75.00 € | 120.0 mm (dans la plage) | 62.0 mm (estimée, écart 2.4) | Élevé | Mid | Inconnu | — | Prix 99.90 € au-dessus du budget maximal 75.00 € |
+| MCHOSE A7 V2 Ultra | ✅ 25/40 (boutons non documentés) | 125.8 mm (écart 2.0 mm) | 60.2 mm (estimée, écart 0.6) | Élevé | Mid | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE K7 Ultra | ✅ 15/40 (boutons non documentés) | 127.3 mm (écart 3.5 mm) | 60.8 mm (estimée, écart 1.2) | Élevé | Rear | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE L7 Ultra | ✅ 15/40 (boutons non documentés) | 115.6 mm (écart 3.2 mm) | 57.6 mm (estimée, écart 0.0) | Moyen | Rear | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE L7 Ultra+ | ✅ 20/40 (boutons non documentés) | 119.6 mm (dans la plage) | 59.9 mm (estimée, écart 0.3) | Moyen | Rear | Inconnu | moyenne | hauteur des boutons non vérifiée |
 
 **Classement par mode (profil P, calculé comme dans le bot)**
 
@@ -77,11 +84,11 @@ Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = matc
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | ATK Z1 V2 Ultimate (30/40) | ATK A9 Mini (30/40) | 8 candidat(s) | Économique : ATK Z1 V2 Ultimate est la moins chère parmi les 8 souris à 5 pts ou moins du meilleur score (35/40). |
+| Économique | ATK Z1 V2 Ultimate (30/40) | ATK GHOST Extreme (30/40) | 8 candidat(s) | Économique : ATK Z1 V2 Ultimate est la moins chère parmi les 8 souris à 5 pts ou moins du meilleur score (35/40). |
 | Qualité/Prix | ATK Phantom Ultimate (35/40) | Pulsar JV-X (35/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (35/40). Indicateur provisoire, pas un score qualité-prix validé. |
 | Haut de gamme | ATK Phantom Ultimate (35/40) | Pulsar JV-X (35/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (2/2) parmi les 2 souris à 2 pts ou moins du meilleur score (35/40). Le prix n'entre pas dans le classement. |
 | Peu importe le prix | ATK Phantom Ultimate (35/40) | Pulsar JV-X (35/40) | 2 candidat(s) | Forme d'abord : ATK Phantom Ultimate est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (35/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
-| Budget ≤ 75 € | ATK Z1 V2 Ultimate (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
+| Budget ≤ 75 € | ATK Z1 V2 Ultimate (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, les meilleurs composants (capteur, MCU, switchs), puis la moins chère. |
 
 
 ## Profil C — Claw 150 × 75 mm
@@ -147,6 +154,13 @@ Cible longueur : 110.9–115.9 mm · Cible largeur de prise : 54.4–58.4 mm
 | Pulsar JV-X | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 121.0 mm (écart 5.1 mm) | 59.0 mm (estimée, écart 0.6) | Élevé | Mid | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Scyrox V12M | ✅ 20/40 (boutons non documentés) | 122.0 mm (écart 6.1 mm) | 59.7 mm (estimée, écart 1.3) | Élevé | Rear | Inconnu | faible | hauteur des boutons non vérifiée |
 | Scyrox V12L | ❌ exclue — Longueur hors plage de 10.1 mm (> 8 mm) | 126.0 mm (écart 10.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Rear | Inconnu | — | Longueur hors plage de 10.1 mm (> 8 mm) |
+| LAMZU Maya X V2 | ❌ exclue — Prix 134.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 8.1 mm) | 61.0 mm (estimée, écart 2.6) | Élevé | Mid | Inconnu | — | Prix 134.90 € au-dessus du budget maximal 75.00 € |
+| LAMZU Thorn V2 | ❌ exclue — Prix 129.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (écart 8.1 mm) | 63.0 mm (estimée, écart 4.6) | Élevé | Mid | Inconnu | — | Prix 129.90 € au-dessus du budget maximal 75.00 € |
+| LAMZU Paro Aurora | ❌ exclue — Prix 99.90 € au-dessus du budget maximal 75.00 € | 120.0 mm (écart 4.1 mm) | 62.0 mm (estimée, écart 3.6) | Élevé | Mid | Inconnu | — | Prix 99.90 € au-dessus du budget maximal 75.00 € |
+| MCHOSE A7 V2 Ultra | ❌ exclue — Longueur hors plage de 9.9 mm (> 8 mm) | 125.8 mm (écart 9.9 mm) | 60.2 mm (estimée, écart 1.8) | Élevé | Mid | Inconnu | — | Longueur hors plage de 9.9 mm (> 8 mm) |
+| MCHOSE K7 Ultra | ❌ exclue — Longueur hors plage de 11.4 mm (> 8 mm) | 127.3 mm (écart 11.4 mm) | 60.8 mm (estimée, écart 2.4) | Élevé | Rear | Inconnu | — | Longueur hors plage de 11.4 mm (> 8 mm) |
+| MCHOSE L7 Ultra | ✅ 35/40 (boutons non documentés) | 115.6 mm (dans la plage) | 57.6 mm (estimée, écart 0.0) | Élevé | Rear | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE L7 Ultra+ | ✅ 20/40 (boutons non documentés) | 119.6 mm (écart 3.7 mm) | 59.9 mm (estimée, écart 1.5) | Élevé | Rear | Inconnu | moyenne | hauteur des boutons non vérifiée |
 
 **Classement par mode (profil C, calculé comme dans le bot)**
 
@@ -154,11 +168,11 @@ Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = matc
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | Pulsar X2 v3 Mini (40/40) | Pulsar TenZ Signature Edition 2.0 Mini (35/40) | 3 candidat(s) | Économique : Pulsar X2 v3 Mini est la moins chère parmi les 3 souris à 5 pts ou moins du meilleur score (40/40). |
-| Qualité/Prix | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). Indicateur provisoire, pas un score qualité-prix validé. |
-| Haut de gamme | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | Pulsar X2 v3 Mini (40/40) | Pulsar X2 CrazyLight Mini (40/40) | 2 candidat(s) | Forme d'abord : Pulsar X2 v3 Mini est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
-| Budget ≤ 75 € | ATK Blazing Sky F1 V2 (30/40) | ATK A9 Mini (30/40) | 4 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 4 souris à 2 pts ou moins du meilleur score (30/40) ; à score égal, la moins chère. |
+| Économique | MCHOSE L7 Ultra (35/40) | Pulsar TenZ Signature Edition 2.0 Mini (35/40) | 4 candidat(s) | Économique : MCHOSE L7 Ultra est la moins chère parmi les 4 souris à 5 pts ou moins du meilleur score (40/40). |
+| Qualité/Prix | Pulsar X2 v3 Mini (40/40) | MCHOSE L7 Ultra (35/40) | 2 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). Indicateur provisoire, pas un score qualité-prix validé. |
+| Haut de gamme | Pulsar X2 v3 Mini (40/40) | MCHOSE L7 Ultra (35/40) | 2 candidat(s) | Haut de gamme : performances documentées les plus élevées (0/2) parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). Le prix n'entre pas dans le classement. |
+| Peu importe le prix | Pulsar X2 v3 Mini (40/40) | MCHOSE L7 Ultra (35/40) | 2 candidat(s) | Forme d'abord : Pulsar X2 v3 Mini est la souris dont la forme colle le mieux à votre main parmi les 2 souris à 2 pts ou moins du meilleur score (40/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Budget ≤ 75 € | MCHOSE L7 Ultra (35/40) | ATK Blazing Sky F1 V2 (30/40) | 1 candidat(s) | Budget personnalisé : meilleur score conforme au budget, seule souris dans la zone de tolérance ; à score égal, les meilleurs composants (capteur, MCU, switchs), puis la moins chère. |
 
 
 ## Profil F — Fingertip 200 × 100 mm
@@ -224,6 +238,13 @@ Cible longueur : ≤ 129.1 mm · Cible largeur de prise : 55.3–59.2 mm
 | Pulsar JV-X | ❌ exclue — Prix 149.99 € au-dessus du budget maximal 75.00 € | 121.0 mm (dans la plage) | 59.0 mm (estimée, écart 0.0) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 149.99 € au-dessus du budget maximal 75.00 € |
 | Scyrox V12M | ✅ 25/40 (boutons non documentés) | 122.0 mm (dans la plage) | 59.7 mm (estimée, écart 0.5) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
 | Scyrox V12L | ✅ 25/40 (boutons non documentés) | 126.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | faible | hauteur des boutons non vérifiée |
+| LAMZU Maya X V2 | ❌ exclue — Prix 134.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (dans la plage) | 61.0 mm (estimée, écart 1.8) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 134.90 € au-dessus du budget maximal 75.00 € |
+| LAMZU Thorn V2 | ❌ exclue — Prix 129.90 € au-dessus du budget maximal 75.00 € | 124.0 mm (dans la plage) | 63.0 mm (estimée, écart 3.8) | Élevé | ignorée (Fingertip) | Inconnu | — | Prix 129.90 € au-dessus du budget maximal 75.00 € |
+| LAMZU Paro Aurora | ❌ exclue — Prix 99.90 € au-dessus du budget maximal 75.00 € | 120.0 mm (dans la plage) | 62.0 mm (estimée, écart 2.8) | Inconnu | ignorée (Fingertip) | Inconnu | — | Prix 99.90 € au-dessus du budget maximal 75.00 € |
+| MCHOSE A7 V2 Ultra | ✅ 20/40 (boutons non documentés) | 125.8 mm (dans la plage) | 60.2 mm (estimée, écart 1.0) | Moyen | ignorée (Fingertip) | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE K7 Ultra | ✅ 20/40 (boutons non documentés) | 127.3 mm (dans la plage) | 60.8 mm (estimée, écart 1.6) | Moyen | ignorée (Fingertip) | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE L7 Ultra | ✅ 30/40 (boutons non documentés) | 115.6 mm (dans la plage) | 57.6 mm (estimée, écart 0.0) | Élevé | ignorée (Fingertip) | Inconnu | moyenne | hauteur des boutons non vérifiée |
+| MCHOSE L7 Ultra+ | ✅ 25/40 (boutons non documentés) | 119.6 mm (dans la plage) | 59.9 mm (estimée, écart 0.7) | Élevé | ignorée (Fingertip) | Inconnu | moyenne | hauteur des boutons non vérifiée |
 
 **Classement par mode (profil F, calculé comme dans le bot)**
 
@@ -231,9 +252,9 @@ Les deux colonnes sont les deux premières souris que le bot AFFICHE (1er = matc
 
 | Mode | 1er | 2e | Zone de tolérance | Explication du 1er |
 |---|---|---|---|---|
-| Économique | VXE Dragonfly V3 / V3 Pro (40/40) | Scyrox V6S (40/40) | 13 candidat(s) | Économique : VXE Dragonfly V3 / V3 Pro est la moins chère parmi les 13 souris à 5 pts ou moins du meilleur score (40/40). |
-| Qualité/Prix | VXE Dragonfly V3 / V3 Pro (40/40) | Scyrox V6S (40/40) | 4 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 4 souris à 2 pts ou moins du meilleur score (40/40). Indicateur provisoire, pas un score qualité-prix validé. |
+| Économique | VXE Dragonfly V3 / V3 Pro (40/40) | Pulsar X2 v3 Mini (40/40) | 13 candidat(s) | Économique : VXE Dragonfly V3 / V3 Pro est la moins chère parmi les 13 souris à 5 pts ou moins du meilleur score (40/40). |
+| Qualité/Prix | VXE Dragonfly V3 / V3 Pro (40/40) | Pulsar X2 v3 Mini (40/40) | 4 candidat(s) | Rapport qualité/prix : meilleur rapport points/€ parmi les 4 souris à 2 pts ou moins du meilleur score (40/40). Indicateur provisoire, pas un score qualité-prix validé. |
 | Haut de gamme | Scyrox V6S (40/40) | VXE Dragonfly V3 / V3 Pro (40/40) | 4 candidat(s) | Haut de gamme : performances documentées les plus élevées (1/2) parmi les 4 souris à 2 pts ou moins du meilleur score (40/40). Le prix n'entre pas dans le classement. |
-| Peu importe le prix | Pulsar X2 v3 Mini (40/40) | VXE Dragonfly V3 / V3 Pro (40/40) | 4 candidat(s) | Forme d'abord : Pulsar X2 v3 Mini est la souris dont la forme colle le mieux à votre main parmi les 4 souris à 2 pts ou moins du meilleur score (40/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
-| Budget ≤ 75 € | VXE Dragonfly V3 / V3 Pro (40/40) | Scyrox V6S (40/40) | 2 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 2 souris à 2 pts ou moins du meilleur score (40/40) ; à score égal, la moins chère. |
+| Peu importe le prix | Pulsar X2 v3 Mini (40/40) | Scyrox V6S (40/40) | 4 candidat(s) | Forme d'abord : Pulsar X2 v3 Mini est la souris dont la forme colle le mieux à votre main parmi les 4 souris à 2 pts ou moins du meilleur score (40/40). À score égal, les composants documentés les plus récents décident (capteur, MCU, switchs, fréquence), puis le prix le plus bas. Le budget ne limite jamais le choix. |
+| Budget ≤ 75 € | Scyrox V6S (40/40) | VXE Dragonfly V3 / V3 Pro (40/40) | 2 candidat(s) | Budget personnalisé : meilleur score conforme au budget parmi les 2 souris à 2 pts ou moins du meilleur score (40/40) ; à score égal, les meilleurs composants (capteur, MCU, switchs), puis la moins chère. |
 

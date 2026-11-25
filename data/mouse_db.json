@@ -5357,5 +5357,515 @@
         "date_checked": "2026-11-12"
       }
     ]
+  },
+  {
+    "id": "lamzu_maya_x_v2",
+    "brand": "LAMZU",
+    "model": "Maya X V2",
+    "category": "Autre",
+    "family": "Maya X",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 124.0,
+    "width_max_mm": 64.0,
+    "height_mm": 40.0,
+    "weight_g": 47.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "La fiche LAMZU présente la souris pour les trois prises dans son encadré « Grip Guiding » (Palm Grip, Claw Grip, Fingertip Grip), sans en écarter aucune.",
+    "sensor": "PAW NEXT I",
+    "polling_hz": 8000,
+    "switches": "Optiques",
+    "mcu": "Nordic 54LM20",
+    "price_eur": 134.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-13 par Maxesport (revendeur français) : 134,90 €. La boutique LAMZU, vers laquelle mène le bouton d'achat (lien affilié du propriétaire), ne vend qu'en dollars (119.99 USD pour la France) : aucune conversion faite ici, le prix montré est celui du revendeur français (même principe que la Scyrox V8 avant le 2026-11-12).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-13 (programme d'affiliation LAMZU du propriétaire). Fiche officielle : 124 × 64 × 40 mm, 47 g (±2), capteur PAW NEXT I, MCU Nordic 54LM20, switchs optiques ; récepteur « Orbit 8K Receiver » fourni dans la boîte → 8 000 Hz retenu. EloShapes : symétrique, bosse « Center » → « Mid » ; cotes 124,4 × 64,9 × 39,6 mm (écart ≤ 0,9 mm, valeurs du fabricant retenues). Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "LAMZU — fiche officielle Maya X V2 (tableau « SPECIFICATION », liste du contenu de la boîte), variante 69503978111010 en stock, relevée le 2026-11-13",
+        "url": "https://lamzu.com/products/lamzu-maya-x-v2?variant=69503978111010",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "palm_grip_fit",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "EloShapes — Maya X V2 (forme et position de la bosse, informations publiques et gratuites), relevé le 2026-11-13",
+        "url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x-v2",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — Lamzu Maya X V2 8K Wireless - Arctic Blue : 134,90 € affichés, en stock, relevé le 2026-11-13",
+        "url": "https://maxesport.gg/products/lamzu-maya-x-v2-8k-wireless-arctic-blue",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "lamzu_thorn_v2",
+    "brand": "LAMZU",
+    "model": "Thorn V2",
+    "category": "Autre",
+    "family": "Thorn",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 124.0,
+    "width_max_mm": 66.0,
+    "height_mm": 42.0,
+    "weight_g": 55.0,
+    "shape": "Ergonomic",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "La fiche LAMZU recommande explicitement Palm, Claw et Fingertip (« Recommended Grip Style ») et précise « Not recommended for small hands (< 17.5 cm) ».",
+    "sensor": "PAW NEXT I",
+    "polling_hz": 8000,
+    "switches": "Optiques",
+    "mcu": "Nordic 54H20",
+    "price_eur": 129.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-13 par Maxesport (revendeur français) : 129,90 €. La boutique LAMZU, vers laquelle mène le bouton d'achat (lien affilié du propriétaire), ne vend qu'en dollars (129.99 USD pour la France) : aucune conversion faite ici, le prix montré est celui du revendeur français (même principe que la Scyrox V8 avant le 2026-11-12).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-13 (programme d'affiliation LAMZU du propriétaire). Fiche officielle : 124 × 66 × 42 mm (66,5 mm au plus large sur le dessin), 55 g, capteur PAW NEXT I, MCU Nordic 54H20, « 8K Polling », récepteur « Orbiter » fourni → 8 000 Hz retenu. Déconseillée par LAMZU aux mains de moins de 17,5 cm. EloShapes : ergonomique droitière, bosse « Center » → « Mid » ; cotes identiques. Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "LAMZU — fiche officielle Thorn V2 (tableau « SPECIFICATION », liste du contenu de la boîte), variante 45771426299938 en stock, relevée le 2026-11-13",
+        "url": "https://lamzu.com/products/lamzu-thorn-v2?variant=45771426299938",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "palm_grip_fit",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "EloShapes — Thorn V2 (forme et position de la bosse, informations publiques et gratuites), relevé le 2026-11-13",
+        "url": "https://www.eloshapes.com/mouse/compare?p=lamzu-thorn-v2",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — Lamzu Thorn V2 8K Wireless Purple : 129,90 € affichés, en stock, relevé le 2026-11-13",
+        "url": "https://maxesport.gg/products/lamzu-thorn-v2-8k-wireless-purple",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "lamzu_paro_aurora",
+    "brand": "LAMZU",
+    "model": "Paro Aurora",
+    "category": "Autre",
+    "family": "Paro",
+    "budget_tier": "Haut de Gamme",
+    "length_mm": 120.0,
+    "width_max_mm": 65.0,
+    "height_mm": 40.0,
+    "weight_g": 48.0,
+    "shape": "Ergonomic",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Inconnu",
+    "fit_rationale": "La fiche LAMZU écrit que la Paro est « more suitable for palm grip and claw grip » et la destine aux petites mains (16-18 cm) ; le fingertip n'est pas recommandé, laissé « Inconnu » (jamais « Faible » sans le propriétaire).",
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "switches": "Optiques Omron",
+    "mcu": "Nordic 52840",
+    "price_eur": 99.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-13 par Maxesport (revendeur français) : 99,90 €. La boutique LAMZU, vers laquelle mène le bouton d'achat (lien affilié du propriétaire), ne vend qu'en dollars (119.99 USD pour la France) : aucune conversion faite ici, le prix montré est celui du revendeur français (même principe que la Scyrox V8 avant le 2026-11-12).",
+    "dimension_status": "verified",
+    "fit_status": "manufacturer_guide",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-13 (programme d'affiliation LAMZU du propriétaire). Fiche officielle : 120 × 65 × 40 mm, 48 ±2 g, capteur PixArt 3950, MCU Nordic 52840, switchs optiques Omron ; « 8K Dongle x1 » dans la boîte → 8 000 Hz retenu. Conçue pour les petites mains (16-18 cm) selon LAMZU. EloShapes : ergonomique droitière, bosse « Center » → « Mid » ; cotes identiques. Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "LAMZU — fiche officielle Paro Aurora (tableau « SPECIFICATION », liste du contenu de la boîte), variante 43711758532642 en stock, relevée le 2026-11-13",
+        "url": "https://lamzu.com/products/lamzu-paro-aurora?variant=43711758532642",
+        "fields": [
+          "claw_grip_fit",
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "palm_grip_fit",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "EloShapes — Paro Aurora (forme et position de la bosse, informations publiques et gratuites), relevé le 2026-11-13",
+        "url": "https://www.eloshapes.com/mouse/compare?p=lamzu-paro-aurora",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-13"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — Lamzu Paro Aurora 8K Wireless Black : 99,90 € affichés, en stock, relevé le 2026-11-13",
+        "url": "https://maxesport.gg/products/lamzu-paro-aurora-8k-wireless-black",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-13"
+      }
+    ]
+  },
+  {
+    "id": "mchose_a7_v2_ultra",
+    "brand": "MCHOSE",
+    "model": "A7 V2 Ultra",
+    "category": "Autre",
+    "family": "MCHOSE A7",
+    "budget_tier": "Qualité-Prix",
+    "length_mm": 125.84,
+    "width_max_mm": 63.24,
+    "height_mm": 39.78,
+    "weight_g": 59.0,
+    "shape": "Symmetrical",
+    "hump_position": "Mid",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Moyen",
+    "fit_rationale": "MCHOSE ne publie aucune recommandation de prise : compatibilités fournies par le propriétaire le 2026-11-18, d'après la souris du catalogue au même gabarit, ATK A9 Plus (125 × 63,5 × 40 mm).",
+    "sensor": "PAW3950 TI",
+    "polling_hz": 8000,
+    "switches": "Mécaniques Omron",
+    "mcu": "Realtek",
+    "price_eur": 54.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-18 par Maxesport (revendeur français) : 54,90 €. La boutique MCHOSE, vers laquelle mène le bouton d'achat (lien affilié du propriétaire, variante « A7 V2 Ultra / White » en stock), ne vend qu'en dollars (47.60 USD) : aucune conversion faite ici (même règle que les LAMZU, choix du propriétaire du 2026-11-13).",
+    "dimension_status": "verified",
+    "fit_status": "owner_spec",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-18 (programme d'affiliation MCHOSE du propriétaire, lien ?ref=AZE). Fiche officielle : 125,84 × 63,24 × 39,78 mm, 59 g (±2), capteur PAW3950 TI, puce Realtek, switchs mécaniques omron ; « 8K Nano Wireless Receiver Included » pour l'Ultra → 8 000 Hz retenu. La fiche MCHOSE dit « Designed for Medium to Large Hands ». EloShapes : symétrique, bosse « Center » → « Mid ». Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "MCHOSE — fiche officielle A7 V2 Ultra (variante « A7 V2 Ultra / White » 50527147753767 en stock), relevée le 2026-11-18",
+        "url": "https://www.mchose.store/products/mchose-a7-v2-series-lightweight-all-round-wireless-gaming-mouse?variant=50527147753767",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "EloShapes — MCHOSE A7 V2 Ultra (forme et bosse, informations publiques et gratuites), relevé le 2026-11-18",
+        "url": "https://www.eloshapes.com/mouse/compare?p=mchose-a7-v2-ultra",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — MCHOSE A7 V2 Ultra 8K Wireless Black : 54,90 € affichés, en stock, relevé le 2026-11-18",
+        "url": "https://maxesport.gg/products/mchose-a7-v2-ultra-8k-wireless-black",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Validation du propriétaire du 2026-11-18 (« je valide ») des prises proposées d'après le gabarit — fil du projet, reprise dans la PR",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/pull/4",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-11-18"
+      }
+    ]
+  },
+  {
+    "id": "mchose_k7_ultra",
+    "brand": "MCHOSE",
+    "model": "K7 Ultra",
+    "category": "Autre",
+    "family": "MCHOSE K7",
+    "budget_tier": "Qualité-Prix",
+    "length_mm": 127.3,
+    "width_max_mm": 63.8,
+    "height_mm": 39.9,
+    "weight_g": 59.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Élevé",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Moyen",
+    "fit_rationale": "MCHOSE ne publie aucune recommandation de prise : compatibilités fournies par le propriétaire le 2026-11-18, d'après la souris du catalogue au même gabarit, ATK X1 V2 Ultra Max 2.0 (127 × 64 × 40 mm ; « Faible » en fingertip au cahier, ramené à « Moyen » par le propriétaire).",
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "switches": "Mécaniques Omron",
+    "mcu": "Realtek",
+    "price_eur": 69.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-18 par Maxesport (revendeur français) : 69,90 €. La boutique MCHOSE, vers laquelle mène le bouton d'achat (lien affilié du propriétaire, variante « White Gold » en stock), ne vend qu'en dollars (67.15 USD) : aucune conversion faite ici (même règle que les LAMZU, choix du propriétaire du 2026-11-13).",
+    "dimension_status": "verified",
+    "fit_status": "owner_spec",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-18 (programme d'affiliation MCHOSE du propriétaire, lien ?ref=AZE). Fiche officielle : 127,30 × 63,80 × 39,90 mm, 59 g (±2), capteur PAW3950, puce Realtek, switchs mécaniques omron ; « 8K Receiver & Magnetic Wireless Charging Dock » fournis → 8 000 Hz retenu. Maxesport la vend sous le nom « K7 Ultra S » avec la même fiche (PAW 3950, switchs Omron, 8K par le dongle fourni, station de charge) ; la fiche MCHOSE dit « Medium to Large Hand ». EloShapes : symétrique, bosse « Back - minimal » → « Rear ». Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "MCHOSE — fiche officielle K7 Ultra (variante « White Gold » 50269487235367 en stock), relevée le 2026-11-18",
+        "url": "https://www.mchose.store/products/mchose-k7-ultra-lightweight-wireless-gaming-mouse?variant=50269487235367",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "EloShapes — MCHOSE K7 Ultra (forme et bosse, informations publiques et gratuites), relevé le 2026-11-18",
+        "url": "https://www.eloshapes.com/mouse/compare?p=mchose-k7-ultra",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — MCHOSE K7 Ultra S 8K Wireless Black : 69,90 € affichés, en stock, relevé le 2026-11-18",
+        "url": "https://maxesport.gg/products/mchose-k7-ultra-s-8k-wireless-black",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Validation du propriétaire du 2026-11-18 (« je valide ») des prises proposées d'après le gabarit — fil du projet, reprise dans la PR",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/pull/4",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-11-18"
+      }
+    ]
+  },
+  {
+    "id": "mchose_l7_ultra",
+    "brand": "MCHOSE",
+    "model": "L7 Ultra",
+    "category": "Autre",
+    "family": "MCHOSE L7",
+    "budget_tier": "Qualité-Prix",
+    "length_mm": 115.62,
+    "width_max_mm": 60.61,
+    "height_mm": 36.04,
+    "weight_g": 39.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Moyen",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "MCHOSE ne publie aucune recommandation de prise : compatibilités fournies par le propriétaire le 2026-11-18, d'après la souris du catalogue au même gabarit, Pulsar X2 v3 Mini (115,6 × 61 × 36,6 mm).",
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "switches": "Optiques Kailh",
+    "mcu": "Realtek",
+    "price_eur": 54.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-18 par Maxesport (revendeur français) : 54,90 €. La boutique MCHOSE, vers laquelle mène le bouton d'achat (lien affilié du propriétaire, variante « L7 Ultra / Black » en stock), ne vend qu'en dollars (47.60 USD) : aucune conversion faite ici (même règle que les LAMZU, choix du propriétaire du 2026-11-13).",
+    "dimension_status": "verified",
+    "fit_status": "owner_spec",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-18 (programme d'affiliation MCHOSE du propriétaire, lien ?ref=AZE). Fiche officielle : 115,62 × 60,61 × 36,04 mm, 39 g (±2), capteur PAW3950, puce Realtek, switchs optiques kailh ; « Up to 8K wired & wireless polling rate » → 8 000 Hz retenu. Taille « Small » de la série L7 (L7 Pro / L7 Ultra) ; la fiche MCHOSE réserve le PAW3950 aux versions Ultra (le PAW3395 équipe les Pro). EloShapes : symétrique, bosse « Back - moderate » → « Rear ». Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "MCHOSE — fiche officielle L7 Ultra (variante « L7 Ultra / Black » 51290274169127 en stock), relevée le 2026-11-18",
+        "url": "https://www.mchose.store/products/mchose-l7-series-ultra-lightweight-wireless-gaming-mouse?variant=51290274169127",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "EloShapes — MCHOSE L7 Ultra (forme et bosse, informations publiques et gratuites), relevé le 2026-11-18",
+        "url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — MCHOSE L7 Ultra 8K Wireless Black : 54,90 € affichés, en stock, relevé le 2026-11-18",
+        "url": "https://maxesport.gg/products/mchose-l7-ultra-8k-wireless-black",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Validation du propriétaire du 2026-11-18 (« je valide ») des prises proposées d'après le gabarit — fil du projet, reprise dans la PR",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/pull/4",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-11-18"
+      }
+    ]
+  },
+  {
+    "id": "mchose_l7_ultra_plus",
+    "brand": "MCHOSE",
+    "model": "L7 Ultra+",
+    "category": "Autre",
+    "family": "MCHOSE L7",
+    "budget_tier": "Qualité-Prix",
+    "length_mm": 119.6,
+    "width_max_mm": 62.9,
+    "height_mm": 38.1,
+    "weight_g": 48.0,
+    "shape": "Symmetrical",
+    "hump_position": "Rear",
+    "button_height": "Inconnu",
+    "palm_grip_fit": "Moyen",
+    "claw_grip_fit": "Élevé",
+    "fingertip_grip_fit": "Élevé",
+    "fit_rationale": "MCHOSE ne publie aucune recommandation de prise : compatibilités fournies par le propriétaire le 2026-11-18, d'après la souris du catalogue au même gabarit, Pulsar X2A v3 (120,4 × 63 × 38 mm).",
+    "sensor": "PAW3950",
+    "polling_hz": 8000,
+    "switches": "Optiques Kailh",
+    "mcu": "Realtek",
+    "price_eur": 54.9,
+    "price_status": "verified",
+    "price_note": "Prix TTC en EUR affiché le 2026-11-18 par Maxesport (revendeur français) : 54,90 €. La boutique MCHOSE, vers laquelle mène le bouton d'achat (lien affilié du propriétaire, variante « L7 Ultra+ / Black » en stock), ne vend qu'en dollars (47.60 USD) : aucune conversion faite ici (même règle que les LAMZU, choix du propriétaire du 2026-11-13).",
+    "dimension_status": "verified",
+    "fit_status": "owner_spec",
+    "conflicts": {},
+    "notes": "Ajout du 2026-11-18 (programme d'affiliation MCHOSE du propriétaire, lien ?ref=AZE). Fiche officielle : 119,60 × 62,90 × 38,10 mm, 48 g (±2), capteur PAW3950, puce Realtek, switchs optiques kailh ; « Up to 8K wired & wireless polling rate » → 8 000 Hz retenu. Taille « Medium / Large » de la série L7, batterie 500 mAh. EloShapes : symétrique, bosse « Back - moderate » → « Rear ». Hauteur des boutons non publiée : « Inconnu ».",
+    "sources": [
+      {
+        "label": "MCHOSE — fiche officielle L7 Ultra+ (variante « L7 Ultra+ / Black » 50181718409511 en stock), relevée le 2026-11-18",
+        "url": "https://www.mchose.store/products/mchose-l7-series-ultra-lightweight-wireless-gaming-mouse?variant=50181718409511",
+        "fields": [
+          "height_mm",
+          "length_mm",
+          "mcu",
+          "model",
+          "polling_hz",
+          "sensor",
+          "switches",
+          "weight_g",
+          "width_max_mm"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "EloShapes — MCHOSE L7 Ultra+ (forme et bosse, informations publiques et gratuites), relevé le 2026-11-18",
+        "url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra-plus",
+        "fields": [
+          "hump_position",
+          "shape"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Maxesport (revendeur FR, prix TTC en EUR) — MCHOSE L7 Ultra+ 8K Wireless Black : 54,90 € affichés, en stock, relevé le 2026-11-18",
+        "url": "https://maxesport.gg/products/mchose-l7-ultra-plus-8k-wireless-black",
+        "fields": [
+          "price_eur",
+          "price_note"
+        ],
+        "date_checked": "2026-11-18"
+      },
+      {
+        "label": "Validation du propriétaire du 2026-11-18 (« je valide ») des prises proposées d'après le gabarit — fil du projet, reprise dans la PR",
+        "url": "https://github.com/francoiseargaud43-source/MouseDiscord/pull/4",
+        "fields": [
+          "claw_grip_fit",
+          "fingertip_grip_fit",
+          "palm_grip_fit"
+        ],
+        "date_checked": "2026-11-18"
+      }
+    ]
   }
 ]

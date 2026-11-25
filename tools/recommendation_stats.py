@@ -34,6 +34,7 @@ from cogs.finder_flow import compute_selection  # noqa: E402
 from utils.slots import (  # noqa: E402
     PISTE_TITLE,
     alternative_slot_title,
+    equal_choices,
     mode_tolerance,
     result_slots,
     third_slot_title,
@@ -165,6 +166,9 @@ def run(fast: bool = False):
             by_grip[grip.value][score.mouse.id] += 1
             key = "—" if session.thenar is None else session.thenar.value
             by_thenar[key][score.mouse.id] += 1
+        # Bloc « 🟰 Au même pourcentage » (2026-11-18) : compté à part, hors des trois places.
+        for score in equal_choices(selection)[0]:
+            counter[score.mouse.id]["meme"] += 1
         shown = {s.mouse.id for s in (ideal, alternative, economy) if s is not None}
         positions = {s.mouse.id: i for i, s in enumerate(selection.ranked)}
         evaluated = {s.mouse.id: s for s in (*selection.ranked, *selection.pending)}
@@ -220,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
     counter = data["counter"]
     total = data["total"]
     ranked = sorted(mice, key=lambda m: (-counter[m.id]["total"], m.label))
-    never = [m for m in ranked if counter[m.id]["total"] == 0]
+    never = [m for m in ranked if counter[m.id]["total"] == 0 and counter[m.id]["meme"] == 0]
 
     lines: list[str] = []
     add = lines.append
@@ -272,12 +276,14 @@ def main(argv: list[str] | None = None) -> int:
         f"Deuxième place : « {ALTERNATIVE_TITLE} » {titres_2e.get(ALTERNATIVE_TITLE, 0)} fois, "
         f"« {PISTE_TITLE} » {titres_2e.get(PISTE_TITLE, 0)} fois (dernier palier : la zone du mode ne "
         "contenait rien de comparable, la ligne le dit).\n")
-    add("| Souris | Idéal | Alternative | 3e place | Total | % des profils |")
-    add("|---|---:|---:|---:|---:|---:|")
+    add("| Souris | Idéal | Alternative | 3e place | Total | % des profils | Au même % (bloc) | % avec le bloc |")
+    add("|---|---:|---:|---:|---:|---:|---:|---:|")
     for mouse in ranked:
         c = counter[mouse.id]
         share = f"{100 * c['total'] / total:.1f} %" if total else "—"
-        add(f"| {mouse.label} | {c['ideal']} | {c['alternative']} | {c['economie']} | {c['total']} | {share} |")
+        with_block = f"{100 * (c['total'] + c['meme']) / total:.1f} %" if total else "—"
+        add(f"| {mouse.label} | {c['ideal']} | {c['alternative']} | {c['economie']} | {c['total']} | {share} "
+            f"| {c['meme']} | {with_block} |")
 
     add("\n## Souris jamais recommandées\n")
     if not never:
